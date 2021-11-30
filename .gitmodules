@@ -1,0 +1,3 @@
+[submodule "gclibs"]
+	path = gclibs
+	url = https://github.com/glowbuzzer/gclibs

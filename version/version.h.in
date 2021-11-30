@@ -1,0 +1,26 @@
+/**
+ ******************************************************************************
+ * @file           :  version.h
+ * @brief          :  GBEM version
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2022 Glowbuzzer.
+ * All rights reserved.</center></h2>
+ *
+ ******************************************************************************
+ */
+
+
+#ifndef GB_MONOREPO_VERSION_H
+#define GB_MONOREPO_VERSION_H
+
+
+#define PROJECT_NAME "@PROJECT_NAME@"
+#define PROJECT_VER  "@PROJECT_VERSION@"
+#define PROJECT_VER_MAJOR "@PROJECT_VERSION_MAJOR@"
+#define PROJECT_VER_MINOR "@PROJECT_VERSION_MINOR@"
+#define PROJECT_VER_PATCH "@PROJECT_VERSION_PATCH@"
+#define GIT_TAG "@GIT_TAG@"
+
+#endif //GB_MONOREPO_VERSION_H
