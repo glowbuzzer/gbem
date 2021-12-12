@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL1002_H
-#define GB_MONOREPO_EL1002_H
+#ifndef GBEM_EL1002_H
+#define GBEM_EL1002_H
 #include "beckhoff_shared.h"
 
 //EL1002 2Ch. Dig. Input 24V, 3ms
@@ -26,4 +26,4 @@
 #define EL1002_CH1_BIT_NUM 		0
 #define EL1002_CH2_BIT_NUM 		1
 
-#endif //GB_MONOREPO_EL1002_H
+#endif //GBEM_EL1002_H

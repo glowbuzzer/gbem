@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_PLC_STDLIB_H
-#define GB_MONOREPO_PLC_STDLIB_H
+#ifndef GBEM_PLC_STDLIB_H
+#define GBEM_PLC_STDLIB_H
 
 #include "stdbool.h"
 #include "inttypes.h"
@@ -248,4 +248,4 @@ void plcsl_clock_div(clock_div_t *c, bool r, bool clk);
 /*MISC */
 void plcsl_hysteresis(hysteresis_t *h, double in);
 
-#endif //GB_MONOREPO_PLC_STDLIB_H
+#endif //GBEM_PLC_STDLIB_H

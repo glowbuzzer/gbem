@@ -12,9 +12,9 @@
  */
 
 
-#ifndef GB_MONOREPO_JSON_PRINT_H
-#define GB_MONOREPO_JSON_PRINT_H
+#ifndef GBEM_JSON_PRINT_H
+#define GBEM_JSON_PRINT_H
 void json_print( char * json);
 
 
-#endif //GB_MONOREPO_JSON_PRINT_H
+#endif //GBEM_JSON_PRINT_H

@@ -12,8 +12,8 @@
  */
 
 
-#ifndef MONOREPO_EL7211_TEST_H
-#define MONOREPO_EL7211_TEST_H
+#ifndef GBEM_EL7211_TEST_H
+#define GBEM_EL7211_TEST_H
 
 
 
@@ -39,4 +39,4 @@
 #define CTRL_ESTOP_RESET_DIN        2
 
 
-#endif //MONOREPO_EL7211_TEST_H
+#endif //GBEM_EL7211_TEST_H

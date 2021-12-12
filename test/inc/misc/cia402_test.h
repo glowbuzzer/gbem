@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_CIA402_TEST_H
-#define GB_MONOREPO_CIA402_TEST_H
+#ifndef GBEM_CIA402_TEST_H
+#define GBEM_CIA402_TEST_H
 
 void test_miscOmStyleCtrlwrds(void);
 void test_miscOmStyleStatwrds(void);
@@ -28,4 +28,4 @@ void test_miscCiaStateToStatwrd(void);
 
 
 
-#endif //GB_MONOREPO_CIA402_TEST_H
+#endif //GBEM_CIA402_TEST_H

@@ -12,12 +12,12 @@
  */
 
 
-#ifndef GB_MONOREPO_MAP_SDO_PRINT_H
-#define GB_MONOREPO_MAP_SDO_PRINT_H
+#ifndef GBEM_MAP_SDO_PRINT_H
+#define GBEM_MAP_SDO_PRINT_H
 
 
 #include "gberror.h"
 
 gberror_t map_print_sdos(void);
 
-#endif //GB_MONOREPO_MAP_SDO_PRINT_H
+#endif //GBEM_MAP_SDO_PRINT_H

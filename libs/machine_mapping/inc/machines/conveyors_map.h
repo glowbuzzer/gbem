@@ -12,8 +12,8 @@
  */
 
 
-#ifndef MONOREPO_CONVEYORS_MAP_H
-#define MONOREPO_CONVEYORS_MAP_H
+#ifndef GBEM_CONVEYORS_MAP_H
+#define GBEM_CONVEYORS_MAP_H
 
 
 #define MAP_CYCLE_TIME              (4)
@@ -46,4 +46,4 @@
 
 
 
-#endif //MONOREPO_CONVEYORS_MAP_H
+#endif //GBEM_CONVEYORS_MAP_H

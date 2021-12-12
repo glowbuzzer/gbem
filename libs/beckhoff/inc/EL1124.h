@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL1124_H
-#define GB_MONOREPO_EL1124_H
+#ifndef GBEM_EL1124_H
+#define GBEM_EL1124_H
 #include "beckhoff_shared.h"
 
 //EL1124 4Ch. Dig. Input 5V, 10µs, Sensor Power
@@ -28,4 +28,4 @@
 #define EL1124_CH4_BIT_NUM 		3
 
 
-#endif //GB_MONOREPO_EL1124_H
+#endif //GBEM_EL1124_H

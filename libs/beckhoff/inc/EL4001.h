@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL4001_H
-#define GB_MONOREPO_EL4001_H
+#ifndef GBEM_EL4001_H
+#define GBEM_EL4001_H
 #include "beckhoff_shared.h"
 
 
@@ -29,4 +29,4 @@
 
 
 
-#endif //GB_MONOREPO_EL4001_H
+#endif //GBEM_EL4001_H

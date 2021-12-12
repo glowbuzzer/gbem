@@ -12,10 +12,10 @@
  */
 
 
-#ifndef GB_MONOREPO_PLC_INIT_H
-#define GB_MONOREPO_PLC_INIT_H
+#ifndef GBEM_PLC_INIT_H
+#define GBEM_PLC_INIT_H
 
 void plc_register_tasks_user(void);
 
 
-#endif //GB_MONOREPO_PLC_INIT_H
+#endif //GBEM_PLC_INIT_H

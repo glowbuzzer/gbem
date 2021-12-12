@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL1004_H
-#define GB_MONOREPO_EL1004_H
+#ifndef GBEM_EL1004_H
+#define GBEM_EL1004_H
 #include "beckhoff_shared.h"
 
 //EL1004 4Ch. Dig. Input 24V, 3ms
@@ -28,4 +28,4 @@
 #define EL1004_CH3_BIT_NUM 		2
 #define EL1004_CH4_BIT_NUM 		3
 
-#endif //GB_MONOREPO_EL1004_H
+#endif //GBEM_EL1004_H

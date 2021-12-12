@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_TEST_H
-#define GB_MONOREPO_TEST_H
+#ifndef GBEM_TEST_H
+#define GBEM_TEST_H
 
 #include <stdio.h>
 
@@ -44,4 +44,4 @@ void internal_stateMachineAdvanceToOperationEnabled(void);
 void internal_setAllDriveStatus(cia_state_t state);
 
 
-#endif //GB_MONOREPO_TEST_H
+#endif //GBEM_TEST_H

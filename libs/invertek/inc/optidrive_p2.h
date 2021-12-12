@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_OPTIDRIVE_P2_H
-#define GB_MONOREPO_OPTIDRIVE_P2_H
+#ifndef GBEM_OPTIDRIVE_P2_H
+#define GBEM_OPTIDRIVE_P2_H
 
 #include "map.h"
 #include "gberror.h"
@@ -44,4 +44,4 @@
 
 
 
-#endif //GB_MONOREPO_OPTIDRIVE_P2_H
+#endif //GBEM_OPTIDRIVE_P2_H

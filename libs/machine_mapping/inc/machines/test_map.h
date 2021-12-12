@@ -12,8 +12,8 @@
  */
 
 
-#ifndef MONOREPO_MINI_MAP_H
-#define MONOREPO_MINI_MAP_H
+#ifndef GBEM_MINI_MAP_H
+#define GBEM_MINI_MAP_H
 
 
 #define MAP_CYCLE_TIME              (4)
@@ -48,4 +48,4 @@
 
 
 
-#endif //MONOREPO_MINI_MAP_H
+#endif //GBEM_MINI_MAP_H

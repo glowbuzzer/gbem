@@ -12,7 +12,7 @@
  */
 
 
-#ifndef GB_MONOREPO_SMC3_H
-#define GB_MONOREPO_SMC3_H
+#ifndef GBEM_SMC3_H
+#define GBEM_SMC3_H
 
-#endif //GB_MONOREPO_SMC3_H
+#endif //GBEM_SMC3_H

@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_BLANK_MAP_H
-#define GB_MONOREPO_BLANK_MAP_H
+#ifndef GBEM_BLANK_MAP_H
+#define GBEM_BLANK_MAP_H
 
 
 
@@ -40,4 +40,4 @@
 #define CTRL_ESTOP_RESET_DIN            2
 
 
-#endif //GB_MONOREPO_BLANK_MAP_H
+#endif //GBEM_BLANK_MAP_H

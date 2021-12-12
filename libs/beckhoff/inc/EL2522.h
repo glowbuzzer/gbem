@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL2522_H
-#define GB_MONOREPO_EL2522_H
+#ifndef GBEM_EL2522_H
+#define GBEM_EL2522_H
 
 #include "beckhoff_shared.h"
 #include "map.h"
@@ -107,4 +107,4 @@ gberror_t ec_initial_pdo_el2522(uint16_t slave);
 
 
 
-#endif //GB_MONOREPO_EL2522_H
+#endif //GBEM_EL2522_H

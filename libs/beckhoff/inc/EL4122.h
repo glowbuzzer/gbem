@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL4122_H
-#define GB_MONOREPO_EL4122_H
+#ifndef GBEM_EL4122_H
+#define GBEM_EL4122_H
 #include "beckhoff_shared.h"
 
 //EL4122 2Ch. Ana. Output 4-20mA
@@ -27,4 +27,4 @@
 #define EL4122_CH2_VALUE_INDEX	2
 
 
-#endif //GB_MONOREPO_EL4122_H
+#endif //GBEM_EL4122_H

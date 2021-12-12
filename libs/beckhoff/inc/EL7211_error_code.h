@@ -12,8 +12,8 @@
  */
 
 
-#ifndef MONOREPO_EL7211_ERROR_CODE_H
-#define MONOREPO_EL7211_ERROR_CODE_H
+#ifndef GBEM_EL7211_ERROR_CODE_H
+#define GBEM_EL7211_ERROR_CODE_H
 
 typedef struct {
     uint16_t text_id;
@@ -26,4 +26,4 @@ etg1020_diag_text_t etg1020_diag_text[NUM_OF_EL7211_DIAG_STRINGS];
 
 
 
-#endif //MONOREPO_EL7211_ERROR_CODE_H
+#endif //GBEM_EL7211_ERROR_CODE_H

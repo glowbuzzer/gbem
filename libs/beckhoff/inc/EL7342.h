@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL7342_H
-#define GB_MONOREPO_EL7342_H
+#ifndef GBEM_EL7342_H
+#define GBEM_EL7342_H
 
 #include "beckhoff_shared.h"
 
@@ -27,4 +27,4 @@
 
 
 
-#endif //GB_MONOREPO_EL7342_H
+#endif //GBEM_EL7342_H

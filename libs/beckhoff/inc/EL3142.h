@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL3142_H
-#define GB_MONOREPO_EL3142_H
+#ifndef GBEM_EL3142_H
+#define GBEM_EL3142_H
 
 
 #include "beckhoff_shared.h"
@@ -32,4 +32,4 @@
 #define EL3142_CH2_VALUE_INDEX	1
 
 
-#endif //GB_MONOREPO_EL3142_H
+#endif //GBEM_EL3142_H

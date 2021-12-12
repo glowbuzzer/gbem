@@ -13,8 +13,8 @@
 
 /** >>>>> see also the defines in map.h */
 
-#ifndef GB_MONOREPO_GBEM_CONFIG_H
-#define GB_MONOREPO_GBEM_CONFIG_H
+#ifndef GBEM_GBEM_CONFIG_H
+#define GBEM_GBEM_CONFIG_H
 
 #include <net/if.h>
 #include "gbem_config_autogen.h"
@@ -123,4 +123,4 @@
 #define EC_CHECK_TASK_PRIO                               3
 
 
-#endif //GB_MONOREPO_GBEM_CONFIG_H
+#endif //GBEM_GBEM_CONFIG_H

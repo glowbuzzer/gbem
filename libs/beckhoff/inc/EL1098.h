@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL1098_H
-#define GB_MONOREPO_EL1098_H
+#ifndef GBEM_EL1098_H
+#define GBEM_EL1098_H
 #include "beckhoff_shared.h"
 
 
@@ -31,4 +31,4 @@
 #define EL1098_CH6_BIT_NUM 		5
 #define EL1098_CH7_BIT_NUM 		6
 #define EL1098_CH8_BIT_NUM 		7
-#endif //GB_MONOREPO_EL1098_H
+#endif //GBEM_EL1098_H

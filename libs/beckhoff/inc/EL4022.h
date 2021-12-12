@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL4022_H
-#define GB_MONOREPO_EL4022_H
+#ifndef GBEM_EL4022_H
+#define GBEM_EL4022_H
 
 #include "beckhoff_shared.h"
 
@@ -26,4 +26,4 @@
 //VALUE is int16
 #define EL4022_CH1_VALUE_INDEX 	0
 #define EL4022_CH2_VALUE_INDEX	2
-#endif //GB_MONOREPO_EL4022_H
+#endif //GBEM_EL4022_H

@@ -11,8 +11,8 @@
  ******************************************************************************
  */
 
-#ifndef MONOREPO_MINI_MAP_H
-#define MONOREPO_MINI_MAP_H
+#ifndef GBEM_MINI_MAP_H
+#define GBEM_MINI_MAP_H
 
 
 
@@ -49,4 +49,4 @@
 //1: Positive side=Clockwise direction
 //default value is 1
 
-#endif //MONOREPO_MINI_MAP_H
+#endif //GBEM_MINI_MAP_H

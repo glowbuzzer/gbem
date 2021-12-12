@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL2124_H
-#define GB_MONOREPO_EL2124_H
+#ifndef GBEM_EL2124_H
+#define GBEM_EL2124_H
 
 #include "beckhoff_shared.h"
 
@@ -29,4 +29,4 @@
 #define EL2124_CH4_BIT_NUM 		3
 
 
-#endif //GB_MONOREPO_EL2124_H
+#endif //GBEM_EL2124_H

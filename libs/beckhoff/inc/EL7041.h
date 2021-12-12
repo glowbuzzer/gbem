@@ -12,12 +12,12 @@
  */
 
 
-#ifndef GB_MONOREPO_EL7041_H
-#define GB_MONOREPO_EL7041_H
+#ifndef GBEM_EL7041_H
+#define GBEM_EL7041_H
 
 #include "beckhoff_shared.h"
 #include "map.h"
 #include "gberror.h"
 
 
-#endif //GB_MONOREPO_EL7041_H
+#endif //GBEM_EL7041_H

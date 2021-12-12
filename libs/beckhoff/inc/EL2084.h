@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL2084_H
-#define GB_MONOREPO_EL2084_H
+#ifndef GBEM_EL2084_H
+#define GBEM_EL2084_H
 #include "beckhoff_shared.h"
 
 //EL2084 4Ch. Dig. Output 24V, 0.5A, switching to negative
@@ -27,4 +27,4 @@
 #define EL2084_CH3_BIT_NUM 		2
 #define EL2084_CH4_BIT_NUM 		3
 
-#endif //GB_MONOREPO_EL2084_H
+#endif //GBEM_EL2084_H

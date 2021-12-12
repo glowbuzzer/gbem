@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL9515_H
-#define GB_MONOREPO_EL9515_H
+#ifndef GBEM_EL9515_H
+#define GBEM_EL9515_H
 
 #include "beckhoff_shared.h"
 
@@ -28,4 +28,4 @@
 
 
 
-#endif //GB_MONOREPO_EL9515_H
+#endif //GBEM_EL9515_H

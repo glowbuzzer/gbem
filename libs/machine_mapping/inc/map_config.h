@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_MAP_CONFIG_H
-#define GB_MONOREPO_MAP_CONFIG_H
+#ifndef GBEM_MAP_CONFIG_H
+#define GBEM_MAP_CONFIG_H
 
 
 /* MACHINE_SWAP - set the correct map here - ofc only one machine at a time can be active << THIS IS THE WAY TO SWAP MACHINES*/
@@ -22,7 +22,7 @@
 #define MACHINE_DRIVE_SPINNERS      0
 #define MACHINE_IGUS                0
 #define MACHINE_STAUBLI             0
-#define MACHINE_SINGLE_AKD          1
+#define MACHINE_SINGLE_AKD          0
 #define MACHINE_CONVEYORS           0
 #define MACHINE_EL7211_TEST         0
 #define MACHINE_TEST                0
@@ -33,10 +33,14 @@
 #define MACHINE_EL7041_TEST         0
 #define MACHINE_EL2522_TEST         0
 #define MACHINE_EL7037_TEST         0
-#define MACHINE_STARTERKIT_1        0
-#define MACHINE_STARTERKIT_2        0
+#define MACHINE_SK1                 1
+#define MACHINE_SK2                 0
+#define MACHINE_ASDA2_TEST          0
+#define MACHINE_SMC3_TEST           0
 
-#define MAP_NUM_MACHINES            17
+//If you add a new machine you have to increment this count
+#define MAP_NUM_MACHINES            21
+
 extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
 /* MACHINE_NEW - add new #ifdef to include the header here */
@@ -106,6 +110,22 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 #endif
 
 
+#if MACHINE_ASDA2_TEST == 1
+#include "asda2_test_map.h"
+#endif
+
+#if MACHINE_SMC3_TEST == 1
+#include "smc3_test_map.h"
+#endif
+
+
+#if MACHINE_SK1 == 1
+#include "sk1_map.h"
+#endif
+#if MACHINE_SK2 == 1
+#include "sk1_map.h"
+#endif
+
 /* MACHINE_NEW - add new MAP_ enum here */
 typedef enum {
     MAP_MACHINE_UNKNOWN,
@@ -125,6 +145,10 @@ typedef enum {
     MAP_MACHINE_EL7041_TEST,
     MAP_MACHINE_EL2522_TEST,
     MAP_MACHINE_EL7037_TEST,
+    MAP_MACHINE_SK1,
+    MAP_MACHINE_SK2,
+    MAP_MACHINE_ASDA2,
+    MAP_MACHINE_SMC3,
     } map_machine_type_t;
 
 #define MAX_DRIVE_NAME_LENGTH                   30
@@ -142,4 +166,4 @@ typedef enum {
 #define MAX_NUMBER_MAP_ENTRIES_IN_IOMAP         100
 
 
-#endif //GB_MONOREPO_MAP_CONFIG_H
+#endif //GBEM_MAP_CONFIG_H

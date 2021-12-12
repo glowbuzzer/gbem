@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL7037_H
-#define GB_MONOREPO_EL7037_H
+#ifndef GBEM_EL7037_H
+#define GBEM_EL7037_H
 
 #include "beckhoff_shared.h"
 #include "map.h"
@@ -181,4 +181,4 @@ gberror_t ec_print_params_el7037(uint16_t drive);
 //0x8010:03  Nominal voltage - value 0xc350 = 50000 = 50v
 
 
-#endif //GB_MONOREPO_EL7037_H
+#endif //GBEM_EL7037_H

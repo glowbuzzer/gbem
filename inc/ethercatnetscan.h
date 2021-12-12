@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_ETHERCATNETSCAN_H
-#define GB_MONOREPO_ETHERCATNETSCANH
+#ifndef GBEM_ETHERCATNETSCAN_H
+#define GBEM_ETHERCATNETSCANH
 
 void ECNetscan(bool apply_pdo_mapping_before_netscan);
 

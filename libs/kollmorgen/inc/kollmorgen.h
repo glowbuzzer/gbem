@@ -12,8 +12,8 @@
  */
 
 
-#ifndef MONOREPO_KOLLMORGEN_H
-#define MONOREPO_KOLLMORGEN_H
+#ifndef GBEM_KOLLMORGEN_H
+#define GBEM_KOLLMORGEN_H
 
 #include "map.h"
 
@@ -149,4 +149,4 @@ within the de
 
 
 
-#endif //MONOREPO_KOLLMORGEN_H
+#endif //GBEM_KOLLMORGEN_H

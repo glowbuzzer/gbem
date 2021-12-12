@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_IOMAP_PROCESSING_H
-#define GB_MONOREPO_IOMAP_PROCESSING_H
+#ifndef GBEM_IOMAP_PROCESSING_H
+#define GBEM_IOMAP_PROCESSING_H
 
 #include "map.h"
 
@@ -39,4 +39,4 @@ void iomap_set_gbc_float_in_from_pdo(ec_datatype_t pdo_type, uint16_t slave_num,
 
 
 
-#endif //GB_MONOREPO_IOMAP_PROCESSING_H
+#endif //GBEM_IOMAP_PROCESSING_H

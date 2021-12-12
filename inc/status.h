@@ -12,8 +12,8 @@
  */
 
 
-#ifndef MONOREPO_STATUS_H
-#define MONOREPO_STATUS_H
+#ifndef GBEM_STATUS_H
+#define GBEM_STATUS_H
 
 #include <stdbool.h>
 #include "shared.h"
@@ -26,4 +26,4 @@ bool write_status_json();
 int status_data_to_json(char *dest, ecm_status_t *data);
 int const_data_to_json(char *dest, ecm_status_t *data);
 
-#endif //MONOREPO_STATUS_H
+#endif //GBEM_STATUS_H

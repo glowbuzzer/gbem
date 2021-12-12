@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL2808_H
-#define GB_MONOREPO_EL2808_H
+#ifndef GBEM_EL2808_H
+#define GBEMO_EL2808_H
 
 #include "beckhoff_shared.h"
 
@@ -33,4 +33,4 @@
 #define EL2808_CH8_BIT_NUM 		7
 
 
-#endif //GB_MONOREPO_EL2808_H
+#endif //GBEM_EL2808_H

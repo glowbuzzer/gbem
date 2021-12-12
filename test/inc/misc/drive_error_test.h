@@ -12,11 +12,11 @@
  */
 
 
-#ifndef GB_MONOREPO_DRIVE_ERROR_TEST_H
-#define GB_MONOREPO_DRIVE_ERROR_TEST_H
+#ifndef GBEM_DRIVE_ERROR_TEST_H
+#define GBEM_DRIVE_ERROR_TEST_H
 
 void test_miscAzdError(void);
 void test_miscAkdError(void);
 void test_miscEc_get_error_code_azd(void);
 
-#endif //GB_MONOREPO_DRIVE_ERROR_TEST_H
+#endif //GBEM_DRIVE_ERROR_TEST_H

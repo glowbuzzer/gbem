@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_G5_TEST_H
-#define GB_MONOREPO_G5_TEST_H
+#ifndef GBEM_G5_TEST_H
+#define GBEM_G5_TEST_H
 
 
 
@@ -33,4 +33,4 @@
 
 
 
-#endif //GB_MONOREPO_G5_TEST_H
+#endif //GBEM_G5_TEST_H

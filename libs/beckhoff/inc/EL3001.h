@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL3001_H
-#define GB_MONOREPO_EL3001_H
+#ifndef GBEM_EL3001_H
+#define GBEM_EL3001_H
 #include "beckhoff_shared.h"
 
 //EL3001 1Ch. Ana. Input +/-10V
@@ -54,4 +54,4 @@
 
 
 
-#endif //GB_MONOREPO_EL3001_H
+#endif //GBEM_EL3001_H

@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL2008_H
-#define GB_MONOREPO_EL2008_H
+#ifndef GBEM_EL2008_H
+#define GBEM_EL2008_H
 #include "beckhoff_shared.h"
 
 
@@ -36,4 +36,4 @@
 
 
 
-#endif //GB_MONOREPO_EL2008_H
+#endif //GBEM_EL2008_H

@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL7037_TEST_H
-#define GB_MONOREPO_EL7037_TEST_H
+#ifndef GBEM_EL7037_TEST_H
+#define GBEM_EL7037_TEST_H
 
 
 
@@ -34,4 +34,4 @@
 
 
 
-#endif //GB_MONOREPO_EL7037_TEST_H
+#endif //GBEM_EL7037_TEST_H

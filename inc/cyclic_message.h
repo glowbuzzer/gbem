@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_CYCLIC_MESSAGE_H
-#define GB_MONOREPO_CYCLIC_MESSAGE_H
+#ifndef GBEM_CYCLIC_MESSAGE_H
+#define GBEM_CYCLIC_MESSAGE_H
 
 #include "stdbool.h"
 #include "stdint.h"
@@ -30,4 +30,4 @@ typedef struct{
 
 void print_cyclic_user_message(uint32_t num_events, cyclic_event_t * event_arr);
 
-#endif //GB_MONOREPO_CYCLIC_MESSAGE_H
+#endif //GBEM_CYCLIC_MESSAGE_H

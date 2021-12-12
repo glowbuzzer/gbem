@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL7211_H
-#define GB_MONOREPO_EL7211_H
+#ifndef GBEM_EL7211_H
+#define GBEM_EL7211_H
 
 #include "beckhoff_shared.h"
 #include "map.h"
@@ -148,4 +148,4 @@ typedef enum {
 
 
 
-#endif //GB_MONOREPO_EL7211_H
+#endif //GBEM_EL7211_H

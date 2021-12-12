@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL1012_H
-#define GB_MONOREPO_EL1012_H
+#ifndef GBEM_EL1012_H
+#define GBEM_EL1012_H
 #include "beckhoff_shared.h"
 
 //EL1012 2Ch. Dig. Input 24V, 10µs
@@ -25,4 +25,4 @@
 #define EL1012_CH1_BIT_NUM 		0
 #define EL1012_CH2_BIT_NUM 		1
 
-#endif //GB_MONOREPO_EL1012_H
+#endif //GBEM_EL1012_H

@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL2622_H
-#define GB_MONOREPO_EL2622_H
+#ifndef GBEM_EL2622_H
+#define GBEM_EL2622_H
 #include "beckhoff_shared.h"
 
 
@@ -25,4 +25,4 @@
 #define EL2622_EEP_ID 0x0a3e3052
 
 
-#endif //GB_MONOREPO_EL2622_H
+#endif //GBEM_EL2622_H

@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL7031_H
-#define GB_MONOREPO_EL7031_H
+#ifndef GBEM_EL7031_H
+#define GBEM_EL7031_H
 
 #include "beckhoff_shared.h"
 #include "map.h"
@@ -142,4 +142,4 @@ gberror_t ec_print_params_el7031(uint16_t drive);
     #define EL7031_ERROR_MOTOR_STALL_BIT_NUM            26
 
 
-#endif //GB_MONOREPO_EL7031_H
+#endif //GBEM_EL7031_H

@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EK1100_H
-#define GB_MONOREPO_EK1100_H
+#ifndef GBEM_EK1100_H
+#define GBEM_EK1100_H
 
 #include "beckhoff_shared.h"
 
@@ -24,4 +24,4 @@
 #define EK1100_EEP_ID 0x044c2c52
 
 
-#endif //GB_MONOREPO_EK1100_H
+#endif //GBEM_EK1100_H

@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL2042_H
-#define GB_MONOREPO_EL2042_H
+#ifndef GBEM_EL2042_H
+#define GBEM_EL2042_H
 
 #include "beckhoff_shared.h"
 
@@ -27,4 +27,4 @@
 #define EL2042_CH2_BIT_NUM 		1
 
 
-#endif //GB_MONOREPO_EL2042_H
+#endif //GBEM_EL2042_H

@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL4012_H
-#define GB_MONOREPO_EL4012_H
+#ifndef GBEM_EL4012_H
+#define GBEM_EL4012_H
 
 #include "beckhoff_shared.h"
 
@@ -27,4 +27,4 @@
 #define EL4012_CH1_VALUE_INDEX 	0
 #define EL4012_CH2_VALUE_INDEX	2
 
-#endif //GB_MONOREPO_EL4012_H
+#endif //GBEM_EL4012_H

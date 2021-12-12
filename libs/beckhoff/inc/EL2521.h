@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL2521_H
-#define GB_MONOREPO_EL2521_H
+#ifndef GBEM_EL2521_H
+#define GBEM_EL2521_H
 
 #include "beckhoff_shared.h"
 #include "map.h"
@@ -87,4 +87,4 @@ gberror_t ec_print_params_el2521(uint16_t drive);
 
 
 
-#endif //GB_MONOREPO_EL2521_H
+#endif //GBEM_EL2521_H

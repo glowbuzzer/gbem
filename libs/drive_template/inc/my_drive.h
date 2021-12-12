@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_MY_DRIVE_H
-#define GB_MONOREPO_MY_DRIVE_H
+#ifndef GBEM_MY_DRIVE_H
+#define GBEM_MY_DRIVE_H
 
 #include "my_drive.h"
 #include "map.h"
@@ -93,4 +93,4 @@ bool ec_get_follow_error_mydrive(uint16_t drive);
 #define MYDRIVE_WRITE_CONFIG_SDO_VALUE      0x1
 
 
-#endif //GB_MONOREPO_MY_DRIVE_H
+#endif //GBEM_MY_DRIVE_H

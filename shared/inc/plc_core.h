@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_CYCLIC_FUNCTIONS_H
-#define GB_MONOREPO_CYCLIC_FUNCTIONS_H
+#ifndef GBEM_CYCLIC_FUNCTIONS_H
+#define GBEM_CYCLIC_FUNCTIONS_H
 #include "gberror.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -94,4 +94,4 @@ void plc_suspend_task (const char * name);
 void plc_enable_task (const char * name);
 uint8_t plc_task_name_to_task_index(const char* name);
 
-#endif //GB_MONOREPO_CYCLIC_FUNCTIONS_H
+#endif //GBEM_CYCLIC_FUNCTIONS_H

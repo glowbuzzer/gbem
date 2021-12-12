@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_ECM_STATUS_H
-#define GB_MONOREPO_ECM_STATUS_H
+#ifndef GBEM_ECM_STATUS_H
+#define GBEM_ECM_STATUS_H
 
 #include "gbem_config.h"
 
@@ -126,4 +126,4 @@ extern const char* ecm_active_program_names[];
 extern const char* ecm_net_scan_names[];
 
 
-#endif //GB_MONOREPO_ECM_STATUS_H
+#endif //GBEM_ECM_STATUS_H

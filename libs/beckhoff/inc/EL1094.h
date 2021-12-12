@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL1094_H
-#define GB_MONOREPO_EL1094_H
+#ifndef GBEM_EL1094_H
+#define GBEM_EL1094_H
 
 #include "beckhoff_shared.h"
 //EL1094 4Ch. Dig. Input 24V, 10µs, negative
@@ -27,4 +27,4 @@
 #define EL1094_CH3_BIT_NUM 		2
 #define EL1094_CH4_BIT_NUM 		3
 
-#endif //GB_MONOREPO_EL1094_H
+#endif //GBEM_EL1094_H

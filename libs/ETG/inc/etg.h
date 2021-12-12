@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_ETG_H
-#define GB_MONOREPO_ETG_H
+#ifndef GBEM_ETG_H
+#define GBEM_ETG_H
 #include "gberror.h"
 #include "stdint.h"
 
@@ -28,4 +28,4 @@ extern etg_vendor_id_t etg_vendor_id_list[ETG_NUM_VENDOR_IDS];
 
 char * etg_lookup_vendor_id (uint32_t id, etg_vendor_id_t *varray, uint32_t rows_in_varray, gberror_t *grc);
 
-#endif //GB_MONOREPO_ETG_H
+#endif //GBEM_ETG_H

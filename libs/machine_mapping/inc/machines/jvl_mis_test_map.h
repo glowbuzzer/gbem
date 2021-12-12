@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_JVL_MIS_TEST_H
-#define GB_MONOREPO_JVL_MIS_TEST_H
+#ifndef GBEM_JVL_MIS_TEST_H
+#define GBEM_JVL_MIS_TEST_H
 
 
 
@@ -38,4 +38,4 @@
 
 
 
-#endif //GB_MONOREPO_JVL_MIS_TEST_H
+#endif //GBEM_JVL_MIS_TEST_H

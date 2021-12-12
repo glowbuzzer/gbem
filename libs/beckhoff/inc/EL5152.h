@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL5152_H
-#define GB_MONOREPO_EL5152_H
+#ifndef GBEM_EL5152_H
+#define GBEM_EL5152_H
 
 #include "beckhoff_shared.h"
 
@@ -25,4 +25,4 @@
 
 //todo-crit xx
 
-#endif //GB_MONOREPO_EL5152_H
+#endif //GBEM_EL5152_H

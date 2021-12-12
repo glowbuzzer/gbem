@@ -12,7 +12,7 @@
  */
 
 
-#ifndef GB_MONOREPO_ETHERCAT_TEST_H
-#define GB_MONOREPO_ETHERCAT_TEST_H
+#ifndef GBEM_ETHERCAT_TEST_H
+#define GBEM_ETHERCAT_TEST_H
 void test_miscEthercatGetSet(void);
-#endif //GB_MONOREPO_ETHERCAT_TEST_H
+#endif //GBEM_ETHERCAT_TEST_H

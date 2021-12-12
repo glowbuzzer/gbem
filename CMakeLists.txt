@@ -16,7 +16,6 @@ set(OS_LIBS pthread rt)
 
 file(GLOB SOURCES "src/*.c" "shared/src/*.c" "plc_user_code/*.c")
 
-configure_file(version/version.h.in version/version.h)
 
 message(STATUS "GB: Using cmake version [${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}]")
 
@@ -62,6 +61,9 @@ elseif (GIT_TAG STREQUAL "")
 else ()
     message(STATUS "GB: The Git Tag was [${GIT_TAG}]")
 endif ()
+
+configure_file(version/version.h.in version/version.h)
+
 
 #FLAVOUR is the platform variant - currently only PI or LINUX
 if (NOT DEFINED FLAVOUR)
@@ -140,10 +142,10 @@ unset(BUILD_DOC CACHE)
     MESSAGE(STATUS "GB: [TARGET_GBEM_LINUX] is being used")
     if (FLAVOUR STREQUAL "PI")
         MESSAGE(STATUS "GB: Loading [gbem_defs_pi.cmake]")
-        include(GBEM/gbem_defs_pi.cmake)
-        if (EXISTS GBEM/gbem_custom_defs_pi.cmake)
+        include(gbem_defs_pi.cmake)
+        if (EXISTS gbem_custom_defs_pi.cmake)
             MESSAGE(STATUS "GB: Loading [gbem_custom_defs_pi.cmake]")
-            include(GBEM/gbem_custom_defs_pi.cmake)
+            include(gbem_custom_defs_pi.cmake)
         else ()
             MESSAGE(STATUS "GB: [gbem_custom_def_pi.cmake] does NOT exist (no overrides for standard definitions will be used)")
         endif ()

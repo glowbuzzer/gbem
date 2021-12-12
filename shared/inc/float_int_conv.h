@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_FLOAT_INT_CONV_H
-#define GB_MONOREPO_FLOAT_INT_CONV_H
+#ifndef GBEM_FLOAT_INT_CONV_H
+#define GBEM_FLOAT_INT_CONV_H
 
 float int32_to_float(float max_range, int32_t val);
 float uint32_to_float(float max_range, uint32_t val);
@@ -30,4 +30,4 @@ int8_t float_to_int8(float max_range, float val);
 uint8_t float_to_uint8(float max_range, float val);
 
 
-#endif //GB_MONOREPO_FLOAT_INT_CONV_H
+#endif //GBEM_FLOAT_INT_CONV_H

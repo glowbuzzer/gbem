@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_G5_H
-#define GB_MONOREPO_G5_H
+#ifndef GBEM_G5_H
+#define GBEM_G5_H
 
 #include "map.h"
 #include "gberror.h"
@@ -130,4 +130,4 @@ gberror_t ec_print_params_g5(uint16_t drive);
 #define G5_EEP_ID 0x5
 
 
-#endif //GB_MONOREPO_G5_H
+#endif //GBEM_G5_H

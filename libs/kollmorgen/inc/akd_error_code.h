@@ -12,8 +12,8 @@
  */
 
 
-#ifndef MONOREPO_AKD_ERROR_CODE_H
-#define MONOREPO_AKD_ERROR_CODE_H
+#ifndef GBEM_AKD_ERROR_CODE_H
+#define GBEM_AKD_ERROR_CODE_H
 
 
 #include "std_headers.h"
@@ -37,4 +37,4 @@ typedef struct {
 const akd_error_code_description_t akd_error_code_description[NUM_OF_AKD_ERROR_STRINGS];
 
 
-#endif //MONOREPO_AKD_ERROR_CODE_H
+#endif //GBEM_AKD_ERROR_CODE_H

@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL1808_H
-#define GB_MONOREPO_EL1808_H
+#ifndef GBEM_EL1808_H
+#define GBEM_EL1808_H
 
 #include "beckhoff_shared.h"
 
@@ -32,4 +32,4 @@
 #define EL1808_CH7_BIT_NUM 		6
 #define EL1808_CH8_BIT_NUM 		7
 
-#endif //GB_MONOREPO_EL1808_H
+#endif //GBEM_EL1808_H

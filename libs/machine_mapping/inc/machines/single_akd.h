@@ -12,8 +12,8 @@
  */
 
 
-#ifndef MONOREPO_SINGLE_AKD_H
-#define MONOREPO_SINGLE_AKD_H
+#ifndef GBEM_SINGLE_AKD_H
+#define GBEM_SINGLE_AKD_H
 
 
 #define MAP_CYCLE_TIME              (4)
@@ -32,4 +32,4 @@
 #define CTRL_ESTOP_RESET_DIN        2
 
 
-#endif //MONOREPO_SINGLE_AKD_H
+#endif //GBEM_SINGLE_AKD_H

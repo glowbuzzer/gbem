@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL1034_H
-#define GB_MONOREPO_EL1034_H
+#ifndef GBEM_EL1034_H
+#define GBEM_EL1034_H
 
 #include "beckhoff_shared.h"
 
@@ -30,4 +30,4 @@
 
 
 
-#endif //GB_MONOREPO_EL1034_H
+#endif //GBEM_EL1034_H

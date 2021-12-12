@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL2002_H
-#define GB_MONOREPO_EL2002_H
+#ifndef GBEM_EL2002_H
+#define GBEM_EL2002_H
 
 #include "beckhoff_shared.h"
 
@@ -26,4 +26,4 @@
 #define EL2002_CH1_BIT_NUM 		0
 #define EL2002_CH2_BIT_NUM 		1
 
-#endif //GB_MONOREPO_EL2002_H
+#endif //GBEM_EL2002_H

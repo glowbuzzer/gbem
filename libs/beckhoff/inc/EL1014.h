@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL1014_H
-#define GB_MONOREPO_EL1014_H
+#ifndef GBEM_EL1014_H
+#define GBEM_EL1014_H
 
 #include "beckhoff_shared.h"
 
@@ -30,4 +30,4 @@
 #define EL1014_CH4_BIT_NUM 		3
 
 
-#endif //GB_MONOREPO_EL1014_H
+#endif //GBEM_EL1014_H

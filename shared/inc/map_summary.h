@@ -12,12 +12,12 @@
  */
 
 
-#ifndef GB_MONOREPO_MAP_SUMMARY_H
-#define GB_MONOREPO_MAP_SUMMARY_H
+#ifndef GBEM_MAP_SUMMARY_H
+#define GBEM_MAP_SUMMARY_H
 
 #include "gberror.h"
 
 int config_create_check_print(char * json_buffer, gberror_t *grc, bool print_output);
 
 
-#endif //GB_MONOREPO_MAP_SUMMARY_H
+#endif //GBEM_MAP_SUMMARY_H

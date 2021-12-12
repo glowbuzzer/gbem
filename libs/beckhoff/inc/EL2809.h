@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL2809_H
-#define GB_MONOREPO_EL2809_H
+#ifndef GBEM_EL2809_H
+#define GBEM_EL2809_H
 
 #include "beckhoff_shared.h"
 
@@ -41,4 +41,4 @@
 #define EL2809_CH16_BIT_NUM 	15
 
 
-#endif //GB_MONOREPO_EL2809_H
+#endif //GBEM_EL2809_H

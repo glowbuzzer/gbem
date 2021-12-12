@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL5101_H
-#define GB_MONOREPO_EL5101_H
+#ifndef GBEM_EL5101_H
+#define GBEM_EL5101_H
 #include "beckhoff_shared.h"
 
 
@@ -51,4 +51,4 @@
 #define EL5101_STATUS_INPUT_BIT_NO      5
 
 
-#endif //GB_MONOREPO_EL5101_H
+#endif //GBEM_EL5101_H

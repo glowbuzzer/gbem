@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_ECRXTX_H
-#define GB_MONOREPO_ECRXTX_H
+#ifndef GBEM_ECRXTX_H
+#define GBEM_ECRXTX_H
 
 
 void ec_rxtx(void *argument);
@@ -31,4 +31,4 @@ extern bool homing_failed;
 extern ec_rxtx_mode_t ec_rxtx_mode;
 
 
-#endif //GB_MONOREPO_ECRXTX_H
+#endif //GBEM_ECRXTX_H

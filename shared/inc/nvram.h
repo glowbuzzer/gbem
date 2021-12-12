@@ -12,9 +12,9 @@
  */
 
 
-#ifndef GB_MONOREPO_NVRAM_H
-#define GB_MONOREPO_NVRAM_H
+#ifndef GBEM_NVRAM_H
+#define GBEM_NVRAM_H
 
 gberror_t nvram_step_1(void);
 
-#endif //GB_MONOREPO_NVRAM_H
+#endif //GBEM_NVRAM_H

@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL4002_H
-#define GB_MONOREPO_EL4002_H
+#ifndef GBEM_EL4002_H
+#define GBEM_EL4002_H
 
 #include "beckhoff_shared.h"
 
@@ -28,4 +28,4 @@
 #define EL4002_CH2_VALUE_INDEX	2
 
 
-#endif //GB_MONOREPO_EL4002_H
+#endif //GBEM_EL4002_H

@@ -11,8 +11,8 @@
  ******************************************************************************
  */
 
-#ifndef MONOREPO_MAIN_H
-#define MONOREPO_MAIN_H
+#ifndef GBEM_MAIN_H
+#define GBEM_MAIN_H
 #include <stdint.h>
 #include "stdbool.h"
 #include "shared.h"
@@ -45,4 +45,4 @@ extern int gbc_pid;
 void main_set_file_paths(void);
 
 
-#endif //MONOREPO_MAIN_H
+#endif //GBEM_MAIN_H

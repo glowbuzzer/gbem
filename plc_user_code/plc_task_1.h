@@ -12,10 +12,10 @@
  */
 
 
-#ifndef GB_MONOREPO_PLC_TASK_1_H
-#define GB_MONOREPO_PLC_TASK_1_H
+#ifndef GBEM_PLC_TASK_1_H
+#define GBEM_PLC_TASK_1_H
 
 
 void * plc_mytask1 (void *argument);
 
-#endif //GB_MONOREPO_PLC_TASK_1_H
+#endif //GBEM_PLC_TASK_1_H

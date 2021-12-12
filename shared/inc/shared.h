@@ -11,8 +11,8 @@
  ******************************************************************************
  */
 
-#ifndef MONOREPO_SHARED
-#define MONOREPO_SHARED
+#ifndef GBEM_SHARED
+#define GBEM_SHARED
 
 #include "std_headers.h"
 #include "cia402.h"

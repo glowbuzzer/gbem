@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL2022_H
-#define GB_MONOREPO_EL2022_H
+#ifndef GBEM_EL2022_H
+#define GBEM_EL2022_H
 #include "beckhoff_shared.h"
 
 //EL2022 2Ch. Dig. Output 24V, 2A
@@ -30,4 +30,4 @@
 
 
 
-#endif //GB_MONOREPO_EL2022_H
+#endif //GBEM_EL2022_H

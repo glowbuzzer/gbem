@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_ETG1020_DIAG_TEST_H
-#define GB_MONOREPO_ETG1020_DIAG_TEST_H
+#ifndef GBEM_ETG1020_DIAG_TEST_H
+#define GBEM_ETG1020_DIAG_TEST_H
 
 void test_miscEtg1020_diag_textid_decode(void);
 void test_miscEtg1020_diag_flag_decode(void);
@@ -21,4 +21,4 @@ void test_miscEtg1020_diag_code_decode(void);
 void test_miscEtg1020_diag_full_decode(void);
 void test_miscEtg1020_diag_timestamp_decode(void);
 void test_miscEtg1020_diag_decode_param_flag(void);
-#endif //GB_MONOREPO_ETG1020_DIAG_TEST_H
+#endif //GBEM_ETG1020_DIAG_TEST_H

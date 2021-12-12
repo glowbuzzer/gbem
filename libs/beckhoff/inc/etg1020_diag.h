@@ -12,8 +12,8 @@
  */
 
 
-#ifndef MONOREPO_ETG1020_DIAG_H
-#define MONOREPO_ETG1020_DIAG_H
+#ifndef GBEM_ETG1020_DIAG_H
+#define GBEM_ETG1020_DIAG_H
 
 #include "stdint.h"
 #include <time.h>
@@ -207,4 +207,4 @@ bool etg1020_diag_full_decode(uint8_t * message, etg1020_diag_message_t * result
 time_t etg1020_diag_timestamp_decode(const uint8_t * nsec_array );
 
 
-#endif //MONOREPO_ETG1020_DIAG_H
+#endif //GBEM_ETG1020_DIAG_H

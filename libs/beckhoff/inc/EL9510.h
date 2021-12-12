@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL9510_H
-#define GB_MONOREPO_EL9510_H
+#ifndef GBEM_EL9510_H
+#define GBEM_EL9510_H
 
 #include "beckhoff_shared.h"
 
@@ -27,4 +27,4 @@
 #define EL9510_OVERLOAD_BIT_NUM 1
 
 
-#endif //GB_MONOREPO_EL9510_H
+#endif //GBEM_EL9510_H

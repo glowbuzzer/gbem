@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_JVL_MIS_H
-#define GB_MONOREPO_JVL_MIS_H
+#ifndef GBEM_JVL_MIS_H
+#define GBEM_JVL_MIS_H
 
 #include "map.h"
 #include "gberror.h"
@@ -109,4 +109,4 @@ gberror_t ec_set_setpos_wrd_jvl_mis(uint16_t drive, int32_t setpos);
 gberror_t ec_standard_sdos_jvl_mis(uint16_t slave);
 gberror_t ec_print_params_jvl_mis(uint16_t drive);
 
-#endif //GB_MONOREPO_JVL_MIS_H
+#endif //GBEM_JVL_MIS_H

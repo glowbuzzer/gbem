@@ -12,8 +12,8 @@
  */
 
 
-#ifndef GB_MONOREPO_EL9505_H
-#define GB_MONOREPO_EL9505_H
+#ifndef GBEM_EL9505_H
+#define GBEMO_EL9505_H
 #include "beckhoff_shared.h"
 
 //EL9505 Power supply terminal 5V
@@ -26,4 +26,4 @@
 #define EL9505_OVERLOAD_BIT_NUM 1
 
 
-#endif //GB_MONOREPO_EL9505_H
+#endif //GBEM_EL9505_H

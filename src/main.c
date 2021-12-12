@@ -508,6 +508,24 @@ int main(int argc, char *argv[]) {
     map_machine_type = MAP_MACHINE_EL7037_TEST;
 #endif
 
+#if MACHINE_SK1 == 1
+    map_machine_type = MAP_MACHINE_SK1;
+#endif
+
+#if MACHINE_SK2 == 1
+    map_machine_type = MAP_MACHINE_SK2;
+#endif
+
+#if MACHINE_ASDA2_TEST == 1
+    map_machine_type = MACHINE_ASDA2_TEST;
+#endif
+
+#if MACHINE_SMC3_TEST == 1
+    map_machine_type = MACHINE_SMC3_TEST;
+#endif
+
+
+
     if (map_machine_type < MAP_NUM_MACHINES) {
         UM_INFO(GBEM_UM_EN, "GBEM: This code has been compiled for [%s]", map_machine_type_strings[map_machine_type]);
 
@@ -549,15 +567,15 @@ int main(int argc, char *argv[]) {
     }
 
     //check the config, create the json config summary, and optionally print it - in this case don't print. If you want a config summary printed at start-up change to true
-    len = config_create_check_print(&config_summary_json_buffer[0], &grc, true);
-
-
-    if (grc == E_SUCCESS) {
-        UM_INFO(GBEM_UM_EN, "GBEM: Size of config json [%d]", len);
-    } else {
-        UM_FATAL(
-                "GBEM: Config checking (and config JSON creation) >failed< .This implies that there is something nasty in either the machine config itself or the process to create it");
-    }
+//    len = config_create_check_print(&config_summary_json_buffer[0], &grc, true);
+//
+//
+//    if (grc == E_SUCCESS) {
+//        UM_INFO(GBEM_UM_EN, "GBEM: Size of config json [%d]", len);
+//    } else {
+//        UM_FATAL(
+//                "GBEM: Config checking (and config JSON creation) >failed< .This implies that there is something nasty in either the machine config itself or the process to create it");
+//    }
 
     //write  config json to file
     fp = fopen(full_path_for_config_json, "w+");
