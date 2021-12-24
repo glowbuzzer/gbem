@@ -1316,9 +1316,11 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
         }
 
         int8_t moo_disp = 0;
+
         for (int i = 0; i < MAP_NUM_DRIVES; i++) {
             if (*map_drive_get_moo_sdo_function_ptr[i] != NULL) {
                 moo_disp = (*map_drive_get_moo_sdo_function_ptr[i])(i);
+//                printf("moo_disp: %d", moo_disp);
                 if (moo_disp > 0)
                     event_data.moo_disp[i] = moo_disp;
             } else {

@@ -516,12 +516,12 @@ int main(int argc, char *argv[]) {
     map_machine_type = MAP_MACHINE_SK2;
 #endif
 
-#if MACHINE_ASDA2_TEST == 1
-    map_machine_type = MACHINE_ASDA2_TEST;
+#if MACHINE_ASDA_A2_TEST == 1
+    map_machine_type = MAP_MACHINE_ASDA_A2;
 #endif
 
 #if MACHINE_SMC3_TEST == 1
-    map_machine_type = MACHINE_SMC3_TEST;
+    map_machine_type = MAP_MACHINE_SMC3;
 #endif
 
 

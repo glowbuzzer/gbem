@@ -72,7 +72,7 @@ gberror_t ec_standard_sdos_azd_ked(const uint16_t slave) {
 
 
 /**
- * @brief sets fixed PDO mapping with a load of SDO writes for AZD3A-KED drive
+ * @brief sets fixed PDO mapping with a load of SDO writes for AZD-KED drive
  * @return
  * @warning must be called in pre-op states
  *
@@ -88,23 +88,23 @@ gberror_t ec_pdo_map_azd_ked(const uint16_t slave) {
                 slave);
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM2_azd_ked.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_SM2_azd_ked.SM_assignment_index, 0, 0)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM3_azd_ked.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_SM3_azd_ked.SM_assignment_index, 0, 0)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     for (int i = 0; i < map_SM2_azd_ked.number_of_entries; i++) {
-        if (!ec_sdo_write_uint16(slave, map_SM2_azd_ked.SM_assignment_index, i + 1,
+        if (!ec_sdo_write_uint8(slave, map_SM2_azd_ked.SM_assignment_index, i + 1,
                                  map_SM2_index_of_assigned_PDO_azd_ked[i])) {
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     for (int i = 0; i < map_SM3_azd_ked.number_of_entries; i++) {
-        if (!ec_sdo_write_uint16(slave, map_SM3_azd_ked.SM_assignment_index, i + 1,
+        if (!ec_sdo_write_uint8(slave, map_SM3_azd_ked.SM_assignment_index, i + 1,
                                  map_SM3_index_of_assigned_PDO_azd_ked[i])) {
             return E_SDO_WRITE_FAILURE;
         }
@@ -141,6 +141,7 @@ int8_t ec_get_moo_pdo_azd_ked(const uint16_t drive) {
 //            "GBEM: Linked ec_get_modes_of_operation function: %s (this is controlled by the MACHINE #define)",
 //            __FUNCTION__);
 
+//printf("moo: %d\n",ec_pdo_get_input_int8(map_drive_to_slave[drive], AZD_KED_MOODISP_PDO_INDEX) );
     return ec_pdo_get_input_int8(map_drive_to_slave[drive], AZD_KED_MOODISP_PDO_INDEX);
 
 
@@ -187,6 +188,8 @@ gberror_t ec_initial_pdo_azd_ked(const uint16_t slave) {
 
     ec_pdo_set_output_int8(slave, AZD_KED_MOOSET_PDO_INDEX, CIA_MOO_CSP);
 
+    LL_INFO(GBEM_GEN_LOG_EN,
+            "GBEM: Applying initial PDO writes for AZD-KED drive slave [%u], offset [%u], value [%u]", slave, AZD_KED_MOOSET_PDO_INDEX, CIA_MOO_CSP);
 
     if (ec_iserror()) {
         LL_ERROR(GBEM_GEN_LOG_EN,

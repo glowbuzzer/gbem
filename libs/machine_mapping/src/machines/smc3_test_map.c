@@ -15,7 +15,7 @@
 #include "map.h"
 
 #if MACHINE_SMC3_TEST == 1
-#include "smc3_test_map.h"
+#include "smc3.h"
 
 //@formatter:off
 /* SLAVES */
@@ -23,12 +23,12 @@
 //                                        MAP_SMC3_1
 //                                        Drive
 MAP_NUM_DRIVES_ATTACHED(                  1                                 );
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL                              );
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          ec_pdo_map_smc3                              );
 MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL                              );
 MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         ec_standard_sdos_smc3               );
 MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          ec_initial_pdo_smc3                 );
 MAP_SLAVE_DC_TYPE(                        EC_DC_0,                          );
-
+MAP_SLAVE_DC_CYCLE(                       4);
 
 /* DRIVES */
 MAP_DRIVE_TO_NAME(                          "SMC3"                           );

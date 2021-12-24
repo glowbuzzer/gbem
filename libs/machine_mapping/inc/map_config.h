@@ -33,12 +33,12 @@
 #define MACHINE_EL7041_TEST         0
 #define MACHINE_EL2522_TEST         0
 #define MACHINE_EL7037_TEST         0
-#define MACHINE_SK1                 1
+#define MACHINE_SK1                 0
 #define MACHINE_SK2                 0
-#define MACHINE_ASDA2_TEST          0
+#define MACHINE_ASDA_A2_TEST        1
 #define MACHINE_SMC3_TEST           0
 
-//If you add a new machine you have to increment this count
+//If you add a new machine you have to increment this count to match the number above
 #define MAP_NUM_MACHINES            21
 
 extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
@@ -110,8 +110,8 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 #endif
 
 
-#if MACHINE_ASDA2_TEST == 1
-#include "asda2_test_map.h"
+#if MACHINE_ASDA_A2_TEST == 1
+#include "asda_a2_test_map.h"
 #endif
 
 #if MACHINE_SMC3_TEST == 1
@@ -123,7 +123,7 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 #include "sk1_map.h"
 #endif
 #if MACHINE_SK2 == 1
-#include "sk1_map.h"
+#include "sk2_map.h"
 #endif
 
 /* MACHINE_NEW - add new MAP_ enum here */
@@ -147,7 +147,7 @@ typedef enum {
     MAP_MACHINE_EL7037_TEST,
     MAP_MACHINE_SK1,
     MAP_MACHINE_SK2,
-    MAP_MACHINE_ASDA2,
+    MAP_MACHINE_ASDA_A2,
     MAP_MACHINE_SMC3,
     } map_machine_type_t;
 

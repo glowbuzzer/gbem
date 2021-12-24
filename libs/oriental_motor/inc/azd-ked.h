@@ -53,7 +53,7 @@ gberror_t ec_set_moo_pdo_rev_azd_ked(const uint16_t drive);
 #define AZD_KED_EEP_NAME "AZD-KED"
 #define AZD_KED_EEP_MAN ORIENTAL_MOTOR_MAN
 #define AZD_KED_EEP_REV 0x0
-#define AZD_KED_EEP_ID 0x1
+#define AZD_KED_EEP_ID 0x13e5
 
 
 
@@ -121,7 +121,7 @@ const azd_ked_error_string_t azd_ked_alarm_code[NUM_OF_AZD_ERROR_STRINGS];
 #define AZD_KED_STATUSWORD_PDO_INDEX    0
 
 
-#define AZD_KED_MOOSET_PDO_INDEX        6
+#define AZD_KED_MOOSET_PDO_INDEX        10
 
 #define AZD_KED_MOODISP_PDO_INDEX       6
 
