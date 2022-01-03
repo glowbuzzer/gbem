@@ -137,7 +137,7 @@ gberror_t ec_standard_sdos_asda_a2(const uint16_t slave) {
     }
 
 
-    ASDA_A2_POSITION_FACTOR_FEEDCONSTANT_SDO_INDEX
+//    ASDA_A2_POSITION_FACTOR_FEEDCONSTANT_SDO_INDEX
 
 
 

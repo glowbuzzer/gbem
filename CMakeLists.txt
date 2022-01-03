@@ -24,16 +24,14 @@ message(STATUS "GB: Using cmake version [${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VE
 #INTERFACE = Not needed by me, but my dependents
 
 
-
 #print_all_variables()
 
 if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "GB: No build type was provided, we will default to [Release]")
     set(CMAKE_BUILD_TYPE "Release")
-    else()
+else ()
     message(STATUS "GB: CMAKE_BUILD_TYPE is [${CMAKE_BUILD_TYPE}]")
-endif()
-
+endif ()
 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wsign-conversion -Og -fPIC -std=gnu99")
@@ -44,11 +42,11 @@ set(CMAKE_C_FLAGS_RELEASE "-O3")
 
 message(STATUS "GB: CMAKE_C_FLAGS is ${CMAKE_C_FLAGS}")
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-message(STATUS "GB: CMAKE_C_FLAGS_DEBUG is ${CMAKE_C_FLAGS_DEBUG}")
-endif()
+    message(STATUS "GB: CMAKE_C_FLAGS_DEBUG is ${CMAKE_C_FLAGS_DEBUG}")
+endif ()
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
-message(STATUS "GB: CMAKE_C_FLAGS_RELEASE is ${CMAKE_C_FLAGS_RELEASE}")
-endif()
+    message(STATUS "GB: CMAKE_C_FLAGS_RELEASE is ${CMAKE_C_FLAGS_RELEASE}")
+endif ()
 
 
 #If a GIT_TAG string is passed in (-D) we will add this to the version.h file. If no tag or empty string set the GIT_TAG to "dev_ver"
@@ -80,13 +78,10 @@ message(STATUS "GB: PROJECT_BINARY_DIR [${PROJECT_BINARY_DIR} ]")
 message(STATUS "GB: CURRENT_SOURCE_DIR [${CMAKE_CURRENT_SOURCE_DIR} ]")
 
 
-
-
-
 add_executable(GBEM ${SOURCES})
 
 target_link_libraries(GBEM EtherCAT Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen delta JVL omron oriental_motor unity gberror gbem_config startup etg m rt)
-target_include_directories(GBEM PUBLIC "inc" "shared/inc" "plc_user_code" ${PROJECT_BINARY_DIR}/version ${gbem_config_BINARY_DIR} )
+target_include_directories(GBEM PUBLIC "inc" "shared/inc" "plc_user_code" ${PROJECT_BINARY_DIR}/version ${gbem_config_BINARY_DIR})
 
 
 add_executable(GBEM_testStateMachine shared/src/control.c shared/src/ec_functions.c src/ecrxtx.c src/ethercatnetscan.c src/status.c shared/src/json-maker.c shared/src/float_int_conv.c test/src/test.c test/src/testStateMachine.c shared/src/plc_core.c plc_user_code/plc_init.c src/cyclic_message.c plc_user_code/plc_task_1.c shared/src/iomap_processing.c)
@@ -137,48 +132,47 @@ endif (BUILD_DOC)
 unset(BUILD_DOC CACHE)
 
 
-
-    add_compile_definitions(GB_APP_LINUX)
-    MESSAGE(STATUS "GB: [TARGET_GBEM_LINUX] is being used")
-    if (FLAVOUR STREQUAL "PI")
-        MESSAGE(STATUS "GB: Loading [gbem_defs_pi.cmake]")
-        include(gbem_defs_pi.cmake)
-        if (EXISTS gbem_custom_defs_pi.cmake)
-            MESSAGE(STATUS "GB: Loading [gbem_custom_defs_pi.cmake]")
-            include(gbem_custom_defs_pi.cmake)
-        else ()
-            MESSAGE(STATUS "GB: [gbem_custom_def_pi.cmake] does NOT exist (no overrides for standard definitions will be used)")
-        endif ()
+add_compile_definitions(GB_APP_LINUX)
+MESSAGE(STATUS "GB: [TARGET_GBEM_LINUX] is being used")
+if (FLAVOUR STREQUAL "PI")
+    MESSAGE(STATUS "GB: Loading [gbem_defs_pi.cmake]")
+    include(gbem_defs_pi.cmake)
+    if (EXISTS gbem_custom_defs_pi.cmake)
+        MESSAGE(STATUS "GB: Loading [gbem_custom_defs_pi.cmake]")
+        include(gbem_custom_defs_pi.cmake)
     else ()
-        MESSAGE(STATUS "GB: Loading [gbem_defs_linux.cmake]")
-        include(gbem_defs_linux.cmake)
-        if (EXISTS gbem_custom_defs_linux.cmake)
-            MESSAGE(STATUS "GB: Loading [gbem_custom_defs_linuxc.make]")
-            include(gbem_custom_defs_linux.cmake)
-        else ()
-            MESSAGE(STATUS "GB: gbem_custom_defs_linux.cmake does NOT exist (no overrides for standard definitions will be used)")
-        endif ()
-
+        MESSAGE(STATUS "GB: [gbem_custom_def_pi.cmake] does NOT exist (no overrides for standard definitions will be used)")
     endif ()
-    configure_file(gbem_config_autogen.h.in libs/gbem_config/gbem_config_autogen.h)
+else ()
+    MESSAGE(STATUS "GB: Loading [gbem_defs_linux.cmake]")
+    include(gbem_defs_linux.cmake)
+    if (EXISTS gbem_custom_defs_linux.cmake)
+        MESSAGE(STATUS "GB: Loading [gbem_custom_defs_linuxc.make]")
+        include(gbem_custom_defs_linux.cmake)
+    else ()
+        MESSAGE(STATUS "GB: gbem_custom_defs_linux.cmake does NOT exist (no overrides for standard definitions will be used)")
+    endif ()
 
-    add_subdirectory("libs/gbem_config")
-    add_subdirectory("libs/EtherCAT")
-    add_subdirectory("libs/oriental_motor")
-    add_subdirectory("libs/machine_mapping")
-    add_subdirectory("libs/beckhoff")
-    add_subdirectory("libs/kollmorgen")
-    add_subdirectory("libs/unity")
-    add_subdirectory("libs/mjson")
-    add_subdirectory("libs/ETG")
-    add_subdirectory("libs/JVL")
-    add_subdirectory("libs/omron")
-    add_subdirectory("libs/nanotec")
-    add_subdirectory("libs/ecm_status")
-    add_subdirectory("libs/cannon_automata")
-    add_subdirectory("libs/invertek")
-    add_subdirectory("libs/delta")
-    #this has to to be placed after the definitions
+endif ()
+configure_file(gbem_config_autogen.h.in libs/gbem_config/gbem_config_autogen.h)
+
+add_subdirectory("libs/gbem_config")
+add_subdirectory("libs/EtherCAT")
+add_subdirectory("libs/oriental_motor")
+add_subdirectory("libs/machine_mapping")
+add_subdirectory("libs/beckhoff")
+add_subdirectory("libs/kollmorgen")
+add_subdirectory("libs/unity")
+add_subdirectory("libs/mjson")
+add_subdirectory("libs/ETG")
+add_subdirectory("libs/JVL")
+add_subdirectory("libs/omron")
+add_subdirectory("libs/nanotec")
+add_subdirectory("libs/ecm_status")
+add_subdirectory("libs/cannon_automata")
+add_subdirectory("libs/invertek")
+add_subdirectory("libs/delta")
+#this has to to be placed after the definitions
 #    add_subdirectory("apps/GBEM")
 
 

@@ -524,6 +524,9 @@ int main(int argc, char *argv[]) {
     map_machine_type = MAP_MACHINE_SMC3;
 #endif
 
+#if MACHINE_AX5101_TEST == 1
+    map_machine_type = MAP_MACHINE_AX5101_TEST;
+#endif
 
 
     if (map_machine_type < MAP_NUM_MACHINES) {

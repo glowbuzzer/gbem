@@ -37,6 +37,7 @@ const char *map_machine_type_strings[MAP_NUM_MACHINES] = {
         "MACHINE_SK2",
         "MACHINE_ASDA_A2_TEST",
         "MACHINE_SMC3_TEST",
+        "MACHINE_AX5101_TEST",
 };
 
 
