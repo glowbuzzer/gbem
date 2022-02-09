@@ -20,7 +20,7 @@
 #include "main.h"
 #include "ec_functions.h"
 #include "control.h"
-
+#include <stdio.h>
 
 /**
  * @brief this is the thread for writing the status JSON file

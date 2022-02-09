@@ -25,6 +25,7 @@
 #include "iomap_processing.h"
 #include "ecrxtx.h"
 #include "ethercatsetget.h"
+#include "cia402.h"
 
 #ifndef GB_APP_LINUX
 #include "FreeRTOS.h"
@@ -60,6 +61,7 @@ typedef enum {
     CONTROL_EVENT_ESTOP,
     CONTROL_EVENT_DRIVE_FAULT,
     CONTROL_EVENT_GBC_FAULT_REQUEST,
+    CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST,
     CONTROL_EVENT_HEARTBEAT_LOST,
     CONTROL_EVENT_LIMIT_REACHED,
     CONTROL_EVENT_DRIVE_STATE_CHANGE_TIMEOUT,
@@ -79,6 +81,7 @@ cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
         [CONTROL_EVENT_ESTOP] = {.message="An error has been detected [ESTOP event]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_DRIVE_FAULT] = {.message="An error has been detected [Drive fault]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_GBC_FAULT_REQUEST] = {.message="An error has been detected [GBC requesting fault state]", .type=CYCLIC_MSG_ERROR},
+        [CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST] = {.message="An error has been detected [Move when not in op en]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_HEARTBEAT_LOST] = {.message="An error has been detected [Heartbeat to GBC lost]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_LIMIT_REACHED] = {.message="An error has been detected [Drive reached limit]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_DRIVE_STATE_CHANGE_TIMEOUT] = {.message="An error has been detected [Drive state change timeout]", .type=CYCLIC_MSG_ERROR},
@@ -840,6 +843,12 @@ bool cia_is_fault_condition(struct event *event) {
         control_event[CONTROL_EVENT_GBC_FAULT_REQUEST].active = true;
         have_fault = true;
     }
+    if (((event_data_t *) event->data)->machine_move_not_op_enabled_fault_req == true) {
+        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > machine word is requesting an error because a move has been attempted and we are not in operation enabled");
+        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_GBC_ACTION_REQUESTED_WHEN_NOT_OP_EN);
+        control_event[CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST].active = true;
+        have_fault = true;
+    }
     if (ctrl_check_any_drives_state(CIA_FAULT_REACTION_ACTIVE)) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > one or more drives are in FAULT REACTION ACTIVE");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_FAULT_BIT_NUM);
@@ -1412,7 +1421,7 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
     if (grc != E_SUCCESS) {
         UM_ERROR(GBEM_UM_EN, "GBEM: error checking drive for internal limit [%s]", gb_strerror(grc));
     }
-
+    event_data.machine_move_not_op_enabled_fault_req = BIT_CHECK(dpm_out->machine_word, CTRL_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM);
     event_data.machine_request_error = BIT_CHECK(dpm_out->machine_word, CTRL_MACHINE_CTRL_WRD_REQUEST_FAULT_BIT_NUM);
     event_data.ec_check_error = (ecm_status.ec_check_found_error == true) ? true : false;
     event_data.slave_reported_error = EcatError;

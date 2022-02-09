@@ -17,6 +17,7 @@
 #include <errno.h>
 #include <dirent.h>
 #include <signal.h>
+#include <stdio.h>
 
 #include <sys/ioctl.h>    // SIOCGIFFLAGS
 #include <errno.h>        // errno
@@ -88,6 +89,7 @@ uint8_t outA[SIZE_OF_GBC_PDO];
 uint8_t outB[SIZE_OF_GBC_PDO];
 
 
+int log_run_level = LOG_LEVEL;
 
 struct shm_msg *shmp;
 int gbc_pid =0;

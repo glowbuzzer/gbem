@@ -63,8 +63,10 @@
 /** Number of cycles in which the heartbeat received from GBC must be within the one generated on GBEM */
 #define CTRL_HEARTBEAT_TOLERANCE                        50
 
-/** Bit number in machine controlword that triggers a transition to fault state */
-#define CTRL_MACHINE_CTRL_WRD_REQUEST_FAULT_BIT_NUM     6
+
+
+///** Bit number in machine controlword that triggers a transition to fault state */
+//#define CTRL_MACHINE_CTRL_WRD_REQUEST_FAULT_BIT_NUM     16
 
 /**Bit number in machine controlword that triggers a reset of drives and statemachine */
 #define CTRL_MACHINE_CTRL_WRD_REQUEST_RESET_BIT_NUM     ???
