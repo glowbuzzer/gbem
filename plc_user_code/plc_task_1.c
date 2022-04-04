@@ -42,12 +42,12 @@ void *plc_mytask1(void *argument) {
 
 //        printf("mytask1\n");
 
-        if (plc_din1) {
-            printf("Button 1 pressed\n");
-        }
-        if (plc_din2) {
-            printf("Button 2 pressed\n");
-        }
+//        if (plc_din1) {
+//            printf("Button 1 pressed\n");
+//        }
+//        if (plc_din2) {
+//            printf("Button 2 pressed\n");
+//        }
 
 
 

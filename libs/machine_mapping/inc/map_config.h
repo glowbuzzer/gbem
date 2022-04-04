@@ -17,7 +17,7 @@
 
 
 /* MACHINE_SWAP - set the correct map here - ofc only one machine at a time can be active << THIS IS THE WAY TO SWAP MACHINES*/
-#define MACHINE_MINI                0
+#define MACHINE_MINI                1
 #define MACHINE_CARTESIAN           0
 #define MACHINE_DRIVE_SPINNERS      0
 #define MACHINE_IGUS                0
@@ -37,7 +37,7 @@
 #define MACHINE_SK2                 0
 #define MACHINE_ASDA_A2_TEST        0
 #define MACHINE_SMC3_TEST           0
-#define MACHINE_AX5101_TEST         1
+#define MACHINE_AX5101_TEST         0
 
 //If you add a new machine you have to increment this count to match the number above
 #define MAP_NUM_MACHINES            22

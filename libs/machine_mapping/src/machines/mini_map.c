@@ -25,16 +25,16 @@ map_pdo_object_t ctrl_estop_reset_din = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .
 
 
 /* SLAVES */
-//                                        Slave 1             Slave 2         Slave 3         Slave 4         Slave 5
-//                                        MAP_EK1100_1        MAP_EL2008_1    MAP_EL1008_1    MAP_EL5101_1    MAP_AZD_CTRL_1            );
-//                                        Coupler             8 dig out       8 dig in        Encoder         3 axis stepper
-MAP_NUM_DRIVES_ATTACHED(                  0,                  0,              0,              0,              2                         );
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,               NULL,           NULL,           NULL,           ec_pdo_map_azd3a_ked      );
-MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,               NULL,           NULL,           NULL,           ec_nvram_sdos_azdxa_ked   );
-MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         NULL,               NULL,           NULL,           NULL,           NULL                      );
-MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          NULL,               NULL,           NULL,           NULL,           ec_initial_pdo_azdxa_ked  );
-MAP_SLAVE_DC_TYPE(                        EC_DC_NONE,         EC_DC_NONE,     EC_DC_NONE,     EC_DC_NONE,     EC_DC_0                   );
-MAP_SLAVE_DC_CYCLE(                       0,                  0,              0,              0,              4                         );
+//                                        Slave 1             Slave 2         Slave 3          Slave 5
+//                                        MAP_EK1100_1        MAP_EL2008_1    MAP_EL1008_1     MAP_AZD_CTRL_1
+//                                        Coupler             8 dig out       8 dig in         3 axis stepper
+MAP_NUM_DRIVES_ATTACHED(                  0,             0,           0,        2                           );
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,               NULL,           NULL,         ec_pdo_map_azd3a_ked       );
+MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,               NULL,           NULL,         ec_nvram_sdos_azdxa_ked    );
+MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         NULL,               NULL,           NULL,            NULL                        );
+MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          NULL,               NULL,           NULL,           ec_initial_pdo_azdxa_ked );
+MAP_SLAVE_DC_TYPE(                        EC_DC_NONE, EC_DC_NONE, EC_DC_NONE,   EC_DC_0                     );
+MAP_SLAVE_DC_CYCLE(                       0,          0,           0,           4                           );
 
 //set moo is in either initial PDO or custom sdos
 
@@ -68,12 +68,11 @@ extern bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3;
 
 
 /*IO MAP*/
-mapping_t map_iomap[5] = {
+mapping_t map_iomap[4] = {
         {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=1, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din1, .linked_task_name="Task1"}},
         {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=2, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din2, .linked_task_name="Task1"}},
         {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=1, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=0},    {}},
         {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=2, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=1},    {}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL5101_1, .byte_num=EL5101_ACT_VALUE_INDEX, .datatype=ECT_INTEGER16},   {.inout=MAP_IN, .datatype=ECT_INTEGER32, .ionum=0},   {}},
         };
 
 uint16_t map_num_rows_in_iomap = sizeof (map_iomap)/ sizeof(map_iomap[0]);
@@ -84,7 +83,6 @@ const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
         {.name = EK1100_EEP_NAME,   .eep_id = EK1100_EEP_ID,   .eep_man = EK1100_EEP_MAN,     .eep_rev = EK1100_EEP_REV },
         {.name = EL2008_EEP_NAME,   .eep_id = EL2008_EEP_ID,   .eep_man = EL2008_EEP_MAN,     .eep_rev = EL2008_EEP_REV },
         {.name = EL1008_EEP_NAME,   .eep_id = EL1008_EEP_ID,   .eep_man = EL1008_EEP_MAN,     .eep_rev = EL1008_EEP_REV },
-        {.name = EL5101_EEP_NAME,   .eep_id = EL5101_EEP_ID,   .eep_man = EL5101_EEP_MAN,     .eep_rev = EL5101_EEP_REV },
         {.name = AZD3A_KED_EEP_NAME,      .eep_id = AZD3A_KED_EEP_ID,      .eep_man = AZD3A_KED_EEP_MAN,        .eep_rev = AZD3A_KED_EEP_REV    },
 };
 

@@ -25,6 +25,7 @@ typedef struct {
     bool follow_error;
     bool machine_request_error; //bit 16 of machine controlword
     bool machine_move_not_op_enabled_fault_req; //bit 17 of machine controlword
+    bool gbc_internal_fault;
     bool estop;
     bool heartbeat_lost;
     bool any_drive_has_alarm;

@@ -23,11 +23,10 @@
 #define MAP_EK1100_1                1
 #define MAP_EL2008_1                2
 #define MAP_EL1008_1                3
-#define MAP_EL5101_1                4
-#define MAP_AZD_CTRL_1              5
+#define MAP_AZD_CTRL_1              4
 
 #define MAP_NUM_DRIVES              2
-#define MAP_NUM_SLAVES              5
+#define MAP_NUM_SLAVES              4
 
 /** Use a digital input to reset the estop */
 #define USE_ESTOP_RESET             1
