@@ -372,7 +372,7 @@ void ec_rxtx(void *argument) {
 
         if (ns_rc != 0) {
             UM_FATAL(
-                    "GBEM: nanosleep suffered a nasty error. The system error message was: %s (%d). This error is irrecoverable. GBEM will exit",
+                    "GBEM: The nanosleep command suffered a nasty error. The system error message was: %s (%d). This error is irrecoverable. GBEM will exit",
                     strerror(errno), ns_rc);
         }
 
