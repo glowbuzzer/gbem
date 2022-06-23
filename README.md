@@ -26,3 +26,21 @@ GBEM provides a framework to control EtherCAT slaves. It allows you to easily co
 * Real-time execution - the lowest achievable cycle times depends on hardware. Typically, 0.5ms, 1ms or 4ms cycles are used
 * A code based suitable for use on both Linux and microcontroller targets
 * Open Source code base
+
+# Build (Linux)
+
+`mkdir build`
+
+`cd build`
+
+`cmake ..`
+
+`make`
+
+# Documentation
+
+For SOEM see [here](https://openethercatsociety.github.io/doc/soem/).
+
+For the glowbuzzer framework around SOEM (GBEM)  see [here](https://www.glowbuzzer.com/docs/gbem/overview).
+
+
