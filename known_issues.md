@@ -5,7 +5,10 @@
 * No functions to read/write 24 bit data types from EtherCAT (ECT_UNSIGNED24, ECT_INTEGER24)
 * no support groups
 * no Explicit device ID
-##AZD
+
+## AZD
+
 * no integration with controller commands
-##AKD
+
+## AKD
 * Does not report AKD warning messages (error messages yes, warnings no)

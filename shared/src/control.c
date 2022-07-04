@@ -1277,9 +1277,9 @@ bool ctrl_check_heartbeat_ok(uint32_t gbem_heartbeat_to_check, uint32_t gbc_hear
         return false;
     }
 
-    printf("check heartbeat (incremented by GBEM and echoed by GBC)\n");
-    printf("gbem_heartbeat_to_check [%u]\n", gbem_heartbeat_to_check);
-    printf("gbc_heartbeat_to_check [%u]\n", gbc_heartbeat_to_check);
+//    printf("check heartbeat (incremented by GBEM and echoed by GBC)\n");
+//    printf("gbem_heartbeat_to_check [%u]\n", gbem_heartbeat_to_check);
+//    printf("gbc_heartbeat_to_check [%u]\n", gbc_heartbeat_to_check);
     /*
      * cycle 1 - gbem send out 0 to gbc - gbc echos 0 back
      * cycle 2 - gbem send out 1 to gbc - gbc echos 0 back

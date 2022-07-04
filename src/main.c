@@ -143,7 +143,7 @@ static void main_getopt_usage(void) {
     ec_adaptert *adapter = NULL;
     printf("Usage of GBEM:\n");
 
-    printf("\t-h | -n | -d | -wSLAVENAME | -n | -m | -c -iIFNAME [-pPROCESSNAME]\n\n");
+    printf("\t-h | -n | -d | -w SLAVENAME | -n | -m | -c -i IFNAME [-p PROCESSNAME]\n\n");
     printf("\t-n | --netscan: run the GBEM netscan program to scan the EtherCAT network including reading the slave EEPROM summary\n");
     printf("\t-m | --netscanwithpdo: run the GBEM netscan program to scan the EtherCAT network after writing PDO re-map SDOs \n");
     printf("\t-d | --confcheck: check and print out GBEM configuration and exit\n");
@@ -152,12 +152,14 @@ static void main_getopt_usage(void) {
     printf("\t-i | --if: interface to use - this is a NIC interface, e.g. eth0 (mandatory)\n");
     printf("\t-p | --process: the process name to send signals to (this is optional, default is: [%s])\n",
            GBC_PROCESS_NAME);
+    printf("\t-v | --version: show the version of GBEM\n");
     printf("\t-h | --help: GBEM usage information\n");
-    printf("\nExample #1: GBEM -n -ieth0 -pGBC-linux = run netscan on eth0\n");
-    printf("\nExample #2: GBEM --netscan --iflan1 --processGBC-linux = run cyclic program on lan1\n");
+    printf("\nExample #1: GBEM -n -i eth0 -pGBC-linux = run netscan on eth0\n");
+    printf("\nExample #2: GBEM --netscan --if lan1 --process GBC-linux = run cyclic program on lan1\n");
     printf("\nIf no process name name (-p or --process) is specified the default [%s] will be used\n",
            GBC_PROCESS_NAME);
     printf("\nAvailable adapters:\n");
+
 
     //todo-crit
 //    add write slave firmware
@@ -228,6 +230,93 @@ int main(int argc, char *argv[]) {
 //    exit(0);
 
 
+/* handy defines to output to console what machine type has been configured */
+#if MACHINE_MINI == 1
+    map_machine_type = MAP_MACHINE_MINI;
+#endif
+#if MACHINE_CARTESIAN == 1
+    map_machine_type = MAP_MACHINE_CARTESIAN;
+#endif
+#if MACHINE_DRIVE_SPINNERS == 1
+    map_machine_type = MAP_MACHINE_DRIVE_SPINNERS;
+#endif
+#if MACHINE_IGUS == 1
+    map_machine_type = MAP_MACHINE_IGUS;
+#endif
+#if MACHINE_STAUBLI == 1
+    map_machine_type = MAP_MACHINE_STAUBLI;
+#endif
+#if MACHINE_SINGLE_AKD == 1
+    map_machine_type = MAP_MACHINE_SINGLE_AKD;
+#endif
+#if MACHINE_CONVEYORS == 1
+    map_machine_type = MAP_MACHINE_CONVEYORS;
+#endif
+#if MACHINE_EL7211_TEST == 1
+    map_machine_type = MAP_MACHINE_EL7211_TEST;
+#endif
+#if MACHINE_TEST == 1
+    map_machine_type = MAP_MACHINE_TEST;
+#endif
+
+#if MACHINE_JVL_MIS_TEST == 1
+    map_machine_type = MAP_MACHINE_JVL_MIS_TEST;
+#endif
+
+#if MACHINE_G5_TEST == 1
+    map_machine_type = MAP_MACHINE_G5_TEST;
+#endif
+
+#if MACHINE_N5_TEST == 1
+    map_machine_type = MAP_MACHINE_N5_TEST;
+#endif
+
+#if MACHINE_EL7031_TEST == 1
+    map_machine_type = MAP_MACHINE_EL7031_TEST;
+#endif
+
+#if MACHINE_EL7041_TEST == 1
+    map_machine_type = MAP_MACHINE_EL7041_TEST;
+#endif
+
+#if MACHINE_EL2522_TEST == 1
+    map_machine_type = MAP_MACHINE_EL2522_TEST;
+#endif
+
+#if MACHINE_EL7037_TEST == 1
+    map_machine_type = MAP_MACHINE_EL7037_TEST;
+#endif
+
+#if MACHINE_SK1 == 1
+    map_machine_type = MAP_MACHINE_SK1;
+#endif
+
+#if MACHINE_SK2 == 1
+    map_machine_type = MAP_MACHINE_SK2;
+#endif
+
+#if MACHINE_ASDA_A2_TEST == 1
+    map_machine_type = MAP_MACHINE_ASDA_A2;
+#endif
+
+#if MACHINE_SMC3_TEST == 1
+    map_machine_type = MAP_MACHINE_SMC3;
+#endif
+
+#if MACHINE_AX5101_TEST == 1
+    map_machine_type = MAP_MACHINE_AX5101_TEST;
+#endif
+
+
+    if (map_machine_type < MAP_NUM_MACHINES) {
+        UM_INFO(GBEM_UM_EN, "GBEM: This code has been compiled for [%s]", map_machine_type_strings[map_machine_type]);
+
+    } else {
+        UM_ERROR(GBEM_UM_EN, "GBEM: There is an issue with map_machine_type_strings, please add your machine to the array");
+    }
+
+
+
     UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***                     Starting GB EtherCAT Master                    ***");
     UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
@@ -280,10 +369,11 @@ int main(int argc, char *argv[]) {
             {"confcheck",      no_argument,       NULL, 'd'},
             {"if",             required_argument, NULL, 'i'},
             {"process",        required_argument, NULL, 'p'},
+            {"version",         no_argument,       NULL, 'v'},
             {0, 0, 0,                                   0}
     };
 
-    while (((ch = getopt_long(argc, argv, "hnmcw:di:p:", options, &index)) != -1) && (ch != 255)) {
+    while (((ch = getopt_long(argc, argv, "hnmcwv:di:p:", options, &index)) != -1) && (ch != 255)) {
         switch (ch) {
             case 'h':
                 main_getopt_usage();
@@ -330,7 +420,10 @@ int main(int argc, char *argv[]) {
                     printf("Please specify an process name with -p[name]");
                 }
                 break;
-
+            case 'v':
+                UM_INFO(GBEM_UM_EN, "GBEM: Version is [%s]", GIT_TAG);
+                exit(EXIT_SUCCESS);
+                break;
             case '?':
                 main_getopt_usage();
                 return EXIT_FAILURE;
@@ -455,93 +548,9 @@ int main(int argc, char *argv[]) {
     }
 
 
-/* handy defines to output to console what machine type has been configured */
-#if MACHINE_MINI == 1
-    map_machine_type = MAP_MACHINE_MINI;
-#endif
-#if MACHINE_CARTESIAN == 1
-    map_machine_type = MAP_MACHINE_CARTESIAN;
-#endif
-#if MACHINE_DRIVE_SPINNERS == 1
-    map_machine_type = MAP_MACHINE_DRIVE_SPINNERS;
-#endif
-#if MACHINE_IGUS == 1
-    map_machine_type = MAP_MACHINE_IGUS;
-#endif
-#if MACHINE_STAUBLI == 1
-    map_machine_type = MAP_MACHINE_STAUBLI;
-#endif
-#if MACHINE_SINGLE_AKD == 1
-    map_machine_type = MAP_MACHINE_SINGLE_AKD;
-#endif
-#if MACHINE_CONVEYORS == 1
-    map_machine_type = MAP_MACHINE_CONVEYORS;
-#endif
-#if MACHINE_EL7211_TEST == 1
-    map_machine_type = MAP_MACHINE_EL7211_TEST;
-#endif
-#if MACHINE_TEST == 1
-    map_machine_type = MAP_MACHINE_TEST;
-#endif
-
-#if MACHINE_JVL_MIS_TEST == 1
-    map_machine_type = MAP_MACHINE_JVL_MIS_TEST;
-#endif
-
-#if MACHINE_G5_TEST == 1
-    map_machine_type = MAP_MACHINE_G5_TEST;
-#endif
-
-#if MACHINE_N5_TEST == 1
-    map_machine_type = MAP_MACHINE_N5_TEST;
-#endif
-
-#if MACHINE_EL7031_TEST == 1
-    map_machine_type = MAP_MACHINE_EL7031_TEST;
-#endif
-
-#if MACHINE_EL7041_TEST == 1
-    map_machine_type = MAP_MACHINE_EL7041_TEST;
-#endif
-
-#if MACHINE_EL2522_TEST == 1
-    map_machine_type = MAP_MACHINE_EL2522_TEST;
-#endif
-
-#if MACHINE_EL7037_TEST == 1
-    map_machine_type = MAP_MACHINE_EL7037_TEST;
-#endif
-
-#if MACHINE_SK1 == 1
-    map_machine_type = MAP_MACHINE_SK1;
-#endif
-
-#if MACHINE_SK2 == 1
-    map_machine_type = MAP_MACHINE_SK2;
-#endif
-
-#if MACHINE_ASDA_A2_TEST == 1
-    map_machine_type = MAP_MACHINE_ASDA_A2;
-#endif
-
-#if MACHINE_SMC3_TEST == 1
-    map_machine_type = MAP_MACHINE_SMC3;
-#endif
-
-#if MACHINE_AX5101_TEST == 1
-    map_machine_type = MAP_MACHINE_AX5101_TEST;
-#endif
-
-
-    if (map_machine_type < MAP_NUM_MACHINES) {
-        UM_INFO(GBEM_UM_EN, "GBEM: This code has been compiled for [%s]", map_machine_type_strings[map_machine_type]);
-
-    } else {
-        UM_ERROR(GBEM_UM_EN, "GBEM: There is an issue with map_machine_type_strings, please add your machine to the array");
-    }
 
 #if DISABLE_ESTOP_CHECKING == 1
-    UM_WARN(GBEM_UM_EN, "Warning DISABLE_ESTOP_CHECKING is defined! This will override the hardware estop");
+    UM_WARN(GBEM_UM_EN, "GBEM: Warning DISABLE_ESTOP_CHECKING is defined! This will override the hardware estop");
 #endif
 #if DISABLE_HEARTBEAT_CHECKING == 1
     UM_WARN(GBEM_UM_EN, "Warning DISABLE_HEARTBEAT_CHECKING is defined! This will disable heartbeat check");

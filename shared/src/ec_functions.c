@@ -420,6 +420,7 @@ static bool disable_sync_managers(const uint16_t slave, const uint8_t sync_manag
  * @return gberror
  */
 gberror_t print_1c32(const uint16_t slave) {
+    bool read_error = false;
     uint16_t uib16;
     uint32_t uib32;
     static const char *const ec_sync_mode_strings[] = {"Free Run", "Synchron with SM 2 Event",
@@ -441,6 +442,8 @@ gberror_t print_1c32(const uint16_t slave) {
             UM_INFO(GBEM_GEN_LOG_EN, "GBEM: Sync mode read from slave [%d] (0x1c32:1) is [%s]", slave,
                     ec_sync_mode_strings[uib16]);
         }
+    }else{
+        read_error=true;
     }
 
 
@@ -449,16 +452,32 @@ gberror_t print_1c32(const uint16_t slave) {
     if (ec_sdo_read_uint32(slave, 0x1c32, 0x2, &uib32)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Cycle time read from slave(%d) (0x1c32:2) is: [%d]", slave, uib32);
     }
+    else{
+        read_error=true;
+    }
 
 
-    // read 1C32:03 unit32 for shift time
+
+// read 1C32:03 unit32 for shift time
     if (ec_sdo_read_uint32(slave, 0x1c32, 0x3, &uib32)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Shift time read from slave [%d] (0x1c32:3) is [%d]", slave, uib32);
     }
+    else{
+        read_error=true;
+    }
+
 
     // read 1C32:06 unit32 for calc and copy time
     if (ec_sdo_read_uint32(slave, 0x1c32, 0x6, &uib32)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Calc and copy time read from slave [%d] (0x1c32:6) is [%d]", slave, uib32);
+    }
+    else{
+        read_error=true;
+    }
+
+
+    if (read_error){
+        return E_REGISTER_READ_FAILURE;
     }
 
     return E_SUCCESS;
@@ -748,14 +767,6 @@ void ECBoot(void *argument) {
     int rc;
     bool ec_boot_proceed = false;
 
-#ifndef GB_APP_LINUX
-#define SCREEN_SHOW_THRESHOLD_LOGO 5
-    /* first, pause to make sure logo screen has had enough air time */
-//todo
-//        while (ecm_status.ecm_screen_show_count.logo < SCREEN_SHOW_THRESHOLD_LOGO) {
-//        vTaskDelay(2);
-//    }
-#endif
 
 
 //placeholder in case we want to run different modes in ECM_CYCLIC_PROG
@@ -901,8 +912,9 @@ void ECBoot(void *argument) {
             print_slave_dc_local_config(i);
             gbrc = print_1c32(i);
             if (gbrc != E_SUCCESS) {
-                UM_WARN(GBEM_UM_EN, "GBEM: Could not print 1c32 information for slave [%u]. Error [%s] ", i,
+                UM_WARN(GBEM_UM_EN, "GBEM: Could not print 1c32 information for slave [%u]. Error [%s]", i,
                         gb_strerror(gbrc));
+                UM_WARN(GBEM_UM_EN, "GBEM: If you have debug logging enabled, you will see some failed SDO read messages in the proceeding console lines");
             }
         }
     }
@@ -943,33 +955,9 @@ void ECBoot(void *argument) {
             ec_rxtx_mode = EC_RXTX_MODE_OP;
         }
         ecm_status.cyclic_state = ECM_BOOT_FINISHED;
-#define SCREEN_SHOW_THRESHOLD_BOOT 5
-        /** pause to make sure boot screen has had enough air time */
-
-#ifndef GB_APP_LINUX
-
-        //        while (ecm_status.ecm_screen_show_count.cyclic_boot_results < SCREEN_SHOW_THRESHOLD_BOOT) {
-        //
-        //            ec_send_processdata();
-        //            ec_receive_processdata(EC_TIMEOUTRET);
-        //            vTaskDelay(2000);
-
-        //
-        //        }
-
-        ecm_status.cyclic_state = ECM_CYCLIC_RUNNING;
-#endif
     } else {
 //We have had an issue during the boot phase
-#define ECM_REBOOT_DELAY_SECS 10
-        //need a delay here to stop is zipping back through the boot process without ever showing the logo boot screen
-//		vTaskDelay(((ECM_REBOOT_DELAY_SECS / 2) * 1000) / portTICK_PERIOD_MS);
-#ifdef GB_APP_LINUX
-
         sleep(5);
-#else
-        //        vTaskDelay(5000);
-#endif
 
 
         ecm_status.boot_state.boot_sucessful = false;
@@ -978,7 +966,6 @@ void ECBoot(void *argument) {
         UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
         /* Pause here for a number of seconds while the gui displays the result of the boot process and give a bit of time for  */
 //		vTaskDelay(((ECM_REBOOT_DELAY_SECS / 2) * 1000) / portTICK_PERIOD_MS);
-        ecm_status.ecm_screen_show_count.cyclic_boot_results = 0;
         /* jump back to the start and try whole boot process again */
         goto boot_start_goto_label;
     }

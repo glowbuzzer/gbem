@@ -38,13 +38,6 @@ typedef struct {
 }ecm_boot_state_t;
 
 
-/** used on mbed to control the UI flow */
-typedef struct {
-    uint32_t logo;
-    uint32_t cyclic_boot_results;
-    uint32_t cyclic_error;
-    uint32_t network_scan;
-}ecm_screen_show_count_t;
 
 
 /** struct used in ecm_status to hold a copy of key slave state info*/
@@ -89,7 +82,6 @@ typedef struct {
     ecm_active_program_t active_program;
     //ec_map is the struct copies into from soem slave struct array
     ecm_status_map_t map[EC_MAXSLAVE]; //this is key bits of the slave state struct
-    ecm_screen_show_count_t ecm_screen_show_count;
     uint64_t cycle_count;
     uint8_t drive_count; //const
     uint8_t gbc_max_float_in_count; //const
