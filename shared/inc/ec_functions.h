@@ -20,7 +20,7 @@
 
 
 gberror_t ec_ack_errors(void);
-bool ec_slaves_match(void);
+gberror_t ec_slaves_match(void);
 void ECBoot (void *argument);
 void copy_ec_slave_to_ecm_status(void);
 void ec_check(void *argument);

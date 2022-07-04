@@ -708,13 +708,20 @@ bool ec_step_7_wkc_check(void) {
  */
 bool ec_step_8_slaves_match(void) {
     /* now we want to make sure the slaves are the ones we have hard coded in our map and occur in the right order */
-    if (ec_slaves_match()) {
+    gberror_t grc = E_GENERAL_FAILURE;
+
+    grc=ec_slaves_match();
+
+    if (grc==E_SUCCESS) {
         UM_INFO(GBEM_UM_EN, "GBEM: Boot step 8 >success< (check all slaves match the configuration)");
         return true;
     } else {
         UM_ERROR(GBEM_UM_EN, "GBEM: Boot step 8 >failure< (check all slaves match the configuration)");
         UM_ERROR(GBEM_UM_EN,
                  "GBEM: Not all slaves match the configuration (this is the array of slave names manufacturer ids etc. in the machine config");
+        UM_ERROR(GBEM_UM_EN,
+                 "GBEM: Error from slave match [%s]", gb_strerror(grc));
+
         return false;
     }
 }
@@ -964,8 +971,7 @@ void ECBoot(void *argument) {
         UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
         UM_ERROR(GBEM_UM_EN, "GBEM: ***     The boot process failed - we will start again at Step 1        ***");
         UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
-        /* Pause here for a number of seconds while the gui displays the result of the boot process and give a bit of time for  */
-//		vTaskDelay(((ECM_REBOOT_DELAY_SECS / 2) * 1000) / portTICK_PERIOD_MS);
+
         /* jump back to the start and try whole boot process again */
         goto boot_start_goto_label;
     }
@@ -1015,10 +1021,12 @@ void ECBoot(void *argument) {
  * @brief runs through the slaves defined in the map and checks their name (and) man, id, ver against the EEprom and checks order
  * @return true: slaves on network matches the map (good), false slaves don't map the network (bad)
  */
-bool ec_slaves_match(void) {
+gberror_t ec_slaves_match(void) {
 
-    if (ec_slavecount < MAP_NUM_SLAVES)
-        return false;
+    if (ec_slavecount < MAP_NUM_SLAVES) {
+
+        return E_NOT_ENOUGH_SLAVES;
+    }
     /* Verify slave by slave that it is correct*/
     /* strcmp returns 0 if strings are identical */
 
@@ -1030,26 +1038,26 @@ bool ec_slaves_match(void) {
      * */
 
     for (int i = 0; i < MAP_NUM_SLAVES; i++) {
-        //todo-crit - remvoe!!!!!
-        return true;
+
         if (strcmp(ec_slave[i + 1].name, ecm_slave_map[i].name)) {
-            return false;
+            return E_SLAVE_NAME_MATCH_FAILURE;
         }
 #ifdef ECM_CHECK_EEP_MAN
         if (ecm_slave_map[i].eep_man==0){
             LL_WARN(GBEM_GEN_LOG_EN, "GBEM: ECM_CHECK_EEP_MAN is defined but slave [%u] has a 0 manufacturer");
         }
         if (ec_slave[i + 1].eep_man != ecm_slave_map[i].eep_man) {
-            return false;
+            return E_SLAVE_EEP_MAN_MATCH_FAILURE;
         }
 #endif
+
 #ifdef ECM_CHECK_EEP_ID
         if (ecm_slave_map[i].eep_id==0){
             LL_WARN(GBEM_GEN_LOG_EN, "GBEM: ECM_CHECK_EEP_ID is defined but slave [%u] has a 0 id");
         }
 
         if (ec_slave[i + 1].eep_id != ecm_slave_map[i].eep_id) {
-            return false;
+            return E_SLAVE_EEP_ID_MATCH_FAILURE;
         }
 #endif
 #ifdef ECM_CHECK_EEP_REV
@@ -1057,11 +1065,11 @@ bool ec_slaves_match(void) {
             LL_WARN(GBEM_GEN_LOG_EN, "GBEM: ECM_CHECK_EEP_REV is defined but slave [%u] has a 0 revision id");
         }
         if (ec_slave[i + 1].eep_rev != ecm_slave_map[i].eep_rev) {
-            return false;
+            return E_SLAVE_EEP_REV_MATCH_FAILURE;
         }
 #endif
     }
-    return true;
+    return E_SUCCESS;
 }
 
 ///** array mapping ec state to text descriptions*/
