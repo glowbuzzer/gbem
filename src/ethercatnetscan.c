@@ -20,6 +20,7 @@
 #include "user_message.h"
 #include "time.h"
 #include "main.h"
+#include <unistd.h>
 
 //char IOmap[4096];
 ec_ODlistt ODlist;
@@ -537,7 +538,7 @@ static int netscan_slave_config(uint16 slave) {
 void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
     int cnt, i, j, nSM;
     uint16 ssigen;
-    int nsexpectedWKC;
+
 
     ecm_status.net_scan_state = ECM_NET_SCAN_START;
 
@@ -659,7 +660,7 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
                 }
                 printf(" FMMUfunc 0:%d 1:%d 2:%d 3:%d\n", ec_slave[cnt].FMMU0func, ec_slave[cnt].FMMU1func, ec_slave[cnt].FMMU2func, ec_slave[cnt].FMMU3func);
                 printf(" MBX length wr: %d rd: %d MBX protocols : %2.2x\n", ec_slave[cnt].mbx_l, ec_slave[cnt].mbx_rl, ec_slave[cnt].mbx_proto);
-                ssigen = ec_siifind(cnt, ECT_SII_GENERAL);
+                ssigen = (uint16) ec_siifind(cnt, ECT_SII_GENERAL);
                 /* SII general section */
                 if (ssigen) {
                     ec_slave[cnt].CoEdetails = ec_siigetbyte(cnt, ssigen + 0x07);

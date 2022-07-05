@@ -18,7 +18,7 @@
 #include <stdbool.h>
 #include "shared.h"
 
-void ec_emstat(void *argument);
+_Noreturn void ec_emstat(void *argument);
 
 bool write_const_json();
 bool write_status_json();

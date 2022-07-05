@@ -260,7 +260,7 @@ void plc_task_exec(void) {
             if (!plc_task_set.tasks[i].exec.completed) {
                 printf("task overrun!\n");
                 plc_task_has_overrun = true;
-                //todo-crit decide what to do here
+                //todo decide what to do here
             }
             pthread_cond_signal(&plc_task_set.tasks[i].cond);
         }

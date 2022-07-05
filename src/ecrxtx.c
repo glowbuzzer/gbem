@@ -82,7 +82,7 @@ static gberror_t __attribute__((unused)) print_slave_dc_sysdiff(const uint16_t s
  */
 static uint32_t __attribute__((unused)) fieldbus_roundtrip(void) {
     ec_timet start, end, diff;
-    int wkc_roundtrip;
+    int wkc_roundtrip __attribute__((unused));
     uint32_t roundtrip_time = 0;
 
     start = osal_current_time();
@@ -176,7 +176,7 @@ bool print_repeater_message = false;
  */
 void ec_rxtx(void *argument) {
     bool first_run = true;
-    char *proc = (char *) argument;
+    char *proc __attribute__((unused)) = (char *) argument;
     struct timespec ts, ts_wall;
     struct timespec tleft;
     int ht;
@@ -188,9 +188,11 @@ void ec_rxtx(void *argument) {
     gberror_t grc = 0;
 
 #define NUM_CYCLIC_EVENTS 5
-    typedef enum {
+
+    enum {
         CYCLIC_EVENT_OVERRUN, CYCLIC_EVENT_TIMEWARN, CYCLIC_EVENT_SEND_FAIL, CYCLIC_EVENT_NOT_OPMODE, CYCLIC_EVENT_GBC_NOT_CONNECTED
-    } cyclic_event_type_t;
+    };
+
     //@formatter:off
     cyclic_event_t ec_rxtx_event[NUM_CYCLIC_EVENTS] = {
             [CYCLIC_EVENT_OVERRUN] = {.message="The execution time has overrun!", .type=CYCLIC_MSG_ERROR},

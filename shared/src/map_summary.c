@@ -291,7 +291,7 @@ if (ctrl_estop_din.slave_num>1){
     UM_INFO(GBEM_UM_EN, "GBEM: Estop on Digital In: %d, and does NOT require a reset signal (USE_ESTOP_RESET is NOT #defined)");
 #endif
 #endif
-    //todo-crit json estop info
+    //todo add to json estop info
 
 
     UM_INFO(GBEM_UM_EN, "GBEM: Max number of GBC digital ins [%u] (DPM_NUM_DIGITAL)",

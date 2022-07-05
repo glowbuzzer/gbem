@@ -26,14 +26,11 @@
  * @brief this is the thread for writing the status JSON file
  * @param argument
  */
-void ec_emstat(void *argument) {
+_Noreturn void ec_emstat(void *argument) {
     /* this function never exits so no need for statics */
     bool first_run = true;
     bool start_output = false;
-    int ascii_counter = 0;
-    uint32_t trigger = 2000; // ms
-    const int numDots = 50;
-    const char prompt[] = "GBEM: running ";
+
 
     for (;;) {
         /* Here we have a short pause before outputting the JSON status and const files and spitting out the spinner*/
