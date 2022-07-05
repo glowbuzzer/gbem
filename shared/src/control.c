@@ -1047,7 +1047,7 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
 
 
 /**
- * @brief Guards the transition from fault reaction to fault that occurs when a fault is cleared - doesn't depend on machine controlword
+ * @brief Guards the transition from fault reaction active to fault that occurs when a fault is cleared - doesn't depend on machine controlword
  * @param condition
  * @param event
  * @return
@@ -1056,19 +1056,19 @@ static bool cia_trn14_guard(void *condition, struct event *event) {
     (void) condition; //unused parameter
 
     static int reset_in_progress = 0;
-//todo-crit this isnt correct
     if (ctrl_check_all_drives_state(CIA_SWITCH_ON_DISABLED)) {
         // all drives have transitioned to switch on so the state machine can go to fault state if no error
         if (!cia_is_fault_condition(event)) {
             return true;
         }
     } else {
-
         reset_in_progress++;
         if ((reset_in_progress % 5) == 0) {
+            //ask all drives to fault reset which should send them to SWITCH ON DISABLED
             ctrl_change_all_drives_states(CIA_FAULT_RESET_CTRLWRD);
 //            printf("reset\n");
         } else {
+            //provides a bit transition for the drives with the fault reset
             ctrl_change_all_drives_states(0b00000000);
 //            printf("reset 0\n");
         }

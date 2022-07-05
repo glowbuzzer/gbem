@@ -118,11 +118,6 @@ static char *config_process_general(char *json_dest, gberror_t *grc) {
     bool config_error = false;
     json_dest = json_objOpen(json_dest, "general");
 
-    gberror_t testgrc;
-
-    printf("[%s]\n", etg_lookup_vendor_id(0, etg_vendor_id_list, ETG_NUM_VENDOR_IDS,
-                         &testgrc));
-    exit(0);
 
     UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***                Step 1 - Examining general configuration                  ***");
@@ -944,7 +939,7 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
             json_dest = json_uint(json_dest, "slave_number", (uint32_t) i);
             UM_INFO(GBEM_UM_EN, "GBEM: \tName [%s]", ecm_slave_map[i - 1].name);
             json_dest = json_str(json_dest, "slave_name", ecm_slave_map[i - 1].name);
-            //todo-crit bug here?
+
             gberror_t etg_lookup_vendor_id_grc = E_GENERAL_FAILURE;
             UM_INFO(GBEM_UM_EN, "GBEM: \tEEP ID [%#.8x], EEP MANUFACTURER [%#.8x] (%s), EEP REVISION [%#.8x]",
                     ecm_slave_map[i - 1].eep_id, ecm_slave_map[i - 1].eep_man,
