@@ -161,8 +161,8 @@ static void main_getopt_usage(void) {
     printf("\nAvailable adapters:\n");
 
 
-    //todo-crit
-//    add write slave firmware
+    //todo
+// add write slave firmware
 // add read and write slave eeprom
 
     adapter = ec_find_adapters();
