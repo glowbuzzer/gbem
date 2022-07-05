@@ -27,7 +27,7 @@ GBEM provides a framework to control EtherCAT slaves. It allows you to easily co
 * A code based suitable for use on both Linux and microcontroller targets
 * Open Source code base
 
-# Build (Linux)
+# Build
 
 `mkdir build`
 
@@ -37,10 +37,24 @@ GBEM provides a framework to control EtherCAT slaves. It allows you to easily co
 
 `make`
 
+# Configure
+
+GBEM needs to have a machine configured. A machine defines the EtherCAT slaves that make up the machine.
+
+See [Configuring machines](https://www.glowbuzzer.com/docs/gbem/configuring_machines) for details on how to do this. 
+
+# Run
+
+To scan for slaves on an EtherCAT network using network interface `eth0`:
+`./GBEM -n -i eth0`
+
+To run cyclically using network interface `eth0`:
+`./GBEM -c -i eth0`
+
 # Documentation
 
-For SOEM see [here](https://openethercatsociety.github.io/doc/soem/).
+For SOEM documentation see [the SOEM github repository](https://openethercatsociety.github.io/doc/soem/).
 
-For the glowbuzzer framework around SOEM (GBEM)  see [here](https://www.glowbuzzer.com/docs/gbem/overview).
+For the glowbuzzer framework around SOEM (GBEM) see [GBEM overivew on the glowbuzzer website](https://www.glowbuzzer.com/docs/gbem/overview).
 
 
