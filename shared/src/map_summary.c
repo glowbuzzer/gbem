@@ -118,6 +118,12 @@ static char *config_process_general(char *json_dest, gberror_t *grc) {
     bool config_error = false;
     json_dest = json_objOpen(json_dest, "general");
 
+    gberror_t testgrc;
+
+    printf("[%s]\n", etg_lookup_vendor_id(0, etg_vendor_id_list, ETG_NUM_VENDOR_IDS,
+                         &testgrc));
+    exit(0);
+
     UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***                Step 1 - Examining general configuration                  ***");
     UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
