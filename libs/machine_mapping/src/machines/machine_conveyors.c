@@ -21,8 +21,8 @@
 //@formatter:off
 /* SLAVES */
 //                                        Slave 1             Slave 2         Slave 3         Slave 4         Slave 5               Slave 6
-//                                        MAP_EK1100_1        MAP_EL2008_1    MAP_EL1008_1    MAP_EL52022_1   MAP_AKD1              MAP_AKD2
-//                                        Coupler             8 dig out       8 dig in        Encoder         single servo          single servo
+//                                        MAP_EK1100_1        MAP_EL2008_1    MAP_EL1008_1    MAP_EL2022_1   MAP_AKD1              MAP_AKD2
+//                                        Coupler             8 dig out       8 dig in        2 fig ou       single servo          single servo
 MAP_NUM_DRIVES_ATTACHED(                  0,                  0,              0,              0,              1,                    1                   );
 MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,               NULL,           NULL,           NULL,           ec_pdo_map_akd,       ec_pdo_map_akd      );
 MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,               NULL,           NULL,           NULL,           ec_nvram_sdos_akd,    ec_nvram_sdos_akd   );
@@ -84,7 +84,8 @@ mapping_t map_iomap[18] = {
 uint16_t map_num_rows_in_iomap = sizeof (map_iomap)/ sizeof(map_iomap[0]);
 
 /* This must be laid out in the order they appear in netscan */
-MAP_SLAVE_EEP ({EK1100_EEP_NAME},{EL2008_EEP_NAME}, {EL1008_EEP_NAME},{EL2022_EEP_NAME}, {AKD_EEP_NAME, AKD_EEP_ID, AKD_EEP_MAN, AKD_EEP_REV});
+MAP_SLAVE_EEP ({EK1100_EEP_NAME},{EL2008_EEP_NAME}, {EL1008_EEP_NAME},{EL2022_EEP_NAME}, {AKD_EEP_NAME, AKD_EEP_ID, AKD_EEP_MAN, AKD_EEP_REV}, {AKD_EEP_NAME, AKD_EEP_ID, AKD_EEP_MAN, AKD_EEP_REV});
+
 
 /* REVERSE FUNCTIONS - USED FOR TESTING */
 MAP_DRIVE_GET_CTRL_WRD_REV_FUNCTIONS(       ec_get_ctrl_wrd_rev_akd,        ec_get_ctrl_wrd_rev_akd             );

@@ -909,6 +909,7 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
     bool dc_on_any_slave = false;
     json_dest = json_arrOpen(json_dest, "slaves");
     for (int i = 1; i < MAP_NUM_SLAVES + 1; i++) {
+
         if (strlen(ecm_slave_map[i - 1].name) == 0) {
             UM_ERROR(GBEM_UM_EN, "GBEM: Slave number [%u] is missing its name in the ecm_slave_map array", i);
             config_error = true;

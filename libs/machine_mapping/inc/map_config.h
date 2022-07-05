@@ -17,14 +17,14 @@
 
 
 /* MACHINE_SWAP - set the correct map here - ofc only one machine at a time can be active << THIS IS THE WAY TO SWAP MACHINES*/
-/* WARNING! Don't enable more than one or bad things happen */
-#define MACHINE_MINI                1
+/* WARNING! Don't enable more than one or bad things happen when linking */
+#define MACHINE_MINI                0
 #define MACHINE_CARTESIAN           0
 #define MACHINE_DRIVE_SPINNERS      0
 #define MACHINE_IGUS                0
 #define MACHINE_STAUBLI             0
 #define MACHINE_SINGLE_AKD          0
-#define MACHINE_CONVEYORS           0
+#define MACHINE_CONVEYORS           1
 #define MACHINE_EL7211_TEST         0
 #define MACHINE_TEST                0
 #define MACHINE_JVL_MIS_TEST        0
@@ -38,7 +38,7 @@
 #define MACHINE_STARTER_KIT_2       0
 #define MACHINE_ASDA_A2_TEST        0
 #define MACHINE_SMC3_TEST           0
-#define MACHINE_AX5101_TEST         1
+#define MACHINE_AX5101_TEST         0
 
 //If you add a new machine you have to increment this count to match the number above
 #define MAP_NUM_MACHINES            22
@@ -153,8 +153,8 @@ typedef enum {
     MAP_MACHINE_EL7037_TEST,
     MAP_MACHINE_STARTER_KIT_1,
     MAP_MACHINE_STARTER_KIT_2,
-    MAP_MACHINE_ASDA_A2,
-    MAP_MACHINE_SMC3,
+    MAP_MACHINE_ASDA_A2_TEST,
+    MAP_MACHINE_SMC3_TEST,
     MAP_MACHINE_AX5101_TEST,
     } map_machine_type_t;
 

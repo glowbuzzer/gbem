@@ -300,11 +300,11 @@ int main(int argc, char *argv[]) {
 #endif
 
 #if MACHINE_ASDA_A2_TEST == 1
-    map_machine_type = MAP_MACHINE_ASDA_A2;
+    map_machine_type = MAP_MACHINE_ASDA_A2_TEST;
 #endif
 
 #if MACHINE_SMC3_TEST == 1
-    map_machine_type = MAP_MACHINE_SMC3;
+    map_machine_type = MAP_MACHINE_SMC3_TEST;
 #endif
 
 #if MACHINE_AX5101_TEST == 1
@@ -631,10 +631,6 @@ int main(int argc, char *argv[]) {
             ECNetscan(true);
             break;
         case ECM_PRINT_CONFIG_PROG:
-            UM_INFO(GBEM_UM_EN,
-                    "GBEM: Here, we print out the SDO configuration that will be applied to configure the PDOs and SDOs to configure the slaves");
-
-            map_print_sdos();
             config_create_check_print(config_summary_json_buffer, &grc, true);
             if (grc == E_SUCCESS) {
                 return EXIT_SUCCESS;
