@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
  * @file           :  map_config.h
- * @brief          :
+ * @brief          :  configures the machine mapping
  ******************************************************************************
  * @attention
  *
@@ -17,6 +17,7 @@
 
 
 /* MACHINE_SWAP - set the correct map here - ofc only one machine at a time can be active << THIS IS THE WAY TO SWAP MACHINES*/
+/* WARNING! Don't enable more than one or bad things happen */
 #define MACHINE_MINI                1
 #define MACHINE_CARTESIAN           0
 #define MACHINE_DRIVE_SPINNERS      0
@@ -33,11 +34,11 @@
 #define MACHINE_EL7041_TEST         0
 #define MACHINE_EL2522_TEST         0
 #define MACHINE_EL7037_TEST         0
-#define MACHINE_SK1                 0
-#define MACHINE_SK2                 0
+#define MACHINE_STARTER_KIT_1       0
+#define MACHINE_STARTER_KIT_2       0
 #define MACHINE_ASDA_A2_TEST        0
 #define MACHINE_SMC3_TEST           0
-#define MACHINE_AX5101_TEST         0
+#define MACHINE_AX5101_TEST         1
 
 //If you add a new machine you have to increment this count to match the number above
 #define MAP_NUM_MACHINES            22
@@ -46,89 +47,89 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
 /* MACHINE_NEW - add new #ifdef to include the header here */
 #if MACHINE_MINI == 1
-#include "mini_map.h"
+#include "machine_mini.h"
 #endif
 
 #if MACHINE_CARTESIAN == 1
-#include "cartesian_map.h"
+#include "machine_cartesian.h"
 #endif
 
 #if MACHINE_DRIVE_SPINNERS == 1
-#include "drive_spinners_map.h"
+#include "machine_drive_spinners.h"
 #endif
 
 #if MACHINE_IGUS == 1
-#include "igus_map.h"
+#include "machine_igus.h"
 #endif
 
 #if MACHINE_STAUBLI == 1
-#include "staubli_map.h"
+#include "machine_staubli.h"
 #endif
 
 #if  MACHINE_CONVEYORS == 1
-#include "conveyors_map.h"
+#include "machine_conveyors.h"
 #endif
 
 #if MACHINE_SINGLE_AKD == 1
-#include "single_akd.h"
+#include "machine_single_akd.h"
 #endif
 
 #if MACHINE_EL7211_TEST == 1
-#include "EL7211_test_map.h"
+#include "machine_EL7211_test.h"
 #endif
 
 #if MACHINE_TEST == 1
-#include "test_map.h"
+#include "machine_test.h"
 #endif
 
 #if MACHINE_JVL_MIS_TEST == 1
-#include "jvl_mis_test_map.h"
+#include "machine_jvl_mis_test.h"
 #endif
 
 #if MACHINE_G5_TEST == 1
-#include "g5_test_map.h"
+#include "machine_g5_test.h"
 #endif
 
 #if MACHINE_N5_TEST == 1
-#include "n5_test_map.h"
+#include "machine_n5_test.h"
 #endif
 
 
 #if MACHINE_EL7031_TEST == 1
-#include "EL7031_test_map.h"
+#include "machine_EL7031_test.h"
 #endif
 
 #if MACHINE_EL7041_TEST == 1
-#include "EL7041_test_map.h"
+#include "machine_EL7041_test.h"
 #endif
 
 #if MACHINE_EL2522_TEST == 1
-#include "EL2522_test_map.h"
+#include "machine_EL2522_test.h"
 #endif
 
 #if MACHINE_EL7037_TEST == 1
-#include "EL7037_test_map.h"
+#include "machine_EL7037_test.h"
 #endif
 
 
 #if MACHINE_ASDA_A2_TEST == 1
-#include "asda_a2_test_map.h"
+#include "machine_asda_a2_test.h"
 #endif
 
 #if MACHINE_SMC3_TEST == 1
-#include "smc3_test_map.h"
+#include "machine_smc3_test.h"
 #endif
 
-
-#if MACHINE_SK1 == 1
-#include "sk1_map.h"
+#if MACHINE_STARTER_KIT_1 == 1
+#include "machine_starter_kit_1.h"
 #endif
-#if MACHINE_SK2 == 1
-#include "sk2_map.h"
+
+#if MACHINE_STARTER_KIT_2 == 1
+#include "machine_starter_kit_2.h"
 #endif
 
 #if MACHINE_AX5101_TEST == 1
-#include "AX5101_test_map.h"
+#include "machine_AX5101_test.h"
 #endif
 
 /* MACHINE_NEW - add new MAP_ enum here */
@@ -150,8 +151,8 @@ typedef enum {
     MAP_MACHINE_EL7041_TEST,
     MAP_MACHINE_EL2522_TEST,
     MAP_MACHINE_EL7037_TEST,
-    MAP_MACHINE_SK1,
-    MAP_MACHINE_SK2,
+    MAP_MACHINE_STARTER_KIT_1,
+    MAP_MACHINE_STARTER_KIT_2,
     MAP_MACHINE_ASDA_A2,
     MAP_MACHINE_SMC3,
     MAP_MACHINE_AX5101_TEST,

@@ -229,6 +229,10 @@ int main(int argc, char *argv[]) {
 //    fclose(fp);
 //    exit(0);
 
+    UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
+    UM_INFO(GBEM_UM_EN, "GBEM: ***                     Starting GB EtherCAT Master                    ***");
+    UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
+
 
 /* handy defines to output to console what machine type has been configured */
 #if MACHINE_MINI == 1
@@ -287,12 +291,12 @@ int main(int argc, char *argv[]) {
     map_machine_type = MAP_MACHINE_EL7037_TEST;
 #endif
 
-#if MACHINE_SK1 == 1
-    map_machine_type = MAP_MACHINE_SK1;
+#if MACHINE_STARTER_KIT_1 == 1
+    map_machine_type = MAP_MACHINE_STARTER_KIT_1;
 #endif
 
-#if MACHINE_SK2 == 1
-    map_machine_type = MAP_MACHINE_SK2;
+#if MACHINE_STARTER_KIT_2 == 1
+    map_machine_type = MAP_MACHINE_STARTER_KIT_2;
 #endif
 
 #if MACHINE_ASDA_A2_TEST == 1
@@ -316,13 +320,8 @@ int main(int argc, char *argv[]) {
     }
 
 
-
-    UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
-    UM_INFO(GBEM_UM_EN, "GBEM: ***                     Starting GB EtherCAT Master                    ***");
-    UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
-
-
     /* This section just outputs the state of debug #defines */
+    UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***                           Debug info.                              ***");
     UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
 
