@@ -136,7 +136,9 @@ bool ec_get_follow_error_el2521(const uint16_t drive) {
 
 uint8_t *ec_get_error_string_sdo_el2521(const uint16_t drive) {
 
-    return "no string yet";
+    static uint8_t empty_message[]="no string yet";
+
+    return empty_message;
     //sync error
     //general error?
 }
@@ -219,7 +221,7 @@ uint16_t ec_get_stat_wrd_el2521(const uint16_t drive) {
 
 
     el2521_status = ec_pdo_get_input_uint8(map_drive_to_slave[drive], EL2521_STATUSWORD_PDO_INDEX);
-    //    printf("el7031_status: %u\n", el7031_status);
+        printf("el7031_status: %u\n", el2521_status);
 
 //
 //    if (BIT_CHECK(el2521_status, EL7031_STATUS_ERROR_BIT_NUM)) {
@@ -333,4 +335,5 @@ gberror_t ec_set_setpos_wrd_el2521(const uint16_t drive, const int32_t setpos) {
 
 
 gberror_t ec_print_params_el2521(const uint16_t drive) {
+    return E_SUCCESS;
 }

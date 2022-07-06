@@ -156,7 +156,6 @@ gberror_t ec_standard_sdos_jvl_mis(const uint16_t slave) {
 //quick stop option code
 
 /* bit - function - supported
-/*
  0 - Disable drive function                                                 - Yes
  1 - Slow down on slow ramp and transit into Switch On Disabled             - Yes
  2 - Slow down on quick ramp and transit into Switch On Disabled            - Yes << DEFAULT
@@ -167,6 +166,7 @@ gberror_t ec_standard_sdos_jvl_mis(const uint16_t slave) {
  7 - Slow down on current limit and stay in quick stop active               - No/Same as 6
  8 - Slow down on voltage limit and stay in quick stop active               - No/Same as 6
 */
+
 int16_t quickstop_option_code = 0;
     BIT_SET(quickstop_option_code, 2);
 

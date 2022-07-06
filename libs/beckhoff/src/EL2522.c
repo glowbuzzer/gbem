@@ -310,4 +310,5 @@ gberror_t ec_set_setpos_wrd_el2522(const uint16_t drive, int32_t setpos) {
 
 
 gberror_t ec_print_params_el2522(const uint16_t drive) {
+    return E_SUCCESS;
 }

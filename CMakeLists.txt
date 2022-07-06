@@ -83,11 +83,9 @@ add_executable(GBEM ${SOURCES})
 target_link_libraries(GBEM EtherCAT Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen delta JVL omron oriental_motor unity gberror gbem_config etg m rt)
 target_include_directories(GBEM PUBLIC "inc" "shared/inc" "plc_user_code" ${PROJECT_BINARY_DIR}/version ${gbem_config_BINARY_DIR})
 
-
 add_executable(GBEM_testStateMachine shared/src/control.c shared/src/ec_functions.c src/ecrxtx.c src/ethercatnetscan.c src/status.c shared/src/json-maker.c shared/src/float_int_conv.c test/src/test.c test/src/testStateMachine.c shared/src/plc_core.c plc_user_code/plc_init.c src/cyclic_message.c plc_user_code/plc_task_1.c shared/src/iomap_processing.c)
 target_link_libraries(GBEM_testStateMachine mjson EtherCAT gbem_config machine_mapping Logging common-misc cia state_machine dpm minini linux-shm pid sleep beckhoff delta kollmorgen oriental_motor unity gberror m)
 target_include_directories(GBEM_testStateMachine PUBLIC "inc" "shared/inc" "test/inc" "plc_user_code")
-
 
 add_executable(GBEM_testMisc shared/src/float_int_conv.c shared/src/control.c shared/src/ec_functions.c src/ecrxtx.c src/ethercatnetscan.c src/json_print.c src/status.c shared/src/json-maker.c test/src/test.c test/src/testMisc.c test/src/misc/etg1020_diag_test.c test/src/misc/drive_error_test.c test/src/misc/cia402_test.c test/src/misc/ethercat_test.c shared/src/plc_core.c plc_user_code/plc_init.c src/cyclic_message.c shared/src/iomap_processing.c plc_user_code/plc_task_1.c)
 target_link_libraries(GBEM_testMisc mjson EtherCAT gbem_config machine_mapping Logging common-misc cia state_machine dpm minini linux-shm pid sleep beckhoff kollmorgen oriental_motor unity gberror m)
@@ -196,3 +194,6 @@ add_subdirectory("gclibs/state_machine")
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     message(FATAL_ERROR “GB: In-source builds not allowed! Create a build directory and run CMake from there.”)
 endif ()
+
+
+install(TARGETS GBEM DESTINATION bin CONFIGURATIONS Release)

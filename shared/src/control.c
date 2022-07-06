@@ -384,7 +384,7 @@ static struct state cia_fault_state = {
         .exitAction =
         NULL,};
 
-static struct state errorState = {
+__attribute__((unused)) static struct state errorState = {
         .entryAction = &sm_error_state_entry_action};
 
 
@@ -1023,6 +1023,8 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
                 state_mismatch = true;
             }
             break;
+        case CIA_FAULT_RESET:
+            break;
     }
     if (state_mismatch) {
         LL_TRACE(GBEM_SM_LOG_EN,
@@ -1579,7 +1581,7 @@ static void ctrl_copy_actpos(void) {
 
 #define CTRL_POS_JUMP_THRESHOLD 25000
 
-static void ctrl_check_for_big_pos_jump(uint16_t drive, int32_t current_position) {
+__attribute__((unused)) static void ctrl_check_for_big_pos_jump(uint16_t drive, int32_t current_position) {
     static int32_t last_pos[MAP_NUM_DRIVES];
     if ((abs(current_position - last_pos[drive])) > CTRL_POS_JUMP_THRESHOLD) {
         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Position jump too big for drive [%u] jump [%u]", drive,

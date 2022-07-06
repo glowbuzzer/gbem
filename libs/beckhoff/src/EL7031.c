@@ -169,48 +169,48 @@ uint8_t *ec_get_error_string_sdo_el7031(const uint16_t drive) {
     int rc = ec_SDOread(map_drive_to_slave[drive], EL7031_DIAG_SDO_INDEX, EL7031_DIAG_SDO_SUB_INDEX, true, &size, &read_val,  EC_TIMEOUTRXM);
 
     if (rc <= 0) {
-        return "Can't read EL7031 error code from SDO";
+        return (uint8_t*)"Can't read EL7031 error code from SDO";
     }
 
     if(BIT_CHECK(read_val, EL7031_ERROR_SATURATED_BIT_NUM)){
-        return "EL7031: Saturated error";
+        return (uint8_t *) "EL7031: Saturated error";
     }
     if(BIT_CHECK(read_val, EL7031_ERROR_OVER_TEMPERATURE_BIT_NUM)){
-        return "EL7031: Over temperature error";
+        return (uint8_t *) "EL7031: Over temperature error";
     }
 
     if(BIT_CHECK(read_val, EL7031_ERROR_TORQUE_OVERLOAD_BIT_NUM)){
-        return "EL7031: Torque overload error";
+        return (uint8_t *) "EL7031: Torque overload error";
     }
 
     if(BIT_CHECK(read_val, EL7031_ERROR_UNDER_VOLTAGE_BIT_NUM)){
-        return "EL7031: Under voltage error";
+        return (uint8_t *) "EL7031: Under voltage error";
     }
     if(BIT_CHECK(read_val, EL7031_ERROR_OVER_VOLTAGE_BIT_NUM)){
-        return "EL7031: Over volatge error";
+        return (uint8_t *) "EL7031: Over volatge error";
     }
 
     if(BIT_CHECK(read_val, EL7031_ERROR_SHORT_CIRCUIT_A_BIT_NUM)){
-        return "EL7031: Short circuit A error";
+        return (uint8_t *) "EL7031: Short circuit A error";
     }
 
     if(BIT_CHECK(read_val, EL7031_ERROR_SHORT_CIRCUIT_B_BIT_NUM)){
-        return "EL7031: Short circuit B error";
+        return (uint8_t *) "EL7031: Short circuit B error";
     }
 
     if(BIT_CHECK(read_val, EL7031_ERROR_NO_CONTROL_POWER_BIT_NUM)){
-        return "EL7031: No control power error";
+        return (uint8_t *) "EL7031: No control power error";
     }
 
     if(BIT_CHECK(read_val, EL7031_ERROR_MISC_ERROR_BIT_NUM)){
-        return "EL7031: Misc error";
+        return (uint8_t *) "EL7031: Misc error";
     }
 
     if(BIT_CHECK(read_val, EL7031_ERROR_CONFIG_ERROR_BIT_NUM)){
-        return "EL7031: Config error";
+        return (uint8_t *) "EL7031: Config error";
     }
 
-    return "EL7031: Unknown error";
+    return (uint8_t *) "EL7031: Unknown error";
 
 
 }
@@ -391,4 +391,5 @@ gberror_t ec_set_setpos_wrd_el7031(const uint16_t drive, const int32_t setpos) {
 
 
 gberror_t ec_print_params_el7031(const uint16_t drive) {
+    return E_SUCCESS;
 }

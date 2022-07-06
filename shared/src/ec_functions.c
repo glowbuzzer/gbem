@@ -409,7 +409,7 @@ dc_clock_type_t check_dc_clock_type(const uint16_t slave) {
  * @param sync_manager
  * @return
  */
-static bool disable_sync_managers(const uint16_t slave, const uint8_t sync_manager) {
+__attribute__((unused)) static bool disable_sync_managers  (const uint16_t slave, const uint8_t sync_manager)  {
     ec_slave[slave].SM[sync_manager].StartAddr = 0;
     return true;
 }

@@ -149,8 +149,8 @@ bool ec_get_follow_error_smc3(const uint16_t drive) {
 uint8_t *ec_get_error_string_sdo_smc3(const uint16_t drive) {
     static uint8_t error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH];
     memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
-    uint32_t drive_error_code = 0;
-    uint8_t num_errors = 0;
+//    uint32_t drive_error_code = 0;
+//    uint8_t num_errors = 0;
 
 //    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], N5_PREDEFINED_ERROR_NUM_OF_ERRORS_SDO_INDEX, N5_PREDEFINED_ERROR_NUM_OF_ERRORS_SDO_SUB_INDEX, &num_errors)) {
 //        sprintf(error_code_string, "Can't read error code from N5 drive, %u", drive);

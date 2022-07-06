@@ -736,7 +736,7 @@ int32_t ec_get_setpos_word_rev_EL7211(const uint16_t drive){
 
 gberror_t ec_set_moo_pdo_rev_EL7211(const uint16_t drive){
 
-
+    return E_SUCCESS;
 }
 
 

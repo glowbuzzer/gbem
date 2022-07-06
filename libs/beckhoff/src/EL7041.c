@@ -107,6 +107,7 @@
 int32_t ec_get_actpos_wrd_el7041(const uint16_t drive) {
 //    return ec_pdo_get_input_int32(map_drive_to_slave[drive], JVL_MIS_ACTPOS_PDO_INDEX);
 
+    return E_SUCCESS;
 }
 
 gberror_t ec_set_ctrl_wrd_el7041(const uint16_t drive, const uint16_t ctrlwrd) {
@@ -123,6 +124,7 @@ gberror_t ec_set_ctrl_wrd_el7041(const uint16_t drive, const uint16_t ctrlwrd) {
 
 uint16_t ec_get_stat_wrd_el7041(const uint16_t drive) {
 //    return ec_pdo_get_input_uint16(map_drive_to_slave[drive], JVL_MIS_STATUSWORD_PDO_INDEX);
+    return E_SUCCESS;
 }
 
 gberror_t ec_set_setpos_wrd_el7041(const uint16_t drive, const int32_t setpos) {

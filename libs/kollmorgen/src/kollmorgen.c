@@ -666,7 +666,6 @@ int32_t ec_get_setpos_word_rev_akd(const uint16_t drive) {
  */
 bool print_akd_sync_params(const uint16_t slave) {
     uint32_t ib32;
-    int os = sizeof(ib32);
 
     ec_sdo_read_uint32(slave, 0x3496, 0x2, &ib32);
     LL_INFO(GBEM_GEN_LOG_EN, "GBEM: AKD drive actual sync time [%d]", ib32);

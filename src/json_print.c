@@ -21,7 +21,7 @@ void json_print( char * json) {
 
     int koff, klen, voff, vlen, vtype, off;
 
-    for (off = 0; (off = mjson_next(json, strlen(json), off, &koff, &klen,
+    for (off = 0; (off = mjson_next(json, (int) strlen(json), off, &koff, &klen,
                                     &voff, &vlen, &vtype)) != 0;) {
         printf("key: %.*s, value: %.*s\n", klen, json + koff, vlen, json + voff);
     }

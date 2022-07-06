@@ -23,16 +23,16 @@
 
 //@formatter:off
 /* SLAVES */
-//                                        Slave 1
-//                                        MAP_AZD_1
-//                                        1 axis stepper
-MAP_NUM_DRIVES_ATTACHED(                  1                                         );
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          ec_pdo_map_azd_ked                        );
-MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            ec_nvram_sdos_azd_ked                     );
-MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         NULL                                      );
-MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          ec_initial_pdo_azd_ked                    );
-MAP_SLAVE_DC_TYPE(                        EC_DC_0                                   );
-MAP_SLAVE_DC_CYCLE(                       4                                         );
+//                                          Slave 1
+//                                          MAP_AZD_1
+//                                          1 axis stepper
+MAP_NUM_DRIVES_ATTACHED(                    1                                       );
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            ec_pdo_map_azd_ked                      );
+MAP_SLAVE_NVRAM_SDO_FUNCTIONS(              ec_nvram_sdos_azd_ked                   );
+MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           NULL                                    );
+MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            ec_initial_pdo_azd_ked                  );
+MAP_SLAVE_DC_TYPE(                          EC_DC_0                                 );
+MAP_SLAVE_DC_CYCLE(                         4                                       );
 
 /* DRIVES */
 MAP_DRIVE_TO_NAME(                          "AZD1"                                  );

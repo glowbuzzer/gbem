@@ -401,4 +401,5 @@ gberror_t ec_set_setpos_wrd_el7037(const uint16_t drive, const int32_t setpos) {
 
 
 gberror_t ec_print_params_el7037(const uint16_t drive) {
+    return E_SUCCESS;
 }
