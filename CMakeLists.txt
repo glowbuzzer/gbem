@@ -50,15 +50,18 @@ endif ()
 
 
 #If a GIT_TAG string is passed in (-D) we will add this to the version.h file. If no tag or empty string set the GIT_TAG to "dev_ver"
-if (NOT DEFINED GIT_TAG)
-    message(STATUS "GB: No Git Tag was passed to cmake. It will default to [dev_ver]")
-    set(GIT_TAG "dev_ver")
-elseif (GIT_TAG STREQUAL "")
-    message(STATUS "GB: Git Tag was empty. It will default to [dev_ver]")
-    set(GIT_TAG "dev_ver")
-else ()
-    message(STATUS "GB: The Git Tag was [${GIT_TAG}]")
-endif ()
+#if (NOT DEFINED GIT_TAG)
+#    message(STATUS "GB: No Git Tag was passed to cmake. It will default to [dev_ver]")
+#    set(GIT_TAG "dev_ver")
+#elseif (GIT_TAG STREQUAL "")
+#    message(STATUS "GB: Git Tag was empty. It will default to [dev_ver]")
+#    set(GIT_TAG "dev_ver")
+#else ()
+#    message(STATUS "GB: The Git Tag was [${GIT_TAG}]")
+#endif ()
+
+file(READ "version.txt" GIT_TAG)
+
 
 configure_file(version/version.h.in version/version.h)
 
