@@ -62,6 +62,7 @@ endif ()
 
 file(READ "version.txt" GIT_TAG)
 
+message(STATUS "GB: GIT_TAG from version.txt is ${GIT_TAG}")
 
 configure_file(version/version.h.in version/version.h)
 

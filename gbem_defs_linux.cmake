@@ -51,4 +51,9 @@ add_compile_definitions(GBEM_GEN_LOG_EN=1)
 #Enables missing function pointer logging for GBEM
 add_compile_definitions(GBEM_MISSING_FUN_LOG_EN=0)
 
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_compile_definitions(DEBUG_BUILD=0)
+else()
+    add_compile_definitions(DEBUG_BUILD=1)
+endif()
 
