@@ -95,6 +95,10 @@ struct shm_msg *shmp;
 int gbc_pid =0;
 
 
+pthread_t thread_ec_rxtx;
+pthread_t thread_ec_check;
+pthread_t thread_ec_emstat;
+
 /* function forward declarations */
 
 static void main_getopt_usage(void);

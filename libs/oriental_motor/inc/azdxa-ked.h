@@ -17,20 +17,20 @@
 #include "map.h"
 #include "gberror.h"
 
-map_SM_assignment_object_t map_SM2_azd2a_ked;
-map_SM_assignment_object_t map_SM3_azd2a_ked;
-map_SM_assignment_object_t map_SM2_azd3a_ked;
-map_SM_assignment_object_t map_SM3_azd3a_ked;
-map_SM_assignment_object_t map_SM2_azd4a_ked;
-map_SM_assignment_object_t map_SM3_azd4a_ked;
+extern map_SM_assignment_object_t map_SM2_azd2a_ked;
+extern map_SM_assignment_object_t map_SM3_azd2a_ked;
+extern map_SM_assignment_object_t map_SM2_azd3a_ked;
+extern map_SM_assignment_object_t map_SM3_azd3a_ked;
+extern map_SM_assignment_object_t map_SM2_azd4a_ked;
+extern map_SM_assignment_object_t map_SM3_azd4a_ked;
 
 
-uint16_t map_SM2_index_of_assigned_PDO_azd2a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
-uint16_t map_SM3_index_of_assigned_PDO_azd2a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
-uint16_t map_SM2_index_of_assigned_PDO_azd3a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
-uint16_t map_SM3_index_of_assigned_PDO_azd3a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
-uint16_t map_SM2_index_of_assigned_PDO_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
-uint16_t map_SM3_index_of_assigned_PDO_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
+extern uint16_t map_SM2_index_of_assigned_PDO_azd2a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
+extern uint16_t map_SM3_index_of_assigned_PDO_azd2a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
+extern uint16_t map_SM2_index_of_assigned_PDO_azd3a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
+extern uint16_t map_SM3_index_of_assigned_PDO_azd3a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
+extern uint16_t map_SM2_index_of_assigned_PDO_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
+extern uint16_t map_SM3_index_of_assigned_PDO_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
 
 /** Slave functions */
 gberror_t ec_pdo_map_azd2a_ked(const uint16_t slave);
@@ -127,7 +127,7 @@ typedef struct {
 } azdxa_ked_error_string_t;
 
 
-const azdxa_ked_error_string_t azdxa_ked_alarm_code[NUM_OF_AZD_ERROR_STRINGS];
+extern const azdxa_ked_error_string_t azdxa_ked_alarm_code[NUM_OF_AZD_ERROR_STRINGS];
 
 /* These define the position of objects in the PDO - number of bytes from start of input or output */
 //need to decide on these

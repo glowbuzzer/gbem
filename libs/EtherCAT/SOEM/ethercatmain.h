@@ -535,7 +535,7 @@ int ecx_receive_processdata(ecx_contextt *context, int timeout);
 int ecx_send_processdata_group(ecx_contextt *context, uint8 group);
 
 
-const char *ec_state_to_string[0x21];
+extern const char *ec_state_to_string[0x21];
 
 #ifdef __cplusplus
 }

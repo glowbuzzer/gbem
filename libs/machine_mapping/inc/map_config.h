@@ -20,7 +20,7 @@
 /* WARNING! Don't enable more than one or bad things happen when linking */
 #define MACHINE_MINI                0
 #define MACHINE_CARTESIAN           0
-#define MACHINE_DRIVE_SPINNERS      0
+#define MACHINE_DRIVE_SPINNERS      1
 #define MACHINE_IGUS                0
 #define MACHINE_STAUBLI             0
 #define MACHINE_SINGLE_AKD          0
@@ -35,7 +35,7 @@
 #define MACHINE_EL2522_TEST         0
 #define MACHINE_EL7037_TEST         0
 #define MACHINE_STARTER_KIT_1       0
-#define MACHINE_STARTER_KIT_2       1
+#define MACHINE_STARTER_KIT_2       0
 #define MACHINE_ASDA_A2_TEST        0
 #define MACHINE_SMC3_TEST           0
 #define MACHINE_AX5101_TEST         0

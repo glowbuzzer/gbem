@@ -35,7 +35,7 @@
 #include "main.h"
 
 bool homing_failed = false;
-char proc_name[100];
+extern char proc_name[100];
 
 //var to enable test mode in ec_rxtx
 bool ec_rxtx_test_mode = false;

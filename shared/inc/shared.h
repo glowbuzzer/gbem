@@ -34,7 +34,9 @@
 #endif
 
 #ifdef GB_APP_LINUX
-pthread_t thread_ec_rxtx, thread_ec_check, thread_ec_emstat;
+extern pthread_t thread_ec_rxtx;
+extern pthread_t thread_ec_check;
+extern pthread_t thread_ec_emstat;
 
 #endif
 

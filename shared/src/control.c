@@ -24,7 +24,7 @@
 #include "plc_core.h"
 #include "iomap_processing.h"
 #include "ecrxtx.h"
-#include "ethercatsetget.h"
+//#include "ethercatsetget.h"
 #include "cia402.h"
 
 #ifndef GB_APP_LINUX

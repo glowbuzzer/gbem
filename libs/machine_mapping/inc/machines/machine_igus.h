@@ -13,7 +13,7 @@
 
 
 #ifndef GBEM_IGUS_H
-#define GBEMO_IGUS_H
+#define GBEM_IGUS_H
 
 
 

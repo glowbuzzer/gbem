@@ -12,7 +12,7 @@
 #include "ethercat.h"
 #include <stdbool.h>
 
-const char * ec_datatype_string[0x0037+2];
+extern const char * ec_datatype_string[0x0037+2];
 
 void ec_pdo_set_output_int8(uint16_t slave_no, uint8_t byte_no, int8_t value);
 void ec_pdo_set_output_uint8(uint16_t slave_no, uint8_t byte_no, uint8_t value);

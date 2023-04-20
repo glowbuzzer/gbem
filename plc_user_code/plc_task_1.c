@@ -18,10 +18,9 @@
 #include "plc_core.h"
 #include "time.h"
 #include "std_defs_and_macros.h"
-#include "stdio.h"
 #include "log.h"
-#include "map.h"
-#include "ethercatsetget.h"
+//#include "map.h"
+//#include "ethercatsetget.h"
 
 
 

@@ -229,7 +229,7 @@ bool map_is_valid_pdo_datatype(ec_datatype_t type);
 bool map_is_valid_plc_datatype(ec_datatype_t type);
 
 
-map_pdo_object_t ctrl_estop_din;
-map_pdo_object_t ctrl_estop_reset_din;
+extern map_pdo_object_t ctrl_estop_din;
+extern map_pdo_object_t ctrl_estop_reset_din;
 
 #endif /* INC_MAP_H_ */
