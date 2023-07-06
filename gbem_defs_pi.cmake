@@ -12,7 +12,7 @@ SET(CTRL_ENABLE_FORCING 0)
 SET(PLC_ENABLE_FORCING 0)
 
 #Enables emstat (writing of status json files periodically
-SET(ENABLE_EMSTAT 1)
+SET(ENABLE_EMSTAT 0)
 
 #defines for which signal to send to GBC */
 SET(SIGNAL_TO_SEND SIGIO)

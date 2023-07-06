@@ -492,14 +492,15 @@ int main(int argc, char *argv[]) {
         UM_ERROR(GBEM_UM_EN, "GBEM: This is a >serious< issue and GBEM is unlike to run successfully");
     }
 
-    grc = plc_init();
-    if (grc != E_SUCCESS) {
-        UM_FATAL(
-                "GBEM: We were unable to initialise the PLC, we can't run with a defective PLC configuration. Error [%s]",
-                gb_strerror(grc));
-    } else {
-        UM_INFO(GBEM_UM_EN, "GBEM: PLC initialised successfully");
-    }
+    //disable plc
+//    grc = plc_init();
+//    if (grc != E_SUCCESS) {
+//        UM_FATAL(
+//                "GBEM: We were unable to initialise the PLC, we can't run with a defective PLC configuration. Error [%s]",
+//                gb_strerror(grc));
+//    } else {
+//        UM_INFO(GBEM_UM_EN, "GBEM: PLC initialised successfully");
+//    }
 
     if ((ecm_status.active_program == ECM_NET_SCAN_PROG) || (ecm_status.active_program == ECM_NET_SCAN_PDO_PROG) || (ecm_status.active_program == ECM_PRINT_CONFIG_PROG) ||
         (ecm_status.active_program == ECM_WRITE_NVRAM_PROG)) {
@@ -653,10 +654,10 @@ int main(int argc, char *argv[]) {
 
     if (ecm_status.active_program != ECM_NET_SCAN_PROG) {
         //join the main to the thread to stop it exiting until the thread has finished - pthread jiggerypokery
-        pthread_join(thread_ec_emstat, NULL);
+//        pthread_join(thread_ec_emstat, NULL);
 
         //if emstat isn't running join ec_rxtx by uncommenting the following line
-//        pthread_join(thread_ec_rxtx, NULL);
+        pthread_join(thread_ec_rxtx, NULL);
     }
     return 0;
 }

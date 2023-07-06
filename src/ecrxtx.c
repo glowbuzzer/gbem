@@ -476,19 +476,22 @@ void ec_rxtx(void *argument) {
                         uint64_t exec_time_usec =
                                 (uint64_t) (((t_exec_end.tv_sec * NSEC_PER_SEC) + t_exec_end.tv_nsec) -
                                             ((t_exec_start.tv_sec * NSEC_PER_SEC) + t_exec_start.tv_nsec)) / 1000;
-//                            printf("exec time usecs:%" PRIu64 "\n", exec_time_usec);
 
+                        if (exec_time_usec > 1000) {
+                            printf("exec time usecs:%" PRIu64 "\n", exec_time_usec);
+                            printf("bus cycle tick:%" PRIu64 "\n", bus_cycle_tick);
+                        }
 //here we warn if the exec time (state machine gubbins plus plc jiggerypokery) is more than half our cycle time
 
                         if ((uint32_t) exec_time_usec >
                             (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_ERROR_PERCENTAGE / 100)) {
                             ec_rxtx_event[CYCLIC_EVENT_OVERRUN].active = true;
-//                            printf("warn: %u\n", (uint32_t)exec_time_usec);
+                            printf("time error: %u\n", (uint32_t)exec_time_usec);
 
                         } else if ((uint32_t) exec_time_usec >
                                    (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_WARNING_PERCENTAGE / 100)) {
                             ec_rxtx_event[CYCLIC_EVENT_TIMEWARN].active = true;
-//                            printf("error: %u\n", (uint32_t) exec_time_usec);
+                            printf("time warn: %u\n", (uint32_t) exec_time_usec);
                         } else {
                             ec_rxtx_event[CYCLIC_EVENT_OVERRUN].active = false;
                             ec_rxtx_event[CYCLIC_EVENT_TIMEWARN].active = false;
@@ -509,12 +512,12 @@ void ec_rxtx(void *argument) {
                 ec_rxtx_event[CYCLIC_EVENT_GBC_NOT_CONNECTED].active = false;
             }
 
-            if (ms_tick > ECRXTX_DELAY_TO_START_MESSAGES_SEC * 1000) {
-                print_cyclic_user_message(NUM_CYCLIC_EVENTS, ec_rxtx_event);
-            }
-            if (print_i_am_alive_message) {
-                UM_INFO(GBEM_UM_EN, "GBEM: Is running. Current bus cycle count is [%llu]", bus_cycle_tick);
-            }
+//            if (ms_tick > ECRXTX_DELAY_TO_START_MESSAGES_SEC * 1000) {
+//                print_cyclic_user_message(NUM_CYCLIC_EVENTS, ec_rxtx_event);
+//            }
+//            if (print_i_am_alive_message) {
+//                UM_INFO(GBEM_UM_EN, "GBEM: Is running. Current bus cycle count is [%llu]", bus_cycle_tick);
+//            }
 
 
         } else {

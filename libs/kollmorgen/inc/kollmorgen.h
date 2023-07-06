@@ -17,10 +17,10 @@
 
 #include "map.h"
 
-map_SM_assignment_object_t map_SM2_akd;
-map_SM_assignment_object_t map_SM3_akd;
-uint16_t map_SM2_index_of_assigned_PDO_akd[ECM_MAX_PDO_MAPPING_ENTRIES];
-uint16_t map_SM3_index_of_assigned_PDO_akd[ECM_MAX_PDO_MAPPING_ENTRIES];
+//map_SM_assignment_object_t map_SM2_akd;
+//map_SM_assignment_object_t map_SM3_akd;
+//uint16_t map_SM2_index_of_assigned_PDO_akd[ECM_MAX_PDO_MAPPING_ENTRIES];
+//uint16_t map_SM3_index_of_assigned_PDO_akd[ECM_MAX_PDO_MAPPING_ENTRIES];
 
 
 bool ec_get_remote_akd(uint16_t drive);
