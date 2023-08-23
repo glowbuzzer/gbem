@@ -1420,7 +1420,11 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
 #if DISABLE_HEARTBEAT_CHECKING == 1
     event_data.heartbeat_lost = false;
 #endif
+
+    //todo crit
     event_data.any_drive_has_alarm = alarm_on_any_drive;
+    event_data.any_drive_has_alarm = false;
+
     event_data.estop = estop;
 
 #if DISABLE_ESTOP_CHECKING == 1
@@ -1467,6 +1471,7 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
     } else {
         event_data.remote_ok = false;
     }
+
 
     /* This prints out the drive status and control words */
 //    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
@@ -1572,6 +1577,8 @@ static void ctrl_copy_actpos(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_actpos_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_actual_position[i] = map_drive_get_actpos_wrd_function_ptr[i](i);
+
+
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                      "GBEM: Missing function pointer for map_drive_get_actpos_wrd on drive [%u]", i);

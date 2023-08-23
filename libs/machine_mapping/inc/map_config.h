@@ -24,7 +24,7 @@
 #define MACHINE_IGUS                0
 #define MACHINE_STAUBLI             0
 #define MACHINE_SINGLE_AKD          0
-#define MACHINE_CONVEYORS           1
+#define MACHINE_CONVEYORS           0
 #define MACHINE_EL7211_TEST         0
 #define MACHINE_TEST                0
 #define MACHINE_JVL_MIS_TEST        0
@@ -39,9 +39,10 @@
 #define MACHINE_ASDA_A2_TEST        0
 #define MACHINE_SMC3_TEST           0
 #define MACHINE_AX5101_TEST         0
+#define MACHINE_AW_J17              1
 
 //If you add a new machine you have to increment this count to match the number above
-#define MAP_NUM_MACHINES            22
+#define MAP_NUM_MACHINES            23
 
 extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
@@ -132,6 +133,11 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 #include "machine_AX5101_test.h"
 #endif
 
+#if MACHINE_AW_J17 == 1
+#include "machine_aw_j17.h"
+#endif
+
+
 /* MACHINE_NEW - add new MAP_ enum here */
 typedef enum {
     MAP_MACHINE_UNKNOWN,
@@ -156,6 +162,7 @@ typedef enum {
     MAP_MACHINE_ASDA_A2_TEST,
     MAP_MACHINE_SMC3_TEST,
     MAP_MACHINE_AX5101_TEST,
+    MAP_MACHINE_AW_J17
     } map_machine_type_t;
 
 #define MAX_DRIVE_NAME_LENGTH                   30
