@@ -39,9 +39,9 @@
 #define MACHINE_ASDA_A2_TEST        0
 #define MACHINE_SMC3_TEST           0
 #define MACHINE_AX5101_TEST         0
-#define MACHINE_AW_J17              0
+#define MACHINE_AW_J17              1
 #define MACHINE_AW_ROBOT_M          0
-#define MACHINE_VIRTUAL             1
+#define MACHINE_VIRTUAL             0
 
 
 //If you add a new machine you have to increment this count to match the number above

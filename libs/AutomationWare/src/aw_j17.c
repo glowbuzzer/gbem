@@ -39,30 +39,31 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
             //Max position limit	0x607D:2	DINT	32			2147483647	Inc	readwrite	Receive PDO (Outputs)
 
 
-//    if (!ec_sdo_write_int32(slave, AW_J17_MAX_POSITION_LIMIT_SDO_INDEX, AW_J17_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-//                            2147483647)) {
-//        return E_SDO_WRITE_FAILURE;
-//    }
-//
-//    if (!ec_sdo_write_int32(slave, AW_J17_MIN_POSITION_LIMIT_SDO_INDEX, AW_J17_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-//                            -2147483647)) {
-//        return E_SDO_WRITE_FAILURE;
-//    }
+            if (nolimits) {
+                if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
+                                        AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
+                                        2147483647)) {
+                    return E_SDO_WRITE_FAILURE;
+                }
 
+                if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
+                                        AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
+                                        -2147483647)) {
+                    return E_SDO_WRITE_FAILURE;
+                }
+            } else {
+                if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
+                                        AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
+                                        map_drive_pos_limit[i])) {
+                    return E_SDO_WRITE_FAILURE;
+                }
 
-            if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
-                                    AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                    map_drive_pos_limit[i])) {
-                return E_SDO_WRITE_FAILURE;
+                if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
+                                        AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
+                                        map_drive_neg_limit[i])) {
+                    return E_SDO_WRITE_FAILURE;
+                }
             }
-
-            if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
-                                    AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                    map_drive_neg_limit[i])) {
-                return E_SDO_WRITE_FAILURE;
-            }
-
-
             //Polarity	0x607E:0	USINT	8
 
             uint8_t polarity = 0;

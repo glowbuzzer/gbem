@@ -20,7 +20,6 @@
 #include "map_config.h"
 
 
-
 /*
  *
  * Comments highlight where things to be:
@@ -30,6 +29,8 @@
  *
  */
 
+
+extern bool nolimits;
 
 /** These macros build the function pointers for slave and drive startup and operational functions */
 

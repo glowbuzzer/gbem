@@ -63,6 +63,8 @@ char full_path_for_config_json[200];
 char eth_interface1[SIZE_OF_IF_NAME] = {0};
 char eth_interface2[SIZE_OF_IF_NAME] = {0};
 
+//global var indicating if we are to run without limits
+bool nolimits = false;
 
 //todo-crit put in ec
 /** global variable to signal between tasks when ec_check finds and error */
@@ -156,6 +158,7 @@ static void main_getopt_usage(void) {
     printf("\t-i | --if: interface to use - this is a NIC interface, e.g. eth0 (mandatory)\n");
     printf("\t-p | --process: the process name to send signals to (this is optional, default is: [%s])\n",
            GBC_PROCESS_NAME);
+    printf("\t-x | --nolimits: run GBEM without any drive limits. WARNING take care with this option!   \n");
     printf("\t-v | --version: show the version of GBEM\n");
     printf("\t-h | --help: GBEM usage information\n");
     printf("\nExample #1: GBEM -n -i eth0 -pGBC-linux = run netscan on eth0\n");
@@ -383,11 +386,12 @@ int main(int argc, char *argv[]) {
             {"confcheck",      no_argument,       NULL, 'd'},
             {"if",             required_argument, NULL, 'i'},
             {"process",        required_argument, NULL, 'p'},
+            {"nolimits",       no_argument,       NULL, 'x'},
             {"version",         no_argument,       NULL, 'v'},
             {0, 0, 0,                                   0}
     };
 
-    while (((ch = getopt_long(argc, argv, "hnmcwv:di:p:", options, &index)) != -1) && (ch != 255)) {
+    while (((ch = getopt_long(argc, argv, "hnmcwxv:di:p:", options, &index)) != -1) && (ch != 255)) {
         switch (ch) {
             case 'h':
                 main_getopt_usage();
@@ -438,6 +442,11 @@ int main(int argc, char *argv[]) {
                 UM_INFO(GBEM_UM_EN, "GBEM: Version is [%s]", GIT_TAG);
                 exit(EXIT_SUCCESS);
                 break;
+                case 'x':
+                    UM_WARN(GBEM_UM_EN, "GBEM: GBEM has been run without drive limits enabled!");
+                    nolimits=true;
+                    break;
+
             case '?':
                 main_getopt_usage();
                 return EXIT_FAILURE;
