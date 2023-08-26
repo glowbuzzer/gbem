@@ -14,6 +14,9 @@
 #define GBEM_AUTOMATIONWARE_H
 
 #define AW_MOTOR_MAN 0x00022d2
-#include "aw-j17.h"
+
+#include "aw_j_series.h"
+#include "aw_j17.h"
+
 
 #endif //GBEM_AUTOMATIONWARE_H

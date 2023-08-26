@@ -410,7 +410,7 @@ dc_clock_type_t check_dc_clock_type(const uint16_t slave) {
  * @param sync_manager
  * @return
  */
-__attribute__((unused)) static bool disable_sync_managers  (const uint16_t slave, const uint8_t sync_manager)  {
+__attribute__((unused)) static bool disable_sync_managers(const uint16_t slave, const uint8_t sync_manager) {
     ec_slave[slave].SM[sync_manager].StartAddr = 0;
     return true;
 }
@@ -443,8 +443,8 @@ gberror_t print_1c32(const uint16_t slave) {
             UM_INFO(GBEM_GEN_LOG_EN, "GBEM: Sync mode read from slave [%d] (0x1c32:1) is [%s]", slave,
                     ec_sync_mode_strings[uib16]);
         }
-    }else{
-        read_error=true;
+    } else {
+        read_error = true;
     }
 
 
@@ -452,9 +452,8 @@ gberror_t print_1c32(const uint16_t slave) {
 
     if (ec_sdo_read_uint32(slave, 0x1c32, 0x2, &uib32)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Cycle time read from slave(%d) (0x1c32:2) is: [%d]", slave, uib32);
-    }
-    else{
-        read_error=true;
+    } else {
+        read_error = true;
     }
 
 
@@ -462,22 +461,20 @@ gberror_t print_1c32(const uint16_t slave) {
 // read 1C32:03 unit32 for shift time
     if (ec_sdo_read_uint32(slave, 0x1c32, 0x3, &uib32)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Shift time read from slave [%d] (0x1c32:3) is [%d]", slave, uib32);
-    }
-    else{
-        read_error=true;
+    } else {
+        read_error = true;
     }
 
 
     // read 1C32:06 unit32 for calc and copy time
     if (ec_sdo_read_uint32(slave, 0x1c32, 0x6, &uib32)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Calc and copy time read from slave [%d] (0x1c32:6) is [%d]", slave, uib32);
-    }
-    else{
-        read_error=true;
+    } else {
+        read_error = true;
     }
 
 
-    if (read_error){
+    if (read_error) {
         return E_REGISTER_READ_FAILURE;
     }
 
@@ -521,6 +518,10 @@ bool ec_step_1_init(void) {
  * @return
  */
 bool ec_step_2_config(void) {
+//added fidding with AW-Joints reboot mailbox issue
+    ec_slave[0].state = EC_STATE_BOOT;
+    ec_writestate(0);
+    usleep(1000000);
 
     if (ec_config_init(FALSE)) {
 
@@ -531,11 +532,11 @@ bool ec_step_2_config(void) {
 
         UM_INFO(GBEM_UM_EN, "GBEM: We found [%d] slaves on the EtherCAT network", ec_slavecount);
 
-        if (ec_slavecount!=MAP_NUM_SLAVES){
-            UM_FATAL("GBEM: The number of slaves found on the EtherCAT network [%d] does not match the number configured in the machine map (MAP_NUM_SLAVES) [%d]", ec_slavecount, MAP_NUM_SLAVES);
+        if (ec_slavecount != MAP_NUM_SLAVES) {
+            UM_FATAL(
+                    "GBEM: The number of slaves found on the EtherCAT network [%d] does not match the number configured in the machine map (MAP_NUM_SLAVES) [%d]",
+                    ec_slavecount, MAP_NUM_SLAVES);
         }
-
-
 
 
         /* Here we loop over all slaves in the map and assign a function (custom_slave_config) to their transition from PreOp to SafeOp */
@@ -547,6 +548,7 @@ bool ec_step_2_config(void) {
  */
         for (int i = 1; i <= MAP_NUM_SLAVES; i++) {
             ec_slave[i].PO2SOconfig = custom_slave_config;
+
         }
 /*copy the contents of the ec_slave struct to shared mem (the ecm_status struct is used by the UI and needs basic info e.g. slave names */
         copy_ec_slave_to_ecm_status();
@@ -661,7 +663,8 @@ bool ec_step_6_safeop(void) {
         ec_readstate();
         for (int i = 1; i <= ec_slavecount; i++) {
             if (ec_slave[i].state != EC_STATE_SAFE_OP) {
-                UM_INFO(GBEM_UM_EN, "GBEM: slave not in safe op is Slave [%d] State [%s] StatusCode [%4x : %s]", i, ec_state_to_string[ec_slave[i].state], ec_slave[i].ALstatuscode,
+                UM_INFO(GBEM_UM_EN, "GBEM: slave not in safe op is Slave [%d] State [%s] StatusCode [%4x : %s]", i,
+                        ec_state_to_string[ec_slave[i].state], ec_slave[i].ALstatuscode,
                         ec_ALstatuscode2string(ec_slave[i].ALstatuscode));
             }
         }
@@ -684,7 +687,8 @@ bool ec_step_7_wkc_check(void) {
 
     int temp_wkc = ec_receive_processdata(EC_TIMEOUTRET);
     expectedWKC = (ec_group[0].outputsWKC * 2) + ec_group[0].inputsWKC;
-    UM_INFO(GBEM_UM_EN, "GBEM: We have a wkc of [%d], and an expectedWKC of [%d] (these are the EtherCAT working counters",
+    UM_INFO(GBEM_UM_EN,
+            "GBEM: We have a wkc of [%d], and an expectedWKC of [%d] (these are the EtherCAT working counters",
             temp_wkc,
             expectedWKC);
 
@@ -711,9 +715,9 @@ bool ec_step_8_slaves_match(void) {
     /* now we want to make sure the slaves are the ones we have hard coded in our map and occur in the right order */
     gberror_t grc = E_GENERAL_FAILURE;
 
-    grc=ec_slaves_match();
+    grc = ec_slaves_match();
 
-    if (grc==E_SUCCESS) {
+    if (grc == E_SUCCESS) {
         UM_INFO(GBEM_UM_EN, "GBEM: Boot step 8 >success< (check all slaves match the configuration)");
         return true;
     } else {
@@ -827,7 +831,8 @@ void ECBoot(void *argument) {
             sleep(1);
             error_ack_count++;
             if (error_ack_count > 5) {
-                UM_ERROR(GBEM_UM_EN, "GBEM: Slaves were in a error state and we tried acknowledging the errors but the remained in the error state");
+                UM_ERROR(GBEM_UM_EN,
+                         "GBEM: Slaves were in a error state and we tried acknowledging the errors but the remained in the error state");
                 break;
             }
         }
@@ -922,7 +927,8 @@ void ECBoot(void *argument) {
             if (gbrc != E_SUCCESS) {
                 UM_WARN(GBEM_UM_EN, "GBEM: Could not print 1c32 information for slave [%u]. Error [%s]", i,
                         gb_strerror(gbrc));
-                UM_WARN(GBEM_UM_EN, "GBEM: If you have debug logging enabled, you will see some failed SDO read messages in the proceeding console lines");
+                UM_WARN(GBEM_UM_EN,
+                        "GBEM: If you have debug logging enabled, you will see some failed SDO read messages in the proceeding console lines");
             }
         }
     }
@@ -1013,9 +1019,6 @@ void ECBoot(void *argument) {
 //    sleep(10000);
 
 }
-
-
-
 
 
 /**

@@ -101,7 +101,8 @@ static uint32_t __attribute__((unused)) fieldbus_roundtrip(void) {
  */
 static void __attribute__((unused)) print_dc_timestamps(void) {
 
-    LL_INFO(GBEM_GEN_LOG_EN, "GBEM: Process data cycle %12lld , Wck %3d, DCtime %12lld, dt %12lld\n", ecm_status.cycle_count,
+    LL_INFO(GBEM_GEN_LOG_EN, "GBEM: Process data cycle %12lld , Wck %3d, DCtime %12lld, dt %12lld\n",
+            ecm_status.cycle_count,
             wkc,
             ec_DCtime, gl_delta);
 }
@@ -190,7 +191,11 @@ void ec_rxtx(void *argument) {
 #define NUM_CYCLIC_EVENTS 5
 
     enum {
-        CYCLIC_EVENT_OVERRUN, CYCLIC_EVENT_TIMEWARN, CYCLIC_EVENT_SEND_FAIL, CYCLIC_EVENT_NOT_OPMODE, CYCLIC_EVENT_GBC_NOT_CONNECTED
+        CYCLIC_EVENT_OVERRUN,
+        CYCLIC_EVENT_TIMEWARN,
+        CYCLIC_EVENT_SEND_FAIL,
+        CYCLIC_EVENT_NOT_OPMODE,
+        CYCLIC_EVENT_GBC_NOT_CONNECTED
     };
 
     //@formatter:off
@@ -278,19 +283,20 @@ void ec_rxtx(void *argument) {
         bool check_gbc_flag = false;
         bool gbem_i_am_alive_flag = false;
 
-        for (int i = 0; i < MAP_CYCLE_TIME; i++) {
-            ms_tick++;
-
-            if ((ms_tick) % ECRXTX_REMINDER_MESSAGE_INTERVAL_MS == 0) {
-                reminder_message_flag = true;
-            }
-            if ((ms_tick) % ECRXTX_GBC_CONNECTION_CHECK_INTERVAL_MS == 0) {
-                check_gbc_flag = true;
-            }
-            if ((ms_tick) % ECRXTX_GBEM_I_AM_ALIVE_MESSAGE_INTERVAL_MS == 0) {
-                gbem_i_am_alive_flag = true;
-            }
-        }
+        //exectime
+//        for (int i = 0; i < MAP_CYCLE_TIME; i++) {
+//            ms_tick++;
+//
+//            if ((ms_tick) % ECRXTX_REMINDER_MESSAGE_INTERVAL_MS == 0) {
+//                reminder_message_flag = true;
+//            }
+//            if ((ms_tick) % ECRXTX_GBC_CONNECTION_CHECK_INTERVAL_MS == 0) {
+//                check_gbc_flag = true;
+//            }
+//            if ((ms_tick) % ECRXTX_GBEM_I_AM_ALIVE_MESSAGE_INTERVAL_MS == 0) {
+//                gbem_i_am_alive_flag = true;
+//            }
+//        }
 
         print_i_am_alive_message = gbem_i_am_alive_flag ? true : false;
         print_repeater_message = reminder_message_flag ? true : false;
@@ -329,11 +335,14 @@ void ec_rxtx(void *argument) {
 
         // if gbc is not connected AND we are not in test mode AND it is time to try an connect again to GBC
         if (!ecm_status.gbc_connected && !ec_rxtx_test_mode && time_to_check_gbc && ec_rxtx_mode == EC_RXTX_MODE_OP) {
+
+            //exectime
+
             grc = establish_shared_mem_and_signal_con(shmp, proc_name, false, &gbc_pid, 1);
             if (grc == E_SUCCESS) {
                 UM_INFO(GBEM_UM_EN, "GBEM: Connection to shared memory and GBC process >successfully< established ");
-                memset(shmp->sm_buf_in, 0, sizeof (uint8_t) * SHM_BUF_SIZE);
-                memset(shmp->sm_buf_out, 0, sizeof (uint8_t) * SHM_BUF_SIZE);
+                memset(shmp->sm_buf_in, 0, sizeof(uint8_t) * SHM_BUF_SIZE);
+                memset(shmp->sm_buf_out, 0, sizeof(uint8_t) * SHM_BUF_SIZE);
                 ecm_status.gbc_connected = true;
             } else {
                 UM_INFO(GBEM_UM_EN, "GBEM: Connection to shared memory and/or GBC process >failed<");
@@ -387,10 +396,13 @@ void ec_rxtx(void *argument) {
         ecm_status.cycle_count++;
 
         //this is a weak function used to add test code to the cyclic process
-        cyclicTest();
+
+        //exectime
+        //        cyclicTest();
 
         // ec_rxtx_dorun is set after "Boot step 6 >success< (transition all slaves to SAFE OP state"
-        if ((ec_rxtx_mode == EC_RXTX_MODE_DORUN) || (ec_rxtx_mode == EC_RXTX_MODE_OP) || (ec_rxtx_mode == EC_RXTX_MODE_HOME)) {
+        if ((ec_rxtx_mode == EC_RXTX_MODE_DORUN) || (ec_rxtx_mode == EC_RXTX_MODE_OP) ||
+            (ec_rxtx_mode == EC_RXTX_MODE_HOME)) {
             //wkc global is set here - it is checked in ec_check
             wkc = ec_receive_processdata(EC_TIMEOUTRET);
 
@@ -428,6 +440,7 @@ void ec_rxtx(void *argument) {
                         ctrl_main(m, first_run);
                     }
                 }
+
                 //this fills out ec_slave struct with the current state
                 ec_readstate();
             } else if (ec_rxtx_mode == EC_RXTX_MODE_HOME) {
@@ -444,7 +457,7 @@ void ec_rxtx(void *argument) {
                 //not in opmode or home
             }
 
-            plc_task_exec();
+//            plc_task_exec();
             clock_gettime(CLOCK_MONOTONIC, &t_exec_end);
 
             rc = ec_send_processdata();
@@ -486,7 +499,7 @@ void ec_rxtx(void *argument) {
                         if ((uint32_t) exec_time_usec >
                             (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_ERROR_PERCENTAGE / 100)) {
                             ec_rxtx_event[CYCLIC_EVENT_OVERRUN].active = true;
-                            printf("time error: %u\n", (uint32_t)exec_time_usec);
+                            printf("time error: %u\n", (uint32_t) exec_time_usec);
 
                         } else if ((uint32_t) exec_time_usec >
                                    (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_WARNING_PERCENTAGE / 100)) {
@@ -511,7 +524,7 @@ void ec_rxtx(void *argument) {
             } else {
                 ec_rxtx_event[CYCLIC_EVENT_GBC_NOT_CONNECTED].active = false;
             }
-
+//exectime
 //            if (ms_tick > ECRXTX_DELAY_TO_START_MESSAGES_SEC * 1000) {
 //                print_cyclic_user_message(NUM_CYCLIC_EVENTS, ec_rxtx_event);
 //            }

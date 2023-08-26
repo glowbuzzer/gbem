@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
- * @file           :  machine_aw_j17.c
- * @brief          :  machine map for aw j17 single joint with EK1100 + El1008 + EL2008
+ * @file           :  machine_aw_robot_m.c
+ * @brief          :  machine map for aw medium sized robot with EK1100 + El1008 + EL2008
  ******************************************************************************
  * @attention
  *
@@ -13,7 +13,7 @@
 
 #include "map.h"
 //#ifdef must surround all the machine specific code so that when this machine is not defined it is not compiled
-#if MACHINE_AW_J17 == 1
+#if MACHINE_AW_ROBOT_M == 1
 
 #include "automationware.h"
 #include "beckhoff.h"
@@ -42,18 +42,16 @@ MAP_SLAVE_DC_CYCLE(                       0,                  0,              0,
 MAP_DRIVE_TO_NAME(                          "AW_J17"                            );
 MAP_DRIVE_TO_SLAVE(                         MAP_AW_J17_CTRL,                    );
 MAP_DRIVE_TO_SUBDRIVE(                      1,                                  );
-MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_aw_j_series,         );
+MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_aw_j_series,              );
 MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                               );
 MAP_DRIVE_GET_REMOTE_FUNCTIONS(             ec_get_remote_aw_j_series,          );
-MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_aw_j_series,    );
+MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_aw_j_series,         );
 MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   NULL,                               );
-MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   ec_get_error_string_sdo_aw_j_series );
-MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_aw_j_series,        );
-MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_aw_j_series,        );
-MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_aw_j_series,      );
-MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         ec_get_actvel_wrd_aw_j_series,      );
-MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(         ec_get_acttorq_wrd_aw_j_series,    );
-MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_aw_j_series,      );
+MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   ec_get_error_string_sdo_aw_j_series      );
+MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_aw_j_series,             );
+MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_aw_j_series,             );
+MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_aw_j_series,           );
+MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_aw_j_series,           );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                               );
 MAP_DRIVE_RUN_HOMING(                       0,                                  );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               );

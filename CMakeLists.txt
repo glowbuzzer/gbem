@@ -86,7 +86,7 @@ message(STATUS "GB: CURRENT_SOURCE_DIR [${CMAKE_CURRENT_SOURCE_DIR} ]")
 
 add_executable(GBEM ${SOURCES})
 
-target_link_libraries(GBEM EtherCAT Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen automationware delta JVL omron oriental_motor unity gberror gbem_config etg m rt)
+target_link_libraries(GBEM EtherCAT Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen automationware virtual_drive delta JVL omron oriental_motor unity gberror gbem_config etg m rt)
 target_include_directories(GBEM PUBLIC "inc" "shared/inc" "plc_user_code" ${PROJECT_BINARY_DIR}/version ${gbem_config_BINARY_DIR})
 
 add_executable(GBEM_testStateMachine shared/src/control.c shared/src/ec_functions.c src/ecrxtx.c src/ethercatnetscan.c src/status.c shared/src/json-maker.c shared/src/float_int_conv.c test/src/test.c test/src/testStateMachine.c shared/src/plc_core.c plc_user_code/plc_init.c src/cyclic_message.c plc_user_code/plc_task_1.c shared/src/iomap_processing.c)
@@ -102,7 +102,7 @@ target_link_libraries(GBEM_testEthercat mjson EtherCAT gbem_config machine_mappi
 target_include_directories(GBEM_testEthercat PUBLIC "inc" "shared/inc" "test/inc" "plc_user_code")
 
 add_executable(GBEM_testIo shared/src/control.c shared/src/ec_functions.c src/ecrxtx.c shared/src/float_int_conv.c shared/src/json-maker.c src/status.c src/ethercatnetscan.c test/src/test.c shared/src/plc_core.c plc_user_code/plc_init.c test/src/testIo.c src/cyclic_message.c plc_user_code/plc_task_1.c shared/src/iomap_processing.c)
-target_link_libraries(GBEM_testIo mjson EtherCAT gbem_config  Logging common-misc cia state_machine dpm minini machine_mapping linux-shm pid sleep beckhoff kollmorgen oriental_motor unity gberror m)
+target_link_libraries(GBEM_testIo mjson EtherCAT gbem_config Logging common-misc cia state_machine dpm minini machine_mapping linux-shm pid sleep beckhoff kollmorgen oriental_motor unity gberror m)
 target_include_directories(GBEM_testIo PUBLIC "inc" "shared/inc" "test/inc" "plc_user_code")
 
 add_executable(GBEM_testPLC shared/src/plc_core.c shared/src/plc_stdlib.c test/src/testPLC.c shared/src/float_int_conv.c plc_user_code/plc_init.c plc_user_code/plc_task_1.c test/src/test.c shared/src/control.c src/cyclic_message.c src/ecrxtx.c shared/src/json-maker.c shared/src/ec_functions.c src/status.c src/ethercatnetscan.c shared/src/iomap_processing.c)
@@ -177,6 +177,7 @@ add_subdirectory("libs/cannon_automata")
 add_subdirectory("libs/invertek")
 add_subdirectory("libs/delta")
 add_subdirectory("libs/AutomationWare")
+add_subdirectory("libs/VirtualDrive")
 
 #this has to to be placed after the definitions
 #    add_subdirectory("apps/GBEM")

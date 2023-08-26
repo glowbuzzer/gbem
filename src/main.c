@@ -315,6 +315,17 @@ int main(int argc, char *argv[]) {
     map_machine_type = MAP_MACHINE_AX5101_TEST;
 #endif
 
+#if MACHINE_AW_J17 == 1
+    map_machine_type = MAP_MACHINE_AW_J17;
+#endif
+#if MACHINE_AW_ROBOT_M == 1
+    map_machine_type = MAP_MACHINE_AW_ROBOT_M;
+#endif
+#if MACHINE_VIRTUAL == 1
+    map_machine_type = MAP_MACHINE_VIRTUAL;
+#endif
+
+
 
     if (map_machine_type < MAP_NUM_MACHINES) {
         UM_INFO(GBEM_UM_EN, "GBEM: This code has been compiled for [%s]", map_machine_type_strings[map_machine_type]);

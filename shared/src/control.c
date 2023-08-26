@@ -109,11 +109,19 @@ uint32_t ctrl_state_change_timeout = CTRL_DRIVE_CHANGE_STATE_TIMEOUT;
 
 /* functions to copy between EC and DPM */
 static void ctrl_copy_actpos(void);
+
+static void ctrl_copy_actvel(void);
+
+static void ctrl_copy_acttorq(void);
+
+
 static void ctrl_copy_setpos(void);
+
 static void ctrl_copy_drive_statuswords(void);
 
 /* functions to force gbc and pdos */
 void ctrl_process_forces_in(void);
+
 void ctrl_process_forces_out(void);
 
 static void ctrl_check_for_big_pos_jump(uint16_t drive, int32_t current_position);
@@ -846,7 +854,8 @@ bool cia_is_fault_condition(struct event *event) {
         have_fault = true;
     }
     if (((event_data_t *) event->data)->machine_move_not_op_enabled_fault_req == true) {
-        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > machine word is requesting an error because a move has been attempted and we are not in operation enabled");
+        LL_TRACE(GBEM_SM_LOG_EN,
+                 "sm: Fault > machine word is requesting an error because a move has been attempted and we are not in operation enabled");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_MOVE_NOT_OP_EN_BIT_NUM);
         control_event[CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST].active = true;
         have_fault = true;
@@ -924,7 +933,6 @@ bool cia_is_fault_condition(struct event *event) {
         control_event[CONTROL_EVENT_HOMING_ERROR].active = true;
         have_fault = true;
     }
-
 
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
@@ -1358,6 +1366,14 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     DPM_IN_PROTECT_START
     //copy actpos from EC_IN to DPM_IN (write) (do this every cycle irrespective of state)
     ctrl_copy_actpos();
+
+#if CTRL_COPY_ACTVEL == 1
+    ctrl_copy_actvel();
+#endif
+#if CTRL_COPY_ACTTORQ == 1
+    ctrl_copy_acttorq();
+#endif
+
     //copy statuswords from EC_IN to DPM_IN (write)
     ctrl_copy_drive_statuswords();
     //copy digital ins from EC_IN to DPM_IN (write)
@@ -1396,7 +1412,7 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
         }
     }
 #endif
-#if  USE_ESTOP_RESET == 0  && DISABLE_ESTOP_CHECKING != 1
+#if  USE_ESTOP_RESET == 0 && DISABLE_ESTOP_CHECKING != 1
 
     if (ctrl_estop_din_reset.slave_num < 1){
         UM_FATAL("GBEM: no ctrl_estop_din_reset is defined!");
@@ -1441,7 +1457,8 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
     if (grc != E_SUCCESS) {
         UM_ERROR(GBEM_UM_EN, "GBEM: error checking drive for internal limit [%s]", gb_strerror(grc));
     }
-    event_data.machine_move_not_op_enabled_fault_req = BIT_CHECK(dpm_out->machine_word, CTRL_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM);
+    event_data.machine_move_not_op_enabled_fault_req = BIT_CHECK(dpm_out->machine_word,
+                                                                 CTRL_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM);
     event_data.machine_request_error = BIT_CHECK(dpm_out->machine_word, CTRL_MACHINE_CTRL_WRD_REQUEST_FAULT_BIT_NUM);
     event_data.ec_check_error = (ecm_status.ec_check_found_error == true) ? true : false;
     event_data.slave_reported_error = EcatError;
@@ -1529,9 +1546,9 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
                     error_code_string = map_drive_get_error_string_sdo_function_ptr[i](i);
 
                     //                printf("drive err msg: %s\n", ecm_status.drives[i].error_message);
-                    memset(&ecm_status.drives[i].error_message[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH );
+                    memset(&ecm_status.drives[i].error_message[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
                     strncpy(&ecm_status.drives[i].error_message[0], error_code_string,
-                            (sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH)-1);
+                            (sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH) - 1);
                     memcpy(&ecm_status.drives[i].error_message[0], error_code_string,
                            strlen((char *) error_code_string) + 1);
                 } else {
@@ -1546,8 +1563,8 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
     ctrl_copy_setpos();
 
 #if CTRL_ENABLE_FORCING == 1
-ctrl_process_forces_out();
-    #endif
+    ctrl_process_forces_out();
+#endif
 
     if (current_state == CIA_OPERATION_ENABLED) {
         ctrl_process_iomap_out(false);
@@ -1559,9 +1576,9 @@ ctrl_process_forces_out();
 
 
 
-
+//exectime
     //output user messages for any faults that have occurred
-    print_cyclic_user_message(NUM_CONTROL_EVENTS, control_event);
+//    print_cyclic_user_message(NUM_CONTROL_EVENTS, control_event);
 
     DPM_OUT_PROTECT_END
 
@@ -1585,6 +1602,41 @@ static void ctrl_copy_actpos(void) {
         }
     }
 }
+
+/**
+ * @brief actvel to be sent to GBC via DPM in is set from actpos received over EC from the drive (and update ecm_status for gui)
+ * @param slave_ptrs
+ * @param inout_ptrs
+ */
+static void ctrl_copy_actvel(void) {
+    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+        if (*map_drive_get_actvel_wrd_function_ptr[i] != NULL) {
+            dpm_in->joint_actual_velocity[i] = map_drive_get_actvel_wrd_function_ptr[i](i);
+
+        } else {
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                     "GBEM: Missing function pointer for map_drive_get_actvel_wrd on drive [%u]", i);
+        }
+    }
+}
+
+/**
+ * @brief acttorq to be sent to GBC via DPM in is set from acttorq received over EC from the drive (and update ecm_status for gui)
+ * @param slave_ptrs
+ * @param inout_ptrs
+ */
+static void ctrl_copy_acttorq(void) {
+    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+        if (*map_drive_get_acttorq_wrd_function_ptr[i] != NULL) {
+            dpm_in->joint_actual_torque[i] = map_drive_get_acttorq_wrd_function_ptr[i](i);
+
+        } else {
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                     "GBEM: Missing function pointer for map_drive_get_acttorq_wrd on drive [%u]", i);
+        }
+    }
+}
+
 
 #define CTRL_POS_JUMP_THRESHOLD 25000
 
@@ -1712,15 +1764,19 @@ void ctrl_process_iomap_in(void) {
              map_iomap[i].plc.inout == MAP_UNDEFINED)) {
             switch (map_iomap[i].gbc.datatype) {
                 case ECT_BOOLEAN:
-                    iomap_set_gbc_digital_in_from_pdo(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,  map_iomap[i].gbc.ionum);
+                    iomap_set_gbc_digital_in_from_pdo(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
+                                                      map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
+                                                      map_iomap[i].gbc.ionum);
                     break;
                 case ECT_INTEGER32:
                     iomap_set_gbc_in_int32_from_pdo(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
-                                                    map_iomap[i].pdo.byte_num, map_iomap[i].gbc.ionum, (float) map_iomap[i].pdo.max_val);
+                                                    map_iomap[i].pdo.byte_num, map_iomap[i].gbc.ionum,
+                                                    (float) map_iomap[i].pdo.max_val);
                     break;
                 case ECT_UNSIGNED32:
                     iomap_set_gbc_uint32_in_from_pdo(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
-                                                     map_iomap[i].pdo.byte_num, map_iomap[i].gbc.ionum, (float) map_iomap[i].pdo.max_val);
+                                                     map_iomap[i].pdo.byte_num, map_iomap[i].gbc.ionum,
+                                                     (float) map_iomap[i].pdo.max_val);
                     break;
                 case ECT_REAL32:
                     iomap_set_gbc_float_in_from_pdo(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
@@ -1763,22 +1819,26 @@ void ctrl_process_iomap_out(const bool zero) {
                 //we have a gbc out
                 case ECT_BOOLEAN:
                     if (!zero) {
-                        iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
+                        iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
+                                               map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
                                                BIT_CHECK(dpm_out->digital, map_iomap[i].gbc.ionum));
                     } else {
-                        iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
+                        iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
+                                               map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
                                                false);
                     }
                     break;
                 case ECT_INTEGER32:
                     iomap_set_pdo_out_int32(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
                                             map_iomap[i].pdo.byte_num,
-                                            dpm_out->integer32[map_iomap[i].gbc.ionum], (float) map_iomap[i].pdo.max_val);
+                                            dpm_out->integer32[map_iomap[i].gbc.ionum],
+                                            (float) map_iomap[i].pdo.max_val);
                     break;
                 case ECT_UNSIGNED32:
                     iomap_set_pdo_out_uint32(map_iomap[i].pdo.datatype,
                                              map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num,
-                                             dpm_out->unsigned32[map_iomap[i].gbc.ionum], (float) map_iomap[i].pdo.max_val);
+                                             dpm_out->unsigned32[map_iomap[i].gbc.ionum],
+                                             (float) map_iomap[i].pdo.max_val);
                     break;
                 case ECT_REAL32:
                     iomap_set_pdo_out_float(map_iomap[i].pdo.datatype,

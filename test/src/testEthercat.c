@@ -68,43 +68,44 @@ void test_boot(void) {
     TEST_ASSERT_MESSAGE(ec_step_3_preop() == true, "Step 3: Move slaves to PRE_OP");
     TEST_ASSERT_MESSAGE(ec_step_5_error_check() == true, "Step 4: EtherCAT error check");
     TEST_ASSERT_MESSAGE(ec_step_6_safeop() == true, "Step 5: Move slaves to SAFE-OP");
-    TEST_ASSERT_MESSAGE(ecm_status.boot_state.pdo_remap_done && ecm_status.boot_state.apply_standard_sdos_done, "Step 6: hooks complete");
+    TEST_ASSERT_MESSAGE(ecm_status.boot_state.pdo_remap_done && ecm_status.boot_state.apply_standard_sdos_done,
+                        "Step 6: hooks complete");
     TEST_ASSERT_MESSAGE(ec_step_7_wkc_check() == true, "Step 7: Run WKC check");
     TEST_ASSERT_MESSAGE(ec_step_8_slaves_match() == true, "Step 8: Check slaves match");
     TEST_ASSERT_MESSAGE(ec_step_9_op() == true, "Step 9: Move slaves to OP");
 }
 
-void test_move(void){
+void test_move(void) {
     static int32_t initial_pos[MAP_NUM_DRIVES];
     static bool first_run = true;
-    static int execution_count=0;
+    static int execution_count = 0;
     const int num_cycles_to_abort = 1000;
     execution_count++;
     static bool test_pass = false;
 
 
-    if (first_run){
+    if (first_run) {
         for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-            initial_pos[i]=dpm_in->joint_actual_position[i];
+            initial_pos[i] = dpm_in->joint_actual_position[i];
 //            printf("init pos: %d", initial_pos[i]);
         }
 
-        first_run=false;
+        first_run = false;
     }
-    for (int i = 0; i < MAP_NUM_DRIVES; i++){
+    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         dpm_out->joint_set_position[i]++;
     }
 
-    int j=0;
-    for (int i = 0; i < MAP_NUM_DRIVES; i++){
-        if ((dpm_in->joint_actual_position[i]-initial_pos[i])>500){
+    int j = 0;
+    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+        if ((dpm_in->joint_actual_position[i] - initial_pos[i]) > 500) {
             j++;
         }
 //        printf("j:%u, init pos:%d, act pos:%d\n", i, dpm_in->joint_actual_position[i], initial_pos[i]);
 //        printf("j:%u, pos:%d\n", i, (dpm_in->joint_actual_position[i]-initial_pos[i]));
     }
-    if (j==MAP_NUM_DRIVES){
-        test_pass=true;
+    if (j == MAP_NUM_DRIVES) {
+        test_pass = true;
     }
     if (execution_count > num_cycles_to_abort) {
         test_result.premature_termination = true;
@@ -114,7 +115,7 @@ void test_move(void){
 }
 
 void test_op_enabled(void) {
-    static int execution_count =0;
+    static int execution_count = 0;
     const int num_cycles_to_abort = 100;
     static bool sync_pos = true;
     int32_t initial_pos;
@@ -123,7 +124,7 @@ void test_op_enabled(void) {
 //    printf("Machine status word: %s\n", cia_state_names[cia_statwrd_to_state(dpm_in->machine_word)]);
 
     /*force statemachine up to Operation Enabled */
-    if (dpm_in->machine_word == CIA_FAULT_STATWRD){
+    if (dpm_in->machine_word == CIA_FAULT_STATWRD) {
         dpm_out->machine_word = CIA_FAULT_RESET_CTRLWRD;
     }
 
@@ -178,10 +179,11 @@ int main(void) {
         LL_FATAL("GBEM: error creating pthread (ec_rxtx)");
     }
 
-    rc = osal_thread_create_rt(&thread_ec_check, STACK64K * 2, &ec_check, NULL);
-    if (rc != 1) {
-        LL_FATAL("GBEM: An error occured whilst creating the pthread (ec_heck which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happend deep down");
-    }
+    //exectime
+//    rc = osal_thread_create_rt(&thread_ec_check, STACK64K * 2, &ec_check, NULL);
+//    if (rc != 1) {
+//        LL_FATAL("GBEM: An error occurred whilst creating the pthread (ec_heck which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happend deep down");
+//    }
 
 
     //wait to let the thread_ec_rxtx so startup messages spit out ungarbled

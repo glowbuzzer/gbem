@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
- * @file           :  machine_aw_j17.h
- * @brief          :  machine map for aw j17 single joint with EK1100 + El1008 + EL2008
+ * @file           :  machine_virtual.h
+ * @brief          :  machine map for EK1100 + El1008 + EL2008 + virtual drives
  ******************************************************************************
  * @attention
  *
@@ -11,8 +11,8 @@
  ******************************************************************************
  */
 
-#ifndef GBEM_MACHINE_AW_J17_H
-#define GBEM_MACHINE_AW_J17_H
+#ifndef GBEM_MACHINE_VIRTUAL_H
+#define GBEM_MACHINE_VIRTUAL_H
 
 
 #define MAP_CYCLE_TIME              (1)
@@ -25,7 +25,7 @@
 #define MAP_AW_J17_CTRL             4
 
 #define MAP_NUM_DRIVES              1
-#define MAP_NUM_SLAVES              4
+#define MAP_NUM_SLAVES              3
 
 /** Use a digital input to reset the estop */
 #define USE_ESTOP_RESET             1
@@ -52,4 +52,4 @@
 //1: Positive side=Clockwise direction
 //default value is 1
 
-#endif //GBEM_MACHINE_AW_J17_H
+#endif //GBEM_MACHINE_VIRTUAL_H
