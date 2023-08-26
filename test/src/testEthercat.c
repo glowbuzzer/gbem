@@ -179,11 +179,12 @@ int main(void) {
         LL_FATAL("GBEM: error creating pthread (ec_rxtx)");
     }
 
-    //exectime
-//    rc = osal_thread_create_rt(&thread_ec_check, STACK64K * 2, &ec_check, NULL);
-//    if (rc != 1) {
-//        LL_FATAL("GBEM: An error occurred whilst creating the pthread (ec_heck which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happend deep down");
-//    }
+    //RT-sensitive
+    rc = osal_thread_create_rt(&thread_ec_check, STACK64K * 2, &ec_check, NULL);
+    if (rc != 1) {
+        LL_FATAL(
+                "GBEM: An error occurred whilst creating the pthread (ec_heck which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happend deep down");
+    }
 
 
     //wait to let the thread_ec_rxtx so startup messages spit out ungarbled

@@ -1576,9 +1576,9 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
 
 
 
-//exectime
+    RT-sensitive
     //output user messages for any faults that have occurred
-//    print_cyclic_user_message(NUM_CONTROL_EVENTS, control_event);
+    print_cyclic_user_message(NUM_CONTROL_EVENTS, control_event);
 
     DPM_OUT_PROTECT_END
 

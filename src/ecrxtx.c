@@ -283,20 +283,20 @@ void ec_rxtx(void *argument) {
         bool check_gbc_flag = false;
         bool gbem_i_am_alive_flag = false;
 
-        //exectime
-//        for (int i = 0; i < MAP_CYCLE_TIME; i++) {
-//            ms_tick++;
-//
-//            if ((ms_tick) % ECRXTX_REMINDER_MESSAGE_INTERVAL_MS == 0) {
-//                reminder_message_flag = true;
-//            }
-//            if ((ms_tick) % ECRXTX_GBC_CONNECTION_CHECK_INTERVAL_MS == 0) {
-//                check_gbc_flag = true;
-//            }
-//            if ((ms_tick) % ECRXTX_GBEM_I_AM_ALIVE_MESSAGE_INTERVAL_MS == 0) {
-//                gbem_i_am_alive_flag = true;
-//            }
-//        }
+        //RT-sensitive
+        for (int i = 0; i < MAP_CYCLE_TIME; i++) {
+            ms_tick++;
+
+            if ((ms_tick) % ECRXTX_REMINDER_MESSAGE_INTERVAL_MS == 0) {
+                reminder_message_flag = true;
+            }
+            if ((ms_tick) % ECRXTX_GBC_CONNECTION_CHECK_INTERVAL_MS == 0) {
+                check_gbc_flag = true;
+            }
+            if ((ms_tick) % ECRXTX_GBEM_I_AM_ALIVE_MESSAGE_INTERVAL_MS == 0) {
+                gbem_i_am_alive_flag = true;
+            }
+        }
 
         print_i_am_alive_message = gbem_i_am_alive_flag ? true : false;
         print_repeater_message = reminder_message_flag ? true : false;
@@ -336,7 +336,6 @@ void ec_rxtx(void *argument) {
         // if gbc is not connected AND we are not in test mode AND it is time to try an connect again to GBC
         if (!ecm_status.gbc_connected && !ec_rxtx_test_mode && time_to_check_gbc && ec_rxtx_mode == EC_RXTX_MODE_OP) {
 
-            //exectime
 
             grc = establish_shared_mem_and_signal_con(shmp, proc_name, false, &gbc_pid, 1);
             if (grc == E_SUCCESS) {
@@ -397,8 +396,7 @@ void ec_rxtx(void *argument) {
 
         //this is a weak function used to add test code to the cyclic process
 
-        //exectime
-        //        cyclicTest();
+        cyclicTest();
 
         // ec_rxtx_dorun is set after "Boot step 6 >success< (transition all slaves to SAFE OP state"
         if ((ec_rxtx_mode == EC_RXTX_MODE_DORUN) || (ec_rxtx_mode == EC_RXTX_MODE_OP) ||
@@ -457,7 +455,8 @@ void ec_rxtx(void *argument) {
                 //not in opmode or home
             }
 
-//            plc_task_exec();
+            //RT-sensitive
+            //plc_task_exec();
             clock_gettime(CLOCK_MONOTONIC, &t_exec_end);
 
             rc = ec_send_processdata();
@@ -484,33 +483,38 @@ void ec_rxtx(void *argument) {
                 if (ec_DCtime > 0) {
                     ec_sync(ec_DCtime - (int64) (clock_difference_sec * 1000000000), cycletime, &toff);
 
+#ifdef ECRXTX_MEASURE_EXEC_TIME
                     if (ec_rxtx_mode == EC_RXTX_MODE_OP) {
+                        //todo this UM printfs are redundant if cyclic messages are enabled - they are just for debugging
 
-                        uint64_t exec_time_usec =
-                                (uint64_t) (((t_exec_end.tv_sec * NSEC_PER_SEC) + t_exec_end.tv_nsec) -
-                                            ((t_exec_start.tv_sec * NSEC_PER_SEC) + t_exec_start.tv_nsec)) / 1000;
+                        if (current_state == CIA_OPERATION_ENABLED) {
+                            uint64_t exec_time_usec =
+                                    (uint64_t) (((t_exec_end.tv_sec * NSEC_PER_SEC) + t_exec_end.tv_nsec) -
+                                                ((t_exec_start.tv_sec * NSEC_PER_SEC) + t_exec_start.tv_nsec)) / 1000;
 
-                        if (exec_time_usec > 1000) {
-                            printf("exec time usecs:%" PRIu64 "\n", exec_time_usec);
-                            printf("bus cycle tick:%" PRIu64 "\n", bus_cycle_tick);
-                        }
+//                            if (exec_time_usec > 1000) {
+//                                UM_INFO(GBEM_UM_EN, "GBEM: Execution time usecs [%]" PRIu64, exec_time_usec);
+//                                UM_INFO(GBEM_UM_EN, "GBEM: Bus cycle tick [%]" PRIu64, bus_cycle_tick);
+//                            }
 //here we warn if the exec time (state machine gubbins plus plc jiggerypokery) is more than half our cycle time
 
-                        if ((uint32_t) exec_time_usec >
-                            (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_ERROR_PERCENTAGE / 100)) {
-                            ec_rxtx_event[CYCLIC_EVENT_OVERRUN].active = true;
-                            printf("time error: %u\n", (uint32_t) exec_time_usec);
+                            if ((uint32_t) exec_time_usec >
+                                (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_ERROR_PERCENTAGE / 100)) {
+                                ec_rxtx_event[CYCLIC_EVENT_OVERRUN].active = true;
+                                UM_ERROR(GBEM_UM_EN, "GBEM: Execution time [%u] (error)", (uint32_t) exec_time_usec);
 
-                        } else if ((uint32_t) exec_time_usec >
-                                   (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_WARNING_PERCENTAGE / 100)) {
-                            ec_rxtx_event[CYCLIC_EVENT_TIMEWARN].active = true;
-                            printf("time warn: %u\n", (uint32_t) exec_time_usec);
-                        } else {
-                            ec_rxtx_event[CYCLIC_EVENT_OVERRUN].active = false;
-                            ec_rxtx_event[CYCLIC_EVENT_TIMEWARN].active = false;
+                            } else if ((uint32_t) exec_time_usec >
+                                       (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_WARNING_PERCENTAGE / 100)) {
+                                ec_rxtx_event[CYCLIC_EVENT_TIMEWARN].active = true;
+                                UM_WARN(GBEM_UM_EN, "GBEM: Execution time [%u] (warning)", (uint32_t) exec_time_usec);
+                            } else {
+                                ec_rxtx_event[CYCLIC_EVENT_OVERRUN].active = false;
+                                ec_rxtx_event[CYCLIC_EVENT_TIMEWARN].active = false;
+                            }
                         }
-                    }
+#endif
 
+                    }
 //                ec_sync(ec_DCtime, cycletime, &toff);
 #if ECRXTX_MEASURE_TIMING == 1
                     clock_gettime(CLOCK_MONOTONIC, &endTime);
@@ -524,13 +528,13 @@ void ec_rxtx(void *argument) {
             } else {
                 ec_rxtx_event[CYCLIC_EVENT_GBC_NOT_CONNECTED].active = false;
             }
-//exectime
-//            if (ms_tick > ECRXTX_DELAY_TO_START_MESSAGES_SEC * 1000) {
-//                print_cyclic_user_message(NUM_CYCLIC_EVENTS, ec_rxtx_event);
-//            }
-//            if (print_i_am_alive_message) {
-//                UM_INFO(GBEM_UM_EN, "GBEM: Is running. Current bus cycle count is [%llu]", bus_cycle_tick);
-//            }
+            //RT-sensitive
+            if (ms_tick > ECRXTX_DELAY_TO_START_MESSAGES_SEC * 1000) {
+                print_cyclic_user_message(NUM_CYCLIC_EVENTS, ec_rxtx_event);
+            }
+            if (print_i_am_alive_message) {
+                UM_INFO(GBEM_UM_EN, "GBEM: Is running. Current bus cycle count is [%llu]", bus_cycle_tick);
+            }
 
 
         } else {

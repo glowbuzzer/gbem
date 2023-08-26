@@ -33,6 +33,7 @@
 #define ECRXTX_EXEC_TIME_ERROR_PERCENTAGE               80
 #define ECRXTX_EXEC_TIME_WARNING_PERCENTAGE             50
 
+#define ECRXTX_MEASURE_EXEC_TIME                        1
 
 
 
