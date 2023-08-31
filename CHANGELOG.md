@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.0](https://github.com/glowbuzzer/gbem/compare/v1.0.0...v1.1.0) (2023-08-31)
+
+
+### Features
+
+* **#8:** add nolimits command line flag to disable drive limits ([3592108](https://github.com/glowbuzzer/gbem/commit/35921088d4b10682d045ceb33e0e5992546eec47))
+* **#9:** Add #define to control execution time monitoring ([5259315](https://github.com/glowbuzzer/gbem/commit/5259315dd8f55ee11471e7d1c68cd474560a22c1))
+* FATAL error handler shows file name ([f564ddd](https://github.com/glowbuzzer/gbem/commit/f564ddd13766fb16fe89fd8a4f8809d3d57377db))
+* FATAL error handler shows file name ([fd75815](https://github.com/glowbuzzer/gbem/commit/fd758158f8f022c35539f5934d1363f72d407256))
+
 ## 1.0.0 (2022-07-20)
 
 
