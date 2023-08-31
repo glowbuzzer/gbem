@@ -110,31 +110,40 @@ gberror_t ec_pdo_map_el7037(const uint16_t slave) {
 
 gberror_t ec_standard_sdos_el7037(const uint16_t slave) {
 
-    if (!ec_sdo_write_uint16(slave, EL7037_KP_CURRENT_SDO_INDEX, EL7037_KP_CURRENT_SDO_SUB_INDEX, 2 * EL7037_KP_CURRENT_SDO_VALUE)) {
+    if (!ec_sdo_write_uint16(slave, EL7037_KP_CURRENT_SDO_INDEX, EL7037_KP_CURRENT_SDO_SUB_INDEX,
+                             2 * EL7037_KP_CURRENT_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint16(slave, EL7037_MAX_CURRENT_SDO_INDEX, EL7037_MAX_CURRENT_SDO_SUB_INDEX, EL7037_MAX_CURRENT_SDO_VALUE)) {
+    if (!ec_sdo_write_uint16(slave, EL7037_MAX_CURRENT_SDO_INDEX, EL7037_MAX_CURRENT_SDO_SUB_INDEX,
+                             EL7037_MAX_CURRENT_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint16(slave, EL7037_REDUCED_CURRENT_SDO_INDEX, EL7037_REDUCED_CURRENT_SDO_SUB_INDEX, EL7037_REDUCED_CURRENT_SDO_VALUE)) {
+    if (!ec_sdo_write_uint16(slave, EL7037_REDUCED_CURRENT_SDO_INDEX, EL7037_REDUCED_CURRENT_SDO_SUB_INDEX,
+                             EL7037_REDUCED_CURRENT_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint16(slave, EL7037_NOMINAL_VOLTAGE_SDO_INDEX, EL7037_NOMINAL_VOLTAGE_SDO_SUB_INDEX, EL7037_NOMINAL_VOLTAGE_SDO_VALUE)) {
+    if (!ec_sdo_write_uint16(slave, EL7037_NOMINAL_VOLTAGE_SDO_INDEX, EL7037_NOMINAL_VOLTAGE_SDO_SUB_INDEX,
+                             EL7037_NOMINAL_VOLTAGE_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint16(slave, EL7037_MOTOR_COIL_RESISTANCE_SDO_INDEX, EL7037_MOTOR_COIL_RESISTANCE_SDO_SUB_INDEX, EL7037_MOTOR_COIL_RESISTANCE_SDO_VALUE)) {
+    if (!ec_sdo_write_uint16(slave, EL7037_MOTOR_COIL_RESISTANCE_SDO_INDEX, EL7037_MOTOR_COIL_RESISTANCE_SDO_SUB_INDEX,
+                             EL7037_MOTOR_COIL_RESISTANCE_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint16(slave, EL7037_MOTOR_FULL_STEPS_SDO_INDEX, EL7037_MOTOR_FULL_STEPS_SDO_SUB_INDEX, EL7037_MOTOR_FULL_STEPS_SDO_VALUE)) {
+    if (!ec_sdo_write_uint16(slave, EL7037_MOTOR_FULL_STEPS_SDO_INDEX, EL7037_MOTOR_FULL_STEPS_SDO_SUB_INDEX,
+                             EL7037_MOTOR_FULL_STEPS_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, EL7037_OPERATION_MODE_SDO_INDEX, EL7037_OPERATION_MODE_SDO_SUB_INDEX, EL7037_OPERATION_MODE_SDO_VALUE)) {
+    if (!ec_sdo_write_uint8(slave, EL7037_OPERATION_MODE_SDO_INDEX, EL7037_OPERATION_MODE_SDO_SUB_INDEX,
+                            EL7037_OPERATION_MODE_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, EL7037_SPEED_RANGE_SDO_INDEX, EL7037_SPEED_RANGE_SDO_SUB_INDEX, EL7037_SPEED_RANGE_SDO_VALUE)) {
+    if (!ec_sdo_write_uint8(slave, EL7037_SPEED_RANGE_SDO_INDEX, EL7037_SPEED_RANGE_SDO_SUB_INDEX,
+                            EL7037_SPEED_RANGE_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, EL7037_INVERT_MOTOR_POLARITY_SDO_INDEX, EL7037_INVERT_MOTOR_POLARITY_SDO_SUB_INDEX, map_drive_direction[slave - 1])) {
+    if (!ec_sdo_write_uint8(slave, EL7037_INVERT_MOTOR_POLARITY_SDO_INDEX, EL7037_INVERT_MOTOR_POLARITY_SDO_SUB_INDEX,
+                            map_drive_direction[slave - 1])) {
         return E_SDO_WRITE_FAILURE;
     }
     //all applied correctly
@@ -158,56 +167,57 @@ uint8_t *ec_get_error_string_sdo_el7037(const uint16_t drive) {
     uint64_t read_val = 0;
     int size = EL7037_DIAG_SIZE; //48bits
     //read in complete access mode
-    int rc = ec_SDOread(map_drive_to_slave[drive], EL7037_DIAG_SDO_INDEX, EL7037_DIAG_SDO_SUB_INDEX, true, &size, &read_val, EC_TIMEOUTRXM);
+    int rc = ec_SDOread(map_drive_to_slave[drive], EL7037_DIAG_SDO_INDEX, EL7037_DIAG_SDO_SUB_INDEX, true, &size,
+                        &read_val, EC_TIMEOUTRXM);
 
 
     if (rc <= 0) {
-        return "Can't read EL7037 error code from SDO";
+        return (uint8_t *) "Can't read EL7037 error code from SDO";
     }
 
     if (BIT_CHECK(read_val, EL7037_ERROR_SATURATED_BIT_NUM)) {
-        return "EL7037: Saturated error";
+        return (uint8_t *) "EL7037: Saturated error";
     }
     if (BIT_CHECK(read_val, EL7037_ERROR_OVER_TEMPERATURE_BIT_NUM)) {
-        return "EL7037: Over temperature error";
+        return (uint8_t *) "EL7037: Over temperature error";
     }
 
     if (BIT_CHECK(read_val, EL7037_ERROR_TORQUE_OVERLOAD_BIT_NUM)) {
-        return "EL7037: Torque overload error";
+        return (uint8_t *) "EL7037: Torque overload error";
     }
 
     if (BIT_CHECK(read_val, EL7037_ERROR_UNDER_VOLTAGE_BIT_NUM)) {
-        return "EL7037: Under voltage error";
+        return (uint8_t *) "EL7037: Under voltage error";
     }
     if (BIT_CHECK(read_val, EL7037_ERROR_OVER_VOLTAGE_BIT_NUM)) {
-        return "EL7037: Over volatge error";
+        return (uint8_t *) "EL7037: Over volatge error";
     }
 
     if (BIT_CHECK(read_val, EL7037_ERROR_SHORT_CIRCUIT_A_BIT_NUM)) {
-        return "EL7037: Short circuit A error";
+        return (uint8_t *) "EL7037: Short circuit A error";
     }
 
     if (BIT_CHECK(read_val, EL7037_ERROR_SHORT_CIRCUIT_B_BIT_NUM)) {
-        return "EL7037: Short circuit B error";
+        return (uint8_t *) "EL7037: Short circuit B error";
     }
 
     if (BIT_CHECK(read_val, EL7037_ERROR_NO_CONTROL_POWER_BIT_NUM)) {
-        return "EL7037: No control power error";
+        return (uint8_t *) "EL7037: No control power error";
     }
 
     if (BIT_CHECK(read_val, EL7037_ERROR_MISC_ERROR_BIT_NUM)) {
-        return "EL7037: Misc error";
+        return (uint8_t *) "EL7037: Misc error";
     }
 
     if (BIT_CHECK(read_val, EL7037_ERROR_CONFIG_ERROR_BIT_NUM)) {
-        return "EL7037: Config error";
+        return (uint8_t *) "EL7037: Config error";
     }
 
     if (BIT_CHECK(read_val, EL7037_ERROR_MOTOR_STALL_BIT_NUM)) {
-        return "EL7037: Motor stall";
+        return (uint8_t *) "EL7037: Motor stall";
     }
 
-    return "EL7037: No error";
+    return (uint8_t *) "EL7037: No error";
 }
 
 int32_t ec_get_actpos_wrd_el7037(const uint16_t drive) {
@@ -215,19 +225,19 @@ int32_t ec_get_actpos_wrd_el7037(const uint16_t drive) {
 }
 
 
-void ec_sim_cia_el7037(const uint16_t drive, const uint16_t ctrlwrd, cia_state_t * state) {
+void ec_sim_cia_el7037(const uint16_t drive, const uint16_t ctrlwrd, cia_state_t *state) {
     // if fault bit is set then we are always in fault reaction active
-    if (el7037_drive_state_bits[drive].error ){
+    if (el7037_drive_state_bits[drive].error) {
         *state = CIA_FAULT_REACTION_ACTIVE;
         return;
     }
 
-    if (el7037_drive_state_bits[drive].sync_error){
+    if (el7037_drive_state_bits[drive].sync_error) {
         printf("sync error");
     }
 
     //if we don't have a ready to enable bit, state is always Not Ready To Switch On
-    if(!el7037_drive_state_bits[drive].ready_to_enable){
+    if (!el7037_drive_state_bits[drive].ready_to_enable) {
         *state = CIA_NOT_READY_TO_SWITCH_ON;
         return;
     }
@@ -236,7 +246,7 @@ void ec_sim_cia_el7037(const uint16_t drive, const uint16_t ctrlwrd, cia_state_t
         case CIA_FAULT_REACTION_ACTIVE:
             if (cia_ctrlwrd_to_command(ctrlwrd) == CIA_FAULT_RESET) {
                 *state = CIA_SWITCH_ON_DISABLED;
-            }else{
+            } else {
                 *state = CIA_FAULT_REACTION_ACTIVE;
             }
 
@@ -249,9 +259,9 @@ void ec_sim_cia_el7037(const uint16_t drive, const uint16_t ctrlwrd, cia_state_t
             }
             break;
         case CIA_NOT_READY_TO_SWITCH_ON:
-            if (el7037_drive_state_bits[drive].ready_to_enable){
+            if (el7037_drive_state_bits[drive].ready_to_enable) {
                 *state = CIA_SWITCH_ON_DISABLED;
-                } else {
+            } else {
                 *state = CIA_NOT_READY_TO_SWITCH_ON;
             }
             break;
@@ -288,17 +298,17 @@ void ec_sim_cia_el7037(const uint16_t drive, const uint16_t ctrlwrd, cia_state_t
             if (cia_ctrlwrd_to_command(ctrlwrd) == CIA_DISABLE_VOLTAGE) {
                 *state = CIA_SWITCH_ON_DISABLED;
             } else if (cia_ctrlwrd_to_command(ctrlwrd) == CIA_DISABLE_OPERATION) {
-                *state= CIA_SWITCHED_ON;
+                *state = CIA_SWITCHED_ON;
             } else if (cia_ctrlwrd_to_command(ctrlwrd) == CIA_SHUTDOWN) {
                 *state = CIA_READY_TO_SWITCH_ON;
             } else if (cia_ctrlwrd_to_command(ctrlwrd) == CIA_QUICK_STOP) {
                 *state = CIA_QUICK_STOP_ACTIVE;
             } else {
-                *state= CIA_OPERATION_ENABLED;
+                *state = CIA_OPERATION_ENABLED;
             }
 
             //if we are in Operation enabled and lose the ready bit on the drive ?
-            if (!el7037_drive_state_bits[drive].ready){
+            if (!el7037_drive_state_bits[drive].ready) {
                 printf("B\n");
                 *state = CIA_FAULT_REACTION_ACTIVE;
             }
@@ -351,16 +361,18 @@ uint16_t ec_get_stat_wrd_el7037(const uint16_t drive) {
 
     uint8_t ctrlwrd = 0;
 
-    el7037_drive_state_bits[drive] = ec_decode_drive_state_el7037(ec_pdo_get_input_uint16(map_drive_to_slave[drive], EL7037_STATUSWORD_PDO_INDEX));
+    el7037_drive_state_bits[drive] = ec_decode_drive_state_el7037(
+            ec_pdo_get_input_uint16(map_drive_to_slave[drive], EL7037_STATUSWORD_PDO_INDEX));
 
     ec_sim_cia_el7037(drive, el7037_drive_ctrlwrd[drive], &el7037_drive_state[drive]);
 
 
-    if (el7037_drive_state[drive] == CIA_FAULT_REACTION_ACTIVE){
+    if (el7037_drive_state[drive] == CIA_FAULT_REACTION_ACTIVE) {
         BIT_SET(ctrlwrd, EL7037_CONTROL_RESET_BIT_NUM);
     }
 
-    if (el7037_drive_state[drive] == CIA_SWITCHED_ON || el7037_drive_state[drive] == CIA_READY_TO_SWITCH_ON || el7037_drive_state[drive] == CIA_OPERATION_ENABLED ){
+    if (el7037_drive_state[drive] == CIA_SWITCHED_ON || el7037_drive_state[drive] == CIA_READY_TO_SWITCH_ON ||
+        el7037_drive_state[drive] == CIA_OPERATION_ENABLED) {
         BIT_SET(ctrlwrd, EL7037_CONTROL_ENABLE_BIT_NUM);
     }
 

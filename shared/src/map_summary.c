@@ -41,7 +41,7 @@
 static gberror_t check_slave_function_ptrs(const uint16_t num_slaves) {
     //we can't check slaves as all function pointers optional
     for (int i = 0; i < num_slaves; i++) {
-        if(*map_slave_initial_pdo_function_ptr[i] == NULL){
+        if (*map_slave_initial_pdo_function_ptr[i] == NULL) {
 
         }
     }
@@ -132,12 +132,12 @@ static char *config_process_general(char *json_dest, gberror_t *grc) {
     UM_INFO(GBEM_UM_EN, "GBEM: MAX_NUMBER_MAP_ENTRIES_IN_IOMAP [%u]", MAX_NUMBER_MAP_ENTRIES_IN_IOMAP);
 
 #if FLAVOUR == PLATFORM_PI
-        UM_INFO(GBEM_UM_EN, "GBEM: FLAVOUR is [GENERIC_LINUX]");
+    UM_INFO(GBEM_UM_EN, "GBEM: FLAVOUR is [GENERIC_LINUX]");
 #elif FLAVOUR == PLATFORM_LINUX
-        UM_INFO(GBEM_UM_EN, "GBEM: FLAVOUR is [GENERIC_LINUX]");
+    UM_INFO(GBEM_UM_EN, "GBEM: FLAVOUR is [GENERIC_LINUX]");
 #else
-        UM_ERROR(GBEM_UM_EN, "GBEM: No FLAVOUR has been set");
-        config_error = true;
+    UM_ERROR(GBEM_UM_EN, "GBEM: No FLAVOUR has been set");
+    config_error = true;
 #endif
 
     UM_INFO(GBEM_UM_EN, "GBEM: Software version [%s]", PROJECT_VER);
@@ -270,25 +270,25 @@ static char *config_process_io(char *json_dest, gberror_t *grc) {
 //USE_ESTOP_RESET is a define to control whether GBEM processes the reset signal for estop or whether the estop state is provided by the electricals
 
 #if DISABLE_ESTOP_CHECKING != 1
-if (ctrl_estop_din.slave_num>1){
-    UM_INFO(GBEM_UM_EN, "GBEM: ESTOP is on slave [%u] and bit number [%u]", ctrl_estop_din.slave_num, ctrl_estop_din.bit_num);
-} else{
-    UM_ERROR(GBEM_UM_EN, "GBEM: No ESTOP signal is defined. This is an error");
-    config_error = true;
-}
-
-#ifdef USE_ESTOP_RESET
-    if (ctrl_estop_reset_din.slave_num>1){
-
-        UM_INFO(GBEM_UM_EN, "GBEM: ESTOP Reset is on slave [%u] and bit number [%u]", ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bit_num);
-        //    UM_INFO(GBEM_UM_EN,
-        //            "GBEM: Estop on Digital In: %d, and requires a reset on Digital In: %d (USE_ESTOP_RESET is #defined)\n",
-    }else{
-        UM_ERROR(GBEM_UM_EN, "GBEM: No ESTOP reset signal is defined. This is an error when USE_ESTOP_RESET is defined");
+    if (ctrl_estop_din.slave_num>1){
+        UM_INFO(GBEM_UM_EN, "GBEM: ESTOP is on slave [%u] and bit number [%u]", ctrl_estop_din.slave_num, ctrl_estop_din.bit_num);
+    } else{
+        UM_ERROR(GBEM_UM_EN, "GBEM: No ESTOP signal is defined. This is an error");
         config_error = true;
     }
+
+#ifdef USE_ESTOP_RESET
+        if (ctrl_estop_reset_din.slave_num>1){
+
+            UM_INFO(GBEM_UM_EN, "GBEM: ESTOP Reset is on slave [%u] and bit number [%u]", ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bit_num);
+            //    UM_INFO(GBEM_UM_EN,
+            //            "GBEM: Estop on Digital In: %d, and requires a reset on Digital In: %d (USE_ESTOP_RESET is #defined)\n",
+        }else{
+            UM_ERROR(GBEM_UM_EN, "GBEM: No ESTOP reset signal is defined. This is an error when USE_ESTOP_RESET is defined");
+            config_error = true;
+        }
 #else
-    UM_INFO(GBEM_UM_EN, "GBEM: Estop on Digital In: %d, and does NOT require a reset signal (USE_ESTOP_RESET is NOT #defined)");
+        UM_INFO(GBEM_UM_EN, "GBEM: Estop on Digital In: %d, and does NOT require a reset signal (USE_ESTOP_RESET is NOT #defined)");
 #endif
 #endif
     //todo add to json estop info
@@ -306,7 +306,7 @@ if (ctrl_estop_din.slave_num>1){
     json_dest = json_uint(json_dest, "max_gbc_i32_in", DPM_NUM_INT32S);
     UM_INFO(GBEM_UM_EN, "GBEM: Max number of GBC integer32 outs [%u] (MAP_GBC_NUM_INTEGER32_OUT)",
             DPM_NUM_INT32S);
-    json_dest = json_uint(json_dest,"max_gbc_i32_out", DPM_NUM_INT32S);
+    json_dest = json_uint(json_dest, "max_gbc_i32_out", DPM_NUM_INT32S);
     UM_INFO(GBEM_UM_EN, "GBEM: Max number of GBC unsigned32 ins [%u] {MAP_GBC_NUM_UNSIGNED32_IN)",
             DPM_NUM_UINT32S);
     json_dest = json_uint(json_dest, "max_gbc_u32_in", DPM_NUM_UINT32S);
@@ -327,8 +327,8 @@ if (ctrl_estop_din.slave_num>1){
 
     UM_INFO(GBEM_UM_EN, "GBEM: Starting iomap checking");
 
-    int tests_run=0;
-    int tests_passed=0;
+    int tests_run = 0;
+    int tests_passed = 0;
 //check for missing plc info
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
         if (map_iomap[i].plc.inout == MAP_IN || map_iomap[i].plc.inout == MAP_OUT) {
@@ -337,7 +337,7 @@ if (ctrl_estop_din.slave_num>1){
                 UM_ERROR(GBEM_UM_EN,
                          "GBEM: iomap is missing a PLC variable. Problem on row [%u]",
                          i);
-            }else{
+            } else {
                 tests_passed++;
             }
 
@@ -346,7 +346,7 @@ if (ctrl_estop_din.slave_num>1){
                 UM_ERROR(GBEM_UM_EN,
                          "GBEM: iomap is missing a PLC task. Problem on row [%u]",
                          i);
-            }else{
+            } else {
                 tests_passed++;
             }
             tests_run++;
@@ -354,7 +354,7 @@ if (ctrl_estop_din.slave_num>1){
                 UM_ERROR(GBEM_UM_EN,
                          "GBEM: iomap contains an invalid PLC type (not all ec_datatypes are supported in the PLC write functions). Problem on row [%u]",
                          i);
-            }else{
+            } else {
                 tests_passed++;
             }
         }
@@ -368,26 +368,25 @@ if (ctrl_estop_din.slave_num>1){
                 UM_ERROR(GBEM_UM_EN,
                          "GBEM: iomap contains an invalid GBC type (not all ec_datatypes are supported in the DPM). Problem on row [%u]",
                          i);
-            }
-            else{
+            } else {
                 tests_passed++;
             }
         }
 
-        if (map_iomap[i].gbc.datatype==ECT_REAL32){
+        if (map_iomap[i].gbc.datatype == ECT_REAL32) {
             tests_run++;
             //we have a gbc analog (i.e. real32 float) this means we need a max value if the corresponding max val
-            if(map_iomap[i].pdo.datatype!=ECT_REAL32){
+            if (map_iomap[i].pdo.datatype != ECT_REAL32) {
 
-                if (map_iomap[i].pdo.max_val==0){
+                if (map_iomap[i].pdo.max_val == 0) {
                     UM_ERROR(GBEM_UM_EN,
                              "GBEM: iomap is missing a max value on the PDO data type as we going to convert an int to a float. Problem on row [%u]",
                              i);
 
-                }else{
+                } else {
                     tests_passed++;
                 }
-            }else{
+            } else {
                 tests_passed++;
             }
         }
@@ -400,7 +399,7 @@ if (ctrl_estop_din.slave_num>1){
             if (map_iomap[i].pdo.slave_num == 0) {
                 UM_ERROR(GBEM_UM_EN,
                          "GBEM: iomap is missing a PDO slave number. Problem on row [%u]", i);
-            }else{
+            } else {
                 tests_passed++;
             }
 
@@ -409,7 +408,7 @@ if (ctrl_estop_din.slave_num>1){
                 UM_ERROR(GBEM_UM_EN,
                          "GBEM: iomap contains an invalid PDO type (not all ec_datatypes are supported in PDO write functions). Problem on row [%u]",
                          i);
-            }else{
+            } else {
                 tests_passed++;
             }
         }
@@ -427,7 +426,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * in   | in   | out
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -441,7 +440,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * in   | out  | in
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -455,7 +454,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * in   | out  | out
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -469,7 +468,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * in   | out  | none
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -483,7 +482,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * in   | none | out
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -497,7 +496,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * in   | none | none
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -511,7 +510,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * out  | in  | in
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -525,7 +524,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * out  | in   | out
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -539,7 +538,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * out  | in   | none
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -553,7 +552,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * out  | out  | in
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -567,7 +566,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * out  | none | in
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -581,7 +580,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * out  | none | none
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -595,7 +594,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * none | in   | in
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -609,7 +608,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * none | in   | none
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -623,7 +622,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * none | out  | out
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -637,7 +636,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * none | out  | none
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -651,7 +650,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * none | none | in
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -665,7 +664,7 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * none | none | out
              */
-        }else{
+        } else {
             tests_passed++;
         }
 
@@ -679,17 +678,17 @@ if (ctrl_estop_din.slave_num>1){
              * PDO  | GBC  | PLC
              * none | none | none
              */
-        }
-        else{
+        } else {
             tests_passed++;
         }
     } //end of massive for loop
 
-    if (tests_run!=tests_passed){
-        config_error=true;
+    if (tests_run != tests_passed) {
+        config_error = true;
     }
 
-    UM_INFO(GBEM_UM_EN, "GBEM: End of iomap checking [%d] tests were run and [%d] tests passed, %s", tests_run, tests_passed, config_error ? ">ISSUES WERE FOUND<" : "issues were not found");
+    UM_INFO(GBEM_UM_EN, "GBEM: End of iomap checking [%d] tests were run and [%d] tests passed, %s", tests_run,
+            tests_passed, config_error ? ">ISSUES WERE FOUND<" : "issues were not found");
 
     json_dest = json_arrOpen(json_dest, "iomap");
 
@@ -699,23 +698,23 @@ if (ctrl_estop_din.slave_num>1){
         json_dest = json_uint(json_dest, "pdo_slave_num", map_iomap[i].pdo.slave_num);
         json_dest = json_uint(json_dest, "pdo_bit_num", map_iomap[i].pdo.bit_num);
         json_dest = json_uint(json_dest, "pdo_byte_num", map_iomap[i].pdo.byte_num);
-        json_dest = json_str(json_dest, "pdo_type",  ec_datatype_string[map_iomap[i].pdo.datatype]);
+        json_dest = json_str(json_dest, "pdo_type", ec_datatype_string[map_iomap[i].pdo.datatype]);
         json_dest = json_double(json_dest, "pdo_bit_byte_num", map_iomap[i].pdo.max_val);
 
         json_dest = json_str(json_dest, "gbc_inout", map_iomap[i].gbc.inout == MAP_IN ? "IN" : "OUT");
-        json_dest = json_str(json_dest, "gbc_type",  ec_datatype_string[map_iomap[i].gbc.datatype]);
+        json_dest = json_str(json_dest, "gbc_type", ec_datatype_string[map_iomap[i].gbc.datatype]);
         json_dest = json_uint(json_dest, "gbc_ionum", map_iomap[i].gbc.ionum);
 
         json_dest = json_str(json_dest, "plc_inout", map_iomap[i].plc.inout == MAP_IN ? "IN" : "OUT");
-        json_dest = json_str(json_dest, "plc_type",  ec_datatype_string[map_iomap[i].plc.datatype]);
-        json_dest = json_str(json_dest, "plc_type",  map_iomap[i].plc.linked_task_name);
+        json_dest = json_str(json_dest, "plc_type", ec_datatype_string[map_iomap[i].plc.datatype]);
+        json_dest = json_str(json_dest, "plc_type", map_iomap[i].plc.linked_task_name);
 
-        json_dest= json_objClose(json_dest);
+        json_dest = json_objClose(json_dest);
     }
     json_dest = json_arrClose(json_dest);
 
 
-        UM_INFO(GBEM_UM_EN, "GBEM: Summary of iomap:");
+    UM_INFO(GBEM_UM_EN, "GBEM: Summary of iomap:");
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
         /* copy from PDO(in) to GBC(in) and PLC (in) #0
         * PDO | GBC | PLC
@@ -726,10 +725,12 @@ if (ctrl_estop_din.slave_num>1){
             UM_INFO(GBEM_UM_EN,
                     "GBEM: GBC [%s.%u] (%s) and PLC [%s@0x%p] (%s) in task (%s) are linked to a PDO [%s.%u.%u.%u] [%s] (%s)",
                     map_iomap[i].gbc.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].gbc.ionum,
-                    ec_datatype_string[map_iomap[i].gbc.datatype], map_iomap[i].plc.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].plc.io,
+                    ec_datatype_string[map_iomap[i].gbc.datatype], map_iomap[i].plc.inout == MAP_IN ? "IN" : "OUT",
+                    map_iomap[i].plc.io,
                     ec_datatype_string[map_iomap[i].plc.datatype],
-                    map_iomap[i].plc.linked_task_name, map_iomap[i].pdo.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].pdo.slave_num,
-                    map_iomap[i].pdo.byte_num,map_iomap[i].pdo.bit_num,
+                    map_iomap[i].plc.linked_task_name, map_iomap[i].pdo.inout == MAP_IN ? "IN" : "OUT",
+                    map_iomap[i].pdo.slave_num,
+                    map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
                     ecm_slave_map[map_iomap[i].pdo.slave_num - 1].name,
                     ec_datatype_string[map_iomap[i].pdo.datatype]);
         }
@@ -744,7 +745,7 @@ if (ctrl_estop_din.slave_num>1){
                     map_iomap[i].gbc.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].gbc.ionum,
                     ec_datatype_string[map_iomap[i].gbc.datatype],
                     map_iomap[i].pdo.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].pdo.slave_num,
-                    map_iomap[i].pdo.byte_num,map_iomap[i].pdo.bit_num,
+                    map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
                     ecm_slave_map[map_iomap[i].pdo.slave_num - 1].name,
                     ec_datatype_string[map_iomap[i].pdo.datatype]);
 
@@ -760,7 +761,8 @@ if (ctrl_estop_din.slave_num>1){
                     "GBEM: PLC [%s@0x%p] (%s) in task (%s) is linked to a PDO [%s.%u.%u.%u] [%s] (%s)",
                     map_iomap[i].plc.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].plc.io,
                     ec_datatype_string[map_iomap[i].plc.datatype],
-                    map_iomap[i].plc.linked_task_name, map_iomap[i].pdo.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].pdo.slave_num,
+                    map_iomap[i].plc.linked_task_name, map_iomap[i].pdo.inout == MAP_IN ? "IN" : "OUT",
+                    map_iomap[i].pdo.slave_num,
                     map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
                     ecm_slave_map[map_iomap[i].pdo.slave_num - 1].name,
                     ec_datatype_string[map_iomap[i].pdo.datatype]);
@@ -776,10 +778,12 @@ if (ctrl_estop_din.slave_num>1){
             UM_INFO(GBEM_UM_EN,
                     "GBEM: GBC [%s.%u] (%s) and PLC [%s@0x%p] (%s) in task (%s) are linked to a PDO [%s.%u.%u.%u] [%s] (%s)",
                     map_iomap[i].gbc.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].gbc.ionum,
-                    ec_datatype_string[map_iomap[i].gbc.datatype], map_iomap[i].plc.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].plc.io,
+                    ec_datatype_string[map_iomap[i].gbc.datatype], map_iomap[i].plc.inout == MAP_IN ? "IN" : "OUT",
+                    map_iomap[i].plc.io,
                     ec_datatype_string[map_iomap[i].plc.datatype],
-                    map_iomap[i].plc.linked_task_name, map_iomap[i].pdo.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].pdo.slave_num,
-                    map_iomap[i].pdo.byte_num,map_iomap[i].pdo.bit_num,
+                    map_iomap[i].plc.linked_task_name, map_iomap[i].pdo.inout == MAP_IN ? "IN" : "OUT",
+                    map_iomap[i].pdo.slave_num,
+                    map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
                     ecm_slave_map[map_iomap[i].pdo.slave_num - 1].name,
                     ec_datatype_string[map_iomap[i].pdo.datatype]);
 
@@ -795,8 +799,9 @@ if (ctrl_estop_din.slave_num>1){
             UM_INFO(GBEM_UM_EN,
                     "GBEM: GBC [%s.%u] (%s) is linked to a PDO [%s.%u.%u.%u] [%s] (%s)",
                     map_iomap[i].gbc.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].gbc.ionum,
-                    ec_datatype_string[map_iomap[i].gbc.datatype], map_iomap[i].pdo.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].pdo.slave_num,
-                    map_iomap[i].pdo.byte_num,map_iomap[i].pdo.bit_num,
+                    ec_datatype_string[map_iomap[i].gbc.datatype], map_iomap[i].pdo.inout == MAP_IN ? "IN" : "OUT",
+                    map_iomap[i].pdo.slave_num,
+                    map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
                     ecm_slave_map[map_iomap[i].pdo.slave_num - 1].name,
                     ec_datatype_string[map_iomap[i].pdo.datatype]);
 
@@ -812,8 +817,9 @@ if (ctrl_estop_din.slave_num>1){
                     "GBEM: PLC [%s@0x%p] (%s) in task (%s) is linked to a PDO [%s.%u.%u.%u] [%s] (%s)",
                     map_iomap[i].plc.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].plc.io,
                     ec_datatype_string[map_iomap[i].plc.datatype],
-                    map_iomap[i].plc.linked_task_name, map_iomap[i].pdo.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].pdo.slave_num,
-                    map_iomap[i].pdo.byte_num,map_iomap[i].pdo.bit_num,
+                    map_iomap[i].plc.linked_task_name, map_iomap[i].pdo.inout == MAP_IN ? "IN" : "OUT",
+                    map_iomap[i].pdo.slave_num,
+                    map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
                     ecm_slave_map[map_iomap[i].pdo.slave_num - 1].name,
                     ec_datatype_string[map_iomap[i].pdo.datatype]);
 
@@ -828,7 +834,8 @@ if (ctrl_estop_din.slave_num>1){
             UM_INFO(GBEM_UM_EN,
                     "GBEM: GBC [%s.%u] (%s) and PLC [%s@0x%p] (%s) in task (%s) are linked",
                     map_iomap[i].gbc.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].gbc.ionum,
-                    ec_datatype_string[map_iomap[i].gbc.datatype], map_iomap[i].plc.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].plc.io,
+                    ec_datatype_string[map_iomap[i].gbc.datatype], map_iomap[i].plc.inout == MAP_IN ? "IN" : "OUT",
+                    map_iomap[i].plc.io,
                     ec_datatype_string[map_iomap[i].plc.datatype],
                     map_iomap[i].plc.linked_task_name);
         }
@@ -843,7 +850,8 @@ if (ctrl_estop_din.slave_num>1){
             UM_INFO(GBEM_UM_EN,
                     "GBEM: GBC [%s.%u] (%s) and PLC [%s@0x%p] (%s) in task (%s) are linked",
                     map_iomap[i].gbc.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].gbc.ionum,
-                    ec_datatype_string[map_iomap[i].gbc.datatype], map_iomap[i].plc.inout == MAP_IN ? "IN" : "OUT", map_iomap[i].plc.io,
+                    ec_datatype_string[map_iomap[i].gbc.datatype], map_iomap[i].plc.inout == MAP_IN ? "IN" : "OUT",
+                    map_iomap[i].plc.io,
                     ec_datatype_string[map_iomap[i].plc.datatype],
                     map_iomap[i].plc.linked_task_name);
 
@@ -875,21 +883,21 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
     UM_INFO(GBEM_UM_EN, "GBEM: ***                Step 4 - Examining slave configuration                    ***");
     UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
 
-    //#define ECM_CHECK_EEP_MAN
-//#define ECM_CHECK_EEP_REV
-//#define ECM_CHECK_EEP_ID
 
-#ifdef ECM_CHECK_EEP_MAN
-    UM_WARN(GBEM_UM_EN, "GBEM: Slave  manufacturer checking (#define ECM_CHECK_EEP_MAN) is enabled. This means that all slaves must have their EEP_MFR completed in the ecm_slave_map array");
+#if ECM_CHECK_EEP_MAN == 1
+    UM_WARN(GBEM_UM_EN,
+            "GBEM: Slave  manufacturer checking (#define ECM_CHECK_EEP_MAN) is enabled. This means that all slaves must have their EEP_MFR completed in the ecm_slave_map array");
 #endif
 
 
-#ifdef ECM_CHECK_EEP_ID
-    UM_WARN(GBEM_UM_EN, "GBEM: Slave ID checking (#define ECM_CHECK_EEP_ID) is enabled. This means that all slaves must have their EEP_ID completed in the ecm_slave_map array");
+#if ECM_CHECK_EEP_ID == 1
+    UM_WARN(GBEM_UM_EN,
+            "GBEM: Slave ID checking (#define ECM_CHECK_EEP_ID) is enabled. This means that all slaves must have their EEP_ID completed in the ecm_slave_map array");
 #endif
 
-#ifdef ECM_CHECK_EEP_REV
-    UM_WARN(GBEM_UM_EN, "GBEM: Slave revision checking (#define ECM_CHECK_EEP_REV) is enabled. This means that all slaves must have their EEP_REV completed in the ecm_slave_map array");
+#if ECM_CHECK_EEP_REV == 1
+    UM_WARN(GBEM_UM_EN,
+            "GBEM: Slave revision checking (#define ECM_CHECK_EEP_REV) is enabled. This means that all slaves must have their EEP_REV completed in the ecm_slave_map array");
 #endif
 
 
@@ -902,7 +910,7 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
         config_error = true;
     }
 
-    if (check_slave_function_ptrs(MAP_NUM_SLAVES)!=E_SUCCESS){
+    if (check_slave_function_ptrs(MAP_NUM_SLAVES) != E_SUCCESS) {
         UM_ERROR(GBEM_UM_EN, "GBEM: Error checking slave function pointers");
         config_error = true;
     }
@@ -915,23 +923,26 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
             UM_ERROR(GBEM_UM_EN, "GBEM: Slave number [%u] is missing its name in the ecm_slave_map array", i);
             config_error = true;
         }
-#ifdef ECM_CHECK_EEP_ID
-            else if (ecm_slave_map[i-1].eep_id==0){
-                UM_ERROR(GBEM_UM_EN, "GBEM: Slave number: %u is missing its EEP ID in (ecm_slave_map) - as full slave checking is enabled (#define ECM_CHECK_EEP) GBEM will not boot until these are complete in the array ecm_slave_map");
-                          config_error = true;
-            }
-#endif
-#ifdef ECM_CHECK_EEP_REV
-            else if (ecm_slave_map[i-1].eep_rev==0){
-            UM_ERROR(GBEM_UM_EN, "GBEM: Slave number: %u is missing its EEP REVISION in (ecm_slave_map) - as full slave checking is enabled (#define ECM_CHECK_EEP) GBEM will not boot until these are complete in the array ecm_slave_map");
+#if ECM_CHECK_EEP_ID == 1
+        else if (ecm_slave_map[i - 1].eep_id == 0) {
+            UM_ERROR(GBEM_UM_EN,
+                     "GBEM: Slave number: %u is missing its EEP ID in (ecm_slave_map) - as full slave checking is enabled (#define ECM_CHECK_EEP) GBEM will not boot until these are complete in the array ecm_slave_map");
             config_error = true;
-            }
+        }
 #endif
-#ifdef ECM_CHECK_EEP_MAN
-            else if (ecm_slave_map[i-1].eep_man==0){
-            UM_ERROR(GBEM_UM_EN, "GBEM: Slave number: %u is missing its EEP MANUFACTURER in (ecm_slave_map) - as full slave checking is enabled (#define ECM_CHECK_EEP) GBEM will not boot until these are complete in the array ecm_slave_map");
+#if ECM_CHECK_EEP_REV == 1
+        else if (ecm_slave_map[i - 1].eep_rev == 0) {
+            UM_ERROR(GBEM_UM_EN,
+                     "GBEM: Slave number: %u is missing its EEP REVISION in (ecm_slave_map) - as full slave checking is enabled (#define ECM_CHECK_EEP) GBEM will not boot until these are complete in the array ecm_slave_map");
             config_error = true;
-            }
+        }
+#endif
+#if ECM_CHECK_EEP_MAN == 1
+        else if (ecm_slave_map[i - 1].eep_man == 0) {
+            UM_ERROR(GBEM_UM_EN,
+                     "GBEM: Slave number: %u is missing its EEP MANUFACTURER in (ecm_slave_map) - as full slave checking is enabled (#define ECM_CHECK_EEP) GBEM will not boot until these are complete in the array ecm_slave_map");
+            config_error = true;
+        }
 #endif
         else {
             json_dest = json_objOpen(json_dest, NULL);
@@ -973,11 +984,11 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
             default:
                 LL_FATAL("GBEM: DC case missing type");
         }
-        json_dest = json_uint(json_dest, "slave_dc_cycle", (unsigned int) map_dc_cycle[i-1]);
-        UM_INFO(GBEM_UM_EN, "GBEM: \tSlave has DC cycle time of [%u]",map_dc_cycle[i-1] );
+        json_dest = json_uint(json_dest, "slave_dc_cycle", (unsigned int) map_dc_cycle[i - 1]);
+        UM_INFO(GBEM_UM_EN, "GBEM: \tSlave has DC cycle time of [%u]", map_dc_cycle[i - 1]);
         //if the dc cycle time is more than say 12 ms then flag a warning
-        if (map_dc_cycle[i-1] > 12){
-            UM_WARN(GBEM_UM_EN, "GBEM: Slave has what looks like an invalid DC cycle time [%u]",map_dc_cycle[i-1]);
+        if (map_dc_cycle[i - 1] > 12) {
+            UM_WARN(GBEM_UM_EN, "GBEM: Slave has what looks like an invalid DC cycle time [%u]", map_dc_cycle[i - 1]);
             config_error = true;
         }
 
@@ -1043,19 +1054,19 @@ static char *config_process_drives(char *json_dest, gberror_t *grc) {
             config_error = true;
         } else {
             UM_INFO(GBEM_UM_EN, "GBEM: Drive [%u]", i);
-            json_dest = json_uint(json_dest, "drive_num", (uint32_t ) i);
+            json_dest = json_uint(json_dest, "drive_num", (uint32_t) i);
             UM_INFO(GBEM_UM_EN, "GBEM: \tName [%s]", map_drive_to_name[i]);
             json_dest = json_str(json_dest, "drive_name", map_drive_to_name[i]);
             UM_INFO(GBEM_UM_EN, "GBEM: \tDrive is on slave [%u] (%s)", map_drive_to_slave[i],
                     map_drive_to_name[i]);
-            json_dest = json_uint(json_dest, "drive_slave_num", map_drive_to_slave[i] );
+            json_dest = json_uint(json_dest, "drive_slave_num", map_drive_to_slave[i]);
             json_dest = json_str(json_dest, "drive_slave_name", map_drive_to_name[i]);
             UM_INFO(GBEM_UM_EN, "GBEM: \tSub-drive number [%u]", map_drive_to_subdrive[i]);
-            json_dest = json_uint(json_dest, "drive_sub_drive_num",  map_drive_to_subdrive[i]);
+            json_dest = json_uint(json_dest, "drive_sub_drive_num", map_drive_to_subdrive[i]);
             UM_INFO(GBEM_UM_EN, "GBEM: \tPositive limit [%d], Negative limit [%d]", map_drive_pos_limit[i],
                     map_drive_neg_limit[i]);
-            json_dest = json_int(json_dest, "drive_pos_limit",  map_drive_pos_limit[i]);
-            json_dest = json_int(json_dest, "drive_sub_drive_num",  map_drive_neg_limit[i]);
+            json_dest = json_int(json_dest, "drive_pos_limit", map_drive_pos_limit[i]);
+            json_dest = json_int(json_dest, "drive_sub_drive_num", map_drive_neg_limit[i]);
 
         }
         json_dest = json_objClose(json_dest);
@@ -1102,12 +1113,12 @@ char *config_process_plc(char *json_dest, gberror_t *grc) {
 
     UM_INFO(GBEM_UM_EN, "GBEM: Number of PLC tasks defined [%u]", plc_task_set.num_tasks_defined);
 
-    json_dest= json_uint(json_dest, "plc_num_tasks", plc_task_set.num_tasks_defined);
+    json_dest = json_uint(json_dest, "plc_num_tasks", plc_task_set.num_tasks_defined);
 
     for (int i = 0; i < plc_task_set.num_tasks_defined; i++) {
 
         UM_INFO(GBEM_UM_EN, "GBEM: Task [%s] has priority [%u] and a cycle time of [%ums] and is index [%u]",
-                 plc_task_set.tasks[i].name, plc_task_set.tasks[i].priority, plc_task_set.tasks[i].cycle_time, i);
+                plc_task_set.tasks[i].name, plc_task_set.tasks[i].priority, plc_task_set.tasks[i].cycle_time, i);
 
     }
 
@@ -1123,7 +1134,6 @@ char *config_process_plc(char *json_dest, gberror_t *grc) {
 }
 
 
-
 /**
  * @brief this creates the status and const json files and prints them to stdout
  *
@@ -1131,7 +1141,7 @@ char *config_process_plc(char *json_dest, gberror_t *grc) {
  *
  * It is really just for testing
  */
-void config_print_json_const_status(void){
+void config_print_json_const_status(void) {
     char const_json_temp[3000] = {0};
     char status_json_temp[3000] = {0};
 
@@ -1164,7 +1174,7 @@ int config_create_check_print(char *json_buffer, gberror_t *grc, bool print_outp
     char *json_dest = json_buffer;
 
     //if we have be asked to run without printing the output disable by setting the user message (um) global flag
-    if (!print_output){
+    if (!print_output) {
         um_disable_logging = true;
     }
 
@@ -1269,7 +1279,7 @@ int config_create_check_print(char *json_buffer, gberror_t *grc, bool print_outp
     json_dest = json_end(json_dest);
 
     //re-enabled um logging
-    if (!print_output){
+    if (!print_output) {
         um_disable_logging = false;
     }
     //return size of json created

@@ -242,7 +242,6 @@ uint16_t map_SM3_index_of_assigned_PDO_AX5101[ECM_MAX_PDO_MAPPING_ENTRIES] = {
         0x1a06};
 
 
-
 const char *AX5101_error_warning_string[27] = {
         "AX5101_ERROR_ADCERROR",
         "AX5101_ERROR_OVERCURRENT",
@@ -278,7 +277,7 @@ AX5101_error_warning_t ec_warning_or_error_decode_AX5101(const uint16_t drive) {
     uint16_t infodata2 = ec_pdo_get_input_uint16(map_drive_to_slave[drive], AX5101_INFO_DATA2_PDO_INDEX);
 //    printf("infodata1:%u\n", infodata1);
 //    printf("infodata2:%u\n", infodata2);
-    if ((infodata1 != 0) || (infodata2 != 0) ) {
+    if ((infodata1 != 0) || (infodata2 != 0)) {
 
         LL_WARN(GBEM_GEN_LOG_EN, "GBEM: AX5101 infodata contained an error or warning");
 
@@ -331,12 +330,12 @@ AX5101_error_warning_t ec_warning_or_error_decode_AX5101(const uint16_t drive) {
     return AX5101_ERROR_NONE;
 }
 
-gberror_t ec_initial_pdo_AX5101(const uint16_t slave){
+gberror_t ec_initial_pdo_AX5101(const uint16_t slave) {
 //we dont do any initial PDO writes on the AX5101
     return E_NOT_IMPLEMENTED;
 }
 
-gberror_t ec_standard_sdos_AX5101(const uint16_t slave){
+gberror_t ec_standard_sdos_AX5101(const uint16_t slave) {
 
     if (ec_printSDO) {
         UM_INFO(GBEM_UM_EN, "GBEM: Standard SDOs configured for AX5101 slave [%u] are:", slave);
@@ -355,7 +354,7 @@ gberror_t ec_standard_sdos_AX5101(const uint16_t slave){
 
 //    0x001B233
 
-    if (!ec_sdo_write_uint32(slave, 0xF081, 0x1, 0x001F2336)){
+    if (!ec_sdo_write_uint32(slave, 0xF081, 0x1, 0x001F2336)) {
 //if (!ec_sdo_write_uint32(slave, 0xF081, 0x1, 0x001B233)){
 
         return E_SDO_WRITE_FAILURE;
@@ -634,18 +633,18 @@ gberror_t ec_pdo_map_AX5101(const uint16_t slave) {
     return E_SUCCESS;
 }
 
-int8_t ec_get_moo_sdo_AX5101(const uint16_t drive){
+int8_t ec_get_moo_sdo_AX5101(const uint16_t drive) {
 
     uint8_t uib8;
 
-    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], AX5101_MOO_GET_SDO_INDEX, AX5101_MOO_GET_SDO_SUB_INDEX, &uib8)){
+    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], AX5101_MOO_GET_SDO_INDEX, AX5101_MOO_GET_SDO_SUB_INDEX, &uib8)) {
         return -1;
     }
-    LL_INFO(GBEM_GEN_LOG_EN, "Got MOO for AX5101 (slave %u) - value:%u", map_drive_to_slave[drive], uib8 );
-    return ((int8_t)uib8);
+    LL_INFO(GBEM_GEN_LOG_EN, "Got MOO for AX5101 (slave %u) - value:%u", map_drive_to_slave[drive], uib8);
+    return ((int8_t) uib8);
 }
 
-uint8_t * ec_get_error_string_sdo_AX5101(const uint16_t drive){
+uint8_t *ec_get_error_string_sdo_AX5101(const uint16_t drive) {
     int os;
     char octet_string[29] = {0};
     int rc;
@@ -663,7 +662,7 @@ uint8_t * ec_get_error_string_sdo_AX5101(const uint16_t drive){
 
     bool error_reading_diag = false;
 
-    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], AX5101_ERROR_CODE_SDO_INDEX, 0x04, &new_message_available)){
+    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], AX5101_ERROR_CODE_SDO_INDEX, 0x04, &new_message_available)) {
         error_reading_diag = true;
         //    printf("AX5101: New message is available: %d\n", uib8);
 
@@ -672,18 +671,18 @@ uint8_t * ec_get_error_string_sdo_AX5101(const uint16_t drive){
 
 //    // 10F3:01 - uint8 - maximum number of messages - always 50
 
-if (!ec_sdo_read_uint8(map_drive_to_slave[drive], AX5101_ERROR_CODE_SDO_INDEX, 0x01, &max_num_messages)){
+    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], AX5101_ERROR_CODE_SDO_INDEX, 0x01, &max_num_messages)) {
 
-    error_reading_diag = true;
-    //    printf("Maximum number of messages:%d\n", uib8);
+        error_reading_diag = true;
+        //    printf("Maximum number of messages:%d\n", uib8);
 
-}
+    }
 
 //    10F3:02 - uint8 - newest message index
 
     uint8_t newest_message_index;
 
-    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], AX5101_ERROR_CODE_SDO_INDEX, 0x2, &newest_message_index)){
+    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], AX5101_ERROR_CODE_SDO_INDEX, 0x2, &newest_message_index)) {
         error_reading_diag = true;
         //    printf("Newest message index for diagnostic message:%d\n", newest_message_index);
 
@@ -704,12 +703,13 @@ if (!ec_sdo_read_uint8(map_drive_to_slave[drive], AX5101_ERROR_CODE_SDO_INDEX, 0
 //    }
 
 
-rc = ec_SDOread(map_drive_to_slave[drive], AX5101_ERROR_CODE_SDO_INDEX, newest_message_index, false,
+        rc = ec_SDOread(map_drive_to_slave[drive], AX5101_ERROR_CODE_SDO_INDEX, newest_message_index, false,
                         &os,
                         &octet_string,
                         EC_TIMEOUTRXM);
         if (rc <= 0) {
-            LL_ERROR(GBEM_GEN_LOG_EN, "Could not read SDO index:0x%04x - sub-index:0x%04x (on slave:%u)", AX5101_ERROR_CODE_SDO_INDEX,
+            LL_ERROR(GBEM_GEN_LOG_EN, "Could not read SDO index:0x%04x - sub-index:0x%04x (on slave:%u)",
+                     AX5101_ERROR_CODE_SDO_INDEX,
                      newest_message_index, map_drive_to_slave[drive]);
         }
 
@@ -725,9 +725,9 @@ rc = ec_SDOread(map_drive_to_slave[drive], AX5101_ERROR_CODE_SDO_INDEX, newest_m
 
 
         //diag full decode will return false if the text id is 0 or an parse error occurred
-        if (etg1020_diag_full_decode(&octet_string[0], &msg_decode)) {
+        if (etg1020_diag_full_decode((uint8_t *) &octet_string[0], &msg_decode)) {
 
-            strcpy(&error_code_string[0], msg_decode.diag_message_text);
+            strcpy((char *) &error_code_string[0], (char *) msg_decode.diag_message_text);
 
 //            printf("number of params in message:%d\n", msg_decode.diag_flags.number_of_parameters);
 //            printf("param type [0] %s\n", etg1020_diag_param_type_string[msg_decode.diag_params[0].param_type]);
@@ -753,9 +753,9 @@ rc = ec_SDOread(map_drive_to_slave[drive], AX5101_ERROR_CODE_SDO_INDEX, newest_m
 //            printf("Time stamp:%s\n", time_print_buf);
 //            printf("message:%s\n", msg_decode.diag_message_text);
 
-            strcat(error_code_string, " (");
-            strcat(error_code_string, time_print_buf);
-            strcat(error_code_string, ")");
+            strcat((char *) error_code_string, " (");
+            strcat((char *) error_code_string, time_print_buf);
+            strcat((char *) error_code_string, ")");
 
         }
     }
@@ -767,16 +767,18 @@ rc = ec_SDOread(map_drive_to_slave[drive], AX5101_ERROR_CODE_SDO_INDEX, newest_m
     //todo this will make the infodata warning take precedence?
     if (errorWarning != AX5101_ERROR_NONE) {
         memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
-        strcpy(error_code_string, AX5101_error_warning_string[ec_warning_or_error_decode_AX5101(drive)]);
+        strcpy((char *) error_code_string, AX5101_error_warning_string[ec_warning_or_error_decode_AX5101(drive)]);
     }
     return error_code_string;
 
 
 }
-gberror_t ec_nvram_sdos_AX5101(const uint16_t slave){
+
+gberror_t ec_nvram_sdos_AX5101(const uint16_t slave) {
     return E_NOT_IMPLEMENTED;
 }
-gberror_t ec_write_nvram_AX5101(const uint16_t slave){
+
+gberror_t ec_write_nvram_AX5101(const uint16_t slave) {
     return E_NOT_IMPLEMENTED;
 }
 
@@ -787,7 +789,7 @@ gberror_t ec_write_nvram_AX5101(const uint16_t slave){
  * @param ctrlwrd
  * @return gberror
  */
-gberror_t ec_set_ctrl_wrd_AX5101(const uint16_t drive, const uint16_t ctrlwrd){
+gberror_t ec_set_ctrl_wrd_AX5101(const uint16_t drive, const uint16_t ctrlwrd) {
     ec_pdo_set_output_uint16(map_drive_to_slave[drive], AX5101_CONTROLWORD_PDO_INDEX, ctrlwrd);
     return E_SUCCESS;
 }
@@ -797,7 +799,7 @@ gberror_t ec_set_ctrl_wrd_AX5101(const uint16_t drive, const uint16_t ctrlwrd){
  * @param drive
  * @return status word
  */
-uint16_t ec_get_stat_wrd_AX5101(const uint16_t drive){
+uint16_t ec_get_stat_wrd_AX5101(const uint16_t drive) {
     return ec_pdo_get_input_uint16(map_drive_to_slave[drive], AX5101_STATUSWORD_PDO_INDEX);
 }
 
@@ -807,7 +809,7 @@ uint16_t ec_get_stat_wrd_AX5101(const uint16_t drive){
  * @return ctrlwrd
  * @warning REVERSE FUNCTION ("WRONG" WAY ROUND)
  */
-uint16_t ec_get_ctrl_wrd_rev_AX5101(const uint16_t drive){
+uint16_t ec_get_ctrl_wrd_rev_AX5101(const uint16_t drive) {
     return ec_pdo_get_output_uint16_rev(map_drive_to_slave[drive], AX5101_CONTROLWORD_PDO_INDEX);
 }
 
@@ -819,7 +821,7 @@ uint16_t ec_get_ctrl_wrd_rev_AX5101(const uint16_t drive){
  * @return gberror
  * @warning REVERSE FUNCTION ("WRONG" WAY ROUND)
  */
-gberror_t ec_set_stat_wrd_rev_AX5101(const uint16_t drive, const uint16_t statwrd){
+gberror_t ec_set_stat_wrd_rev_AX5101(const uint16_t drive, const uint16_t statwrd) {
     ec_pdo_set_input_uint16_rev(map_drive_to_slave[drive], AX5101_STATUSWORD_PDO_INDEX, statwrd);
     return E_SUCCESS;
 }
@@ -832,7 +834,7 @@ gberror_t ec_set_stat_wrd_rev_AX5101(const uint16_t drive, const uint16_t statwr
  * @return gberror
  * @warning FREVERSE FUNCTION ("WRONG" WAY ROUND)
  */
-gberror_t ec_set_actpos_wrd_rev_AX5101(const uint16_t drive, const int32_t actpos){
+gberror_t ec_set_actpos_wrd_rev_AX5101(const uint16_t drive, const int32_t actpos) {
 
     ec_pdo_set_input_int32_rev(map_drive_to_slave[drive], AX5101_ACTPOS_PDO_INDEX, actpos);
     return E_SUCCESS;
@@ -844,14 +846,14 @@ gberror_t ec_set_actpos_wrd_rev_AX5101(const uint16_t drive, const int32_t actpo
  * @return setpos
  * @warning REVERSE FUNCTION ("WRONG" WAY ROUND)
  */
-int32_t ec_get_setpos_word_rev_AX5101(const uint16_t drive){
+int32_t ec_get_setpos_word_rev_AX5101(const uint16_t drive) {
     return ec_pdo_get_output_int32_rev(map_drive_to_slave[drive], AX5101_SETPOS_PDO_INDEX);
 }
 
 
+gberror_t ec_set_moo_pdo_rev_AX5101(const uint16_t drive) {
 
-gberror_t ec_set_moo_pdo_rev_AX5101(const uint16_t drive){
-
+    return E_NOT_IMPLEMENTED;
 
 }
 
@@ -862,7 +864,7 @@ gberror_t ec_set_moo_pdo_rev_AX5101(const uint16_t drive){
  * @return int32 position
  */
 
-int32_t ec_get_actpos_wrd_AX5101(const uint16_t drive){
+int32_t ec_get_actpos_wrd_AX5101(const uint16_t drive) {
     return ec_pdo_get_input_int32(map_drive_to_slave[drive], AX5101_ACTPOS_PDO_INDEX);
 }
 
@@ -874,7 +876,7 @@ int32_t ec_get_actpos_wrd_AX5101(const uint16_t drive){
  * @return gberror
  */
 
-gberror_t ec_set_setpos_wrd_AX5101(const uint16_t drive, const int32_t setpos){
+gberror_t ec_set_setpos_wrd_AX5101(const uint16_t drive, const int32_t setpos) {
     ec_pdo_set_output_int32(map_drive_to_slave[drive], AX5101_SETPOS_PDO_INDEX, setpos);
     return E_SUCCESS;
 }
@@ -885,7 +887,7 @@ gberror_t ec_set_setpos_wrd_AX5101(const uint16_t drive, const int32_t setpos){
  * @param drive
  * @return true remote bit is set (ok) false not set
  */
-bool ec_get_remote_AX5101(const uint16_t drive){
+bool ec_get_remote_AX5101(const uint16_t drive) {
 //there is no remote bit on the AX5101
     return true;
 }
@@ -906,17 +908,18 @@ window
 */
 
 
-bool ec_get_follow_error_AX5101(const uint16_t drive){
+bool ec_get_follow_error_AX5101(const uint16_t drive) {
 
     //read follow error bytes and threshold
     //the follow error is large until the drive reaches operation enabled
 
 //printf("follow error El7211 [%d]\n", ec_pdo_get_input_int32(map_drive_to_slave[drive], AX5101_FOLLOWERROR_ACTVAL_PDO_INDEX));
 
-if (ecm_status.machine_state != CIA_OPERATION_ENABLED){
-    return false;
-}
-    if (abs(ec_pdo_get_input_int32(map_drive_to_slave[drive], AX5101_FOLLOWERROR_ACTVAL_PDO_INDEX)) > AX5101_FOLLOW_ERROR_TOLERANCE){
+    if (ecm_status.machine_state != CIA_OPERATION_ENABLED) {
+        return false;
+    }
+    if (abs(ec_pdo_get_input_int32(map_drive_to_slave[drive], AX5101_FOLLOWERROR_ACTVAL_PDO_INDEX)) >
+        AX5101_FOLLOW_ERROR_TOLERANCE) {
         return true;
     }
     return false;

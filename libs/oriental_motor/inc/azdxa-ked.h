@@ -34,30 +34,45 @@ extern uint16_t map_SM3_index_of_assigned_PDO_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTR
 
 /** Slave functions */
 gberror_t ec_pdo_map_azd2a_ked(const uint16_t slave);
+
 gberror_t ec_pdo_map_azd3a_ked(const uint16_t slave);
+
 gberror_t ec_pdo_map_azd4a_ked(const uint16_t slave);
 
 
-
 gberror_t ec_initial_pdo_azdxa_ked(const uint16_t slave);
+
 gberror_t ec_apply_standard_sdos_azdxa_ked(uint16_t slave);
+
 int8_t ec_get_moo_pdo_azdxa_ked(const uint16_t drive);
-uint8_t * ec_get_error_string_pdo_azdxa_ked(const uint16_t drive);
+
+uint8_t *ec_get_error_string_pdo_azdxa_ked(const uint16_t drive);
+
 gberror_t ec_nvram_sdos_azdxa_ked(const uint16_t slave);
+
 gberror_t ec_write_nvram_azdxa_ked(const uint16_t slave);
 
 /** Drive functions */
 gberror_t ec_set_ctrl_wrd_azdxa_ked(const uint16_t drive, const uint16_t ctrlwrd);
+
 uint16_t ec_get_stat_wrd_azdxa_ked(const uint16_t drive);
+
 int32_t ec_get_actpos_wrd_azdxa_ked(const uint16_t drive);
+
 gberror_t ec_set_setpos_wrd_azdxa_ked(const uint16_t drive, const int32_t setpos);
+
 bool ec_get_remote_azdxa_ked(const uint16_t drive);
+
 bool ec_get_follow_error_azdxa_ked(const uint16_t drive);
 
 uint16_t ec_get_ctrl_wrd_rev_azdxa_ked(const uint16_t drive);
+
 gberror_t ec_set_stat_wrd_rev_azdxa_ked(const uint16_t drive, const uint16_t statwrd);
+
 gberror_t ec_set_actpos_wrd_rev_azdxa_ked(const uint16_t drive, const int32_t actpos);
+
 int32_t ec_get_setpos_word_rev_azdxa_ked(const uint16_t drive);
+
 gberror_t ec_set_moo_pdo_rev_azdxa_ked(const uint16_t drive);
 
 #define ORIENTAL_MOTOR_MAN 0x2BE
@@ -81,7 +96,7 @@ gberror_t ec_set_moo_pdo_rev_azdxa_ked(const uint16_t drive);
 #define NUM_OF_AZD_ERROR_STRINGS 42
 
 /* AZD drive extended statusword bit numbers (CSP) */
-#define AZD_STATUSWORD_TLC_BIT_NUM                      		(15)
+#define AZD_STATUSWORD_TLC_BIT_NUM                            (15)
 
 
 /* Homing mode status word */
@@ -102,11 +117,11 @@ gberror_t ec_set_moo_pdo_rev_azdxa_ked(const uint16_t drive);
 
 
 /* AZD controller - controlword bit numbers (for controller command 1 */
-#define AZDXA_KED_CONTROLLER_CONTROLWORD_ALARM_RESET_BIT_NUM    		(0)
+#define AZDXA_KED_CONTROLLER_CONTROLWORD_ALARM_RESET_BIT_NUM            (0)
 
 /* AZD controller - controlword bit numbers (for controller command 2 */
-#define AZDXA_KED_CONTROLLER_CONTROLWORD_FAULT_RESET_BIT_NUM    		(0)
-#define AZDXA_KED_CONTROLLER_CONTROLWORD_STOP_BIT_NUM            		(1)
+#define AZDXA_KED_CONTROLLER_CONTROLWORD_FAULT_RESET_BIT_NUM            (0)
+#define AZDXA_KED_CONTROLLER_CONTROLWORD_STOP_BIT_NUM                    (1)
 
 /* AZD controller - statusword bit numbers (for controller status 1 */
 #define AZDXA_KED_CONTROLLER_STATUSWORD_ALARM_BIT_NUM                 (0)
@@ -130,7 +145,7 @@ typedef struct {
 extern const azdxa_ked_error_string_t azdxa_ked_alarm_code[NUM_OF_AZD_ERROR_STRINGS];
 
 /* These define the position of objects in the PDO - number of bytes from start of input or output */
-//need to decide on these
+
 //static const uint16_t AZDXA_KED_SETPOS_DRIVE_1_INDEX = 2;
 
 #define AZDXA_KED_SETPOS_PDO_DRIVE1_INDEX        2

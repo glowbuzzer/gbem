@@ -11,7 +11,7 @@ SET(JSON_CONFIG_FILENAME "config.json")
 SET(CTRL_ENABLE_FORCING 0)
 SET(PLC_ENABLE_FORCING 0)
 
-#Enables emstat (writing of status json files periodically
+##Enables emstat (writing of status json files periodically
 SET(ENABLE_EMSTAT 0)
 
 #defines for which signal to send to GBC */
@@ -54,6 +54,6 @@ add_compile_definitions(GBEM_MISSING_FUN_LOG_EN=0)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_definitions(DEBUG_BUILD=0)
-else()
+else ()
     add_compile_definitions(DEBUG_BUILD=1)
-endif()
+endif ()

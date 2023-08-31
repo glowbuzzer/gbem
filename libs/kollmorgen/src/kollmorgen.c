@@ -119,7 +119,8 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
     // BIT 4 = Scaling is done using special DS402 - objects (independent on units)
     BIT_SET(uob32, 4);
     if (!ec_sdo_write_uint32(slave, 0x36E9, 0x0, uob32)) {
-        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (No emergency messages &/or special DS402 objects)");
+        LL_ERROR(GBEM_GEN_LOG_EN,
+                 "GBEM: AKD error applying custom sdo (No emergency messages &/or special DS402 objects)");
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -390,12 +391,14 @@ gberror_t ec_pdo_map_alt_akd(const uint16_t slave) {
  * @param
  * @return false no follow error, true a follow error
  */
-bool ec_get_follow_error_akd(const uint16_t drive){
+bool ec_get_follow_error_akd(const uint16_t drive) {
 
-return false;
+    return false;
     //read follow error bytes and threshold
-    if (ec_pdo_get_input_uint32(map_drive_to_slave[drive], AKD_FOLLOWERROR_ACTVAL_PDO_INDEX) > AKD_FOLLOW_ERROR_TOLLERANCE){
-        printf("follow error %u\n", ec_pdo_get_input_uint32(map_drive_to_slave[drive], AKD_FOLLOWERROR_ACTVAL_PDO_INDEX));
+    if (ec_pdo_get_input_uint32(map_drive_to_slave[drive], AKD_FOLLOWERROR_ACTVAL_PDO_INDEX) >
+        AKD_FOLLOW_ERROR_TOLLERANCE) {
+        printf("follow error %u\n",
+               ec_pdo_get_input_uint32(map_drive_to_slave[drive], AKD_FOLLOWERROR_ACTVAL_PDO_INDEX));
 
         return true;
     }
@@ -431,7 +434,7 @@ __attribute__(( weak ))int8_t ec_get_moo_sdo_akd(const uint16_t drive) {
  * @warning doesn't process warning codes (but does read them)
  * @warning only returns one fault
  */
-uint8_t *ec_get_error_string_sdo_akd(const uint16_t drive) {
+const uint8_t *ec_get_error_string_sdo_akd(const uint16_t drive) {
     uint32_t ib32 = 0;
 
     //these error codes are only accessible through SDO reads and so can't be accessed every cycle
@@ -446,7 +449,7 @@ uint8_t *ec_get_error_string_sdo_akd(const uint16_t drive) {
         return error_reading_drive_error;
     }
 
-    if (ib32==0){
+    if (ib32 == 0) {
         return error_code_no_error;
     }
 
@@ -459,7 +462,7 @@ uint8_t *ec_get_error_string_sdo_akd(const uint16_t drive) {
     //loop over all few hundred error codes to match the one we have - could do a better search algo here
     for (int i = 0; i < NUM_OF_AKD_ERROR_STRINGS; i++) {
         if (akd_error_code_description[i].numeric_code == ib32) {
-            return akd_error_code_description[i].description;
+            return (uint8_t *) akd_error_code_description[i].description;
         }
     }
     return error_code_not_found;

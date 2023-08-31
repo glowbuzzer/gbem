@@ -28,14 +28,10 @@
 #include "kollmorgen.h"
 #include "jvl_mis.h"
 
-#ifdef GB_APP_LINUX
 
 #include "status.h"
 #include <unistd.h>
 
-#else
-#include "FreeRTOS.h"
-#endif
 
 /** global holding dc delta */
 extern int64 gl_delta;
@@ -73,22 +69,16 @@ static bool __attribute__((unused)) check_slave_dc_sysdiff_less_than_threshold(c
  */
 void ECNetscan(const bool apply_pdo_mapping_before_netscan) {
 
-#ifdef GB_APP_LINUX
     ecm_netscan(eth_interface1, apply_pdo_mapping_before_netscan);
-#else
-    ecm_netscan();
-#endif
+
 
     //copy the contents of the ec_slave struct to the ecm_status struct (shared mem to gbc-m4 for gui)
     copy_ec_slave_to_ecm_status();
     ecm_status.net_scan_state = ECM_NET_SCAN_FINISHED;
     UM_INFO(GBEM_UM_EN, "GBEM: net scan finished");
 
-#ifndef GB_APP_LINUX
-    vTaskDelete( NULL);
-#else
+
     exit(EXIT_SUCCESS);
-#endif
 }
 
 
@@ -218,12 +208,10 @@ void ec_check(void *argument) {
             }
         }
         //delay before we tick round and run the error check again
-#ifndef GB_APP_LINUX
-        vTaskDelay(50);
-#else
+
         //500ms
         usleep(500000);
-#endif
+
     }
 }
 
@@ -270,9 +258,9 @@ static int custom_slave_config(uint16 slave) {
 
     if (*map_slave_standard_sdo_function_ptr[slave - 1] != NULL) {
         if ((*map_slave_standard_sdo_function_ptr[slave - 1])(slave) == E_SUCCESS) {
-            UM_INFO(GBEM_UM_EN, "GBEM: applying standard SDOs succeeded for slave [%u]", slave);
+            UM_INFO(GBEM_UM_EN, "GBEM: Applying standard SDOs succeeded for slave [%u]", slave);
         } else {
-            UM_ERROR(GBEM_UM_EN, "GBEM: applying standard SDOs failed for slave [%u]", slave);
+            UM_ERROR(GBEM_UM_EN, "GBEM: Applying standard SDOs failed for slave [%u]", slave);
             apply_standard_sdos_failure = true;
         }
     }
@@ -571,11 +559,8 @@ bool ec_step_3_preop(void) {
     ec_slave[0].state = EC_STATE_PRE_OP;
     ec_writestate(0);
 
-#ifdef GB_APP_LINUX
     usleep(200);
-#else
-    vTaskDelay(100);
-#endif
+
 
     /* '0' here addresses all slaves */
     if (ec_statecheck(0, EC_STATE_PRE_OP, 8 * EC_TIMEOUTSTATE) == EC_STATE_PRE_OP) {
@@ -594,12 +579,9 @@ bool ec_step_3_preop(void) {
             UM_FATAL("GBEM: The size of slave io map is greater than the maximum we allow (increase ECM_IO_MAP_SIZE)");
         }
         return true;
-#ifdef GB_APP_LINUX
 //            usleep(500000);
         sleep(3);
-#else
-        vTaskDelay(1000);
-#endif
+
 
     } else {
         UM_ERROR(GBEM_UM_EN, "GBEM: Boot step 3 >failure< (transition all slaves to PRE OP state)");
@@ -618,11 +600,9 @@ bool ec_step_5_error_check(void) {
     while (EcatError) {
         ec_boot_ecaterror_count++;
         UM_ERROR(GBEM_UM_EN, "GBEM: EtherCAT error detected [%s]", ec_elist2string());
-#ifdef GB_APP_LINUX
+
         usleep(500000);
-#else
-        vTaskDelay(5000);
-#endif
+
         if (ec_boot_ecaterror_count > 20) {
             break;
         }
@@ -678,11 +658,7 @@ bool ec_step_6_safeop(void) {
  * @return
  */
 bool ec_step_7_wkc_check(void) {
-#ifdef GB_APP_LINUX
     sleep(1);
-#else
-    //        vTaskDelay(3000);
-#endif
 
 
     int temp_wkc = ec_receive_processdata(EC_TIMEOUTRET);
@@ -750,18 +726,11 @@ bool ec_step_9_op(void) {
 
     if (ec_statecheck(0, EC_STATE_OPERATIONAL, (5 * EC_TIMEOUTSTATE)) == EC_STATE_OPERATIONAL) {
         UM_INFO(GBEM_UM_EN, "GBEM: Boot step 9 >success< (transition all slaves to OP state)");
-#ifdef GB_APP_LINUX
         sleep(1);
-#else
-        //            vTaskDelay(1000);
-#endif
 
 
-#ifdef GB_APP_LINUX
         sleep(2);
-#else
-        //            vTaskDelay(2000);
-#endif
+
 
         return true;
     } else {
@@ -795,11 +764,9 @@ void ECBoot(void *argument) {
     UM_INFO(GBEM_UM_EN, "GBEM: ***                    Start of cyclic boot process                    ***");
     UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
     ecm_status.cyclic_state = ECM_PRE_BOOT;
-#ifdef GB_APP_LINUX
+
     sleep(2);
-#else
-    vTaskDelay(2000);
-#endif
+
 
     /* first let's try and initialise the network adapter */
     /* we need to call this even with a single hardcoded NIC as it assigns a load of pointers */
@@ -923,6 +890,7 @@ void ECBoot(void *argument) {
             }
 
             print_slave_dc_local_config(i);
+#if PRINT_1C32_INFO == 1
             gbrc = print_1c32(i);
             if (gbrc != E_SUCCESS) {
                 UM_WARN(GBEM_UM_EN, "GBEM: Could not print 1c32 information for slave [%u]. Error [%s]", i,
@@ -930,6 +898,7 @@ void ECBoot(void *argument) {
                 UM_WARN(GBEM_UM_EN,
                         "GBEM: If you have debug logging enabled, you will see some failed SDO read messages in the proceeding console lines");
             }
+#endif
         }
     }
     /* !! Once we are in operational mode it is ESSENTIAL that we keep sending process data to avoid the slave's watchdog (WD) being activated
@@ -944,6 +913,9 @@ void ECBoot(void *argument) {
         UM_INFO(GBEM_UM_EN, "GBEM: ***                  The boot process was successful                   ***");
         UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
         ecm_status.boot_state.boot_sucessful = true;
+
+
+
 
         //This calls a function that can be defined for each drive to print out useful config information
         for (int i = 0; i < MAP_NUM_DRIVES; i++) {
@@ -986,33 +958,22 @@ void ECBoot(void *argument) {
     //fills out ecm_status with things like MAP_NUM_DRIVES
     init_ecm_status();
 
-#ifndef GB_APP_LINUX
-    //    xReturned = xTaskCreate(ec_heck, "ec_check_task", configMINIMAL_STACK_SIZE, NULL, EC_CHECK_TASK_PRIO, NULL);
-//    if (xReturned != pdPASS) {
-//        UM_FATAL("GBEM: freertos could not create the ec_check task, this is very bad indeed");
-//    }
+//RT-sensitive
 
-#else
-
-//    rc = osal_thread_create_rt(&thread_ec_check, STACK64K * 2, &ec_check, NULL);
-//    if (rc != 1) {
-//        UM_FATAL(
-//                "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
-//    }
-#endif
+    rc = osal_thread_create_rt(&thread_ec_check, STACK64K * 2, &ec_check, NULL);
+    if (rc != 1) {
+        UM_FATAL(
+                "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
+    }
 
 
-#ifdef GB_APP_LINUX
 #if ENABLE_EMSTAT == 1
+    //RT-sensitive
     rc = osal_thread_create_rt(&thread_ec_emstat, STACK64K * 2, &ec_emstat, NULL);
     if (rc != 1) {
         UM_FATAL(
                 "GBEM: An error occurred whilst creating the pthread (ec_emstat which is the thread to create JSON status messages) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
     }
-#endif
-#else
-    vTaskDelete(NULL);
-
 #endif
 
 //this is needed ONLY if the display / ecmstat is disabled
@@ -1046,8 +1007,8 @@ gberror_t ec_slaves_match(void) {
         if (strcmp(ec_slave[i + 1].name, ecm_slave_map[i].name)) {
             return E_SLAVE_NAME_MATCH_FAILURE;
         }
-#ifdef ECM_CHECK_EEP_MAN
-        if (ecm_slave_map[i].eep_man==0){
+#if ECM_CHECK_EEP_MAN == 1
+        if (ecm_slave_map[i].eep_man == 0) {
             LL_WARN(GBEM_GEN_LOG_EN, "GBEM: ECM_CHECK_EEP_MAN is defined but slave [%u] has a 0 manufacturer");
         }
         if (ec_slave[i + 1].eep_man != ecm_slave_map[i].eep_man) {
@@ -1055,8 +1016,8 @@ gberror_t ec_slaves_match(void) {
         }
 #endif
 
-#ifdef ECM_CHECK_EEP_ID
-        if (ecm_slave_map[i].eep_id==0){
+#if ECM_CHECK_EEP_ID == 1
+        if (ecm_slave_map[i].eep_id == 0) {
             LL_WARN(GBEM_GEN_LOG_EN, "GBEM: ECM_CHECK_EEP_ID is defined but slave [%u] has a 0 id");
         }
 
@@ -1064,8 +1025,8 @@ gberror_t ec_slaves_match(void) {
             return E_SLAVE_EEP_ID_MATCH_FAILURE;
         }
 #endif
-#ifdef ECM_CHECK_EEP_REV
-        if (ecm_slave_map[i].eep_rev==0){
+#if ECM_CHECK_EEP_REV == 1
+        if (ecm_slave_map[i].eep_rev == 0) {
             LL_WARN(GBEM_GEN_LOG_EN, "GBEM: ECM_CHECK_EEP_REV is defined but slave [%u] has a 0 revision id");
         }
         if (ec_slave[i + 1].eep_rev != ecm_slave_map[i].eep_rev) {

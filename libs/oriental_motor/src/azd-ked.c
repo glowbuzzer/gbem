@@ -98,14 +98,14 @@ gberror_t ec_pdo_map_azd_ked(const uint16_t slave) {
 
     for (int i = 0; i < map_SM2_azd_ked.number_of_entries; i++) {
         if (!ec_sdo_write_uint8(slave, map_SM2_azd_ked.SM_assignment_index, i + 1,
-                                 map_SM2_index_of_assigned_PDO_azd_ked[i])) {
+                                map_SM2_index_of_assigned_PDO_azd_ked[i])) {
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     for (int i = 0; i < map_SM3_azd_ked.number_of_entries; i++) {
         if (!ec_sdo_write_uint8(slave, map_SM3_azd_ked.SM_assignment_index, i + 1,
-                                 map_SM3_index_of_assigned_PDO_azd_ked[i])) {
+                                map_SM3_index_of_assigned_PDO_azd_ked[i])) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -189,7 +189,8 @@ gberror_t ec_initial_pdo_azd_ked(const uint16_t slave) {
     ec_pdo_set_output_int8(slave, AZD_KED_MOOSET_PDO_INDEX, CIA_MOO_CSP);
 
     LL_INFO(GBEM_GEN_LOG_EN,
-            "GBEM: Applying initial PDO writes for AZD-KED drive slave [%u], offset [%u], value [%u]", slave, AZD_KED_MOOSET_PDO_INDEX, CIA_MOO_CSP);
+            "GBEM: Applying initial PDO writes for AZD-KED drive slave [%u], offset [%u], value [%u]", slave,
+            AZD_KED_MOOSET_PDO_INDEX, CIA_MOO_CSP);
 
     if (ec_iserror()) {
         LL_ERROR(GBEM_GEN_LOG_EN,
@@ -223,7 +224,7 @@ uint8_t *ec_get_error_string_pdo_azd_ked(const uint16_t drive) {
     for (int i = 0; i < NUM_OF_AZD_ERROR_STRINGS; i++) {
         if (azd_ked_alarm_code[i].error_id == drive_error_code) {
             memset(&error_code_string[0], 0, sizeof(error_code_string));
-            strncpy(&error_code_string[0], azd_ked_alarm_code[i].text_string, sizeof(error_code_string) - 1);
+            strncpy((char *) &error_code_string[0], azd_ked_alarm_code[i].text_string, sizeof(error_code_string) - 1);
             break;
         }
     }
@@ -317,7 +318,7 @@ uint16_t ec_get_stat_wrd_azd_ked(const uint16_t drive) {
 gberror_t ec_set_setpos_wrd_azd_ked(const uint16_t drive, const int32_t setpos) {
 
     ec_pdo_set_output_int32(map_drive_to_slave[drive], AZD_KED_SETPOS_PDO_INDEX, setpos);
-return E_SUCCESS;
+    return E_SUCCESS;
 }
 
 /**
@@ -329,7 +330,7 @@ return E_SUCCESS;
  */
 gberror_t ec_set_actpos_wrd_rev_azd_ked(const uint16_t drive, const int32_t actpos) {
     ec_pdo_set_input_int32_rev(map_drive_to_slave[drive], AZD_KED_ACTPOS_PDO_INDEX, actpos);
-return E_SUCCESS;
+    return E_SUCCESS;
 }
 
 /**

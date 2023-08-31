@@ -450,16 +450,20 @@ uint8_t *ec_get_error_string_pdo_azdxa_ked(const uint16_t drive) {
     uint16_t drive_error_code = 0;
     switch (map_drive_to_subdrive[drive]) {
         case 1:
-            drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive], AZDXA_KED_ERROR_CODE_PDO_DRIVE1_INDEX);
+            drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive],
+                                                       AZDXA_KED_ERROR_CODE_PDO_DRIVE1_INDEX);
             break;
         case 2:
-            drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive], AZDXA_KED_ERROR_CODE_PDO_DRIVE2_INDEX);
+            drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive],
+                                                       AZDXA_KED_ERROR_CODE_PDO_DRIVE2_INDEX);
             break;
         case 3:
-            drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive], AZDXA_KED_ERROR_CODE_PDO_DRIVE3_INDEX);
+            drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive],
+                                                       AZDXA_KED_ERROR_CODE_PDO_DRIVE3_INDEX);
             break;
         case 4:
-            drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive], AZDXA_KED_ERROR_CODE_PDO_DRIVE4_INDEX);
+            drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive],
+                                                       AZDXA_KED_ERROR_CODE_PDO_DRIVE4_INDEX);
             break;
         default:
             LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
@@ -473,7 +477,7 @@ uint8_t *ec_get_error_string_pdo_azdxa_ked(const uint16_t drive) {
     for (int i = 0; i < NUM_OF_AZD_ERROR_STRINGS; i++) {
         if (azdxa_ked_alarm_code[i].error_id == drive_error_code) {
             memset(&error_code_string[0], 0, sizeof(error_code_string));
-            strncpy(&error_code_string[0], azdxa_ked_alarm_code[i].text_string, sizeof(error_code_string) - 1);
+            strncpy((char *) &error_code_string[0], azdxa_ked_alarm_code[i].text_string, sizeof(error_code_string) - 1);
             break;
         }
     }
@@ -497,25 +501,29 @@ gberror_t ec_write_nvram_azdxa_ked(const uint16_t slave) {
             //this is a drive attached to the slave
             switch (map_drive_to_subdrive[i]) {
                 case 1:
-                    if (!ec_sdo_write_int8(slave, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE1_INDEX, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE1_SUB_INDEX,
+                    if (!ec_sdo_write_int8(slave, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE1_INDEX,
+                                           AZDXA_KED_WRITE_CONFIG_SDO_DRIVE1_SUB_INDEX,
                                            AZDXA_KED_WRITE_CONFIG_SDO_DRIVE1_VALUE)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     break;
                 case 2:
-                    if (!ec_sdo_write_int8(slave, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE2_INDEX, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE2_SUB_INDEX,
+                    if (!ec_sdo_write_int8(slave, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE2_INDEX,
+                                           AZDXA_KED_WRITE_CONFIG_SDO_DRIVE2_SUB_INDEX,
                                            AZDXA_KED_WRITE_CONFIG_SDO_DRIVE2_VALUE)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     break;
                 case 3:
-                    if (!ec_sdo_write_int8(slave, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE3_INDEX, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE3_SUB_INDEX,
+                    if (!ec_sdo_write_int8(slave, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE3_INDEX,
+                                           AZDXA_KED_WRITE_CONFIG_SDO_DRIVE3_SUB_INDEX,
                                            AZDXA_KED_WRITE_CONFIG_SDO_DRIVE3_VALUE)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     break;
                 case 4:
-                    if (!ec_sdo_write_int8(slave, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE4_INDEX, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE4_SUB_INDEX,
+                    if (!ec_sdo_write_int8(slave, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE4_INDEX,
+                                           AZDXA_KED_WRITE_CONFIG_SDO_DRIVE4_SUB_INDEX,
                                            AZDXA_KED_WRITE_CONFIG_SDO_DRIVE4_VALUE)) {
                         return E_SDO_WRITE_FAILURE;
                     }

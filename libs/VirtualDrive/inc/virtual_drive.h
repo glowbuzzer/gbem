@@ -30,6 +30,12 @@ bool ec_get_remote_aw_j_virtual(uint16_t drive);
 
 bool ec_get_follow_error_virtual(uint16_t drive);
 
-bool ec_get_remote_virtual(const uint16_t drive);
+bool ec_get_remote_virtual(uint16_t drive);
+
+int8_t ec_get_moo_pdo_virtual(uint16_t drive);
+
+//ec_get_error_string_pdo_virtual
+uint8_t *ec_get_error_string_pdo_virtual(uint16_t drive);
+
 
 #endif //GBEM_VIRTUAL_H

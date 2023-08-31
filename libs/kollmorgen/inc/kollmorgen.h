@@ -24,22 +24,36 @@
 
 
 bool ec_get_remote_akd(uint16_t drive);
+
 gberror_t ec_standard_sdos_akd(uint16_t slave);
+
 gberror_t ec_pdo_map_akd(uint16_t slave);
+
 int8_t ec_get_moo_sdo_akd(uint16_t drive);
-uint8_t * ec_get_error_string_sdo_akd(uint16_t drive);
+
+const uint8_t *ec_get_error_string_sdo_akd(uint16_t drive);
+
 gberror_t ec_write_nvram_akd(uint16_t slave);
+
 gberror_t ec_nvram_sdos_akd(uint16_t slave);
 
 
 gberror_t ec_set_ctrl_wrd_akd(uint16_t drive, uint16_t ctrlwrd);
+
 uint16_t ec_get_stat_wrd_akd(uint16_t drive);
+
 uint16_t ec_get_ctrl_wrd_rev_akd(uint16_t drive);
+
 gberror_t ec_set_stat_wrd_rev_akd(uint16_t drive, uint16_t statwrd);
+
 gberror_t ec_set_actpos_wrd_rev_akd(uint16_t drive, int32_t actpos);
+
 int32_t ec_get_setpos_word_rev_akd(uint16_t drive);
+
 int32_t ec_get_actpos_wrd_akd(uint16_t drive);
+
 gberror_t ec_set_setpos_wrd_akd(uint16_t drive, int32_t setpos);
+
 bool ec_get_follow_error_akd(uint16_t drive);
 
 bool print_akd_sync_params(const uint16_t slave);
@@ -49,7 +63,6 @@ bool print_akd_sync_params(const uint16_t slave);
 #define AKD_EEP_MAN KOLLMORGEN_MAN
 #define AKD_EEP_REV 0x00000002
 #define AKD_EEP_ID 0x00414B44
-
 
 
 #define AKD_SETPOS_PDO_INDEX                    0 //4 bytes
@@ -62,7 +75,7 @@ bool print_akd_sync_params(const uint16_t slave);
 
 
 /* AKD drive extended statusword bit numbers */
-#define AKD_STATUSWORD_STO_BIT_NUM      	    8
+#define AKD_STATUSWORD_STO_BIT_NUM            8
 
 #define AKD_FOLLOW_ERROR_TOLLERANCE             10000
 

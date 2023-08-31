@@ -56,6 +56,10 @@ int8_t ec_get_moo_pdo_virtual(const uint16_t drive) {
 
 }
 
+uint8_t *ec_get_error_string_pdo_virtual(uint16_t drive) {
+    return (uint8_t *) "No error";
+}
+
 
 bool ec_get_follow_error_virtual(const uint16_t drive) {
     return false;

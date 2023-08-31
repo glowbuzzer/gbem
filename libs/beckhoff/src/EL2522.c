@@ -108,10 +108,12 @@ gberror_t ec_standard_sdos_el2522(const uint16_t slave) {
 //        return E_SDO_WRITE_FAILURE;
 //    }
 
-    if (!ec_sdo_write_uint8(slave, EL2522_OPERATION_MODE_CH1_SDO_INDEX, EL2522_OPERATION_MODE_CH1_SDO_SUB_INDEX, EL2522_OPERATION_MODE_CH1_SDO_VALUE)) {
+    if (!ec_sdo_write_uint8(slave, EL2522_OPERATION_MODE_CH1_SDO_INDEX, EL2522_OPERATION_MODE_CH1_SDO_SUB_INDEX,
+                            EL2522_OPERATION_MODE_CH1_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, EL2522_OPERATION_MODE_CH2_SDO_INDEX, EL2522_OPERATION_MODE_CH2_SDO_SUB_INDEX, EL2522_OPERATION_MODE_CH2_SDO_VALUE)) {
+    if (!ec_sdo_write_uint8(slave, EL2522_OPERATION_MODE_CH2_SDO_INDEX, EL2522_OPERATION_MODE_CH2_SDO_SUB_INDEX,
+                            EL2522_OPERATION_MODE_CH2_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -120,7 +122,7 @@ gberror_t ec_standard_sdos_el2522(const uint16_t slave) {
 
 }
 
-gberror_t ec_initial_pdo_el2522(uint16_t slave){
+gberror_t ec_initial_pdo_el2522(uint16_t slave) {
 
     ec_pdo_set_output_uint16(slave, EL2522_CTRLWRD_CH1_PDO_INDEX, 0b1000);
 
@@ -147,7 +149,7 @@ bool ec_get_follow_error_el2522(const uint16_t drive) {
 
 uint8_t *ec_get_error_string_sdo_el2522(const uint16_t drive) {
 
-    return "EL2522: This device doesn't support error messages";
+    return (uint8_t *) "EL2522: This device doesn't support error messages";
 
 }
 
@@ -274,13 +276,15 @@ el2522_drive_state_bits_t ec_decode_drive_state_el2522(uint16_t statusword) {
 uint16_t ec_get_stat_wrd_el2522(const uint16_t drive) {
     switch (map_drive_to_subdrive[drive]) {
         case 1:
-           el2522_drive_state_bits[drive] = ec_decode_drive_state_el2522(ec_pdo_get_input_uint16(map_drive_to_slave[drive], EL2522_STATUSWORD_CH1_PDO_INDEX));
-           break;
-        case 2:
-            el2522_drive_state_bits[drive] = ec_decode_drive_state_el2522(ec_pdo_get_input_uint16(map_drive_to_slave[drive], EL2522_STATUSWORD_CH2_PDO_INDEX));
+            el2522_drive_state_bits[drive] = ec_decode_drive_state_el2522(
+                    ec_pdo_get_input_uint16(map_drive_to_slave[drive], EL2522_STATUSWORD_CH1_PDO_INDEX));
             break;
-            default:
-                LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
+        case 2:
+            el2522_drive_state_bits[drive] = ec_decode_drive_state_el2522(
+                    ec_pdo_get_input_uint16(map_drive_to_slave[drive], EL2522_STATUSWORD_CH2_PDO_INDEX));
+            break;
+        default:
+            LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
     }
 
 

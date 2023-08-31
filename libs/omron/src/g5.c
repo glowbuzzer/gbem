@@ -22,18 +22,17 @@
 #include "cia402.h"
 
 
-
-typedef struct{
+typedef struct {
     uint16_t main_error_num;
     uint16_t sub_error_num;
     char error_string[100];
-}g5_error_main_and_sub_t;
+} g5_error_main_and_sub_t;
 
 
-typedef struct{
+typedef struct {
     uint16_t main_error_num;
     char error_string[100];
-}g5_error_main_t;
+} g5_error_main_t;
 
 
 
@@ -161,13 +160,13 @@ g5_error_main_t g5_error_table_main[G5_NUM_MAIN_ERRORS] = {
         {0x26, "Overspeed"},
         {0x27, "Command Error"},
         {0x29, "Error Counter Overflow"},
-        {0x30,"Safety Input Error"},
+        {0x30, "Safety Input Error"},
         {0x33, "Interface Input Error"},
         {0x34, "Overrun Limit Error"},
         {0x36, "Oject Error"},
         {0x37, "Object Corrupted"},
-        {0x38,"Drive Prohibition Input Error"},
-        {0x40,"Absolute Encoder System Down Error"},
+        {0x38, "Drive Prohibition Input Error"},
+        {0x40, "Absolute Encoder System Down Error"},
         {0x41, "Absolute Encoder Counter Overflow Error"},
         {0x42, "Absolute Encoder Overspeed Error"},
         {0x43, "Encoder Initialization Error"},
@@ -178,8 +177,8 @@ g5_error_main_t g5_error_table_main[G5_NUM_MAIN_ERRORS] = {
         {0x49, "Encoder CS Signal Error"},
         {0x50, "External Encoder Error"},
         {0x51, "External Encoder Status Erro"},
-        {0x55,"Phase Connection Error"},
-        {0x83,"EtherCAT Error"},
+        {0x55, "Phase Connection Error"},
+        {0x83, "EtherCAT Error"},
         {0x87, "Immediate Stop Input Error"},
         {0x88, "ESC error"},
         {0x90, "Communications Setting Error"},
@@ -188,7 +187,6 @@ g5_error_main_t g5_error_table_main[G5_NUM_MAIN_ERRORS] = {
         {0x93, "Object Setting Error"},
         {0x95, "Motor Non-conformity"},
 };
-
 
 
 gberror_t ec_pdo_map_g5(const uint16_t slave) {
@@ -205,31 +203,34 @@ gberror_t ec_pdo_map_g5(const uint16_t slave) {
 }
 
 
-
 gberror_t ec_standard_sdos_g5(const uint16_t slave) {
     if (!ec_sdo_write_int8(slave, G5_MOOSET_SDO_INDEX, G5_MOOSET_SDO_SUB_INDEX, CIA_MOO_CSP)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_int16(slave, G5_DRIVE_PROHIBITION_INPUT_SDO_INDEX, G5_DRIVE_PROHIBITION_INPUT_SDO_SUB_INDEX, G5_DRIVE_PROHIBITION_INPUT_SDO_VALUE)) {
+    if (!ec_sdo_write_int16(slave, G5_DRIVE_PROHIBITION_INPUT_SDO_INDEX, G5_DRIVE_PROHIBITION_INPUT_SDO_SUB_INDEX,
+                            G5_DRIVE_PROHIBITION_INPUT_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_int32(slave, G5_SOFTWARE_POS_LIMIT_MIN_SDO_INDEX, G5_SOFTWARE_POS_LIMIT_MIN_SDO_SUB_INDEX, map_drive_neg_limit[slave -1])) {
+    if (!ec_sdo_write_int32(slave, G5_SOFTWARE_POS_LIMIT_MIN_SDO_INDEX, G5_SOFTWARE_POS_LIMIT_MIN_SDO_SUB_INDEX,
+                            map_drive_neg_limit[slave - 1])) {
 
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_int32(slave, G5_SOFTWARE_POS_LIMIT_MAX_SDO_INDEX, G5_SOFTWARE_POS_LIMIT_MAX_SDO_SUB_INDEX, map_drive_pos_limit[slave -1])) {
+    if (!ec_sdo_write_int32(slave, G5_SOFTWARE_POS_LIMIT_MAX_SDO_INDEX, G5_SOFTWARE_POS_LIMIT_MAX_SDO_SUB_INDEX,
+                            map_drive_pos_limit[slave - 1])) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_int32(slave, G5_SHAFT_REVOLUTIONS_SDO_INDEX, G5_SHAFT_REVOLUTIONS_SDO_SUB_INDEX, G5_SHAFT_REVOLUTIONS_SDO_VALUE)) {
+    if (!ec_sdo_write_int32(slave, G5_SHAFT_REVOLUTIONS_SDO_INDEX, G5_SHAFT_REVOLUTIONS_SDO_SUB_INDEX,
+                            G5_SHAFT_REVOLUTIONS_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_int32(slave, G5_MOTOR_REVOLUTIONS_SDO_INDEX, G5_MOTOR_REVOLUTIONS_SDO_SUB_INDEX, G5_MOTOR_REVOLUTIONS_SDO_VALUE)) {
+    if (!ec_sdo_write_int32(slave, G5_MOTOR_REVOLUTIONS_SDO_INDEX, G5_MOTOR_REVOLUTIONS_SDO_SUB_INDEX,
+                            G5_MOTOR_REVOLUTIONS_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
-
 
 
     return E_SUCCESS;
@@ -237,15 +238,14 @@ gberror_t ec_standard_sdos_g5(const uint16_t slave) {
 
 int8_t ec_get_moo_sdo_g5(const uint16_t drive) {
     int8_t moo;
-    if (!ec_sdo_read_int8(map_drive_to_slave[drive],G5_MOOGET_SDO_INDEX, G5_MOOGET_SDO_SUB_INDEX, &moo)){
+    if (!ec_sdo_read_int8(map_drive_to_slave[drive], G5_MOOGET_SDO_INDEX, G5_MOOGET_SDO_SUB_INDEX, &moo)) {
         return 0;
-    } else{
+    } else {
         printf("moo = [%d]\n", moo);
         return (CIA_MOO_CSP);
     }
 
 }
-
 
 
 bool ec_get_remote_g5(const uint16_t drive) {
@@ -261,7 +261,7 @@ bool ec_get_remote_g5(const uint16_t drive) {
 
 bool ec_get_follow_error_g5(const uint16_t drive) {
     int32_t follow_error = abs(ec_pdo_get_input_int32(map_drive_to_slave[drive], G5_ACTFOLLOWWERROR_PDO_INDEX));
-    if (follow_error>G5_FOLLOWERROR_TOLERANCE){
+    if (follow_error > G5_FOLLOWERROR_TOLERANCE) {
         return true;
     }
     return false;
@@ -277,7 +277,7 @@ uint8_t *ec_get_error_string_pdo_g5(const uint16_t drive) {
 
     for (int i = 0; i < G5_NUM_MAIN_ERRORS; i++) {
         if (g5_error_table_main[i].main_error_num == drive_error_code) {
-            strncpy(&error_code_string[0], g5_error_table_main[i].error_string, sizeof(error_code_string) - 1);
+            strncpy((char *) &error_code_string[0], g5_error_table_main[i].error_string, sizeof(error_code_string) - 1);
             break;
         }
     }
@@ -299,11 +299,11 @@ uint16_t ec_get_stat_wrd_g5(const uint16_t drive) {
 
 gberror_t ec_set_setpos_wrd_g5(const uint16_t drive, const int32_t setpos) {
     ec_pdo_set_output_int32(map_drive_to_slave[drive], G5_SETPOS_PDO_INDEX, setpos);
-        return E_SUCCESS;
+    return E_SUCCESS;
 }
 
 
-gberror_t ec_print_params_g5(const uint16_t drive){
+gberror_t ec_print_params_g5(const uint16_t drive) {
 
 
     return E_SUCCESS;

@@ -28,7 +28,7 @@ int8_t ec_get_moo_pdo_aw_j_series(uint16_t drive);
 /** Error functions */
 uint8_t *ec_get_error_string_sdo_aw_j_series(uint16_t drive);
 
-void ec_read_detailled_error_report_aw_j_series(uint16_t drive_number);
+uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(uint16_t drive_number);
 
 /** Drive functions */
 gberror_t ec_set_ctrl_wrd_aw_j_series(uint16_t drive, uint16_t ctrlwrd);
@@ -60,7 +60,7 @@ gberror_t ec_set_moo_pdo_rev_aw_j_series(uint16_t drive);
 
 //Number of error strings and error report strings for the AW J series drives
 #define NUM_OF_AW_J_SERIES_ERROR_STRINGS 26
-#define NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS 26
+#define NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS 98
 
 
 //PDO indexes for the AW J series drives - these are most easily found from a netscan of the drive

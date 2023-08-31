@@ -327,7 +327,7 @@ time_t etg1020_diag_timestamp_decode(const uint8_t *nsec_array) {
 
 
 
-void etg1020_diag_decode_params(uint8_t *message, etg1020_diag_message_t *result) {
+void etg1020_diag_decode_params(const uint8_t *message, etg1020_diag_message_t *result) {
     if (result->diag_flags.number_of_parameters) {
         //we have a parameter
         uint8_t current_byte = 16;
@@ -401,7 +401,7 @@ void etg1020_diag_decode_params(uint8_t *message, etg1020_diag_message_t *result
         }
     }
 
-    uint8_t *err_msg = &etg1020_diag_text[text_array_index].text_string[0];
+    uint8_t *err_msg = (uint8_t *) &etg1020_diag_text[text_array_index].text_string[0];
 
     if (etg1020_diag_text[text_array_index].num_params > result->diag_flags.number_of_parameters) {
         //num params in message dont match the error string we are about to print
@@ -416,48 +416,48 @@ changed by adding “:n” to the specifier. Counting starts with 0.*/
     for (int i = 0; i < strlen(etg1020_diag_text[text_array_index].text_string); i++) {
 //todo %d vs %u
         if (err_msg[i] != '%') {
-            sprintf(&result->diag_message_text[i], "%c", err_msg[i]);
+            sprintf((char *) &result->diag_message_text[i], "%c", err_msg[i]);
         } else {
             if (err_msg[i + 1] == 'd') {
                 switch (result->diag_params[arg_count].param_type) {
                     case ETG10120DIAG_PARAM_TYPE_BOOLEAN:
                         if (result->diag_params[arg_count].param_value == 1) {
-                            sprintf(&result->diag_message_text[i], "true");
+                            sprintf((char *) &result->diag_message_text[i], "true");
                         } else {
-                            sprintf(&result->diag_message_text[i], "false");
+                            sprintf((char *) &result->diag_message_text[i], "false");
                         }
                         break;
                     case ETG10120DIAG_PARAM_TYPE_INTEGER8:
-                        sprintf(&result->diag_message_text[i], "%u",
+                        sprintf((char *) &result->diag_message_text[i], "%u",
                                 (int8_t) result->diag_params[arg_count].param_value);
                         break;
 
                     case ETG10120DIAG_PARAM_TYPE_INTEGER16:
-                        sprintf(&result->diag_message_text[i], "%d",
+                        sprintf((char *) &result->diag_message_text[i], "%d",
                                 (int16_t) result->diag_params[arg_count].param_value);
                         break;
                     case ETG10120DIAG_PARAM_TYPE_INTEGER32:
-                        sprintf(&result->diag_message_text[i], "%d",
+                        sprintf((char *) &result->diag_message_text[i], "%d",
                                 (int32_t) result->diag_params[arg_count].param_value);
                         break;
                     case ETG10120DIAG_PARAM_TYPE_UNSIGNED8:
-                        sprintf(&result->diag_message_text[i], "%d",
+                        sprintf((char *) &result->diag_message_text[i], "%d",
                                 (uint8_t) result->diag_params[arg_count].param_value);
                         break;
                     case ETG10120DIAG_PARAM_TYPE_UNSIGNED16:
-                        sprintf(&result->diag_message_text[i], "%d",
+                        sprintf((char *) &result->diag_message_text[i], "%d",
                                 (uint16_t) result->diag_params[arg_count].param_value);
                         break;
                     case ETG10120DIAG_PARAM_TYPE_UNSIGNED32:
-                        sprintf(&result->diag_message_text[i], "%d",
+                        sprintf((char *) &result->diag_message_text[i], "%d",
                                 (uint32_t) result->diag_params[arg_count].param_value);
                         break;
                     case ETG10120DIAG_PARAM_TYPE_INTEGER64:
-                        sprintf(&result->diag_message_text[i], "%ld",
+                        sprintf((char *) &result->diag_message_text[i], "%ld",
                                 (int64_t) result->diag_params[arg_count].param_value);
                         break;
                     case ETG10120DIAG_PARAM_TYPE_UNSIGNED64:
-                        sprintf(&result->diag_message_text[i], "%ld",
+                        sprintf((char *) &result->diag_message_text[i], "%ld",
                                 (uint64_t) result->diag_params[arg_count].param_value);
                         break;
                     default:
@@ -466,37 +466,37 @@ changed by adding “:n” to the specifier. Counting starts with 0.*/
                 if ((err_msg[i + 1] == 'x') || (err_msg[i + 1] == 'X')) {
                     switch (result->diag_params[arg_count].param_type) {
                         case ETG10120DIAG_PARAM_TYPE_INTEGER8:
-                            sprintf(&result->diag_message_text[i], "%x",
+                            sprintf((char *) &result->diag_message_text[i], "%x",
                                     (int8_t) result->diag_params[arg_count].param_value);
                             break;
 
                         case ETG10120DIAG_PARAM_TYPE_INTEGER16:
-                            sprintf(&result->diag_message_text[i], "%x",
+                            sprintf((char *) &result->diag_message_text[i], "%x",
                                     (int16_t) result->diag_params[arg_count].param_value);
                             break;
                         case ETG10120DIAG_PARAM_TYPE_INTEGER32:
-                            sprintf(&result->diag_message_text[i], "%x",
+                            sprintf((char *) &result->diag_message_text[i], "%x",
                                     (int32_t) result->diag_params[arg_count].param_value);
                             break;
                         case ETG10120DIAG_PARAM_TYPE_UNSIGNED8:
-                            sprintf(&result->diag_message_text[i], "%x",
+                            sprintf((char *) &result->diag_message_text[i], "%x",
                                     (uint8_t) result->diag_params[arg_count].param_value);
                             break;
                         case ETG10120DIAG_PARAM_TYPE_UNSIGNED16:
-                            sprintf(&result->diag_message_text[i], "%x",
+                            sprintf((char *) &result->diag_message_text[i], "%x",
                                     (uint16_t) result->diag_params[arg_count].param_value);
                             break;
                         case ETG10120DIAG_PARAM_TYPE_UNSIGNED32:
-                            sprintf(&result->diag_message_text[i], "%x",
+                            sprintf((char *) &result->diag_message_text[i], "%x",
                                     (uint32_t) result->diag_params[arg_count].param_value);
                             break;
 
                         case ETG10120DIAG_PARAM_TYPE_INTEGER64:
-                            sprintf(&result->diag_message_text[i], "%lx",
+                            sprintf((char *) &result->diag_message_text[i], "%lx",
                                     (int64_t) result->diag_params[arg_count].param_value);
                             break;
                         case ETG10120DIAG_PARAM_TYPE_UNSIGNED64:
-                            sprintf(&result->diag_message_text[i], "%lx",
+                            sprintf((char *) &result->diag_message_text[i], "%lx",
                                     (uint64_t) result->diag_params[arg_count].param_value);
                             break;
                         default:
@@ -507,11 +507,11 @@ changed by adding “:n” to the specifier. Counting starts with 0.*/
                 if (err_msg[i + 1] == 'f') {
                     switch (result->diag_params[arg_count].param_type) {
                         case ETG10120DIAG_PARAM_TYPE_REAL32:
-                            sprintf(&result->diag_message_text, "%f",
+                            sprintf((char *) &result->diag_message_text, "%f",
                                     (float) result->diag_params[arg_count].param_value);
                             break;
                         case ETG10120DIAG_PARAM_TYPE_REAL64:
-                            sprintf(&result->diag_message_text, "%lf",
+                            sprintf((char *) &result->diag_message_text, "%lf",
                                     (double) result->diag_params[arg_count].param_value);
                             break;
                         default:
@@ -524,11 +524,11 @@ changed by adding “:n” to the specifier. Counting starts with 0.*/
             if (err_msg[i + 1] == 's') {
 
                 if (result->diag_params[arg_count].param_type == ETG10120DIAG_PARAM_TYPE_BYTEARRAY) {
-                    sprintf(&result->diag_message_text[i], "%s",
+                    sprintf((char *) &result->diag_message_text[i], "%s",
                             result->diag_params[arg_count].param_byte_array);
                 }
                 if (result->diag_params[arg_count].param_type == ETG10120DIAG_PARAM_TYPE_ASCIISTRING) {
-                    sprintf(&result->diag_message_text[i], "%s",
+                    sprintf((char *) &result->diag_message_text[i], "%s",
                             result->diag_params[arg_count].param_ascii_array);
                 }
                 if (result->diag_params[arg_count].param_type ==

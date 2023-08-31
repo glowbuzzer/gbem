@@ -86,7 +86,7 @@ message(STATUS "GB: CURRENT_SOURCE_DIR [${CMAKE_CURRENT_SOURCE_DIR} ]")
 
 add_executable(GBEM ${SOURCES})
 
-target_link_libraries(GBEM EtherCAT Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen automationware virtual_drive delta JVL omron oriental_motor unity gberror gbem_config etg m rt)
+target_link_libraries(GBEM EtherCAT Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen automationware virtual_drive RTA trio delta JVL omron oriental_motor unity gberror gbem_config etg m rt)
 target_include_directories(GBEM PUBLIC "inc" "shared/inc" "plc_user_code" ${PROJECT_BINARY_DIR}/version ${gbem_config_BINARY_DIR})
 
 add_executable(GBEM_testStateMachine shared/src/control.c shared/src/ec_functions.c src/ecrxtx.c src/ethercatnetscan.c src/status.c shared/src/json-maker.c shared/src/float_int_conv.c test/src/test.c test/src/testStateMachine.c shared/src/plc_core.c plc_user_code/plc_init.c src/cyclic_message.c plc_user_code/plc_task_1.c shared/src/iomap_processing.c)
@@ -178,6 +178,8 @@ add_subdirectory("libs/invertek")
 add_subdirectory("libs/delta")
 add_subdirectory("libs/AutomationWare")
 add_subdirectory("libs/VirtualDrive")
+add_subdirectory("libs/RTA")
+add_subdirectory("libs/trio")
 
 #this has to to be placed after the definitions
 #    add_subdirectory("apps/GBEM")

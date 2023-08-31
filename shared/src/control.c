@@ -27,22 +27,12 @@
 //#include "ethercatsetget.h"
 #include "cia402.h"
 
-#ifndef GB_APP_LINUX
-#include "FreeRTOS.h"
-#endif
 
-#ifdef GB_APP_LINUX
 //todo review need for semaphores in control.c and ec_rxtx.c
 #define DPM_IN_PROTECT_START
 #define DPM_IN_PROTECT_END
 #define DPM_OUT_PROTECT_START
 #define DPM_OUT_PROTECT_END
-#else
-#define DPM_IN_PROTECT_START 		while (HAL_HSEM_FastTake(HSEM_ID_3) != HAL_OK){ }
-#define DPM_IN_PROTECT_END 			HAL_HSEM_Release(HSEM_ID_3, 0);
-#define DPM_OUT_PROTECT_START 		while (HAL_HSEM_FastTake(HSEM_ID_4) != HAL_OK){ }
-#define DPM_OUT_PROTECT_END			HAL_HSEM_Release(HSEM_ID_4, 0);
-#endif
 
 
 /* Types of sm events */
@@ -55,27 +45,6 @@ uint32_t gbem_heartbeat = 0;
 bool estop = true;
 cia_state_t current_state = CIA_NOT_READY_TO_SWITCH_ON;
 
-
-#define NUM_CONTROL_EVENTS 16
-typedef enum {
-    CONTROL_EVENT_ESTOP,
-    CONTROL_EVENT_DRIVE_FAULT,
-    CONTROL_EVENT_GBC_FAULT_REQUEST,
-    CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST,
-    CONTROL_EVENT_GBC_INTERNAL_FAULT,
-    CONTROL_EVENT_HEARTBEAT_LOST,
-    CONTROL_EVENT_LIMIT_REACHED,
-    CONTROL_EVENT_DRIVE_STATE_CHANGE_TIMEOUT,
-    CONTROL_EVENT_DRIVE_FOLLOW_ERROR,
-    CONTROL_EVENT_DRIVE_NO_REMOTE,
-    CONTROL_EVENT_ECAT_ERROR,
-    CONTROL_EVENT_DRIVE_ALARM,
-//    CONTROL_EVENT_GBC_TO_GBEM_CON_ERROR,
-    CONTROL_EVENT_DRIVE_MOOERROR,
-    CONTROL_EVENT_ECAT_SLAVE_ERROR,
-    CONTROL_EVENT_PLC_SIGNALLED_ERROR,
-    CONTROL_EVENT_HOMING_ERROR
-} control_event_type_t;
 
 //@formatter:off
 cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
@@ -1247,11 +1216,8 @@ static void cia_generic_entry_action(void *stateData, struct event *event) {
  */
 struct stateMachine *ctrl_statemachine_alloc(void) {
 
-#ifdef GB_APP_LINUX
     struct stateMachine *smachine = malloc(sizeof(struct stateMachine));
-#else
-    struct stateMachine *smachine = pvPortMalloc(sizeof(struct stateMachine));
-#endif
+
     return smachine;
 }
 
@@ -1260,11 +1226,8 @@ struct stateMachine *ctrl_statemachine_alloc(void) {
  * @param smachine
  */
 void ctrl_statemachinefree(struct stateMachine *smachine) {
-#ifdef GB_APP_LINUX
     free(smachine);
-#else
-    vPortFree(smachine);
-#endif
+
 }
 
 
@@ -1437,9 +1400,9 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
     event_data.heartbeat_lost = false;
 #endif
 
-    //todo crit
+
     event_data.any_drive_has_alarm = alarm_on_any_drive;
-    event_data.any_drive_has_alarm = false;
+
 
     event_data.estop = estop;
 
@@ -1547,7 +1510,7 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
 
                     //                printf("drive err msg: %s\n", ecm_status.drives[i].error_message);
                     memset(&ecm_status.drives[i].error_message[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
-                    strncpy(&ecm_status.drives[i].error_message[0], error_code_string,
+                    strncpy(&ecm_status.drives[i].error_message[0], (char *) error_code_string,
                             (sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH) - 1);
                     memcpy(&ecm_status.drives[i].error_message[0], error_code_string,
                            strlen((char *) error_code_string) + 1);
@@ -1576,7 +1539,7 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
 
 
 
-    RT-sensitive
+    //RT-sensitive
     //output user messages for any faults that have occurred
     print_cyclic_user_message(NUM_CONTROL_EVENTS, control_event);
 

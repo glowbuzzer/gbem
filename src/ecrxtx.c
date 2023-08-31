@@ -492,11 +492,13 @@ void ec_rxtx(void *argument) {
                                     (uint64_t) (((t_exec_end.tv_sec * NSEC_PER_SEC) + t_exec_end.tv_nsec) -
                                                 ((t_exec_start.tv_sec * NSEC_PER_SEC) + t_exec_start.tv_nsec)) / 1000;
 
+
 //                            if (exec_time_usec > 1000) {
 //                                UM_INFO(GBEM_UM_EN, "GBEM: Execution time usecs [%]" PRIu64, exec_time_usec);
 //                                UM_INFO(GBEM_UM_EN, "GBEM: Bus cycle tick [%]" PRIu64, bus_cycle_tick);
 //                            }
-//here we warn if the exec time (state machine gubbins plus plc jiggerypokery) is more than half our cycle time
+
+/** Here we warn if the exec time (state machine gubbins plus plc jiggerypokery) is more than half our cycle time */
 
                             if ((uint32_t) exec_time_usec >
                                 (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_ERROR_PERCENTAGE / 100)) {

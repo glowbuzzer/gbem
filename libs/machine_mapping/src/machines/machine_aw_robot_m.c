@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
  * @file           :  machine_aw_robot_m.c
- * @brief          :  machine map for aw medium sized robot with EK1100 + El1008 + EL2008
+ * @brief          :  machine map for aw medium sized robot with EK1100 + El1808 + EL2908
  ******************************************************************************
  * @attention
  *

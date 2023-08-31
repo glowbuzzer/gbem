@@ -72,14 +72,16 @@ gberror_t ec_pdo_map_jvl_mis(const uint16_t slave) {
 
     /* write contents of TxPdo */
     for (int i = 0; i < map_txpdo_object_jvl_mis.number_of_entries; i++) {
-        if (!ec_sdo_write_uint32(slave, map_txpdo_object_jvl_mis.PDO_assignment_index, i + 1, map_txpdo_contents_jvl_mis[i])) {
+        if (!ec_sdo_write_uint32(slave, map_txpdo_object_jvl_mis.PDO_assignment_index, i + 1,
+                                 map_txpdo_contents_jvl_mis[i])) {
 
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     /* write number of entries in TxPdo 0x1a00 */
-    if (!ec_sdo_write_uint8(slave, map_txpdo_object_jvl_mis.PDO_assignment_index, 0, map_txpdo_object_jvl_mis.number_of_entries)) {
+    if (!ec_sdo_write_uint8(slave, map_txpdo_object_jvl_mis.PDO_assignment_index, 0,
+                            map_txpdo_object_jvl_mis.number_of_entries)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -90,14 +92,16 @@ gberror_t ec_pdo_map_jvl_mis(const uint16_t slave) {
 
     /* write contents of RxPdo */
     for (int i = 0; i < map_rxpdo_object_jvl_mis.number_of_entries; i++) {
-        if (!ec_sdo_write_uint32(slave, map_rxpdo_object_jvl_mis.PDO_assignment_index, i + 1, map_rxpdo_contents_jvl_mis[i])) {
+        if (!ec_sdo_write_uint32(slave, map_rxpdo_object_jvl_mis.PDO_assignment_index, i + 1,
+                                 map_rxpdo_contents_jvl_mis[i])) {
 
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     /* write number of entries in RxPdo 0x1600 */
-    if (!ec_sdo_write_uint8(slave, map_rxpdo_object_jvl_mis.PDO_assignment_index, 0, map_rxpdo_object_jvl_mis.number_of_entries)) {
+    if (!ec_sdo_write_uint8(slave, map_rxpdo_object_jvl_mis.PDO_assignment_index, 0,
+                            map_rxpdo_object_jvl_mis.number_of_entries)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -111,11 +115,13 @@ gberror_t ec_standard_sdos_jvl_mis(const uint16_t slave) {
 
     //INT32_MAX is multiturn encoder limit
 
-    if (!ec_sdo_write_int32(slave, JVL_MIS_POS_POSLIMIT_SDO_INDEX, JVL_MIS_POS_POSLIMIT_SDO_SUB_INDEX, map_drive_pos_limit[slave-1])) {
+    if (!ec_sdo_write_int32(slave, JVL_MIS_POS_POSLIMIT_SDO_INDEX, JVL_MIS_POS_POSLIMIT_SDO_SUB_INDEX,
+                            map_drive_pos_limit[slave - 1])) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_int32(slave, JVL_MIS_NEG_POSLIMIT_SDO_INDEX, JVL_MIS_NEG_POSLIMIT_SDO_SUB_INDEX, map_drive_neg_limit[slave-1])) {
+    if (!ec_sdo_write_int32(slave, JVL_MIS_NEG_POSLIMIT_SDO_INDEX, JVL_MIS_NEG_POSLIMIT_SDO_SUB_INDEX,
+                            map_drive_neg_limit[slave - 1])) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -167,14 +173,13 @@ gberror_t ec_standard_sdos_jvl_mis(const uint16_t slave) {
  8 - Slow down on voltage limit and stay in quick stop active               - No/Same as 6
 */
 
-int16_t quickstop_option_code = 0;
+    int16_t quickstop_option_code = 0;
     BIT_SET(quickstop_option_code, 2);
 
     if (!ec_sdo_write_int16(slave, JVL_MIS_QUICKSTOP_OPTION_CODE_SDO_INDEX,
-                             JVL_MIS_QUICKSTOP_OPTION_CODE_SDO_SUB_INDEX, quickstop_option_code)) {
+                            JVL_MIS_QUICKSTOP_OPTION_CODE_SDO_SUB_INDEX, quickstop_option_code)) {
         return E_SDO_WRITE_FAILURE;
     }
-
 
 
     return E_SUCCESS;
@@ -205,7 +210,7 @@ bool ec_get_remote_jvl_mis(const uint16_t drive) {
 bool ec_get_follow_error_jvl_mis(const uint16_t drive) {
     int32_t follow_error = abs(ec_pdo_get_input_int32(map_drive_to_slave[drive], JVL_MIS_ACTFOLLOWWERROR_PDO_INDEX));
 
-    if (follow_error>JVL_MIS_FOLLOWERROR_TOLERANCE){
+    if (follow_error > JVL_MIS_FOLLOWERROR_TOLERANCE) {
         return true;
     }
     return false;
@@ -215,23 +220,23 @@ bool ec_get_follow_error_jvl_mis(const uint16_t drive) {
 #define NUM_OF_JVL_MIS_ERROR_STRINGS 17
 
 const jvl_mis_error_string_t jvl_mis_alarm_code[NUM_OF_JVL_MIS_ERROR_STRINGS] = {
-        {0, "No error"},
+        {0,     "No error"},
         {16912, "Temperature too high"},
-        {21376,"Initialization error"},
-        {30081,"Initialization error"},
-        {34321,"Follow erro"},
-        {34432,"SW position limit exceeded"},
-        {12832,"Undervoltage on bus<"},
-        {29446,"Multiturn encoder lost position"},
-        {29447,"Multiturn encoder reed error"},
-        {29448,"Multiturn encoder communication error"},
-        {30080,"SSI Encoder error"},
-        {33921,"SSI Encoder error"},
-        {21889,"Memory error"},
-        {29445,"Singleturn encoder error"},
-        {21377,"STO alarm error"},
-        {34433,"Negative limit exceeded<"},
-        {34434,"Positive limit exceeded"},
+        {21376, "Initialization error"},
+        {30081, "Initialization error"},
+        {34321, "Follow erro"},
+        {34432, "SW position limit exceeded"},
+        {12832, "Undervoltage on bus<"},
+        {29446, "Multiturn encoder lost position"},
+        {29447, "Multiturn encoder reed error"},
+        {29448, "Multiturn encoder communication error"},
+        {30080, "SSI Encoder error"},
+        {33921, "SSI Encoder error"},
+        {21889, "Memory error"},
+        {29445, "Singleturn encoder error"},
+        {21377, "STO alarm error"},
+        {34433, "Negative limit exceeded<"},
+        {34434, "Positive limit exceeded"},
 };
 
 uint8_t *ec_get_error_string_pdo_jvl_mis(const uint16_t drive) {
@@ -242,8 +247,8 @@ uint8_t *ec_get_error_string_pdo_jvl_mis(const uint16_t drive) {
 
     for (int i = 0; i < NUM_OF_JVL_MIS_ERROR_STRINGS; i++) {
         if (jvl_mis_alarm_code[i].error_id == drive_error_code) {
-            memset(&error_code_string[0], 0,sizeof(error_code_string) );
-            strncpy(&error_code_string[0], jvl_mis_alarm_code[i].text_string, sizeof(error_code_string) - 1);
+            memset(&error_code_string[0], 0, sizeof(error_code_string));
+            strncpy((char *) &error_code_string[0], jvl_mis_alarm_code[i].text_string, sizeof(error_code_string) - 1);
             break;
         }
     }
@@ -269,16 +274,13 @@ gberror_t ec_set_setpos_wrd_jvl_mis(const uint16_t drive, const int32_t setpos) 
 }
 
 
-
-
-
-gberror_t ec_print_params_jvl_mis(const uint16_t drive){
+gberror_t ec_print_params_jvl_mis(const uint16_t drive) {
 
     //Encoder increments - this should not be changed
-    uint32_t encoder_increments =0;
+    uint32_t encoder_increments = 0;
     ec_sdo_read_uint32(map_drive_to_slave[drive], 0x608f, 1, &encoder_increments);
     //Motor revolutions
-    uint32_t motor_revolutions =0;
+    uint32_t motor_revolutions = 0;
     ec_sdo_read_uint32(map_drive_to_slave[drive], 0x608f, 2, &motor_revolutions);
 
     //Gear motor: motor revolutions
@@ -296,14 +298,16 @@ gberror_t ec_print_params_jvl_mis(const uint16_t drive){
 
     UM_INFO(GBEM_UM_EN, "GBEM: JVL scaling information for slave [%u]", map_drive_to_slave[drive]);
     UM_INFO(GBEM_UM_EN, "GBEM: Encoder increments [%u]", encoder_increments);
-    UM_INFO(GBEM_UM_EN, "GBEM: Motor revolutions [%u]",motor_revolutions);
-    UM_INFO(GBEM_UM_EN, "GBEM: Gear motor: motor revolutions [%u]",gear_motor_motor_rev);
-    UM_INFO(GBEM_UM_EN, "GBEM: Feed constant; feed [%u]",feed_constat_feed);
-    UM_INFO(GBEM_UM_EN, "GBEM: Feed constant: shaft revolutions [%u]",feed_constant_shaft_revolutions);
+    UM_INFO(GBEM_UM_EN, "GBEM: Motor revolutions [%u]", motor_revolutions);
+    UM_INFO(GBEM_UM_EN, "GBEM: Gear motor: motor revolutions [%u]", gear_motor_motor_rev);
+    UM_INFO(GBEM_UM_EN, "GBEM: Feed constant; feed [%u]", feed_constat_feed);
+    UM_INFO(GBEM_UM_EN, "GBEM: Feed constant: shaft revolutions [%u]", feed_constant_shaft_revolutions);
 
-    float position_factor = ((float)gear_motor_motor_rev * (float)feed_constant_shaft_revolutions* (float)encoder_increments) / ((float)feed_constat_feed * (float)feed_constant_shaft_revolutions *(float)motor_revolutions);
+    float position_factor =
+            ((float) gear_motor_motor_rev * (float) feed_constant_shaft_revolutions * (float) encoder_increments) /
+            ((float) feed_constat_feed * (float) feed_constant_shaft_revolutions * (float) motor_revolutions);
 
-    UM_INFO(GBEM_UM_EN, "GBEM: Position factor [%f]",position_factor);
+    UM_INFO(GBEM_UM_EN, "GBEM: Position factor [%f]", position_factor);
 
     return E_SUCCESS;
 

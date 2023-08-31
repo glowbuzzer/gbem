@@ -103,38 +103,45 @@ gberror_t ec_initial_pdo_n5(const uint16_t slave) {
 }
 
 gberror_t ec_standard_sdos_n5(const uint16_t slave) {
-    if (!ec_sdo_write_int32(slave, N5_MIN_POS_LIMIT_SDO_INDEX, N5_MIN_POS_LIMIT_SDO_SUB_INDEX, map_drive_neg_limit[slave - 1])) {
+    if (!ec_sdo_write_int32(slave, N5_MIN_POS_LIMIT_SDO_INDEX, N5_MIN_POS_LIMIT_SDO_SUB_INDEX,
+                            map_drive_neg_limit[slave - 1])) {
         return E_SDO_WRITE_FAILURE;
     }
 
 
-    if (!ec_sdo_write_int32(slave, N5_MAX_POS_LIMIT_SDO_INDEX, N5_MAX_POS_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[slave - 1])) {
+    if (!ec_sdo_write_int32(slave, N5_MAX_POS_LIMIT_SDO_INDEX, N5_MAX_POS_LIMIT_SDO_SUB_INDEX,
+                            map_drive_pos_limit[slave - 1])) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint8(slave, N5_DIRECTION_OF_ROTATION_SDO_INDEX, N5_DIRECTION_OF_ROTATION_SDO_SUB_INDEX, map_drive_direction[slave - 1])) {
+    if (!ec_sdo_write_uint8(slave, N5_DIRECTION_OF_ROTATION_SDO_INDEX, N5_DIRECTION_OF_ROTATION_SDO_SUB_INDEX,
+                            map_drive_direction[slave - 1])) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_int32(slave, N5_GEAR_MOTOR_REVOLUTIONS_SDO_INDEX, N5_GEAR_MOTOR_REVOLUTIONS_SDO_SUB_INDEX, N5_GEAR_MOTOR_REVOLUTIONS_VALUE)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-    if (!ec_sdo_write_int32(slave, N5_GEAR_SHAFT_REVOLUTIONS_SDO_INDEX, N5_GEAR_SHAFT_REVOLUTIONS_SDO_SUB_INDEX, N5_GEAR_SHAFT_REVOLUTIONS_VALUE)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-    if (!ec_sdo_write_int32(slave, N5_FEED_CONSTANT_SDO_INDEX, N5_FEED_CONSTANT_SDO_SUB_INDEX, N5_FEED_CONSTANT_VALUE)) {
+    if (!ec_sdo_write_int32(slave, N5_GEAR_MOTOR_REVOLUTIONS_SDO_INDEX, N5_GEAR_MOTOR_REVOLUTIONS_SDO_SUB_INDEX,
+                            N5_GEAR_MOTOR_REVOLUTIONS_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_int32(slave, N5_FEED_SHAFT_REVOLUTIONS_SDO_INDEX, N5_FEED_SHAFT_REVOLUTIONS_SDO_SUB_INDEX, N5_FEED_SHAFT_REVOLUTIONS_VALUE)) {
+    if (!ec_sdo_write_int32(slave, N5_GEAR_SHAFT_REVOLUTIONS_SDO_INDEX, N5_GEAR_SHAFT_REVOLUTIONS_SDO_SUB_INDEX,
+                            N5_GEAR_SHAFT_REVOLUTIONS_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint8(slave, N5_INTERPOLATION_TIME_PERIOD_SDO_INDEX,N5_INTERPOLATION_TIME_PERIOD_SDO_SUB_INDEX, 4)) {
+    if (!ec_sdo_write_int32(slave, N5_FEED_CONSTANT_SDO_INDEX, N5_FEED_CONSTANT_SDO_SUB_INDEX,
+                            N5_FEED_CONSTANT_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
 
+    if (!ec_sdo_write_int32(slave, N5_FEED_SHAFT_REVOLUTIONS_SDO_INDEX, N5_FEED_SHAFT_REVOLUTIONS_SDO_SUB_INDEX,
+                            N5_FEED_SHAFT_REVOLUTIONS_VALUE)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    if (!ec_sdo_write_uint8(slave, N5_INTERPOLATION_TIME_PERIOD_SDO_INDEX, N5_INTERPOLATION_TIME_PERIOD_SDO_SUB_INDEX,
+                            4)) {
+        return E_SDO_WRITE_FAILURE;
+    }
 
 
     return E_SUCCESS;
@@ -174,14 +181,15 @@ uint8_t *ec_get_error_string_sdo_n5(const uint16_t drive) {
     uint32_t drive_error_code = 0;
     uint8_t num_errors = 0;
 
-    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], N5_PREDEFINED_ERROR_NUM_OF_ERRORS_SDO_INDEX, N5_PREDEFINED_ERROR_NUM_OF_ERRORS_SDO_SUB_INDEX, &num_errors)) {
-        sprintf(error_code_string, "Can't read error code from N5 drive, %u", drive);
+    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], N5_PREDEFINED_ERROR_NUM_OF_ERRORS_SDO_INDEX,
+                           N5_PREDEFINED_ERROR_NUM_OF_ERRORS_SDO_SUB_INDEX, &num_errors)) {
+        sprintf((char *) error_code_string, "Can't read error code from N5 drive, %u", drive);
         return error_code_string;
     }
 
     if (num_errors > 0) {
         if (!ec_sdo_read_uint32(map_drive_to_slave[drive], N5_PREDEFINED_ERROR_SDO_INDEX, 1, &drive_error_code)) {
-            sprintf(error_code_string, "Can't read error code from N5 drive, %u", drive);
+            sprintf((char *) error_code_string, "Can't read error code from N5 drive, %u", drive);
             return error_code_string;
         }
     }
@@ -191,61 +199,61 @@ uint8_t *ec_get_error_string_sdo_n5(const uint16_t drive) {
     uint8_t error_number = MID(drive_error_code, 24, 32);
 
     bool have_error_class = false;
-    strcat(error_code_string,  "N5: Error class: ");
+    strcat((char *) error_code_string, "N5: Error class: ");
 
     if (BIT_CHECK(error_class, N5_GENERAL_ERROR_BIT_NUM)) {
-strcat(error_code_string, "GEN ");
-have_error_class = true;
+        strcat((char *) error_code_string, "GEN ");
+        have_error_class = true;
     }
 
     if (BIT_CHECK(error_class, N5_CURRENT_ERROR_BIT_NUM)) {
-        strcat(error_code_string, "CURRENT ");
+        strcat((char *) error_code_string, "CURRENT ");
         have_error_class = true;
     }
 
     if (BIT_CHECK(error_class, N5_VOLTAGE_ERROR_BIT_NUM)) {
-        strcat(error_code_string, "VOLTAGE ");
+        strcat((char *) error_code_string, "VOLTAGE ");
         have_error_class = true;
     }
 
 
     if (BIT_CHECK(error_class, N5_TEMPERATURE_ERROR_BIT_NUM)) {
-        strcat(error_code_string, "TEMP ");
+        strcat((char *) error_code_string, "TEMP ");
         have_error_class = true;
     }
     if (BIT_CHECK(error_class, N5_COMMUNICATION_ERROR_BIT_NUM)) {
-        strcat(error_code_string, "COMMS ");
+        strcat((char *) error_code_string, "COMMS ");
         have_error_class = true;
     }
     if (BIT_CHECK(error_class, N5_PROFILE_ERROR_BIT_NUM)) {
-        strcat(error_code_string, "PROFILE ");
+        strcat((char *) error_code_string, "PROFILE ");
         have_error_class = true;
     }
     if (BIT_CHECK(error_class, N5_MOTOR_WRONG_DIR_ERROR_BIT_NUM)) {
-        strcat(error_code_string, "WRONG DIR ");
+        strcat((char *) error_code_string, "WRONG DIR ");
         have_error_class = true;
     }
 
-if (!have_error_class){
-    strcat(error_code_string, "NONE ");
-}
-strcat(error_code_string, "Error code: ");
+    if (!have_error_class) {
+        strcat((char *) error_code_string, "NONE ");
+    }
+    strcat((char *) error_code_string, "Error code: ");
 
     for (int i = 0; i < N5_NUM_ERROR_CODE; i++) {
         if (n5_error_code[i].code == error_code) {
-            strcat(error_code_string, n5_error_code[i].description);
-        }else{
-            strcat(error_code_string, "None");
+            strcat((char *) error_code_string, n5_error_code[i].description);
+        } else {
+            strcat((char *) error_code_string, "None");
         }
     }
 
-    strcat(error_code_string, " Error number: ");
+    strcat((char *) error_code_string, " Error number: ");
 
     for (int i = 0; i < N5_NUM_ERROR_NUM; i++) {
         if (n5_error_number[i].number == error_number) {
-            strcat(error_code_string, n5_error_number[i].description);
-        }else{
-            strcat(error_code_string, "None");
+            strcat((char *) error_code_string, n5_error_number[i].description);
+        } else {
+            strcat((char *) error_code_string, "None");
         }
     }
 

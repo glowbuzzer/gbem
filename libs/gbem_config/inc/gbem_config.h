@@ -33,8 +33,11 @@
 #define ECRXTX_EXEC_TIME_ERROR_PERCENTAGE               80
 #define ECRXTX_EXEC_TIME_WARNING_PERCENTAGE             50
 
+/** Enables measure timing code which logs the timing of the main cyclic EtherCAT comms process to stdout (don't enable when not troubleshooting as it can upset realtimeness) */
 #define ECRXTX_MEASURE_EXEC_TIME                        1
 
+/** Enables printing of slave 1C32 info to stdout */
+#define PRINT_1C32_INFO                                 0
 
 
 /* defines whether redundant Ethernet ports are used. This requires the config to be defined outside of the command line options (NO_COMMAND_LINE_OPTIONS)
@@ -119,11 +122,6 @@
 
 /** defines max size of the SOEM iomap data structure - this is a critical define. It defines the size of the iomap - lots of slaves with lots of POO objects will make thsi large*/
 #define ECM_IO_MAP_SIZE                                 2048
-
-
-/*** *** MBED DEFINES *** ***/
-
-#define EC_CHECK_TASK_PRIO                               3
 
 
 #endif //GBEM_GBEM_CONFIG_H

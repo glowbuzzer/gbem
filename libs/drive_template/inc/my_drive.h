@@ -28,19 +28,30 @@ uint16_t map_SM3_index_of_assigned_PDO_mydrive[ECM_MAX_PDO_MAPPING_ENTRIES];
 
 /** Slave functions */
 gberror_t ec_initial_pdo_mydrive(uint16_t slave);
+
 gberror_t ec_apply_standard_sdos_mydrive(uint16_t slave);
+
 gberror_t ec_pdo_map_mydrive(uint16_t slave);
+
 int8_t ec_get_moo_pdo_mydrive(uint16_t drive);
-uint8_t * ec_get_error_string_pdo_mydrive(uint16_t drive);
+
+uint8_t *ec_get_error_string_pdo_mydrive(uint16_t drive);
+
 gberror_t ec_nvram_sdos_mydrive(uint16_t slave);
+
 gberror_t ec_write_nvram_mydrive(uint16_t slave);
 
 /** Drive functions */
 gberror_t ec_set_ctrl_wrd_mydrive(uint16_t drive, uint16_t ctrlwrd);
+
 uint16_t ec_get_stat_wrd_mydrive(uint16_t drive);
+
 int32_t ec_get_actpos_wrd_mydrive(uint16_t drive);
+
 gberror_t ec_set_setpos_wrd_mydrive(uint16_t drive, int32_t setpos);
+
 bool ec_get_remote_mydrive(uint16_t drive);
+
 bool ec_get_follow_error_mydrive(uint16_t drive);
 
 
@@ -57,7 +68,7 @@ bool ec_get_follow_error_mydrive(uint16_t drive);
 
 
 /* These define the position of objects in the PDO - number of bytes from start of input or output */
-//need to decide on these
+
 //static const uint16_t AZD_SETPOS_DRIVE_1_INDEX = 2;
 
 #define MYDRIVE_SETPOS_PDO_INDEX        2

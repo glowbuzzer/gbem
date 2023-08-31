@@ -184,40 +184,43 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
     memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
     uint16_t drive_error_code = 0;
 
+
     if (ec_sdo_read_uint16(map_drive_to_slave[drive], AW_J_SERIES_ERROR_CODE_SDO_INDEX,
                            AW_J_SERIES_ERROR_CODE_SDO_SUB_INDEX,
                            &drive_error_code)) {
 
         if (drive_error_code == 0) {
-            sprintf(error_code_string, "AW-J-Series no error on drive");
+            sprintf((char *) error_code_string, "AW-J-Series: no error on drive. Detailed error report [%s]",
+                    ec_get_detailled_error_report_sdo_aw_j_series(drive));
             return error_code_string;
         }
 
         for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_STRINGS; i++) {
             if (aw_j_series_error[i].error_id == drive_error_code) {
-                sprintf(error_code_string, "%s", aw_j_series_error[i].text_string);
+                sprintf((char *) error_code_string, "AW-J-Series error [%s]. Detailed error report [%s]",
+                        aw_j_series_error[i].text_string, ec_get_detailled_error_report_sdo_aw_j_series(drive));
                 return error_code_string;
             }
         }
 
-        sprintf(error_code_string, "AW-J-Series error code returned by drive did not match any in the error table");
+        sprintf((char *) error_code_string,
+                "AW-J-Series: error code returned by drive did not match any in the error table. Detailed error report [%s]",
+                ec_get_detailled_error_report_sdo_aw_j_series(drive));
         return error_code_string;
     }
 
-    sprintf(error_code_string, "AW-J-Series error code returned by drive did not match any in the error table");
-
-
-    printf("AW-J-Series drive error [%s] [%d]\n", error_code_string, drive_error_code);
-
-    ec_read_detailled_error_report_aw_j_series(drive);
+    sprintf((char *) error_code_string,
+            "AW-J-Series error code could not be read from drive");
     return error_code_string;
 }
 
-void ec_read_detailled_error_report_aw_j_series(const uint16_t drive_number) {
+uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(const uint16_t drive_number) {
     int os = 8;
     uint8_t octet_string[8];
 
-//    for (int i = 0; i < 8; i++) {
+    static uint8_t failed_error_code_read[50] = "AW-J-Series: Failed to read error code";
+    static uint8_t failed_error_code_lookup[50] = "AW-J-Series: Error code does not match table";
+
     int rc = ec_SDOread(map_drive_to_slave[drive_number], AW_J_SERIES_ERROR_DESCRIPTION_SDO_INDEX,
                         AW_J_SERIES_ERROR_DESCRIPTION_SDO_SUB_INDEX, false, &os,
                         &octet_string, EC_TIMEOUTRXM);
@@ -225,11 +228,17 @@ void ec_read_detailled_error_report_aw_j_series(const uint16_t drive_number) {
         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Could not read SDO index:0x%04x - sub-index:0x%04x (on slave:%u",
                  AW_J_SERIES_ERROR_DESCRIPTION_SDO_INDEX, AW_J_SERIES_ERROR_DESCRIPTION_SDO_SUB_INDEX,
                  map_drive_to_slave[drive_number]);
-    }
-    printf("AW-J-Series detailled error [%s],", octet_string);
+        return failed_error_code_read;
 
-//    }
-    printf("\n");
+    }
+
+    for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS; i++) {
+        if (strcmp(aw_j_series_error_report[i].error_code, (char *) octet_string) != 0) {
+            return (uint8_t *) aw_j_series_error_report[i].text_string;
+        }
+    }
+
+    return failed_error_code_lookup;
 
 }
 
@@ -292,12 +301,107 @@ gberror_t ec_set_moo_pdo_rev_aw_j_series(const uint16_t drive) {
 
 
 const aw_j_series_error_report_string_t aw_j_series_error_report[NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS] = {
-        {"NoFault", "No fault"},
-        {"PuOcA",   "Protection User-defined Over-current Phase A"},
-
+        {"NoFault",  "No fault"},
+        {"PuOcA",    "Protection User-defined Over-current Phase A"},
+        {"PuOcB",    "Protection User-defined Over-current Phase B"},
+        {"PuOcC",    "Protection User-defined Over-current Phase C"},
+        {"PuUv",     "Protection User-defined Under-voltage"},
+        {"PuOv",     "Protection User-defined Over-voltage"},
+        {"PhUdef",   "Protection Hardware Undefined"},
+        {"PhFault",  "Protection Hardware Fault"},
+        {"PhWtdg",   "Protection Hardware Watchdog"},
+        {"PhDeadTA", "Protection Hardware Deadtime Phase A"},
+        {"PhDeadTB", "Protection Hardware Deadtime Phase B"},
+        {"PhDeadTC", "Protection Hardware Deadtime Phase C"},
+        {"PhDeadTD", "Protection Hardware Deadtime Phase D"},
+        {"PhOvUvOt", "Protection Hardware Over-voltage / Under-voltage / Over-temperature"},
+        {"PhOc",     "Protection Hardware Overcurrent"},
+        {"SfeDiIvd", "Safety Digital Input Invalid"},
+        {"SfeFault", "Safety Fault"},
+        {"BisErBit", "BiSS Error Bit active"},
+        {"BisWnBit", "BiSS Warning Bit active"},
+        {"BisAcBit", "BiSS Acknowledge Bit not received"},
+        {"BisSrtBt", "BiSS Start Bit not received"},
+        {"BisSloLo", "BiSS data (SLO) is permanently Low"},
+        {"BisFrame", "BiSS Frame configuration error"},
+        {"BisCrc",   "BiSS CRC error"},
+        {"BisRegEr", "BiSS register communication error"},
+        {"SsiFrame", "SSI Frame configuration error"},
+        {"SsiDtaLo", "SSI Data is permanently Low"},
+        {"SsiChksm", "SSI Checksum error"},
+        {"R16WkMgF", "REM16 Weak Magnetic Field"},
+        {"R16Cont",  "REM16 multiturn Counter error"},
+        {"R16CorDc", "REM16 singleturn CORDIC error"},
+        {"R16SpdOv", "REM16 multiturn Speed Overflow"},
+        {"R16FtCfg", "REM16 Filter Configuration error"},
+        {"R16FtSOF", "REM16 Filter Speed Overflow error"},
+        {"R16UnCmd", "REM16 Unknown Command"},
+        {"R16Chksm", "REM16 Checksum error"},
+        {"R14Chksm", "REM14 Checksum error"},
+        {"QeiLsTck", "QEI Lost Ticks"},
+        {"QeiNoIdx", "QEI No Index"},
+        {"QeiOpnWr", "QEI Open Wire"},
+        {"HallSeq",  "Hall Sequence error"},
+        {"AftFrame", "A-Format Frame error"},
+        {"AftTmout", "A-Format Timeout"},
+        {"AftCrc",   "A-Format CRC error"},
+        {"AftBatt",  "A-Format BATT status"},
+        {"AftMTErr", "A-Format MTERR status"},
+        {"AftOvFlw", "A-Format OvFlow status"},
+        {"AftOvSpd", "A-Format OVSPD status"},
+        {"AftMemEr", "A-Format MEMERR status"},
+        {"AftSTErr", "A-Format STERR status"},
+        {"AftPSErr", "A-Format PSERR status"},
+        {"AftBusyF", "A-Format BUSY status"},
+        {"AftMemBs", "A-Format MemBusy status"},
+        {"AftOvTmp", "A-Format OvTemp status"},
+        {"AftIncEr", "A-Format IncErr status"},
+        {"SnsrAngl", "Sensor Angle error"},
+        {"SnsrCfg",  "Sensor Configuration error"},
+        {"HwRsrcEr", "Hardware Resource Error"},
+        {"IvldGpio", "Invalid Gpio configuration"},
+        {"SnsrBatt", "Sensor battery error"},
+        {"SkpCycls", "Serial encoder service is skipping cycles"},
+        {"SwLimOut", "Software Limit Out"},
+        {"BrkNtRls", "Brake release failed"},
+        {"BkHiPull", "Pull brake voltage too high"},
+        {"BkHiHold", "Hold brake voltage too high"},
+        {"OpnTermA", "Open Terminal A"},
+        {"OpnTermB", "Open Terminal B"},
+        {"OpnTermC", "Open Terminal C"},
+        {"OpnFetAH", "Open high FET at phase A"},
+        {"OpnFetBH", "Open high FET at phase B"},
+        {"OpnFetCH", "Open high FET at phase C"},
+        {"OpnFetAL", "Open low FET at phase A"},
+        {"OpnFetBL", "Open low FET at phase B"},
+        {"OpnFetCL", "Open low FET at phase C"},
+        {"IvldOfst", "Invalid offset"},
+        {"IvldOpmd", "Invalid operational mode"},
+        {"ZeroMxI",  "Max. current is zero or negative"},
+        {"ZeroMxT",  "Max. torque is zero or negative"},
+        {"ZeroMxMS", "Max. motor speed is zero or negative"},
+        {"IvldPara", "Invalid Parameter"},
+        {"SiVelPfx", "Invalid velocity scaling factor"},
+        {"MxPwrLmt", "Maximum mechanical output power of the motor is reached"},
+        {"CyclicHb", "Cyclic heartbeat"},
+        {"OsCmdCol", "OS command collision"},
+        {"I2tActv",  "I2t protection is active"},
+        {"HmInvMth", "Unsupported or invalid homing method"},
+        {"Intern01", "Internal fault 1"},
+        {"Intern02", "Internal fault 2"},
+        {"Intern03", "Internal fault 3"},
+        {"VeFiFcLo", "Velocity filter cut-off frequency too low"},
+        {"VeFiFcHi", "Velocity filter cut-off frequency too high"},
+        {"PoFiFcLo", "Position filter cut-off frequency too low"},
+        {"PoFiFcHi", "Position filter cut-off frequency too high"},
+        {"VffFcLo",  "Velocity feed forward filter cut-off frequency too low"},
+        {"VffFcHi",  "Velocity feed forward filter cut-off frequency too high"},
+        {"NhFiFcHi", "Notch filter center frequency too high"},
+        {"NhFiPara", "Invalid Notch filter parameters"},
+        {"SynDifHi", "Sync difference too high"},
 };
 
-/*array mapping an AW-J-Series drive error code to a text string */
+/*array mapping an AW-J-Series drive detailed error reports to a text string */
 const aw_j_series_error_string_t aw_j_series_error[NUM_OF_AW_J_SERIES_ERROR_STRINGS] = {
         {0x2220, "Continuous over current (device internal)"},
         {0x2250, "Short circuit (device internal)"},
