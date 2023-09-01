@@ -1423,6 +1423,10 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
     event_data.machine_move_not_op_enabled_fault_req = BIT_CHECK(dpm_out->machine_word,
                                                                  CTRL_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM);
     event_data.machine_request_error = BIT_CHECK(dpm_out->machine_word, CTRL_MACHINE_CTRL_WRD_REQUEST_FAULT_BIT_NUM);
+
+    //gbc_internal_fault
+    event_data.gbc_internal_fault = BIT_CHECK(dpm_out->machine_word, CTRL_GBC_INTERNAL_FAULT_REQ_BIT_NUM);
+
     event_data.ec_check_error = (ecm_status.ec_check_found_error == true) ? true : false;
     event_data.slave_reported_error = EcatError;
 
