@@ -111,6 +111,10 @@
 /** Max length of string for PLC task names */
 #define PLC_MAX_TASK_NAME_MAX_LENGTH                    20
 
+/** Defines whether PLC functionality is enabled */
+#define ENABLE_PLC                                      0
+
+
 /** Max length of string for ec_state to string array */
 #define MAX_EC_STATE_TO_STRING_INDEX                    0x20
 

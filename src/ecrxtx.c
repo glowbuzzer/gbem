@@ -456,7 +456,10 @@ void ec_rxtx(void *argument) {
             }
 
             //RT-sensitive
-            //plc_task_exec();
+#if ENABLE_PLC == 1
+            plc_task_exec();
+
+#endif
             clock_gettime(CLOCK_MONOTONIC, &t_exec_end);
 
             rc = ec_send_processdata();

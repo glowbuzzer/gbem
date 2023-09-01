@@ -512,16 +512,18 @@ int main(int argc, char *argv[]) {
         UM_ERROR(GBEM_UM_EN, "GBEM: This is a >serious< issue and GBEM is unlike to run successfully");
     }
 
-    //disable plc
-//    grc = plc_init();
-//    if (grc != E_SUCCESS) {
-//        UM_FATAL(
-//                "GBEM: We were unable to initialise the PLC, we can't run with a defective PLC configuration. Error [%s]",
-//                gb_strerror(grc));
-//    } else {
-//        UM_INFO(GBEM_UM_EN, "GBEM: PLC initialised successfully");
-//    }
+    //RT-Sensitive
+#if ENABLE_PLC == 1
+    grc = plc_init();
+    if (grc != E_SUCCESS) {
+        UM_FATAL(
+                "GBEM: We were unable to initialise the PLC, we can't run with a defective PLC configuration. Error [%s]",
+                gb_strerror(grc));
+    } else {
+        UM_INFO(GBEM_UM_EN, "GBEM: PLC initialised successfully");
+    }
 
+#endif
     if ((ecm_status.active_program == ECM_NET_SCAN_PROG) || (ecm_status.active_program == ECM_NET_SCAN_PDO_PROG) || (ecm_status.active_program == ECM_PRINT_CONFIG_PROG) ||
         (ecm_status.active_program == ECM_WRITE_NVRAM_PROG)) {
         goto program_switch;
