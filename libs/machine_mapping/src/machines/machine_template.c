@@ -50,6 +50,8 @@ MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_azd,            ec_s
 MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_azd,            ec_get_stat_wrd_azd                 );
 MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_azd,          ec_get_actpos_wrd_azd               );
 MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_azd,          ec_set_setpos_wrd_azd               );
+MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         NULL, NULL                                 );
+MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        NULL, NULL                                 );
 
 /* DRIVE PARAMETERS */
 MAP_DRIVE_POS_LIMIT(                        999,                            999                                 );

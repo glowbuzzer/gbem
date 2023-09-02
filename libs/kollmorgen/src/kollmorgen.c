@@ -198,7 +198,7 @@ value of 32.
  */
 gberror_t ec_pdo_map_akd(const uint16_t slave) {
     if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "SODs configured for PDO mapping for AKD slave [%u] are:",
+        UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for AKD slave [%u] are:",
                 slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying PDO mapping to AKD slave [%u]",

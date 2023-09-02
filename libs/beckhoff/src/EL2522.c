@@ -54,7 +54,7 @@ uint16_t map_SM3_index_of_assigned_PDO_el2522[ECM_MAX_PDO_MAPPING_ENTRIES] = {
 gberror_t ec_pdo_map_el2522(const uint16_t slave) {
 
     if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "SODs configured for PDO mapping for EL2522 slave [%u] are:",
+        UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for EL2522 slave [%u] are:",
                 slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying PDO mapping to EL2522 slave [%u]",

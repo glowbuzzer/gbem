@@ -25,9 +25,7 @@
 #include "gberror.h"
 #include "dpm.h"
 #include "ecrxtx.h"
-#include "kollmorgen.h"
-#include "jvl_mis.h"
-
+#include "read_drive_error_code_into_ecm_status.h"
 
 #include "status.h"
 #include <unistd.h>
@@ -643,7 +641,7 @@ bool ec_step_6_safeop(void) {
         ec_readstate();
         for (int i = 1; i <= ec_slavecount; i++) {
             if (ec_slave[i].state != EC_STATE_SAFE_OP) {
-                UM_INFO(GBEM_UM_EN, "GBEM: slave not in safe op is Slave [%d] State [%s] StatusCode [%4x : %s]", i,
+                UM_INFO(GBEM_UM_EN, "GBEM: Slave not in safe op is Slave [%d] State [%s] StatusCode [%4x : %s]", i,
                         ec_state_to_string[ec_slave[i].state], ec_slave[i].ALstatuscode,
                         ec_ALstatuscode2string(ec_slave[i].ALstatuscode));
             }
@@ -728,6 +726,10 @@ bool ec_step_9_op(void) {
         UM_INFO(GBEM_UM_EN, "GBEM: Boot step 9 >success< (transition all slaves to OP state)");
         sleep(1);
 
+        /** read the drive error code into the ecm_status struct */
+        for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+            read_drive_error_code_into_ecm_status(i);
+        }
 
         sleep(2);
 

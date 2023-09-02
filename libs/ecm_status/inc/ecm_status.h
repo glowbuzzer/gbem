@@ -16,11 +16,18 @@
 #define GBEM_ECM_STATUS_H
 
 #include "gbem_config.h"
+#include "cia402.h"
 
 /* enums for the state of the different programs that can be run */
-typedef enum {ECM_PRE_BOOT, ECM_BOOT_FINISHED, ECM_CYCLIC_RUNNING, ECM_ERROR} ecm_cyclic_state_t ;
-typedef enum {ECM_NO_PROG, ECM_NET_SCAN_PROG ,ECM_CYCLIC_PROG, ECM_PRINT_CONFIG_PROG, ECM_WRITE_NVRAM_PROG, ECM_NET_SCAN_PDO_PROG} ecm_active_program_t ;
-typedef enum {ECM_NET_SCAN_PRE_START,ECM_NET_SCAN_START, ECM_NET_SCAN_ERROR, ECM_NET_SCAN_NO_SLAVES_FOUND, ECM_NET_SCAN_FINISHED} ecm_net_scan_state_t;
+typedef enum {
+    ECM_PRE_BOOT, ECM_BOOT_FINISHED, ECM_CYCLIC_RUNNING, ECM_ERROR
+} ecm_cyclic_state_t;
+typedef enum {
+    ECM_NO_PROG, ECM_NET_SCAN_PROG, ECM_CYCLIC_PROG, ECM_PRINT_CONFIG_PROG, ECM_WRITE_NVRAM_PROG, ECM_NET_SCAN_PDO_PROG
+} ecm_active_program_t;
+typedef enum {
+    ECM_NET_SCAN_PRE_START, ECM_NET_SCAN_START, ECM_NET_SCAN_ERROR, ECM_NET_SCAN_NO_SLAVES_FOUND, ECM_NET_SCAN_FINISHED
+} ecm_net_scan_state_t;
 
 /** used in ecm_status to track the progress of the main boot*/
 typedef struct {
@@ -35,9 +42,7 @@ typedef struct {
     bool slaves_match_ok;
     bool all_slaves_op;
     bool boot_sucessful;
-}ecm_boot_state_t;
-
-
+} ecm_boot_state_t;
 
 
 /** struct used in ecm_status to hold a copy of key slave state info*/
@@ -52,7 +57,7 @@ typedef struct {
     uint16_t state;
     uint16_t configadr; //const
     uint16_t ALstatuscode;
-}ecm_status_map_t;
+} ecm_status_map_t;
 
 
 typedef struct {
@@ -62,7 +67,7 @@ typedef struct {
 } ec_circular_slave_error_message_t;
 
 /** nested in ecm_status and holds drive status info */
-typedef struct{
+typedef struct {
     char error_message[MAX_DRIVE_ERROR_MSG_LENGTH];
     cia_commands_t command;
     cia_state_t state;
@@ -113,9 +118,9 @@ typedef struct {
 extern ecm_status_t ecm_status;
 //#endif
 
-extern const char* ecm_cyclic_state_names[];
-extern const char* ecm_active_program_names[];
-extern const char* ecm_net_scan_names[];
+extern const char *ecm_cyclic_state_names[];
+extern const char *ecm_active_program_names[];
+extern const char *ecm_net_scan_names[];
 
 
 #endif //GBEM_ECM_STATUS_H

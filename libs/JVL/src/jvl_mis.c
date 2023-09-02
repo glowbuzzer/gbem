@@ -58,7 +58,7 @@ uint32_t map_txpdo_contents_jvl_mis[ECM_MAX_PDO_MAPPING_ENTRIES] = {
 
 gberror_t ec_pdo_map_jvl_mis(const uint16_t slave) {
     if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "SODs configured for PDO mapping for JVL MIS slave [%u] are:",
+        UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for JVL MIS slave [%u] are:",
                 slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying PDO mapping to JVL MIS slave [%u]",

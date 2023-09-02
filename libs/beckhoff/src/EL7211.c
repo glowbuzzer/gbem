@@ -469,7 +469,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 gberror_t ec_pdo_map_EL7211(const uint16_t slave) {
 
     if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "SODs configured for PDO mapping for EL7211 slave [%u] are:",
+        UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for EL7211 slave [%u] are:",
                 slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying PDO mapping to EL7211 slave [%u]",

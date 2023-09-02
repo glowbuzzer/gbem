@@ -337,7 +337,7 @@ void ec_rxtx(void *argument) {
         if (!ecm_status.gbc_connected && !ec_rxtx_test_mode && time_to_check_gbc && ec_rxtx_mode == EC_RXTX_MODE_OP) {
 
 
-            grc = establish_shared_mem_and_signal_con(shmp, proc_name, false, &gbc_pid, 1);
+            grc = establish_shared_mem_and_signal_con(&shmp, proc_name, false, &gbc_pid, 1);
             if (grc == E_SUCCESS) {
                 UM_INFO(GBEM_UM_EN, "GBEM: Connection to shared memory and GBC process >successfully< established ");
                 memset(shmp->sm_buf_in, 0, sizeof(uint8_t) * SHM_BUF_SIZE);

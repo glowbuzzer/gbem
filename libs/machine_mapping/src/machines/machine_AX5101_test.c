@@ -46,6 +46,8 @@ MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_AX5101,         );
 MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_AX5101,         );
 MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_AX5101,       );
 MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_AX5101,       );
+MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         NULL                            );
+MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        NULL                            );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                           );
 MAP_DRIVE_RUN_HOMING(                       0,                              );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL                            );

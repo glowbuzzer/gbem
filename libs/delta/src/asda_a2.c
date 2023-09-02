@@ -45,7 +45,7 @@ uint16_t map_SM3_index_of_assigned_PDO_asda_a2[ECM_MAX_PDO_MAPPING_ENTRIES] = {
 
 gberror_t ec_pdo_map_asda_a2(const uint16_t slave) {
     if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "SODs configured for PDO mapping for ASDA_A2 slave [%u] are:",
+        UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for ASDA_A2 slave [%u] are:",
                 slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying PDO mapping to ASDA_A2 slave [%u]",

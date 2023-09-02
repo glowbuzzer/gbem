@@ -83,7 +83,7 @@ n5_error_code_t n5_error_code[N5_NUM_ERROR_CODE] = {
 
 gberror_t ec_pdo_map_n5(const uint16_t slave) {
     if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "SODs configured for PDO mapping for N5 slave [%u] are:",
+        UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for N5 slave [%u] are:",
                 slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying PDO mapping to N5 slave [%u]",

@@ -15,7 +15,7 @@
 #define GBEM_MACHINE_VIRTUAL_H
 
 
-#define MAP_CYCLE_TIME              (1)
+#define MAP_CYCLE_TIME              (4)
 #define MAP_GLOBAL_DC_SYNC_OFFSET   2000U
 
 /* Slaves must be defined in order that they appear on the EtherCAT network */
@@ -42,14 +42,5 @@
 //#define CTRL_ESTOP_RESET_DIN        2
 
 
-//1 rotation = 10,000 ppr
-//x= 133.3333 pulses per mm
-//y= 266.6666 pulses per mm
-//azd limits = (−2147483648) (+2147483648)
-
-//unint8 direction of rotation
-//0: Positive side=Counterclockwise direction
-//1: Positive side=Clockwise direction
-//default value is 1
 
 #endif //GBEM_MACHINE_VIRTUAL_H

@@ -584,7 +584,7 @@ gberror_t ec_standard_sdos_AX5101(const uint16_t slave) {
 gberror_t ec_pdo_map_AX5101(const uint16_t slave) {
 
     if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "SODs configured for PDO mapping for AX5101 slave [%u] are:",
+        UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for AX5101 slave [%u] are:",
                 slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying PDO mapping to AX5101 slave [%u]",

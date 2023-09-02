@@ -18,7 +18,7 @@
 
 /* MACHINE_SWAP - set the correct map here - ofc only one machine at a time can be active << THIS IS THE WAY TO SWAP MACHINES*/
 /* WARNING! Don't enable more than one or bad things happen when linking */
-#define MACHINE_MINI                0
+#define MACHINE_MINI                1
 #define MACHINE_CARTESIAN           0
 #define MACHINE_DRIVE_SPINNERS      0
 #define MACHINE_IGUS                0
@@ -39,7 +39,7 @@
 #define MACHINE_ASDA_A2_TEST        0
 #define MACHINE_SMC3_TEST           0
 #define MACHINE_AX5101_TEST         0
-#define MACHINE_AW_J17              1
+#define MACHINE_AW_J17              0
 #define MACHINE_AW_ROBOT_M          0
 #define MACHINE_VIRTUAL             0
 
@@ -51,7 +51,9 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
 /* MACHINE_NEW - add new #ifdef to include the header here */
 #if MACHINE_MINI == 1
+
 #include "machine_mini.h"
+
 #endif
 
 #if MACHINE_CARTESIAN == 1

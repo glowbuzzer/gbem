@@ -26,7 +26,7 @@
 #include "ecrxtx.h"
 //#include "ethercatsetget.h"
 #include "cia402.h"
-
+#include "read_drive_error_code_into_ecm_status.h"
 
 //todo review need for semaphores in control.c and ec_rxtx.c
 #define DPM_IN_PROTECT_START
@@ -1411,6 +1411,12 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
 #endif
     gberror_t grc;
 
+    //todo crit reboot
+    //if (we have signalled for a reboot
+    // ECBoot
+    //kill thread thread_ec_check - pthread_cancel()
+//    set ec_rxtx_mode == EC_RXTX_MODE_OP to something else
+
     event_data.follow_error = ec_check_for_follow_error(&grc);
     if (grc != E_SUCCESS) {
         UM_ERROR(GBEM_UM_EN, "GBEM: error checking drive for follow error [%s]", gb_strerror(grc));
@@ -1422,6 +1428,7 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
     }
     event_data.machine_move_not_op_enabled_fault_req = BIT_CHECK(dpm_out->machine_word,
                                                                  CTRL_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM);
+//todo crit removed in debugging
     event_data.machine_request_error = BIT_CHECK(dpm_out->machine_word, CTRL_MACHINE_CTRL_WRD_REQUEST_FAULT_BIT_NUM);
 
     //gbc_internal_fault
@@ -1506,22 +1513,23 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
     if (current_state == CIA_FAULT || current_state == CIA_FAULT_REACTION_ACTIVE) {
         ctrl_copy_slave_error_to_ecm_status();
         if ((gbem_heartbeat % 1000) == 0) {
-            uint8_t *error_code_string;
+//            uint8_t *error_code_string;
             for (int i = 0; i < MAP_NUM_DRIVES; i++) {
 
-                if (*map_drive_get_error_string_sdo_function_ptr[i] != NULL) {
-                    error_code_string = map_drive_get_error_string_sdo_function_ptr[i](i);
-
-                    //                printf("drive err msg: %s\n", ecm_status.drives[i].error_message);
-                    memset(&ecm_status.drives[i].error_message[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
-                    strncpy(&ecm_status.drives[i].error_message[0], (char *) error_code_string,
-                            (sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH) - 1);
-                    memcpy(&ecm_status.drives[i].error_message[0], error_code_string,
-                           strlen((char *) error_code_string) + 1);
-                } else {
-                    LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
-                             "GBEM: Missing function pointer for map_drive_get_error_string_sdo on drive [%u]", i);
-                }
+                read_drive_error_code_into_ecm_status(i);
+//                if (*map_drive_get_error_string_sdo_function_ptr[i] != NULL) {
+//                    error_code_string = map_drive_get_error_string_sdo_function_ptr[i](i);
+//
+//                    //                printf("drive err msg: %s\n", ecm_status.drives[i].error_message);
+//                    memset(&ecm_status.drives[i].error_message[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
+//                    strncpy(&ecm_status.drives[i].error_message[0], (char *) error_code_string,
+//                            (sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH) - 1);
+//                    memcpy(&ecm_status.drives[i].error_message[0], error_code_string,
+//                           strlen((char *) error_code_string) + 1);
+//                } else {
+//                    LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+//                             "GBEM: Missing function pointer for map_drive_get_error_string_sdo on drive [%u]", i);
+//                }
             }
         }
     }

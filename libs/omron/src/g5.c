@@ -191,7 +191,7 @@ g5_error_main_t g5_error_table_main[G5_NUM_MAIN_ERRORS] = {
 
 gberror_t ec_pdo_map_g5(const uint16_t slave) {
     if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "SODs configured for PDO mapping for G5 slave [%u] are:",
+        UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for G5 slave [%u] are:",
                 slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying PDO mapping to G5 slave [%u]",

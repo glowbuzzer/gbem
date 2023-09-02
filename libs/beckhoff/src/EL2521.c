@@ -53,7 +53,7 @@ gberror_t ec_pdo_map_el2521(const uint16_t slave) {
 
 
     if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "SODs configured for PDO mapping for EL2521 slave [%u] are:",
+        UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for EL2521 slave [%u] are:",
                 slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying PDO mapping to EL2521 slave [%u]",
@@ -88,12 +88,12 @@ gberror_t ec_pdo_map_el2521(const uint16_t slave) {
      * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
      */
     if (!ec_sdo_write_uint8(slave, map_SM2_el2521.SM_assignment_index, 0,
-                             map_SM2_el2521.number_of_entries)) {
+                            map_SM2_el2521.number_of_entries)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint8(slave, map_SM3_el2521.SM_assignment_index, 0,
-                             map_SM3_el2521.number_of_entries)) {
+                            map_SM3_el2521.number_of_entries)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -110,11 +110,12 @@ gberror_t ec_pdo_map_el2521(const uint16_t slave) {
 
 gberror_t ec_standard_sdos_el2521(const uint16_t slave) {
 
-    if (!ec_sdo_write_uint8(slave, EL2521_OPERATING_MODE_SDO_INDEX, EL2521_OPERATING_MODE_SDO_SUB_INDEX, EL2521_OPERATING_MODE_SDO_VALUE)) {
+    if (!ec_sdo_write_uint8(slave, EL2521_OPERATING_MODE_SDO_INDEX, EL2521_OPERATING_MODE_SDO_SUB_INDEX,
+                            EL2521_OPERATING_MODE_SDO_VALUE)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-return E_SUCCESS;
+    return E_SUCCESS;
 
 }
 
@@ -136,7 +137,7 @@ bool ec_get_follow_error_el2521(const uint16_t drive) {
 
 uint8_t *ec_get_error_string_sdo_el2521(const uint16_t drive) {
 
-    static uint8_t empty_message[]="no string yet";
+    static uint8_t empty_message[] = "no string yet";
 
     return empty_message;
     //sync error
@@ -165,45 +166,45 @@ gberror_t ec_set_ctrl_wrd_el2521(const uint16_t drive, const uint16_t ctrlwrd) {
                 el2521_cia_requested_state[drive] = CIA_SWITCH_ON_DISABLED;
             }
             break;
-            case CIA_SWITCHED_ON:
-                if (ctrlwrd == CIA_ENABLE_OPERATION_CTRLWRD) {
-                    el2521_cia_requested_state[drive] = CIA_OPERATION_ENABLED;
+        case CIA_SWITCHED_ON:
+            if (ctrlwrd == CIA_ENABLE_OPERATION_CTRLWRD) {
+                el2521_cia_requested_state[drive] = CIA_OPERATION_ENABLED;
 //                    BIT_SET(el7031_ctrlwrd, EL7031_CONTROL_ENABLE_BIT_NUM);
-                }
-                if (ctrlwrd == CIA_SHUTDOWN_CTRLWRD) {
-                    el2521_cia_requested_state[drive] = CIA_READY_TO_SWITCH_ON;
-                }
-                if (ctrlwrd == CIA_DISABLE_VOLTAGE_CTRLWRD) {
-                    el2521_cia_requested_state[drive] = CIA_SWITCH_ON_DISABLED;
-                }
-                break;
-                case CIA_SWITCH_ON_DISABLED:
-                    if (ctrlwrd == CIA_SHUTDOWN_CTRLWRD) {
-                        el2521_cia_requested_state[drive] = CIA_READY_TO_SWITCH_ON;
-                    }
-                    break;
-                    case CIA_QUICK_STOP_ACTIVE:
-                        break;
-                    case CIA_READY_TO_SWITCH_ON:
-                        if (ctrlwrd == CIA_DISABLE_VOLTAGE_CTRLWRD) {
-                            el2521_cia_requested_state[drive] = CIA_SWITCH_ON_DISABLED;
-                        }
-                        if (ctrlwrd == CIA_SWITCH_ON_CTRLWRD) {
+            }
+            if (ctrlwrd == CIA_SHUTDOWN_CTRLWRD) {
+                el2521_cia_requested_state[drive] = CIA_READY_TO_SWITCH_ON;
+            }
+            if (ctrlwrd == CIA_DISABLE_VOLTAGE_CTRLWRD) {
+                el2521_cia_requested_state[drive] = CIA_SWITCH_ON_DISABLED;
+            }
+            break;
+        case CIA_SWITCH_ON_DISABLED:
+            if (ctrlwrd == CIA_SHUTDOWN_CTRLWRD) {
+                el2521_cia_requested_state[drive] = CIA_READY_TO_SWITCH_ON;
+            }
+            break;
+        case CIA_QUICK_STOP_ACTIVE:
+            break;
+        case CIA_READY_TO_SWITCH_ON:
+            if (ctrlwrd == CIA_DISABLE_VOLTAGE_CTRLWRD) {
+                el2521_cia_requested_state[drive] = CIA_SWITCH_ON_DISABLED;
+            }
+            if (ctrlwrd == CIA_SWITCH_ON_CTRLWRD) {
 //                            BIT_SET(el7031_ctrlwrd, EL7031_CONTROL_ENABLE_BIT_NUM);
-                            el2521_cia_requested_state[drive] = CIA_SWITCHED_ON;
-                        }
-                        break;
-                        case CIA_NOT_READY_TO_SWITCH_ON:
-                            el2521_cia_requested_state[drive] = CIA_SWITCH_ON_DISABLED;
-                            break;
-                            case CIA_FAULT_REACTION_ACTIVE:
-                                el2521_cia_requested_state[drive] = CIA_FAULT;
-                                break;
-                                case CIA_FAULT:
-                                    if (ctrlwrd == CIA_FAULT_RESET_CTRLWRD) {
-                                        el2521_cia_requested_state[drive] = CIA_SWITCH_ON_DISABLED;
-                                    }
-                                    break;
+                el2521_cia_requested_state[drive] = CIA_SWITCHED_ON;
+            }
+            break;
+        case CIA_NOT_READY_TO_SWITCH_ON:
+            el2521_cia_requested_state[drive] = CIA_SWITCH_ON_DISABLED;
+            break;
+        case CIA_FAULT_REACTION_ACTIVE:
+            el2521_cia_requested_state[drive] = CIA_FAULT;
+            break;
+        case CIA_FAULT:
+            if (ctrlwrd == CIA_FAULT_RESET_CTRLWRD) {
+                el2521_cia_requested_state[drive] = CIA_SWITCH_ON_DISABLED;
+            }
+            break;
     }
 
 
@@ -221,7 +222,7 @@ uint16_t ec_get_stat_wrd_el2521(const uint16_t drive) {
 
 
     el2521_status = ec_pdo_get_input_uint8(map_drive_to_slave[drive], EL2521_STATUSWORD_PDO_INDEX);
-        printf("el7031_status: %u\n", el2521_status);
+    printf("el7031_status: %u\n", el2521_status);
 
 //
 //    if (BIT_CHECK(el2521_status, EL7031_STATUS_ERROR_BIT_NUM)) {
@@ -264,61 +265,61 @@ uint16_t ec_get_stat_wrd_el2521(const uint16_t drive) {
             }
             if (el2521_cia_actual_state[drive] == CIA_SWITCHED_ON) {
 //                if (el2521_drive_state[drive].ready && el2521_drive_state[drive].ready_to_enable) {
-                    el2521_cia_actual_state[drive] = CIA_OPERATION_ENABLED;
+                el2521_cia_actual_state[drive] = CIA_OPERATION_ENABLED;
 //                }
             }
             break;
-            case CIA_SWITCHED_ON:
-                if (el2521_cia_actual_state[drive] == CIA_OPERATION_ENABLED) {
-                    el2521_cia_actual_state[drive] = CIA_SWITCHED_ON;
-                }
-                if (el2521_cia_actual_state[drive] == CIA_READY_TO_SWITCH_ON) {
+        case CIA_SWITCHED_ON:
+            if (el2521_cia_actual_state[drive] == CIA_OPERATION_ENABLED) {
+                el2521_cia_actual_state[drive] = CIA_SWITCHED_ON;
+            }
+            if (el2521_cia_actual_state[drive] == CIA_READY_TO_SWITCH_ON) {
 //                    if (el2521_drive_state[drive].ready && el2521_drive_state[drive].ready_to_enable) {
-                        el2521_cia_actual_state[drive] = CIA_SWITCHED_ON;
+                el2521_cia_actual_state[drive] = CIA_SWITCHED_ON;
 //                    }
-                }
-                break;
-                case CIA_SWITCH_ON_DISABLED:
-                    if (el2521_cia_actual_state[drive] == CIA_READY_TO_SWITCH_ON) {
-                        el2521_cia_actual_state[drive] = CIA_SWITCH_ON_DISABLED;
-                    }
-                    if (el2521_cia_actual_state[drive] == CIA_OPERATION_ENABLED) {
-                        el2521_cia_actual_state[drive] = CIA_SWITCH_ON_DISABLED;
-                    }
-                    if (el2521_cia_actual_state[drive] == CIA_SWITCHED_ON) {
-                        el2521_cia_actual_state[drive] = CIA_SWITCH_ON_DISABLED;
-                    }
-                    if (el2521_cia_actual_state[drive] == CIA_NOT_READY_TO_SWITCH_ON) {
-                        el2521_cia_actual_state[drive] = CIA_SWITCH_ON_DISABLED;
-                    }
-                    if (el2521_cia_actual_state[drive] == CIA_FAULT) {
-                        el2521_cia_actual_state[drive] = CIA_SWITCH_ON_DISABLED;
-                    }
-                    break;
-                    case CIA_QUICK_STOP_ACTIVE:
-                        break;
-                    case CIA_READY_TO_SWITCH_ON:
-                        if (el2521_cia_actual_state[drive] == CIA_SWITCH_ON_DISABLED) {
-                            el2521_cia_actual_state[drive] = CIA_READY_TO_SWITCH_ON;
-                        }
-                        if (el2521_cia_actual_state[drive] == CIA_SWITCHED_ON) {
-                            el2521_cia_actual_state[drive] = CIA_READY_TO_SWITCH_ON;
-                        }
-                        if (el2521_cia_actual_state[drive] == CIA_OPERATION_ENABLED) {
-                            el2521_cia_actual_state[drive] = CIA_READY_TO_SWITCH_ON;
-                        }
-                        break;
-                        case CIA_NOT_READY_TO_SWITCH_ON:
-                            el2521_cia_actual_state[drive] = CIA_NOT_READY_TO_SWITCH_ON;
-                            break;
-                            case CIA_FAULT_REACTION_ACTIVE:
-                                el2521_cia_actual_state[drive] = CIA_FAULT_REACTION_ACTIVE;
-                                break;
-                                case CIA_FAULT:
-                                    if (el2521_cia_actual_state[drive] == CIA_FAULT_REACTION_ACTIVE) {
-                                        el2521_cia_actual_state[drive] = CIA_FAULT;
-                                    }
-                                    break;
+            }
+            break;
+        case CIA_SWITCH_ON_DISABLED:
+            if (el2521_cia_actual_state[drive] == CIA_READY_TO_SWITCH_ON) {
+                el2521_cia_actual_state[drive] = CIA_SWITCH_ON_DISABLED;
+            }
+            if (el2521_cia_actual_state[drive] == CIA_OPERATION_ENABLED) {
+                el2521_cia_actual_state[drive] = CIA_SWITCH_ON_DISABLED;
+            }
+            if (el2521_cia_actual_state[drive] == CIA_SWITCHED_ON) {
+                el2521_cia_actual_state[drive] = CIA_SWITCH_ON_DISABLED;
+            }
+            if (el2521_cia_actual_state[drive] == CIA_NOT_READY_TO_SWITCH_ON) {
+                el2521_cia_actual_state[drive] = CIA_SWITCH_ON_DISABLED;
+            }
+            if (el2521_cia_actual_state[drive] == CIA_FAULT) {
+                el2521_cia_actual_state[drive] = CIA_SWITCH_ON_DISABLED;
+            }
+            break;
+        case CIA_QUICK_STOP_ACTIVE:
+            break;
+        case CIA_READY_TO_SWITCH_ON:
+            if (el2521_cia_actual_state[drive] == CIA_SWITCH_ON_DISABLED) {
+                el2521_cia_actual_state[drive] = CIA_READY_TO_SWITCH_ON;
+            }
+            if (el2521_cia_actual_state[drive] == CIA_SWITCHED_ON) {
+                el2521_cia_actual_state[drive] = CIA_READY_TO_SWITCH_ON;
+            }
+            if (el2521_cia_actual_state[drive] == CIA_OPERATION_ENABLED) {
+                el2521_cia_actual_state[drive] = CIA_READY_TO_SWITCH_ON;
+            }
+            break;
+        case CIA_NOT_READY_TO_SWITCH_ON:
+            el2521_cia_actual_state[drive] = CIA_NOT_READY_TO_SWITCH_ON;
+            break;
+        case CIA_FAULT_REACTION_ACTIVE:
+            el2521_cia_actual_state[drive] = CIA_FAULT_REACTION_ACTIVE;
+            break;
+        case CIA_FAULT:
+            if (el2521_cia_actual_state[drive] == CIA_FAULT_REACTION_ACTIVE) {
+                el2521_cia_actual_state[drive] = CIA_FAULT;
+            }
+            break;
 
 
     }

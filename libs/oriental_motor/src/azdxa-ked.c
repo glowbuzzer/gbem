@@ -139,7 +139,7 @@ gberror_t ec_standard_sdos_azdxa_ked(const uint16_t slave) {
 gberror_t ec_pdo_map_azd2a_ked(const uint16_t slave) {
 
     if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "SODs configured for PDO mapping for AZD2A-KED slave [%u] are:",
+        UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for AZD2A-KED slave [%u] are:",
                 slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying PDO mapping to AZD2A-KED slave [%u]",
@@ -197,7 +197,7 @@ gberror_t ec_pdo_map_azd2a_ked(const uint16_t slave) {
 gberror_t ec_pdo_map_azd3a_ked(const uint16_t slave) {
 
     if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "SODs configured for PDO mapping for AZD3A-KED slave [%u] are:",
+        UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for AZD3A-KED slave [%u] are:",
                 slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying PDO mapping to AZD3A-KED slave [%u]",
@@ -281,7 +281,7 @@ gberror_t ec_pdo_map_azd3a_ked(const uint16_t slave) {
 gberror_t ec_pdo_map_azd4a_ked(const uint16_t slave) {
 
     if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "SODs configured for PDO mapping for AZD4A-KED slave [%u] are:",
+        UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for AZD4A-KED slave [%u] are:",
                 slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying PDO mapping to AZD4A-KED slave [%u]",
