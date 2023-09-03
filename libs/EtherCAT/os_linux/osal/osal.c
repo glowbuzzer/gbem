@@ -10,6 +10,7 @@
 #include <string.h>
 #include <osal.h>
 #include "pthread.h"
+#include "stdio.h"
 
 #define USECS_PER_SEC     1000000
 
@@ -124,11 +125,29 @@ int osal_thread_create_rt(void *thandle, int stacksize, void *func, void *param)
     }
     memset(&schparam, 0, sizeof(schparam));
 
-    schparam.sched_priority = 50;
+
+//    original
+    //    schparam.sched_priority = 50;
+
 //    schparam.sched_priority = 30;
+    schparam.sched_priority = 80;
+
 
     //VIP change the kernel scheduler scheme here
     ret = pthread_setschedparam(*threadp, SCHED_FIFO, &schparam);
+
+
+//    struct sched_param get_param;
+//    int policy;
+//    sched_getparam(0, &get_param);
+//    printf("GBEM: thread priority = %d\n", get_param.sched_priority);
+//
+//    pthread_getschedparam(*threadp, &policy, &get_param);
+//
+//    printf("GBEM: Priority of the thread: %d, current policy is: %d and should be %d\n", get_param.sched_priority,
+//           policy, SCHED_FIFO);
+
+
     if (ret < 0) {
         return 0;
     }

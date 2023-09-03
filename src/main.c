@@ -513,6 +513,7 @@ int main(int argc, char *argv[]) {
     }
 
     //RT-Sensitive
+#if ENABLE_ALL_NON_CORE_FUNCTIONS == 1
 #if ENABLE_PLC == 1
     grc = plc_init();
     if (grc != E_SUCCESS) {
@@ -522,8 +523,10 @@ int main(int argc, char *argv[]) {
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: PLC initialised successfully");
     }
-
 #endif
+#endif
+
+
     if ((ecm_status.active_program == ECM_NET_SCAN_PROG) || (ecm_status.active_program == ECM_NET_SCAN_PDO_PROG) || (ecm_status.active_program == ECM_PRINT_CONFIG_PROG) ||
         (ecm_status.active_program == ECM_WRITE_NVRAM_PROG)) {
         goto program_switch;

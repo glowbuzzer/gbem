@@ -18,6 +18,14 @@
 #include "automationware.h"
 #include "beckhoff.h"
 
+//LARGE
+//J20 -> J25 -> J32 ->J40HP -> J40-LP
+
+//MEDIUM
+//J17 -> J20 -> J20 ->J25 -> J32 ->J32
+
+//SMALL
+//J17 -> J17 -> J20 ->J25 -> J32 -> J25
 
 //@formatter:off
 map_pdo_object_t ctrl_estop_din = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1008_1, .bit_num=1};
@@ -89,7 +97,7 @@ const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
 };
 
 
-/* REVERSE FUNCTIONS - USED FOR TESTING */
+/* REVERSE FUNCTIONS - USED FOR UNIT TESTING */
 MAP_DRIVE_GET_CTRL_WRD_REV_FUNCTIONS(       ec_get_ctrl_wrd_rev_aw_j_series);
 MAP_DRIVE_SET_STAT_WRD_REV_FUNCTIONS(       ec_set_stat_wrd_rev_aw_j_series);
 MAP_DRIVE_SET_ACTPOS_WRD_REV_FUNCTIONS(     ec_set_actpos_wrd_rev_aw_j_series);

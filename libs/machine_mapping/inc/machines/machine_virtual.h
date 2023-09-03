@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
  * @file           :  machine_virtual.h
- * @brief          :  machine map for EK1100 + El1008 + EL2008 + virtual drives
+ * @brief          :  machine map for EK1100 + El1008 + EL2008 + a number of virtual drives
  ******************************************************************************
  * @attention
  *
@@ -15,7 +15,7 @@
 #define GBEM_MACHINE_VIRTUAL_H
 
 
-#define MAP_CYCLE_TIME              (4)
+#define MAP_CYCLE_TIME              (1)
 #define MAP_GLOBAL_DC_SYNC_OFFSET   2000U
 
 /* Slaves must be defined in order that they appear on the EtherCAT network */

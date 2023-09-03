@@ -31,7 +31,7 @@
 
 /** These defines define when a warning occurs in the main EtherCAT cyclic task when processing exceeds a given % of the bus cycle time */
 #define ECRXTX_EXEC_TIME_ERROR_PERCENTAGE               80
-#define ECRXTX_EXEC_TIME_WARNING_PERCENTAGE             50
+#define ECRXTX_EXEC_TIME_WARNING_PERCENTAGE             60
 
 /** Enables measure timing code which logs the timing of the main cyclic EtherCAT comms process to stdout (don't enable when not troubleshooting as it can upset realtimeness) */
 #define ECRXTX_MEASURE_EXEC_TIME                        1
@@ -113,6 +113,17 @@
 
 /** Defines whether PLC functionality is enabled */
 #define ENABLE_PLC                                      0
+
+
+/** Defines whether all non-core functions are enable */
+/** This will disable:
+ * PLC
+ * EtherCAT error checking thread
+ * EMSTAT
+ *
+ */
+
+#define ENABLE_ALL_NON_CORE_FUNCTIONS                  1
 
 
 /** Max length of string for ec_state to string array */

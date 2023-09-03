@@ -60,21 +60,34 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               
 
 
 /* DRIVE PARAMETERS */
-MAP_DRIVE_POS_LIMIT(                        99999999,                                );
-MAP_DRIVE_NEG_LIMIT(                        -99999999,                               );
+MAP_DRIVE_POS_LIMIT(                        99999999,                           );
+MAP_DRIVE_NEG_LIMIT(                        -99999999,                          );
 MAP_DRIVE_DIRECTION(                        1,                                  );
-
+//percentage of max torque
+MAP_DRIVE_TORQ_LIMIT(                       100,                                );
 
 
 extern bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3;
 
 
 /*IO MAP*/
-mapping_t map_iomap[4] = {
-        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=1, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din1, .linked_task_name="Task1"}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=2, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din2, .linked_task_name="Task1"}},
+mapping_t map_iomap[16] = {
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=1, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=0},     {}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=2, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1},     {}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=3, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2},     {}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=4, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=3},     {}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=5, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=4},     {}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=6, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=5},     {}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=7, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=6},     {}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=8, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=7},     {}},
         {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=1, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=0},    {}},
         {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=2, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=1},    {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=3, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=2},    {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=4, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=3},    {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=5, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=4},    {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=6, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=5},    {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=7, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=6},    {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=8, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=7},    {}},
         };
 
 uint16_t map_num_rows_in_iomap = sizeof (map_iomap)/ sizeof(map_iomap[0]);
@@ -89,7 +102,7 @@ const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
 };
 
 
-/* REVERSE FUNCTIONS - USED FOR TESTING */
+/* REVERSE FUNCTIONS - USED FOR UNIT TESTING */
 MAP_DRIVE_GET_CTRL_WRD_REV_FUNCTIONS(       ec_get_ctrl_wrd_rev_aw_j_series);
 MAP_DRIVE_SET_STAT_WRD_REV_FUNCTIONS(       ec_set_stat_wrd_rev_aw_j_series);
 MAP_DRIVE_SET_ACTPOS_WRD_REV_FUNCTIONS(     ec_set_actpos_wrd_rev_aw_j_series);

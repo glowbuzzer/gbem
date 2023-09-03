@@ -456,9 +456,10 @@ void ec_rxtx(void *argument) {
             }
 
             //RT-sensitive
+#if ENABLE_ALL_NON_CORE_FUNCTIONS == 1
 #if ENABLE_PLC == 1
             plc_task_exec();
-
+#endif
 #endif
             clock_gettime(CLOCK_MONOTONIC, &t_exec_end);
 
@@ -478,6 +479,9 @@ void ec_rxtx(void *argument) {
 //                print_slave_dc_sysdiff(MAP_EL7211_1);
 //                print_dc_timestamps();
 //            }
+
+
+
 
             if (ec_slave[0].hasdc) {
                 /* calculate toff to get GBC time and DC synced */
@@ -501,17 +505,19 @@ void ec_rxtx(void *argument) {
 //                                UM_INFO(GBEM_UM_EN, "GBEM: Bus cycle tick [%]" PRIu64, bus_cycle_tick);
 //                            }
 
-/** Here we warn if the exec time (state machine gubbins plus plc jiggerypokery) is more than half our cycle time */
+/** Here we warn if the exec time (state machine gubbins plus plc jiggerypokery) is more than ur cycle time */
 
                             if ((uint32_t) exec_time_usec >
                                 (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_ERROR_PERCENTAGE / 100)) {
                                 ec_rxtx_event[CYCLIC_EVENT_OVERRUN].active = true;
-                                UM_ERROR(GBEM_UM_EN, "GBEM: Execution time [%u] (error)", (uint32_t) exec_time_usec);
+                                UM_ERROR(GBEM_UM_EN, "GBEM: Execution time [%u] [%llu] (error)",
+                                         (uint32_t) exec_time_usec, bus_cycle_tick);
 
                             } else if ((uint32_t) exec_time_usec >
                                        (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_WARNING_PERCENTAGE / 100)) {
                                 ec_rxtx_event[CYCLIC_EVENT_TIMEWARN].active = true;
-                                UM_WARN(GBEM_UM_EN, "GBEM: Execution time [%u] (warning)", (uint32_t) exec_time_usec);
+                                UM_WARN(GBEM_UM_EN, "GBEM: Execution time [%u] [%llu] (warning)",
+                                        (uint32_t) exec_time_usec, bus_cycle_tick);
                             } else {
                                 ec_rxtx_event[CYCLIC_EVENT_OVERRUN].active = false;
                                 ec_rxtx_event[CYCLIC_EVENT_TIMEWARN].active = false;

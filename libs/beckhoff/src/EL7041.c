@@ -35,7 +35,8 @@
 //motorCoilResistance 0x8010, 0x04
 //reversed 0x8012, 0x09
 
-//set pos control mode
+//set pos control mode -
+
 //ecrt_slave_config_sdo8(dev->slaveConfig, 0x8012, 0x01, 3);
 
 

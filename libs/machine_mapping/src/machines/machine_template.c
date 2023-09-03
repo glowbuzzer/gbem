@@ -14,7 +14,7 @@
 
 #include "map.h"
 //#ifdef must surround all the machine specific code so that when this machine is not defined it is not compiled
-#if BLANK  == 1
+#if BLANK == 1
 
 
 
@@ -85,7 +85,7 @@ const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
 };
 
 
-/* REVERSE FUNCTIONS - USED FOR TESTING */
+/* REVERSE FUNCTIONS - USED FOR UNIT TESTING */
 MAP_DRIVE_GET_CTRL_WRD_REV_FUNCTIONS(       ec_get_ctrl_wrd_rev_azd,        ec_get_ctrl_wrd_rev_azd             );
 MAP_DRIVE_SET_STAT_WRD_REV_FUNCTIONS(       ec_set_stat_wrd_rev_azd,        ec_set_stat_wrd_rev_azd             );
 MAP_DRIVE_SET_ACTPOS_WRD_REV_FUNCTIONS(     ec_set_actpos_wrd_rev_azd,      ec_set_actpos_wrd_rev_azd           );

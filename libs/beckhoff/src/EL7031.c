@@ -104,7 +104,7 @@ gberror_t ec_pdo_map_el7031(const uint16_t slave) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    //all applied correctly
+    //all applied correctly if here
     return E_SUCCESS;
 
 

@@ -37,7 +37,7 @@
  * Bit 1 : Switched on
  * Bit 2 : Operation enabled
  * Bit 3 : Fault
- * Bit 4 : reserved
+ * Bit 4 : reserved -
  * Bit 5 : reserved
  * Bit 6 : Switch on disabled
  * Bit 7 : Warning

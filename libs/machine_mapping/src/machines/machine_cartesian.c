@@ -14,6 +14,7 @@
 
 
 #include "map.h"
+
 #if MACHINE_CARTESIAN == 1
 
 #include "azdxa-ked.h"
@@ -92,7 +93,7 @@ const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
 
 
 
-/* REVERSE FUNCTIONS - USED FOR TESTING */
+/* REVERSE FUNCTIONS - USED FOR UNIT TESTING */
 MAP_DRIVE_GET_CTRL_WRD_REV_FUNCTIONS(       ec_get_ctrl_wrd_rev_azdxa_ked,        ec_get_ctrl_wrd_rev_azdxa_ked             );
 MAP_DRIVE_SET_STAT_WRD_REV_FUNCTIONS(       ec_set_stat_wrd_rev_azdxa_ked,        ec_set_stat_wrd_rev_azdxa_ked             );
 MAP_DRIVE_SET_ACTPOS_WRD_REV_FUNCTIONS(     ec_set_actpos_wrd_rev_azdxa_ked,      ec_set_actpos_wrd_rev_azdxa_ked           );

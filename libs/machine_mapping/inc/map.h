@@ -71,6 +71,9 @@ extern bool nolimits;
 #define MAP_DRIVE_RUN_HOMING(...) const bool map_drive_run_homing[MAP_NUM_DRIVES] = {__VA_ARGS__};
 #define MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(...) gberror_t (*map_drive_print_params_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 
+#define MAP_DRIVE_TORQ_LIMIT(...) const int32_t map_drive_torque_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
+
+
 //REVERSE FUNCTIONS
 #define MAP_DRIVE_GET_CTRL_WRD_REV_FUNCTIONS(...) uint16_t (*map_drive_get_ctrl_wrd_rev_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 #define MAP_DRIVE_SET_STAT_WRD_REV_FUNCTIONS(...) gberror_t (*map_drive_set_stat_wrd_rev_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, uint16_t statwrd) = {__VA_ARGS__};
@@ -223,6 +226,8 @@ extern gberror_t (*map_drive_homing_exec_function_ptr[MAP_NUM_DRIVES])(uint16_t 
 extern const int32_t map_drive_pos_limit[MAP_NUM_DRIVES];
 extern const int32_t map_drive_neg_limit[MAP_NUM_DRIVES];
 extern const uint8_t map_drive_direction[MAP_NUM_DRIVES];
+
+extern const int32_t map_drive_torque_limit[MAP_NUM_DRIVES];
 
 //REVERSE FUNCTIONS
 extern uint16_t (*map_drive_get_ctrl_wrd_rev_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);

@@ -180,6 +180,7 @@ int main(void) {
     }
 
     //RT-sensitive
+
     rc = osal_thread_create_rt(&thread_ec_check, STACK64K * 2, &ec_check, NULL);
     if (rc != 1) {
         LL_FATAL(

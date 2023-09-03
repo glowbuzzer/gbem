@@ -32,7 +32,7 @@
 // I exported the Mailbox Init commands from twincat. The same is sent to drive using ec_SoeWrite function.
 
 /*
-The only essential IDNS required to bring AX5206 to Op mode are:
+The only essential IDNS required to bring AX5206 to Op mode are :
 
 
 uint8 SoEWrData4[8] ={0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };

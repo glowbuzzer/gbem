@@ -13,8 +13,6 @@
  */
 
 
-
-
 #include "MSE-408.h"
 #include "RTA.h"
 #include "std_headers.h"
@@ -23,12 +21,6 @@
 #include "user_message.h"
 #include "ethercatsetget.h"
 #include "cia402.h"
-
-//LL_TRACE(GBEM_FUN_TRACE_LOG_EN ,
-//         "GBEM: Linked ec_standard_sdo function: [%s] for slave [%u] (this is controlled by the MACHINE #define)",
-//         __FUNCTION__ , slave);
-
-
 
 
 /* This is used for the fixed POO remapping */

@@ -75,7 +75,7 @@ gberror_t ec_pdo_map_smc3(const uint16_t slave) {
     }
 
     /*
-     * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
+     * set the SM2 & SM3 assignment object number of  entries to actual number (sub-index 0)
      */
     if (!ec_sdo_write_uint16(slave, map_SM2_smc3.SM_assignment_index, 0,
                              map_SM2_smc3.number_of_entries)) {

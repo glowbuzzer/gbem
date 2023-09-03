@@ -79,7 +79,7 @@ const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
         {.name = EL2008_EEP_NAME},
         {.name = EL1008_EEP_NAME}};
 
-/* REVERSE FUNCTIONS - USED FOR TESTING */
+/* REVERSE FUNCTIONS - USED FOR UNIT TESTING */
 MAP_DRIVE_GET_CTRL_WRD_REV_FUNCTIONS(       ec_get_ctrl_wrd_rev_EL7211,     );
 MAP_DRIVE_SET_STAT_WRD_REV_FUNCTIONS(       ec_set_stat_wrd_rev_EL7211,     );
 MAP_DRIVE_SET_ACTPOS_WRD_REV_FUNCTIONS(     ec_set_actpos_wrd_rev_EL7211,   );

@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
  * @file           :  read_drive_error_code_into_ecm_status
- * @brief          :
+ * @brief          :  read a drive error code into the ecm status
  ******************************************************************************
  * @attention
  *

@@ -5,7 +5,7 @@
 
 /** \file
  * \brief
- * Configuration module for EtherCAT master.
+ * Configuration module for EtherCAT master
  *
  * After successful initialisation with ec_init() or ec_init_redundant()
  * the slaves can be auto configured with this module.

@@ -20,11 +20,6 @@
 #include "gberror.h"
 #include "user_message.h"
 
-//LL_TRACE(GBEM_FUN_TRACE_LOG_EN ,
-//         "GBEM: Linked ec_standard_sdo function: [%s] for slave [%u] (this is controlled by the MACHINE #define)",
-//         __FUNCTION__ , slave);
-
-
 
 /* This is used for the fixed POO remapping */
 map_SM_assignment_object_t map_SM2_akd = {

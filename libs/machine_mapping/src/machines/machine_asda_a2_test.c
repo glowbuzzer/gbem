@@ -69,7 +69,7 @@ uint16_t map_num_rows_in_iomap = sizeof (map_iomap)/ sizeof(map_iomap[0]);
 /* This must be laid out in the order they appear in netscan */
 MAP_SLAVE_EEP ({ASDA_A2_EEP_NAME});
 
-/* REVERSE FUNCTIONS - USED FOR TESTING */
+/* REVERSE FUNCTIONS - USED FOR UNIT TESTING */
 MAP_DRIVE_GET_CTRL_WRD_REV_FUNCTIONS(       NULL        );
 MAP_DRIVE_SET_STAT_WRD_REV_FUNCTIONS(       NULL        );
 MAP_DRIVE_SET_ACTPOS_WRD_REV_FUNCTIONS(     NULL        );

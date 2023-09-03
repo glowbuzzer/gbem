@@ -226,7 +226,7 @@ const jvl_mis_error_string_t jvl_mis_alarm_code[NUM_OF_JVL_MIS_ERROR_STRINGS] = 
         {30081, "Initialization error"},
         {34321, "Follow erro"},
         {34432, "SW position limit exceeded"},
-        {12832, "Undervoltage on bus<"},
+        {12832, "Undervoltage on bus"},
         {29446, "Multiturn encoder lost position"},
         {29447, "Multiturn encoder reed error"},
         {29448, "Multiturn encoder communication error"},
@@ -235,7 +235,7 @@ const jvl_mis_error_string_t jvl_mis_alarm_code[NUM_OF_JVL_MIS_ERROR_STRINGS] = 
         {21889, "Memory error"},
         {29445, "Singleturn encoder error"},
         {21377, "STO alarm error"},
-        {34433, "Negative limit exceeded<"},
+        {34433, "Negative limit exceeded"},
         {34434, "Positive limit exceeded"},
 };
 

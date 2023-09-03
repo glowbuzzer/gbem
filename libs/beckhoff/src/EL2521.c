@@ -103,7 +103,7 @@ gberror_t ec_pdo_map_el2521(const uint16_t slave) {
 
 }
 
-//0x8000:0xe uint8 - Operating mode - Value = 1 (freq cnt pulse mode)
+//0x8000:0xe uint8 - Operating mode - Value = 1 (freq cnt pulse mode) - must use
 #define EL2521_OPERATING_MODE_SDO_INDEX         0x8000
 #define EL2521_OPERATING_MODE_SDO_SUB_INDEX     0x0e
 #define EL2521_OPERATING_MODE_SDO_VALUE         1

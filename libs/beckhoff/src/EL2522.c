@@ -168,6 +168,7 @@ int32_t ec_get_actpos_wrd_el2522(const uint16_t drive) {
     }
 }
 
+//need to sim state machine
 void ec_sim_cia_el2522(const uint16_t drive, const uint16_t ctrlwrd, cia_state_t *state) {
     // if fault bit is set then we are always in fault reaction active
     if (el2522_drive_state_bits[drive].sync_error) {

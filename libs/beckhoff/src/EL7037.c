@@ -402,7 +402,7 @@ uint16_t ec_get_stat_wrd_el7037(const uint16_t drive) {
 
 
 /*
- * The EL7037 uses uint32 for position. GB uses int32. So we cast from int32 to uint32 to set pos
+ * The EL7037 uses uint32 for position. GB uses int32. So we cast from int32 to uint32 to set pos - should be ok
  *
  */
 
