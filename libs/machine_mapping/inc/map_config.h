@@ -39,13 +39,13 @@
 #define MACHINE_ASDA_A2_TEST        0
 #define MACHINE_SMC3_TEST           0
 #define MACHINE_AX5101_TEST         0
-#define MACHINE_AW_J17              1
+#define MACHINE_AW_J17              0
 #define MACHINE_AW_ROBOT_S          0
 #define MACHINE_AW_ROBOT_M          0
 #define MACHINE_AW_ROBOT_L          0
 #define MACHINE_VIRTUAL             0
 #define MACHINE_J17_PLUS_VIRTUAL    0
-#define MACHINE_AW_STEWART          0
+#define MACHINE_AW_STEWART          1
 
 
 

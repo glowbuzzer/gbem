@@ -13,6 +13,7 @@
  */
 
 
+
 #include "MSE-408.h"
 #include "RTA.h"
 #include "std_headers.h"
@@ -53,13 +54,85 @@ uint16_t map_SM3_index_of_assigned_PDO_mse_408[ECM_MAX_PDO_MAPPING_ENTRIES] = {
  * @return gberror_t
  * @retval E_SUCCESS all ok
  */
-gberror_t ec_standard_sdos_mse_408(const uint16_t slave) {
+gberror_t ec_apply_standard_sdos_mse_408(const uint16_t slave) {
 
-    if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "GBEM: No standard SDOs configured for MSE-408 slave [%u]", slave);
+    if (nolimits) {
+        if (!ec_sdo_write_int32(slave, MSE_408_MAX_POSITION_LIMIT_SDO_INDEX,
+                                MSE_408_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
+                                0)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+
+        if (!ec_sdo_write_int32(slave, MSE_408_MIN_POSITION_LIMIT_SDO_INDEX,
+                                MSE_408_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
+                                0)) {
+            return E_SDO_WRITE_FAILURE;
+        }
     } else {
-        UM_INFO(GBEM_UM_EN, "GBEM: No standard SDOs configured for MSE-408 slave [%u]", slave);
+        if (!ec_sdo_write_int32(slave, MSE_408_MAX_POSITION_LIMIT_SDO_INDEX,
+                                MSE_408_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
+                                map_drive_pos_limit[map_slave_to_drive(slave)])) {
+            return E_SDO_WRITE_FAILURE;
+        }
+
+        if (!ec_sdo_write_int32(slave, MSE_408_MIN_POSITION_LIMIT_SDO_INDEX,
+                                MSE_408_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
+                                map_drive_neg_limit[map_slave_to_drive(slave)])) {
+            return E_SDO_WRITE_FAILURE;
+        }
     }
+
+
+    uint8_t polarity = 0;
+    if (map_drive_direction[map_slave_to_drive(slave)] == 1) {
+        polarity = 1;
+    }
+
+    if (!ec_sdo_write_uint8(slave, MSE_408_DIRECTION_SDO_INDEX, MSE_408_DIRECTION_SDO_SUB_INDEX,
+                            polarity)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+//Max Motor Speed 0x6080 0 U32 RW 1 300 000 0…800 000
+    if (!ec_sdo_write_uint32(slave, MSE_408_MAX_MOTOR_SPEED_SDO_INDEX,
+                             MSE_408_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
+                             MSE_408_MAX_MOTOR_SPEED)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+//Homing Speeds - Speed during Search for Switch - 0x6099 1 U32 RW 1 0x5DC0 (24000) 16001…400 000
+    if (!ec_sdo_write_uint32(slave, MSE_408_HOMING_SPEEDS_SEARCH_FOR_SWITCH_SDO_INDEX,
+                             MSE_408_HOMING_SPEEDS_SEARCH_FOR_SWITCH_SDO_SUB_INDEX,
+                             MSE_408_HOMING_SPEED_SEARCH_FOR_SWITCH)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+//Homing Speeds - Speed during Search for Zero - 0x6099 2 U16 or U32 RW 1 0x0C80 (3200) 0… 16000
+    if (!ec_sdo_write_uint32(slave, MSE_408_HOMING_SPEEDS_SEARCH_FOR_ZERO_SDO_INDEX,
+                             MSE_408_HOMING_SPEEDS_SEARCH_FOR_ZERO_SDO_SUB_INDEX,
+                             MSE_408_HOMING_SPEED_SEARCH_FOR_ZERO)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+//Homing Acceleration 0x609A 0 U32 RW 1 0x9C400 (640000) 2000…10 000 000
+
+    if (!ec_sdo_write_uint32(slave, MSE_408_HOMING_ACCELERATION_SDO_INDEX,
+                             MSE_408_HOMING_ACCELERATION_SDO_SUB_INDEX,
+                             MSE_408_HOMING_ACCELERATION)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+//Motor Code 0x3210 0 U32 RW RO 1,2 MSE-408: 0x00001544 (5444)
+
+    if (!ec_sdo_write_uint32(slave, MSE_408_MOTOR_CODE_SDO_INDEX,
+                             MSE_408_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
+                             MSE_408_MOTOR_CODE)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
     return E_SUCCESS;
 }
 
@@ -130,12 +203,8 @@ gberror_t ec_pdo_map_mse_408(const uint16_t slave) {
  * @attention handles sub-drives
  */
 int8_t ec_get_moo_pdo_mse_408(const uint16_t drive) {
-//    LL_TRACE(GBEM_FUN_TRACE_LOG_EN,
-//            "GBEM: Linked ec_get_modes_of_operation function: %s (this is controlled by the MACHINE #define)",
-//            __FUNCTION__);
 
     return ec_pdo_get_input_int8(map_drive_to_slave[drive], MSE_408_MOODISP_PDO_INDEX);
-
 
 }
 
@@ -194,35 +263,38 @@ gberror_t ec_initial_pdo_mse_408(const uint16_t slave) {
 }
 
 
-/**
- * @brief reads drive error codes for a specific MSE-408 drive and returns an array of error codes
- * @param drive
- * @return pointer to error code string
- */
-uint8_t *ec_get_error_string_pdo_mse_408(const uint16_t drive) {
-
+uint8_t *ec_get_error_string_sdo_mse_408(const uint16_t drive) {
     static uint8_t error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH];
-
-
     memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
-
     uint16_t drive_error_code = 0;
-    drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive], MSE_408_ERROR_CODE_PDO_INDEX);
 
 
-    if (drive_error_code != 0) {
-        BITMASK_CLEAR(drive_error_code, 0xFF00);
-    }
-    for (int i = 0; i < NUM_OF_MSE_408_ERROR_STRINGS; i++) {
-        if (mse_408_alarm_code[i].error_id == drive_error_code) {
-            memset(&error_code_string[0], 0, sizeof(error_code_string));
-            strncpy((char *) &error_code_string[0], mse_408_alarm_code[i].text_string, sizeof(error_code_string) - 1);
-            break;
+    if (ec_sdo_read_uint16(map_drive_to_slave[drive], MSE_408_ERROR_CODE_SDO_INDEX,
+                           MSE_408_ERROR_CODE_SDO_SUB_INDEX,
+                           &drive_error_code)) {
+
+        if (drive_error_code == 0) {
+            sprintf((char *) error_code_string, "MSE-408: no error on drive");
+            return error_code_string;
         }
+
+        for (int i = 0; i < NUM_OF_MSE_408_ERROR_STRINGS; i++) {
+            if (mse_408_error_code[i].error_id == drive_error_code) {
+                sprintf((char *) error_code_string, "MSE-408 error [%s]",
+                        mse_408_error_code[i].text_string);
+                return error_code_string;
+            }
+        }
+
+        sprintf((char *) error_code_string,
+                "MSE-408: Error code returned by drive did not match any in the error table");
+        return error_code_string;
     }
+
+    sprintf((char *) error_code_string,
+            "MSE-408: Error code could not be read from drive");
     return error_code_string;
 }
-
 
 /**
  * @brief get actpos for an MSE-408 drive
@@ -231,19 +303,8 @@ uint8_t *ec_get_error_string_pdo_mse_408(const uint16_t drive) {
  */
 int32_t ec_get_actpos_wrd_mse_408(const uint16_t drive) {
     return ec_pdo_get_input_int32(map_drive_to_slave[drive], MSE_408_ACTPOS_PDO_INDEX);
-
 }
 
-/**
- * @brief get ctrlwrd for for an MSE-408 drive
- * @param drive
- * @return ctrlwrd
- * @warning REVERSE FUNCTION ("WRONG" WAY ROUND)
- */
-uint16_t ec_get_ctrl_wrd_rev_mse_408(const uint16_t drive) {
-    return ec_pdo_get_output_uint16_rev(map_drive_to_slave[drive], MSE_408_CONTROLWORD_PDO_INDEX);
-
-}
 
 /**
  * @brief set status word for an MSE-408 drive
@@ -293,6 +354,19 @@ gberror_t ec_set_setpos_wrd_mse_408(const uint16_t drive, const int32_t setpos) 
     return E_SUCCESS;
 }
 
+
+/**
+ * @brief get ctrlwrd for for an MSE-408 drive
+ * @param drive
+ * @return ctrlwrd
+ * @warning REVERSE FUNCTION ("WRONG" WAY ROUND)
+ */
+uint16_t ec_get_ctrl_wrd_rev_mse_408(const uint16_t drive) {
+    return ec_pdo_get_output_uint16_rev(map_drive_to_slave[drive], MSE_408_CONTROLWORD_PDO_INDEX);
+
+}
+
+
 /**
  * @brief set actpos for an MSE-408 drive
  * @param drive
@@ -330,8 +404,7 @@ gberror_t ec_set_moo_pdo_rev_mse_408(const uint16_t drive) {
 
 
 /*array mapping an MSE-408 drive error code to a text string */
-const mse_408_error_string_t mse_408_alarm_code[NUM_OF_MSE_408_ERROR_STRINGS] = {
-
+const mse_408_error_string_t mse_408_error_code[NUM_OF_MSE_408_ERROR_STRINGS] = {
         {0x8611, "Motor following error"},
         {0x8500, "Error encoder short circuit” (or overcurrent on encoder)"},
         {0x8400, "Axis speed too high” (see object 0x3321, subindex 4)"},
@@ -339,5 +412,4 @@ const mse_408_error_string_t mse_408_alarm_code[NUM_OF_MSE_408_ERROR_STRINGS] = 
         {0x4310, "Error drive excessive temperature"},
         {0x2130, "Error short circuit” (or overcurrent on motor phase)"},
         {0x0000, "Emergency end"},
-
 };

@@ -35,9 +35,6 @@ gberror_t ec_apply_standard_sdos_mse_408(uint16_t slave);
 
 int8_t ec_get_moo_pdo_mse_408(uint16_t drive);
 
-uint8_t *ec_get_error_string_pdo_mse_408(uint16_t drive);
-
-gberror_t ec_nvram_sdos_mse_408(uint16_t slave);
 
 /** Drive functions */
 gberror_t ec_set_ctrl_wrd_mse_408(uint16_t drive, uint16_t ctrlwrd);
@@ -62,8 +59,9 @@ int32_t ec_get_setpos_word_rev_mse_408(uint16_t drive);
 
 gberror_t ec_set_moo_pdo_rev_mse_408(uint16_t drive);
 
+uint8_t *ec_get_error_string_sdo_mse_408(uint16_t drive);
 
-#define MSE_408_KED_EEP_NAME "RTA MSE-408 EtherCAT FLEX-Drive"
+#define MSE_408_EEP_NAME "RTA MSE-408 EtherCAT FLEX-Drive"
 #define MSE_408_EEP_MAN RTA_MOTOR_MAN
 #define MSE_408_EEP_REV 0x0000001F
 #define MSE_408_EEP_ID 0x00000044
@@ -71,8 +69,7 @@ gberror_t ec_set_moo_pdo_rev_mse_408(uint16_t drive);
 
 #define NUM_OF_MSE_408_ERROR_STRINGS 7
 
-/* MSE-408 drive extended statusword bit numbers (CSP) */
-#define MSE_408_STATUSWORD_TLC_BIT_NUM                            (15)
+
 
 
 /* Homing mode status word */
@@ -93,7 +90,7 @@ typedef struct {
 } mse_408_error_string_t;
 
 
-const mse_408_error_string_t mse_408_alarm_code[NUM_OF_MSE_408_ERROR_STRINGS];
+const mse_408_error_string_t mse_408_error_code[NUM_OF_MSE_408_ERROR_STRINGS];
 
 /* These define the position of objects in the PDO - number of bytes from start of input or output */
 
@@ -109,12 +106,15 @@ const mse_408_error_string_t mse_408_alarm_code[NUM_OF_MSE_408_ERROR_STRINGS];
 
 #define MSE_408_ERROR_CODE_PDO_INDEX    17
 
+//1 I32 RW
+// 0 = no limit?
+//Minimum position range limit
+#define MSE_408_MIN_POSITION_LIMIT_SDO_INDEX     (0x607b)
+#define MSE_408_MIN_POSITION_LIMIT_SDO_SUB_INDEX (0x1)
 
-#define MSE_408_MIN_LIMIT_SDO_INDEX     (0x607b)
-#define MSE_408_MIN_LIMIT_SDO_SUB_INDEX (0x1)
-
-#define MSE_408_MAX_LIMIT_SDO_INDEX     (0x607b)
-#define MSE_408_MAX_LIMIT_SDO_SUB_INDEX (0x2)
+//2 I32 RW
+#define MSE_408_MAX_POSITION_LIMIT_SDO_INDEX     (0x607b)
+#define MSE_408_MAX_POSITION_LIMIT_SDO_SUB_INDEX (0x2)
 
 //Revolution Direction (CW / CCW setting) 0x3212 0 U8 RW 1,2 0x00 (0) 0 / 1
 
@@ -161,6 +161,15 @@ const mse_408_error_string_t mse_408_alarm_code[NUM_OF_MSE_408_ERROR_STRINGS];
 //Motor Code 0x3210 0 U32 RW RO 1,2 MSE-408: 0x00001544 (5444)
 #define MSE_408_MOTOR_CODE_SDO_INDEX       0x3210
 #define MSE_408_MOTOR_CODE_SDO_SUB_INDEX   0x0
+
+
+#define MSE_408_MAX_MOTOR_SPEED (300000)
+
+#define MSE_408_HOMING_SPEED_SEARCH_FOR_SWITCH (24000)
+#define MSE_408_HOMING_SPEED_SEARCH_FOR_ZERO (3200)
+#define MSE_408_HOMING_ACCELERATION (640000)
+
+#define MSE_408_MOTOR_CODE (5444)
 
 
 #endif //GBEM_MSE_408_H

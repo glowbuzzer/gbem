@@ -13,8 +13,8 @@
 #ifndef GBEM_RTA_H
 #define GBEM_RTA_H
 
-//todo
-#define RTA_MOTOR_MAN 0x00022d2
+
+#define RTA_MOTOR_MAN 0x17F
 
 
 #include "MSE-408.h"
