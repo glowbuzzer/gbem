@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/glowbuzzer/gbem/compare/v1.1.0...v1.2.0) (2023-09-04)
+
+
+### Features
+
+* **#17:** Add ENABLE_PLC #define to enabled/disable PLC functionality ([9f44e40](https://github.com/glowbuzzer/gbem/commit/9f44e40d6b403a43b61b287dcec1b9112773e799))
+
+
+### Bug Fixes
+
+* **#15:** GBEM doesn't respond to CTRL_GBC_INTERNAL_FAULT_REQ_BIT_NUM in control word ([a6cc9db](https://github.com/glowbuzzer/gbem/commit/a6cc9db7837a3c6c5a2ad6f308076726d67f542a))
+
 ## [1.1.0](https://github.com/glowbuzzer/gbem/compare/v1.0.0...v1.1.0) (2023-08-31)
 
 
