@@ -14,7 +14,7 @@
 
 #include "map_config.h"
 
-/* MACHINE_NEW - add new string for machine here */
+/* NEW_MACHINE - add new string for machine here */
 const char *map_machine_type_strings[MAP_NUM_MACHINES] = {
         "MACHINE_UNKNOWN",
         "MACHINE_MINI",

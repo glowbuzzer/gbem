@@ -17,6 +17,7 @@
 
 
 /* MACHINE_SWAP - set the correct map here - ofc only one machine at a time can be active << THIS IS THE WAY TO SWAP MACHINES*/
+/* NEW_MACHINE */
 /* WARNING! Don't enable more than one or bad things happen when linking */
 #define MACHINE_MINI                0
 #define MACHINE_CARTESIAN           0
@@ -44,17 +45,17 @@
 #define MACHINE_AW_ROBOT_M          0
 #define MACHINE_AW_ROBOT_L          0
 #define MACHINE_VIRTUAL             0
-#define MACHINE_J17_PLUS_VIRTUAL    0
-#define MACHINE_AW_STEWART          1
+#define MACHINE_J17_PLUS_VIRTUAL    1
+#define MACHINE_AW_STEWART          0
 
 
-
+/* NEW_MACHINE */
 //If you add a new machine you have to increment this count to match the number above
 #define MAP_NUM_MACHINES            29
 
 extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
-/* MACHINE_NEW - add new #ifdef to include the header here */
+/* NEW_MACHINE - add new #ifdef to include the header here */
 #if MACHINE_MINI == 1
 
 #include "machine_mini.h"
@@ -183,7 +184,7 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 #endif
 
 
-/* MACHINE_NEW - add new MAP_ enum here */
+/* NEW_MACHINE - add new MAP_ enum here */
 typedef enum {
     MAP_MACHINE_UNKNOWN,
     MAP_MACHINE_MINI,

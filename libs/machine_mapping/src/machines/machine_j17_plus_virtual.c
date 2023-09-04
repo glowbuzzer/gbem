@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file           :  machine_virtual.c
+ * @file           :  machine_j17_plus_virtual.c
  * @brief          :  machine map for  EK1100 + El1008 + EL2008 +virtual drives
  ******************************************************************************
  * @attention
@@ -48,7 +48,7 @@ MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                               
 MAP_DRIVE_GET_REMOTE_FUNCTIONS(             ec_get_remote_aw_j_series,              ec_get_remote_virtual,              ec_get_remote_virtual,              ec_get_remote_virtual,              ec_get_remote_virtual,              ec_get_remote_virtual,              );
 MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_aw_j_series,        ec_get_follow_error_virtual,        ec_get_follow_error_virtual,        ec_get_follow_error_virtual,        ec_get_follow_error_virtual,        ec_get_follow_error_virtual,        );
 MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   NULL,                                   ec_get_error_string_pdo_virtual,    ec_get_error_string_pdo_virtual,    ec_get_error_string_pdo_virtual,    ec_get_error_string_pdo_virtual,    ec_get_error_string_pdo_virtual,    );
-MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   ec_get_error_string_sdo_aw_j_series,    NULL                                NULL,                               NULL,                               NULL,                               NULL,                               );
+MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   ec_get_error_string_sdo_aw_j_series,    NULL,                                NULL,                               NULL,                               NULL,                               NULL,                               );
 MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_aw_j_series,            ec_set_ctrl_wrd_virtual,            ec_set_ctrl_wrd_virtual,            ec_set_ctrl_wrd_virtual,            ec_set_ctrl_wrd_virtual,            ec_set_ctrl_wrd_virtual,            );
 MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_aw_j_series,            ec_get_stat_wrd_virtual,            ec_get_stat_wrd_virtual,            ec_get_stat_wrd_virtual,            ec_get_stat_wrd_virtual,            ec_get_stat_wrd_virtual,            );
 MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(        ec_get_actpos_wrd_aw_j_series,           ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          );
@@ -61,9 +61,11 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               
 
 
 /* DRIVE PARAMETERS */
-MAP_DRIVE_POS_LIMIT(                        99999999,                               0,                                  0,                                  0,                                  0,                                  0);
-MAP_DRIVE_NEG_LIMIT(                        -99999999,                              0,                                  0,                                  0,                                  0,                                  0);
-MAP_DRIVE_DIRECTION(                        1,                                      1,                                  1,                                  1,                                  1,                                  1);
+MAP_DRIVE_POS_LIMIT(                        99999999,                               0,                                  0,                                  0,                                  0,                                  0                                   );
+MAP_DRIVE_NEG_LIMIT(                        -99999999,                              0,                                  0,                                  0,                                  0,                                  0                                   );
+MAP_DRIVE_DIRECTION(                        1,                                      1,                                  1,                                  1,                                  1,                                  1                                   );
+//percentage of max torque
+MAP_DRIVE_TORQ_LIMIT(                       7,                                      0,                                  0,                                  0,                                  0,                                  0,                                  );
 
 
 
@@ -98,4 +100,4 @@ MAP_DRIVE_SET_MOO_REV_FUNCTIONS(            NULL);
 
 //@formatter:on
 
-#endif //MACHINE_VIRTUAL
+#endif //MACHINE_J17_PLUS_VIRTUAL

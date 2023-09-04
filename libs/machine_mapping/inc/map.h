@@ -20,16 +20,6 @@
 #include "map_config.h"
 
 
-/*
- *
- * Comments highlight where things to be:
- * MACHINE_NEW
- * MACHINE_SWAP
- * DRIVE_NEW
- *
- */
-
-
 extern bool nolimits;
 
 /** These macros build the function pointers for slave and drive startup and operational functions */

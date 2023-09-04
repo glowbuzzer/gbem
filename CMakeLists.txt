@@ -85,7 +85,7 @@ message(STATUS "GB: CURRENT_SOURCE_DIR [${CMAKE_CURRENT_SOURCE_DIR} ]")
 
 
 add_executable(GBEM ${SOURCES})
-
+#NEW_DRIVE
 target_link_libraries(GBEM EtherCAT Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen automationware virtual_drive RTA trio delta JVL omron oriental_motor unity gberror gbem_config etg m rt)
 target_include_directories(GBEM PUBLIC "inc" "shared/inc" "plc_user_code" ${PROJECT_BINARY_DIR}/version ${gbem_config_BINARY_DIR})
 
