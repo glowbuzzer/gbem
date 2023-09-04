@@ -27,6 +27,7 @@
 //#include "ethercatsetget.h"
 #include "cia402.h"
 #include "read_drive_error_code_into_ecm_status.h"
+#include "print_slave_error_messages.h"
 
 //todo review need for semaphores in control.c and ec_rxtx.c
 #define DPM_IN_PROTECT_START
@@ -691,7 +692,6 @@ static bool cia_trn11_guard(void *condition, struct event *event) {
 }
 
 
-//todo-crit review
 /**
  * @brief Guards transition from Quick stop active to Switch on disabled - expected machine controlword: DISABLE_VOLTAGE. Commands drives with CIA_DISABLE_VOLTAGE_CTRLWRD
  * @param condition
@@ -1533,6 +1533,8 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
 //                }
             }
         }
+        
+        print_slave_error_messages();
     }
 
 //copy setpos from DPM_OUT (read) to EC_OUT
@@ -1548,6 +1550,7 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
     } else {
         ctrl_process_iomap_out(true);
     }
+
 
 
 

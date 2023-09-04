@@ -66,9 +66,7 @@ char eth_interface2[SIZE_OF_IF_NAME] = {0};
 //global var indicating if we are to run without limits
 bool nolimits = false;
 
-//todo-crit put in ec
-/** global variable to signal between tasks when ec_check finds and error */
-//volatile int ec_check_found_error;
+
 
 /** array for SOEM iomap - this is the key slave comms data storage */
 uint8_t IOmap[ECM_IO_MAP_SIZE];

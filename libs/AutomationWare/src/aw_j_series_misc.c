@@ -82,7 +82,7 @@ gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
                        AW_J_SERIES_ERROR_CODE_SDO_SUB_INDEX,
                        &drive_error_code);
 
-    printf("AW J series %d\n", drive_error_code);
+    UM_INFO(GBEM_UM_EN, "GBEM:  AW-J-Series - drive error code [%d]", drive_error_code);
 
 //default max pos: 2147483647
 //    default min pos: -2147483648
