@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
- * @file           :  machine_aw_robot_m.h
- * @brief          :  machine map for aw medium sized robot with EK1100 + El1808 + EL2908
+ * @file           :  machine_virtual.h
+ * @brief          :  machine map for EK1100 + El1008 + EL2008 + a number of virtual drives
  ******************************************************************************
  * @attention
  *
@@ -11,8 +11,8 @@
  ******************************************************************************
  */
 
-#ifndef GBEM_MACHINE_AW_ROBOT_M_H
-#define GBEM_MACHINE_AW_ROBOT_M_H
+#ifndef GBEM_MACHINE_J17_PLUS_VIRTUAL_H
+#define GBEM_MACHINE_J17_PLUS_VIRTUAL_H
 
 
 #define MAP_CYCLE_TIME              (4)
@@ -20,23 +20,12 @@
 
 /* Slaves must be defined in order that they appear on the EtherCAT network */
 #define MAP_EK1100_1                1
-#define MAP_EL2808_1                2
-#define MAP_EL1808_1                3
-#define MAP_AW_J17_CTRL_1           4
-#define MAP_AW_J20_CTRL_1           5
-#define MAP_AW_J20_CTRL2            6
-#define MAP_AW_J25_CTRL_1           7
-#define MAP_AW_J32_CTRL_1           8
-#define MAP_AW_J32_CTRL_2           9
-
-
-#define ECM_CHECK_EEP_MAN           0
-#define ECM_CHECK_EEP_REV           0
-#define ECM_CHECK_EEP_ID            0
-
+#define MAP_EL2008_1                2
+#define MAP_EL1008_1                3
+#define MAP_AW_J17_CTRL             4
 
 #define MAP_NUM_DRIVES              6
-#define MAP_NUM_SLAVES              10
+#define MAP_NUM_SLAVES              4
 
 /** Use a digital input to reset the estop */
 #define USE_ESTOP_RESET             1
@@ -54,4 +43,4 @@
 
 
 
-#endif //GBEM_MACHINE_AW_ROBOT_M_H
+#endif //GBEM_MACHINE_J17_PLUS_VIRTUAL_H

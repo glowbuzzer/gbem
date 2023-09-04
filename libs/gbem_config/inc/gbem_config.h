@@ -118,7 +118,7 @@
 /** Defines whether all non-core functions are enable */
 /** This will disable:
  * PLC
- * EtherCAT error checking thread
+ * EtherCAT error checking thread (thread_ec_check - function ec_check)
  * EMSTAT
  *
  */

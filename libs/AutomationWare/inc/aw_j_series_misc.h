@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file           :  automationware
+ * @file           :  aw_j_series_misc
  * @brief          :
  ******************************************************************************
  * @attention
@@ -10,19 +10,14 @@
  *
  ******************************************************************************
  */
-#ifndef GBEM_AUTOMATIONWARE_H
-#define GBEM_AUTOMATIONWARE_H
+#ifndef GBEM_AW_J_SERIES_MISC_H
+#define GBEM_AW_J_SERIES_MISC_H
 
-#define AW_MOTOR_MAN 0x00022d2
+#include "std_headers.h"
+#include "std_defs_and_macros.h"
+#include "log.h"
+#include "user_message.h"
 
-#include "aw_j_series.h"
-#include "aw_j17.h"
-#include "aw_j20.h"
-#include "aw_j25.h"
-#include "aw_j32.h"
-#include "aw_j40_hp.h"
-#include "aw_j40_lp.h"
-#include "aw_j_series_misc.h"
+gberror_t ec_print_params_aw_j_series(uint16_t drive);
 
-
-#endif //GBEM_AUTOMATIONWARE_H
+#endif //GBEM_AW_J_SERIES_MISC_H

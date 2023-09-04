@@ -321,11 +321,24 @@ int main(int argc, char *argv[]) {
 #if MACHINE_AW_J17 == 1
     map_machine_type = MAP_MACHINE_AW_J17;
 #endif
+#if MACHINE_AW_ROBOT_S == 1
+    map_machine_type = MAP_MACHINE_AW_ROBOT_S;
+#endif
+
 #if MACHINE_AW_ROBOT_M == 1
     map_machine_type = MAP_MACHINE_AW_ROBOT_M;
 #endif
+#if MACHINE_AW_ROBOT_L == 1
+    map_machine_type = MAP_MACHINE_AW_ROBOT_L;
+#endif
 #if MACHINE_VIRTUAL == 1
     map_machine_type = MAP_MACHINE_VIRTUAL;
+#endif
+#if MACHINE_J17_PLUS_VIRTUAL == 1
+    map_machine_type = MAP_MACHINE_J17_PLUS_VIRTUAL;
+#endif
+#if MACHINE_AW_STEWART == 1
+    map_machine_type = MAP_MACHINE_AW_STEWART;
 #endif
 
 
@@ -547,7 +560,7 @@ int main(int argc, char *argv[]) {
                  SIGNAL_TO_SEND);
     }
 
-#ifdef GB_APP_LINUX
+
     char *username_buf;
     username_buf = (char *) malloc(11 * sizeof(char));
     memset(username_buf, 0, 11 * sizeof(char));
@@ -555,7 +568,7 @@ int main(int argc, char *argv[]) {
         strncpy(username_buf, "<unknown>", 10);
     }
     UM_INFO(GBEM_UM_EN, "GBEM: We are running as user [%s]", username_buf);
-#endif
+
 
 
 //    char gb_inifile_name[] = "gbem.ini";

@@ -56,7 +56,7 @@ MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(         ec_get_acttorq_wrd_aw_j_series,    
 MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_aw_j_series,      );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                               );
 MAP_DRIVE_RUN_HOMING(                       0,                                  );
-MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               );
+MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series         );
 
 
 /* DRIVE PARAMETERS */
@@ -64,9 +64,9 @@ MAP_DRIVE_POS_LIMIT(                        99999999,                           
 MAP_DRIVE_NEG_LIMIT(                        -99999999,                          );
 MAP_DRIVE_DIRECTION(                        1,                                  );
 //percentage of max torque
-MAP_DRIVE_TORQ_LIMIT(                       100,                                );
+MAP_DRIVE_TORQ_LIMIT(                       7,                                );
 
-
+//7 % can stop drive by hand
 extern bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3;
 
 

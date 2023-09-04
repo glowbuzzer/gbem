@@ -22,8 +22,6 @@
 #include "std_defs_and_macros.h"
 
 
-
-
 //global var holding machine type (set in main.c)
 map_machine_type_t map_machine_type = MAP_MACHINE_UNKNOWN;
 
@@ -62,8 +60,9 @@ bool ec_is_warning(void) {
 bool ec_check_for_follow_error(gberror_t *grc) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_follow_error_function_ptr[i] != NULL) {
-            if(map_drive_get_follow_error_function_ptr[i](i)){
-                LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "Missing function pointer for map_drive_get_follow_error on drive [%u]", i);
+            if (map_drive_get_follow_error_function_ptr[i](i)) {
+                LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                         "Missing function pointer for map_drive_get_follow_error on drive [%u]", i);
                 *grc = E_SUCCESS;
                 return true;
             }
@@ -143,8 +142,6 @@ bool ec_check_remote(void) {
 }
 
 
-
-
 /**
  * @brief returns a pointer to a row in the iomap based on gbc params
  * @param inout
@@ -153,11 +150,12 @@ bool ec_check_remote(void) {
  * @param row
  * @return
  */
-gberror_t map_get_gbc_iomap_row(const map_inout_t inout, const uint16_t ionum, const ec_datatype_t datatype, mapping_t ** row){
+gberror_t
+map_get_gbc_iomap_row(const map_inout_t inout, const uint16_t ionum, const ec_datatype_t datatype, mapping_t **row) {
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
-        if (map_iomap[i].gbc.inout == inout){
-            if (map_iomap[i].gbc.ionum == ionum){
-                if (map_iomap[i].gbc.datatype == datatype){
+        if (map_iomap[i].gbc.inout == inout) {
+            if (map_iomap[i].gbc.ionum == ionum) {
+                if (map_iomap[i].gbc.datatype == datatype) {
                     *row = &map_iomap[i];
                     return E_SUCCESS;
                 }
@@ -174,11 +172,11 @@ gberror_t map_get_gbc_iomap_row(const map_inout_t inout, const uint16_t ionum, c
  * @param datatype
  * @return
  */
-uint16_t map_get_gbc_iomap_slave(const map_inout_t inout, const uint16_t ionum, const ec_datatype_t datatype){
+uint16_t map_get_gbc_iomap_slave(const map_inout_t inout, const uint16_t ionum, const ec_datatype_t datatype) {
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
-        if (map_iomap[i].gbc.inout == inout){
-            if (map_iomap[i].gbc.ionum == ionum){
-                if (map_iomap[i].gbc.datatype == datatype){
+        if (map_iomap[i].gbc.inout == inout) {
+            if (map_iomap[i].gbc.ionum == ionum) {
+                if (map_iomap[i].gbc.datatype == datatype) {
                     return map_iomap[i].pdo.slave_num;
                 }
             }
@@ -195,11 +193,11 @@ uint16_t map_get_gbc_iomap_slave(const map_inout_t inout, const uint16_t ionum, 
  * @param datatype
  * @return
  */
-uint32_t map_get_gbc_iomap_byte_num(const map_inout_t inout, const uint16_t ionum, const ec_datatype_t datatype){
+uint32_t map_get_gbc_iomap_byte_num(const map_inout_t inout, const uint16_t ionum, const ec_datatype_t datatype) {
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
-        if (map_iomap[i].gbc.inout == inout){
-            if (map_iomap[i].gbc.ionum == ionum){
-                if (map_iomap[i].gbc.datatype == datatype){
+        if (map_iomap[i].gbc.inout == inout) {
+            if (map_iomap[i].gbc.ionum == ionum) {
+                if (map_iomap[i].gbc.datatype == datatype) {
                     return map_iomap[i].pdo.byte_num;
                 }
             }
@@ -210,11 +208,11 @@ uint32_t map_get_gbc_iomap_byte_num(const map_inout_t inout, const uint16_t ionu
 }
 
 
-uint8_t map_get_gbc_iomap_bit_num(const map_inout_t inout, const uint16_t ionum, const ec_datatype_t datatype){
+uint8_t map_get_gbc_iomap_bit_num(const map_inout_t inout, const uint16_t ionum, const ec_datatype_t datatype) {
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
-        if (map_iomap[i].gbc.inout == inout){
-            if (map_iomap[i].gbc.ionum == ionum){
-                if (map_iomap[i].gbc.datatype == datatype){
+        if (map_iomap[i].gbc.inout == inout) {
+            if (map_iomap[i].gbc.ionum == ionum) {
+                if (map_iomap[i].gbc.datatype == datatype) {
                     return map_iomap[i].pdo.bit_num;
                 }
             }
@@ -230,7 +228,7 @@ uint8_t map_get_gbc_iomap_bit_num(const map_inout_t inout, const uint16_t ionum,
  * @param type
  * @return
  */
-bool map_is_valid_gbc_datatype(const ec_datatype_t type){
+bool map_is_valid_gbc_datatype(const ec_datatype_t type) {
 
     switch (type) {
         case ECT_BOOLEAN:
@@ -251,7 +249,7 @@ bool map_is_valid_gbc_datatype(const ec_datatype_t type){
  * @param type
  * @return
  */
-bool map_is_valid_pdo_datatype(const ec_datatype_t type){
+bool map_is_valid_pdo_datatype(const ec_datatype_t type) {
 
     switch (type) {
         case ECT_BOOLEAN:
@@ -275,12 +273,23 @@ bool map_is_valid_pdo_datatype(const ec_datatype_t type){
     }
 }
 
+uint16_t map_slave_to_drive(uint16_t slave) {
+    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+        if (map_drive_to_slave[i] == slave) {
+            return i;
+        }
+    }
+    LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Matching drive not found");
+    return 0;
+}
+
+
 /**
  * @brief Checks if a ec_datatype is supported in the PLC read/write functions
  * @param type
  * @return
  */
-bool map_is_valid_plc_datatype(const ec_datatype_t type){
+bool map_is_valid_plc_datatype(const ec_datatype_t type) {
     switch (type) {
         case ECT_BOOLEAN:
             return true;

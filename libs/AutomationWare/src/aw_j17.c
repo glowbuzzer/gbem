@@ -12,8 +12,6 @@
  */
 
 
-
-
 #include "aw_j17.h"
 #include "aw_j_series.h"
 #include "std_headers.h"
@@ -117,24 +115,12 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
     }
 
 
-
-
-
     //todo
 //set moo
 //    0x6060:0
     if (!ec_sdo_write_int32(slave, 0x6060, 0, 8)) {
         return E_SDO_WRITE_FAILURE;
     }
-
-
-
-//Max torque	0x6072:0	UINT	16	0	32767	3000		readwrite
-
-//Defines the absolute position limits for the 0x607A Target position and the 0x6064 Position actual value. Every new target and actual position are checked against these limits. The limit positions shall be always relative to the machine home position. Limits are disabled by setting them to default values, min. limit to -2147483648 and max. limit to 2147483647. The units are user-defined (increments of the position encoder by default; see 0x6092 Feed constant to change it).
-
-//Min position limit	0x607D:1	DINT	32			2147483648	Inc	readwrite	Receive PDO (Outputs)
-//Max position limit	0x607D:2	DINT	32			2147483647	Inc	readwrite	Receive PDO (Outputs)
 
 
     return E_SUCCESS;

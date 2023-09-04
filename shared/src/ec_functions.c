@@ -479,17 +479,14 @@ gberror_t print_1c32(const uint16_t slave) {
  * @return
  */
 bool ec_step_1_init(void) {
-#ifdef GB_APP_LINUX
-/* if we want to use the redundant EtherCAT interface we need two interfaces here is where we enable this */
+
+    /* if we want to use the redundant EtherCAT interface we need two interfaces here is where we enable this */
 #if USE_REDUNDANT_ETHERNET_PORTS == 1
     if (ec_init_redundant(eth_interface1, eth_interface2)){
 #else
     if (ec_init(eth_interface1)) {
 #endif
 
-#else
-        if (ec_init(NULL)) {
-#endif
         UM_INFO(GBEM_UM_EN, "GBEM: Boot step 1 >success< (initialisation and Ethernet IF config)");
         return true;
     } else {
@@ -1008,7 +1005,7 @@ gberror_t ec_slaves_match(void) {
 
     for (int i = 0; i < MAP_NUM_SLAVES; i++) {
 
-        if (strcmp(ec_slave[i + 1].name, ecm_slave_map[i].name)) {
+        if (strcmp(ec_slave[i + 1].name, ecm_slave_map[i].name) != 0) {
             return E_SLAVE_NAME_MATCH_FAILURE;
         }
 #if ECM_CHECK_EEP_MAN == 1
@@ -1038,6 +1035,7 @@ gberror_t ec_slaves_match(void) {
         }
 #endif
     }
+
     return E_SUCCESS;
 }
 

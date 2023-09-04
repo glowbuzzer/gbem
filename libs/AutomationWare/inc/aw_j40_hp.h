@@ -22,10 +22,10 @@
 gberror_t ec_apply_standard_sdos_aw_j40_hp(uint16_t slave);
 
 
-#define AW_J17_EEP_NAME "SOMANET"
-#define AW_J17_EEP_MAN AW_MOTOR_MAN
-#define AW_J17_EEP_REV 0x0a000002
-#define AW_J17_EEP_ID 0x00000201
+#define AW_J40_HP_EEP_NAME "SOMANET"
+#define AW_J40_HP_EEP_MAN AW_MOTOR_MAN
+#define AW_J40_HP_EEP_REV 0x0a000002
+#define AW_J40_HP_EEP_ID 0x00000201
 
 
 #endif //GBEM_AW_J40_HP_H

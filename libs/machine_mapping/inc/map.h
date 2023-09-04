@@ -82,6 +82,9 @@ extern bool nolimits;
 #define MAP_DRIVE_SET_MOO_REV_FUNCTIONS(...) gberror_t (*map_drive_set_moo_rev_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 
 
+uint16_t map_slave_to_drive(uint16_t slave);
+
+
 typedef struct {
     /** Slave name from EEprom */
     char name[EC_MAXNAME + 1];

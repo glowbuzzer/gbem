@@ -39,13 +39,18 @@
 #define MACHINE_ASDA_A2_TEST        0
 #define MACHINE_SMC3_TEST           0
 #define MACHINE_AX5101_TEST         0
-#define MACHINE_AW_J17              0
+#define MACHINE_AW_J17              1
+#define MACHINE_AW_ROBOT_S          0
 #define MACHINE_AW_ROBOT_M          0
-#define MACHINE_VIRTUAL             1
+#define MACHINE_AW_ROBOT_L          0
+#define MACHINE_VIRTUAL             0
+#define MACHINE_J17_PLUS_VIRTUAL    0
+#define MACHINE_AW_STEWART          0
+
 
 
 //If you add a new machine you have to increment this count to match the number above
-#define MAP_NUM_MACHINES            25
+#define MAP_NUM_MACHINES            29
 
 extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
@@ -144,17 +149,36 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
 #endif
 
-#if MACHINE_AW_ROBOT_M == 1
-#include "machine_aw_robot_m.h"
+
+#if MACHINE_AW_ROBOT_S == 1
+#include "machine_aw_robot_s.h"
 #endif
 
 #if MACHINE_AW_ROBOT_M == 1
+
 #include "machine_aw_robot_m.h"
+
+#endif
+
+#if MACHINE_AW_ROBOT_L == 1
+#include "machine_aw_robot_l.h"
 #endif
 
 #if MACHINE_VIRTUAL == 1
 
 #include "machine_virtual.h"
+
+#endif
+
+#if MACHINE_J17_PLUS_VIRTUAL == 1
+
+#include "machine_j17_plus_virtual.h"
+
+#endif
+
+#if MACHINE_AW_STEWART == 1
+
+#include "machine_aw_stewart.h"
 
 #endif
 
@@ -184,8 +208,12 @@ typedef enum {
     MAP_MACHINE_SMC3_TEST,
     MAP_MACHINE_AX5101_TEST,
     MAP_MACHINE_AW_J17,
+    MAP_MACHINE_AW_ROBOT_S,
     MAP_MACHINE_AW_ROBOT_M,
-    MAP_MACHINE_VIRTUAL
+    MAP_MACHINE_AW_ROBOT_L,
+    MAP_MACHINE_VIRTUAL,
+    MAP_MACHINE_J17_PLUS_VIRTUAL,
+    MAP_MACHINE_AW_STEWART,
 } map_machine_type_t;
 
 #define MAX_DRIVE_NAME_LENGTH                   30

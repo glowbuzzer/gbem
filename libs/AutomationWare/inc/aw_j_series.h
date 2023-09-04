@@ -116,6 +116,10 @@ gberror_t ec_set_moo_pdo_rev_aw_j_series(uint16_t drive);
 #define AW_J_SERIES_ERROR_DESCRIPTION_SDO_INDEX      0x203F
 #define AW_J_SERIES_ERROR_DESCRIPTION_SDO_SUB_INDEX  0x1
 
+//Manufacturer software version	0x100A:0	STRING(50)	400			0		readonly (default)
+#define AW_J_SERIES_MANUFACTURER_SOFTWARE_VERSION_SDO_INDEX      0x100A
+#define AW_J_SERIES_MANUFACTURER_SOFTWARE_VERSION_SDO_SUB_INDEX  0x0
+
 
 //Typedefs for the error strings and error report strings for the AW J series drives
 typedef struct {

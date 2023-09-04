@@ -37,19 +37,15 @@ bool ec_get_remote_aw_j_series(const uint16_t drive) {
  * @attention handles sub-drives
  */
 int8_t ec_get_moo_pdo_aw_j_series(const uint16_t drive) {
-//    LL_TRACE(GBEM_FUN_TRACE_LOG_EN,
-//            "GBEM: Linked ec_get_modes_of_operation function: %s (this is controlled by the MACHINE #define)",
-//            __FUNCTION__);
-
-//printf("moo: %d\n",ec_pdo_get_input_int8(4, AW_J_SERIES_MOODISP_PDO_INDEX) );
-//    return ec_pdo_get_input_int8(map_drive_to_slave[drive], AW_J_SERIES_MOODISP_PDO_INDEX);
-////todo
     return ec_pdo_get_input_int8(map_drive_to_slave[drive], AW_J_SERIES_MOODISP_PDO_INDEX);
-
-
 }
 
 
+/**
+ * @brief gets the status of the follow error bit for AW-J-series drives
+ * @param drive
+ * @return
+ */
 bool ec_get_follow_error_aw_j_series(const uint16_t drive) {
     uint16_t drive_stat_wrd;
 
@@ -70,16 +66,17 @@ bool ec_get_follow_error_aw_j_series(const uint16_t drive) {
  */
 gberror_t ec_initial_pdo_aw_j_series(const uint16_t slave) {
 
-//    ec_pdo_set_output_int8(slave, AW_J_SERIES_MOOSET_PDO_INDEX, CIA_MOO_CSP);
+    ec_pdo_set_output_int8(slave, AW_J_SERIES_MOOSET_PDO_INDEX, CIA_MOO_CSP);
 
-//    LL_INFO(GBEM_GEN_LOG_EN,
-//            "GBEM: Applying initial PDO writes for AW-J-Series drive slave [%u], offset [%u], value [%u]", slave, AW_J_SERIES_MOOSET_PDO_INDEX, CIA_MOO_CSP);
-//
-//    if (ec_iserror()) {
-//        LL_ERROR(GBEM_GEN_LOG_EN,
-//                 "GBEM: EtherCAT error detected after initial PDO writes: %s", ec_elist2string());
-//        return E_ETHERCAT_ERROR_DETECTED;
-//    }
+    LL_INFO(GBEM_GEN_LOG_EN,
+            "GBEM: Applying initial PDO writes for AW-J-Series drive slave [%u], offset [%u], value [%u]", slave,
+            AW_J_SERIES_MOOSET_PDO_INDEX, CIA_MOO_CSP);
+
+    if (ec_iserror()) {
+        LL_ERROR(GBEM_GEN_LOG_EN,
+                 "GBEM: EtherCAT error detected after initial PDO writes: %s", ec_elist2string());
+        return E_ETHERCAT_ERROR_DETECTED;
+    }
 
     return E_SUCCESS;
 }
@@ -127,20 +124,8 @@ int16_t ec_get_acttorq_wrd_aw_j_series(const uint16_t drive) {
  */
 uint16_t ec_get_ctrl_wrd_rev_aw_j_series(const uint16_t drive) {
     return ec_pdo_get_output_uint16_rev(map_drive_to_slave[drive], AW_J_SERIES_CONTROLWORD_PDO_INDEX);
-
 }
 
-/**
- * @brief set status word for an AW-J-series drive
- * @param drive
- * @param statwrd
- * @return gberror
- * @warning REVERSE FUNCTION ("WRONG" WAY ROUND)
- */
-gberror_t ec_set_stat_wrd_rev_aw_j_series(const uint16_t drive, const uint16_t statwrd) {
-    ec_pdo_set_input_uint16_rev(map_drive_to_slave[drive], AW_J_SERIES_STATUSWORD_PDO_INDEX, statwrd);
-    return E_SUCCESS;
-}
 
 /**
  * @brief set control word for AW-J-series drive
@@ -242,26 +227,17 @@ uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(const uint16_t drive_numb
 
 }
 
-
-
-
-
-//20992
-
-
-
-
-/*
- * Internal limit active (bit 11) indicates if there is an element that doesn't allow the motion to follow the target value.
- *
- * Several limits exist in the firmware.
- *
- * Max. torque (6072h) limits Torque demand (6074h),
- * Max. motor speed (6080h) limits Velocity demand value (606Bh) and Profile velocity (6081h) in Profile position (PP) mode,
- * Software position limit (607Dh) limits Position demand value (6062h) and position or velocity controller integral limit limits integral part of the PID controller.
- * Additional limit, Position range limit (607Bh), exists for Position demand value (6062h) in Profile position (PP) mode since demand value can't wrap around the range limit, when profiler is being used.
- */
-
+/**
+* @brief set status word for an AW-J-series drive
+* @param drive
+* @param statwrd
+* @return gberror
+* @warning REVERSE FUNCTION ("WRONG" WAY ROUND)
+*/
+gberror_t ec_set_stat_wrd_rev_aw_j_series(const uint16_t drive, const uint16_t statwrd) {
+    ec_pdo_set_input_uint16_rev(map_drive_to_slave[drive], AW_J_SERIES_STATUSWORD_PDO_INDEX, statwrd);
+    return E_SUCCESS;
+}
 
 
 /**

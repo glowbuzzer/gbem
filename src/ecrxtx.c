@@ -308,8 +308,45 @@ void ec_rxtx(void *argument) {
         /* calculate next cycle start */
         add_timespec(&ts, cycletime + toff);
 
+//        if (ecm_status.gbc_connected) {
+//            /* do the memcpy to shared mem */
+//            if (shmp->out_busy == 1) {
+//                printf("out busy!\n");
+//            }
+//
+//            memcpy(outA, shmp->sm_buf_out, SIZE_OF_GBC_PDO);
+//            memcpy(shmp->sm_buf_in, inA, SIZE_OF_GBC_PDO);
+//            /* send the signal to GBC to do the shared mem memcpy */
+//            kill_rc = kill((pid_t) gbc_pid, SIGNAL_TO_SEND);
+//        }
+
+
+        // if gbc is not connected AND we are not in test mode AND it is time to try an connect again to GBC
+        if (!ecm_status.gbc_connected && !ec_rxtx_test_mode && time_to_check_gbc && ec_rxtx_mode == EC_RXTX_MODE_OP) {
+
+
+            grc = establish_shared_mem_and_signal_con(&shmp, proc_name, false, &gbc_pid, 1);
+            if (grc == E_SUCCESS) {
+                UM_INFO(GBEM_UM_EN, "GBEM: Connection to shared memory and GBC process >successfully< established ");
+                memset(shmp->sm_buf_in, 0, sizeof(uint8_t) * SHM_BUF_SIZE);
+                memset(shmp->sm_buf_out, 0, sizeof(uint8_t) * SHM_BUF_SIZE);
+                ecm_status.gbc_connected = true;
+            } else {
+                UM_INFO(GBEM_UM_EN, "GBEM: Connection to shared memory and/or GBC process >failed<");
+            }
+        }
+
+        /* wait to cycle start */
+        ts.tv_sec -= clock_difference_sec;
+        int ns_rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, &tleft);
+        ts.tv_sec += clock_difference_sec;
+
         if (ecm_status.gbc_connected) {
             /* do the memcpy to shared mem */
+            if (shmp->out_busy == 1) {
+                printf("out busy!\n");
+            }
+
             memcpy(outA, shmp->sm_buf_out, SIZE_OF_GBC_PDO);
             memcpy(shmp->sm_buf_in, inA, SIZE_OF_GBC_PDO);
             /* send the signal to GBC to do the shared mem memcpy */
@@ -333,25 +370,6 @@ void ec_rxtx(void *argument) {
             }
         }
 
-        // if gbc is not connected AND we are not in test mode AND it is time to try an connect again to GBC
-        if (!ecm_status.gbc_connected && !ec_rxtx_test_mode && time_to_check_gbc && ec_rxtx_mode == EC_RXTX_MODE_OP) {
-
-
-            grc = establish_shared_mem_and_signal_con(&shmp, proc_name, false, &gbc_pid, 1);
-            if (grc == E_SUCCESS) {
-                UM_INFO(GBEM_UM_EN, "GBEM: Connection to shared memory and GBC process >successfully< established ");
-                memset(shmp->sm_buf_in, 0, sizeof(uint8_t) * SHM_BUF_SIZE);
-                memset(shmp->sm_buf_out, 0, sizeof(uint8_t) * SHM_BUF_SIZE);
-                ecm_status.gbc_connected = true;
-            } else {
-                UM_INFO(GBEM_UM_EN, "GBEM: Connection to shared memory and/or GBC process >failed<");
-            }
-        }
-
-        /* wait to cycle start */
-        ts.tv_sec -= clock_difference_sec;
-        int ns_rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, &tleft);
-        ts.tv_sec += clock_difference_sec;
 
 #if ECRXTX_MEASURE_TIMING == 1
         clock_gettime(CLOCK_MONOTONIC, &startTime);

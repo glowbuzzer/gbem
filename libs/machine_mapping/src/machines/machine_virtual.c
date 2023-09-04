@@ -34,7 +34,7 @@ MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,               NULL,           NU
 MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         NULL,               NULL,           NULL,            );
 MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          NULL,               NULL,           NULL,            );
 MAP_SLAVE_DC_TYPE(                        EC_DC_0,         EC_DC_NONE,     EC_DC_NONE,      );
-MAP_SLAVE_DC_CYCLE(                       1,                  0,              0,               );
+MAP_SLAVE_DC_CYCLE(                       4,                  0,              0,               );
 
 //set moo is in either initial PDO or custom sdos
 
