@@ -199,10 +199,20 @@ void main_set_file_paths(void) {
 
 }
 
+void cleanup(int sig) {
+//    shared_mem[0]=GBEM_UNKNOWN;
+UM_ERROR(GBEM_UM_EN, "GBEM: Cleanup called with signal [%d]", sig);
+    exit(1);
+}
 
 int main(int argc, char *argv[]) {
     int len = 0;
     FILE *fp;
+
+    signal(SIGTERM, cleanup);
+    signal(SIGINT, cleanup);
+    signal(SIGSEGV, cleanup);
+    signal(SIGABRT, cleanup);
 
     gberror_t grc = E_GENERAL_FAILURE;
 

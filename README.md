@@ -68,7 +68,7 @@ see [GBEM overivew on the glowbuzzer website](https://www.glowbuzzer.com/docs/gb
 # Important points
 
 To swap between pre-configured machine configurations search the code for "MACHINE_SWAP" you will find a #define to
-toggle.
+toggle. You will need to do this before you compile and run GBEM.
 
 When adding code to support a new drive, you will need to add a library for the new drive and write the required
 functions. Two CMakeLists.txt files will need to be updated. Also, a few simple changes will need to made elsewhere in

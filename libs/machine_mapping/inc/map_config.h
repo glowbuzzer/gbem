@@ -21,7 +21,7 @@
 /* WARNING! Don't enable more than one or bad things happen when linking */
 #define MACHINE_MINI                0
 #define MACHINE_CARTESIAN           0
-#define MACHINE_DRIVE_SPINNERS      0
+#define MACHINE_DRIVE_SPINNERS      1
 #define MACHINE_IGUS                0
 #define MACHINE_STAUBLI             0
 #define MACHINE_SINGLE_AKD          0
@@ -45,7 +45,7 @@
 #define MACHINE_AW_ROBOT_M          0
 #define MACHINE_AW_ROBOT_L          0
 #define MACHINE_VIRTUAL             0
-#define MACHINE_J17_PLUS_VIRTUAL    1
+#define MACHINE_J17_PLUS_VIRTUAL    0
 #define MACHINE_AW_STEWART          0
 
 
@@ -67,7 +67,9 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 #endif
 
 #if MACHINE_DRIVE_SPINNERS == 1
+
 #include "machine_drive_spinners.h"
+
 #endif
 
 #if MACHINE_IGUS == 1
