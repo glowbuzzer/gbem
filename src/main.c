@@ -18,6 +18,7 @@
 #include <dirent.h>
 #include <signal.h>
 #include <stdio.h>
+#include "status_control_word_bit_definitions.h"
 
 #include <sys/ioctl.h>    // SIOCGIFFLAGS
 #include <errno.h>        // errno
@@ -200,7 +201,10 @@ void main_set_file_paths(void) {
 }
 
 void cleanup(int sig) {
-//    shared_mem[0]=GBEM_UNKNOWN;
+
+//set status word to zeros to clear things like GBEM_ALIVE bit
+    dpm_in->machine_word = 0;
+
 UM_ERROR(GBEM_UM_EN, "GBEM: Cleanup called with signal [%d]", sig);
     exit(1);
 }
@@ -218,6 +222,9 @@ int main(int argc, char *argv[]) {
 
     //this is the stack based buffer to hold the json config summary
     char config_summary_json_buffer[SIZE_OF_CONFIG_SUMMARY_JSON_BUFFER];
+
+    // set STATUS_WORD_GBEM_ALIVE_BIT_NUM bit in status word
+    BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_ALIVE_BIT_NUM);
 
     //key boolean indicating if GBC has a shared mem connection to GBEM
     ecm_status.gbc_connected = false;
@@ -243,6 +250,17 @@ int main(int argc, char *argv[]) {
 //    }
 //    fclose(fp);
 //    exit(0);
+
+
+    //if any drive has the STATUS_WORD_GBEM_HOMING_NEEDED_BIT_NUM set then set the status word: STATUS_WORD_GBEM_HOMING_NEEDED_BIT_NUM
+    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+        if (map_drive_run_homing[i]==true) {
+            BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_HOMING_NEEDED_BIT_NUM);
+            break;
+        }
+    }
+
+
 
     UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***                     Starting GB EtherCAT Master                    ***");
