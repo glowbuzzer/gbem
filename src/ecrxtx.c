@@ -235,7 +235,13 @@ void ec_rxtx(void *argument) {
 
     //record monotonic time
     rc = clock_gettime(CLOCK_MONOTONIC, &ts);
+    if (rc != 0) {
+        UM_FATAL("GBEM: gettime suffered a nasty error. (system call error message: %s). This is irrecoverable error.",
+                 strerror(errno));
+    }
 
+
+#if USE_CLOCK_DIFFERENCE == 1
     //record wall clock time
     clock_gettime(CLOCK_REALTIME, &ts_wall);
 
@@ -248,11 +254,6 @@ void ec_rxtx(void *argument) {
 
     ts.tv_sec += (time_t) clock_difference_sec;
 
-    if (rc != 0) {
-        UM_FATAL("GBEM: gettime suffered a nasty error. (system call error message: %s). This is irrecoverable error.",
-                 strerror(errno));
-    }
-
     int64 time_check_nsecs = ((int64) ts.tv_sec * (int64) NSEC_PER_SEC) + (int64) ts.tv_nsec;
 
     UM_INFO(GBEM_UM_EN, "GBEM: Local clock nsec from unix epoch :%" PRId64, time_check_nsecs);
@@ -262,10 +263,17 @@ void ec_rxtx(void *argument) {
     ctime_r(&ts.tv_sec, buf);
     buf[strlen(buf) - 1] = '\0';
     UM_INFO(GBEM_UM_EN, "GBEM: Local time (calculated from monotonic) is [%s]", buf);
-
+#endif
 
     ht = (ts.tv_nsec / 1000000) + 1; /* round to nearest ms */
     ts.tv_nsec = ht * 1000000;
+
+    //this is new to the old code
+    if (ts.tv_nsec >= NSEC_PER_SEC) {
+        ts.tv_sec++;
+        ts.tv_nsec -= NSEC_PER_SEC;
+    }
+
     cycletime = ECM_CYCLE_TIME; /* cycletime in ns */
     toff = 0;
 
@@ -303,22 +311,9 @@ void ec_rxtx(void *argument) {
         time_to_check_gbc = check_gbc_flag ? true : false;
 
 
-//         printf("toff:%" PRIu64 "\n",toff);
         bus_cycle_tick++;
         /* calculate next cycle start */
         add_timespec(&ts, cycletime + toff);
-
-//        if (ecm_status.gbc_connected) {
-//            /* do the memcpy to shared mem */
-//            if (shmp->out_busy == 1) {
-//                printf("out busy!\n");
-//            }
-//
-//            memcpy(outA, shmp->sm_buf_out, SIZE_OF_GBC_PDO);
-//            memcpy(shmp->sm_buf_in, inA, SIZE_OF_GBC_PDO);
-//            /* send the signal to GBC to do the shared mem memcpy */
-//            kill_rc = kill((pid_t) gbc_pid, SIGNAL_TO_SEND);
-//        }
 
 
         // if gbc is not connected AND we are not in test mode AND it is time to try an connect again to GBC
@@ -337,10 +332,13 @@ void ec_rxtx(void *argument) {
         }
 
         /* wait to cycle start */
+#if USE_CLOCK_DIFFERENCE == 1
         ts.tv_sec -= clock_difference_sec;
+#endif
         int ns_rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, &tleft);
+#if USE_CLOCK_DIFFERENCE == 1
         ts.tv_sec += clock_difference_sec;
-
+#endif
         if (ecm_status.gbc_connected) {
             /* do the memcpy to shared mem */
             if (shmp->out_busy == 1) {
@@ -350,11 +348,15 @@ void ec_rxtx(void *argument) {
             memcpy(outA, shmp->sm_buf_out, SIZE_OF_GBC_PDO);
             memcpy(shmp->sm_buf_in, inA, SIZE_OF_GBC_PDO);
             /* send the signal to GBC to do the shared mem memcpy */
+
+#if USE_RT_SIGNAL == 1
+            kill_rc = sigqueue((pid_t) gbc_pid, SIGNAL_TO_SEND, (const union sigval) 1);
+#else
             kill_rc = kill((pid_t) gbc_pid, SIGNAL_TO_SEND);
+#endif
+
         }
 
-        //if we want to use queued RT signals
-        //        sigqueue((pid_t) gbc_pid, SIGRTMIN, (const union sigval) 1);
 
         //if we have a signal send failure AND we are not in test mode AND gbc is flagged as being connected
         if (kill_rc != 0 && !ec_rxtx_test_mode && ecm_status.gbc_connected && ec_rxtx_mode == EC_RXTX_MODE_OP) {
@@ -502,11 +504,22 @@ void ec_rxtx(void *argument) {
 
 
             if (ec_slave[0].hasdc) {
+                if (bus_cycle_tick % 5000 == 0) {
+                    print_dc_timestamps();
+                    printf("toff:%" PRIi64 "\n", toff);
+
+                }
+
+
                 /* calculate toff to get GBC time and DC synced */
                 /*use this for a slave at start of chain that has a 32 bit dc time register */
 //                ec_sync(ref_dc_time, cycletime, &toff);
                 if (ec_DCtime > 0) {
+#if USE_CLOCK_DIFFERENCE == 1
                     ec_sync(ec_DCtime - (int64) (clock_difference_sec * 1000000000), cycletime, &toff);
+#else
+                    ec_sync(ec_DCtime, cycletime, &toff);
+#endif
 
 #ifdef ECRXTX_MEASURE_EXEC_TIME
                     if (ec_rxtx_mode == EC_RXTX_MODE_OP) {
@@ -549,7 +562,7 @@ void ec_rxtx(void *argument) {
                     clock_gettime(CLOCK_MONOTONIC, &endTime);
 #endif
                 }
-                //         printf("toff:%" PRIu64 "\n",toff);
+
             }
 
             if (!ecm_status.gbc_connected) {
@@ -558,13 +571,14 @@ void ec_rxtx(void *argument) {
                 ec_rxtx_event[CYCLIC_EVENT_GBC_NOT_CONNECTED].active = false;
             }
             //RT-sensitive
+#if ENABLE_CYCLIC_MESSAGES == 1
             if (ms_tick > ECRXTX_DELAY_TO_START_MESSAGES_SEC * 1000) {
                 print_cyclic_user_message(NUM_CYCLIC_EVENTS, ec_rxtx_event);
             }
             if (print_i_am_alive_message) {
                 UM_INFO(GBEM_UM_EN, "GBEM: Is running. Current bus cycle count is [%llu]", bus_cycle_tick);
             }
-
+#endif
 
         } else {
 //if not do_run

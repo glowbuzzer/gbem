@@ -122,10 +122,9 @@
  * EMSTAT
  *
  */
-
 #define ENABLE_ALL_NON_CORE_FUNCTIONS                  1
 
-
+/** Defines whether cyclic messages are outputted to stdout - this will impact the real-time behaviour sometimes quite dramatically*/
 #define ENABLE_CYCLIC_MESSAGES                          0
 
 /** Max length of string for ec_state to string array */
@@ -140,6 +139,10 @@
 /** defines max size of the SOEM iomap data structure - this is a critical define. It defines the size of the iomap - lots of slaves with lots of POO objects will make thsi large*/
 #define ECM_IO_MAP_SIZE                                 2048
 
-#define USE_RT_SIGNAL                                   1
+/** defines if you want GBEM to use a RT signal like SIGRTMIN as the signal sending code is slightly different for RT signals */
+#define USE_RT_SIGNAL                                   0
+
+/** defines the use of the clock difference code in ecrtx - this calculates the difference between DC and local clock */
+#define USE_CLOCK_DIFFERENCE                            0
 
 #endif //GBEM_GBEM_CONFIG_H
