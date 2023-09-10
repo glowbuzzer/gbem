@@ -44,6 +44,12 @@ void ec_reboot(void *argument) {
             } else {
                 UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_rxtx");
             }
+            pthread_cancel_rc = pthread_cancel(thread_ec_error_message);
+            if (pthread_cancel_rc != 0) {
+                UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_error_message");
+            } else {
+                UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_error_message");
+            }
 
 #if ENABLE_EMSTAT == 1
             pthread_cancel_rc = pthread_cancel(thread_ec_emstat);

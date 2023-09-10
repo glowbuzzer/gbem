@@ -98,7 +98,7 @@ pthread_t thread_ec_rxtx;
 pthread_t thread_ec_check;
 pthread_t thread_ec_emstat;
 pthread_t thread_ec_reboot;
-pthread_t thread_ec_drive_error_message;
+pthread_t thread_ec_error_message;
 
 /* function forward declarations */
 

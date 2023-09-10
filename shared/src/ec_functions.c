@@ -30,6 +30,7 @@
 #include "std_defs_and_macros.h"
 #include <unistd.h>
 #include "status_control_word_bit_definitions.h"
+#include "read_error_messages.h"
 
 /** global holding dc delta */
 extern int64 gl_delta;
@@ -1013,6 +1014,13 @@ void ECBoot(void *argument) {
         UM_FATAL(
                 "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
     }
+
+    rc = osal_thread_create(&thread_ec_error_message, STACK64K * 2, &ec_read_error_messages, NULL);
+    if (rc != 1) {
+        UM_FATAL(
+                "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
+    }
+
 #endif
 
 #if ENABLE_ALL_NON_CORE_FUNCTIONS == 1

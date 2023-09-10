@@ -1513,21 +1513,7 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
         if ((gbem_heartbeat % 1000) == 0) {
 //            uint8_t *error_code_string;
             for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-
                 read_drive_error_code_into_ecm_status(i);
-//                if (*map_drive_get_error_string_sdo_function_ptr[i] != NULL) {
-//                    error_code_string = map_drive_get_error_string_sdo_function_ptr[i](i);
-//
-//                    //                printf("drive err msg: %s\n", ecm_status.drives[i].error_message);
-//                    memset(&ecm_status.drives[i].error_message[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
-//                    strncpy(&ecm_status.drives[i].error_message[0], (char *) error_code_string,
-//                            (sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH) - 1);
-//                    memcpy(&ecm_status.drives[i].error_message[0], error_code_string,
-//                           strlen((char *) error_code_string) + 1);
-//                } else {
-//                    LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
-//                             "GBEM: Missing function pointer for map_drive_get_error_string_sdo on drive [%u]", i);
-//                }
             }
         }
 
