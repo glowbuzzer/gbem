@@ -205,7 +205,13 @@ void cleanup(int sig) {
 //set status word to zeros to clear things like GBEM_ALIVE bit
     dpm_in->machine_word = 0;
 
-UM_ERROR(GBEM_UM_EN, "GBEM: Cleanup called with signal [%d]", sig);
+
+    /* request INIT state for all slaves */
+    ec_slave[0].state = EC_STATE_INIT;
+    ec_writestate(0);
+    ec_close();
+
+
     exit(1);
 }
 
