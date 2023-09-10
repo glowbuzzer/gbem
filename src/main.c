@@ -570,22 +570,25 @@ int main(int argc, char *argv[]) {
         (ecm_status.active_program == ECM_WRITE_NVRAM_PROG)) {
         goto program_switch;
     }
+int signal_to_send = SIGNAL_TO_SEND;
 
-    if (SIGNAL_TO_SEND > 31) {
+    if (signal_to_send > 34) {
         UM_FATAL(
                 "GBEM: We have a signal number defined (with SIGNAL_TO_SEND) to a number greater than 31. This is outside the range of normal Linux signals. We must exit");
     }
-    char *str = strdup(sys_siglist[SIGNAL_TO_SEND]);
-    if (str) {
-        upcase(str);
-        UM_INFO(GBEM_UM_EN,
-                "GBEM: We are using Linux signal [SIG %s] (we are sending this out to GBC to advance its cycle)", str);
-        free(str);
-    } else {
-        UM_ERROR(GBEM_UM_EN, "GBEM: Error matching the signal number [%u], to the standard Linux signals",
-                 SIGNAL_TO_SEND);
+    if (signal_to_send <31) {
+        char *str = strdup(sys_siglist[signal_to_send]);
+        if (str) {
+            upcase(str);
+            UM_INFO(GBEM_UM_EN,
+                    "GBEM: We are using Linux signal [SIG %s] (we are sending this out to GBC to advance its cycle)",
+                    str);
+            free(str);
+        } else {
+            UM_ERROR(GBEM_UM_EN, "GBEM: Error matching the signal number [%u], to the standard Linux signals",
+                     signal_to_send);
+        }
     }
-
 
     char *username_buf;
     username_buf = (char *) malloc(11 * sizeof(char));
@@ -624,6 +627,7 @@ int main(int argc, char *argv[]) {
     UM_WARN(GBEM_UM_EN, "Warning DISABLE_HEARTBEAT_CHECKING is defined! This will disable heartbeat check");
 #endif
 
+#if ENABLE_EMSTAT ==1
     /* sets the paths for file based exchange with GBC */
     main_set_file_paths();
 
@@ -669,7 +673,7 @@ int main(int argc, char *argv[]) {
     } else{
         UM_FATAL("GBEM: Could not open a file to output the config JSON (file name is %s)", full_path_for_config_json);
     }
-
+#endif
 
     int *task_param = (int *) malloc(sizeof(int));
     *task_param = 0;
