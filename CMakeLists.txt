@@ -84,6 +84,14 @@ message(STATUS "GB: PROJECT_BINARY_DIR [${PROJECT_BINARY_DIR} ]")
 message(STATUS "GB: CURRENT_SOURCE_DIR [${CMAKE_CURRENT_SOURCE_DIR} ]")
 
 
+set(ETHTOOL_CMD "ethtool -C eth0 rx-usecs 0 rx-frames 1 tx-usecs 0 tx-frames 1")
+MESSAGE("COMMAND: ${ETHTOOL_CMD}")
+execute_process(COMMAND "${ETHTOOL_CMD}"
+        RESULT_VARIABLE ETHTOOL_CMD_ERROR
+        OUTPUT_FILE ETHTOOL_CMD_OUTPUT)
+MESSAGE(STATUS "ETHTOOL_CMD_ERROR: " ${ETHTOOL_CMD_ERROR})
+MESSAGE(STATUS "ETHTOOL_CMD_OUTPUT: " ${ETHTOOL_CMD_OUTPUT})
+
 add_executable(GBEM ${SOURCES})
 #NEW_DRIVE
 target_link_libraries(GBEM EtherCAT Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen automationware virtual_drive RTA trio delta JVL omron oriental_motor unity gberror gbem_config etg m rt)
