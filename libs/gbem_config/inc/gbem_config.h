@@ -140,5 +140,6 @@
 /** defines max size of the SOEM iomap data structure - this is a critical define. It defines the size of the iomap - lots of slaves with lots of POO objects will make thsi large*/
 #define ECM_IO_MAP_SIZE                                 2048
 
+#define USE_RT_SIGNAL                                   1
 
 #endif //GBEM_GBEM_CONFIG_H
