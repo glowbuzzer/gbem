@@ -16,7 +16,6 @@ SET(ENABLE_EMSTAT 0)
 
 #defines for which signal to send to GBC */
 SET(SIGNAL_TO_SEND SIGIO)
-#SET(SIGNAL_TO_SEND SIGPWR)
 #RT signals require some jiggerpokery in GBC
 #SET(SIGNAL_TO_SEND SIGRTMIN)
 
