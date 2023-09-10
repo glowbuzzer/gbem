@@ -765,22 +765,7 @@ void ECBoot(void *argument) {
         UM_FATAL("argument invalid");
     }
 
-    //kill threads in case this is a reboot
-    int pthread_cancel_rc = 0;
-    pthread_cancel_rc = pthread_cancel(thread_ec_check);
-    if (pthread_cancel_rc != 0) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_check");
-    } else {
-        UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_check");
-    }
-    pthread_cancel_rc = pthread_cancel(thread_ec_emstat);
-    if (pthread_cancel_rc != 0) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_emstat");
-    } else {
-        UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_emstat");
-    }
 
-    //leave ecrtx thread running but set mode to none
     ec_rxtx_mode = EC_RXTX_MODE_NONE;
 
     ecm_status.cyclic_state = ECM_PRE_BOOT;

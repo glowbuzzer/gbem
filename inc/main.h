@@ -13,12 +13,15 @@
 
 #ifndef GBEM_MAIN_H
 #define GBEM_MAIN_H
+
 #include <stdint.h>
 #include "stdbool.h"
 #include "shared.h"
 
+extern int main_argc;
+extern char **main_argv;
 
-
+int main(int argc, char *argv[]);
 
 extern char storage_dir_for_gbc_exchange[200];
 extern char full_path_for_emstat_json_const[200];
@@ -37,7 +40,6 @@ extern int expectedWKC;
 extern uint8_t currentgroup;
 
 extern uint16_t slave_to_write_nvram;
-
 
 
 extern int gbc_pid;

@@ -1413,17 +1413,6 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
 #endif
     gberror_t grc;
 
-    if (BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBEM_REBOOT_BIT_NUM)) {
-        LL_INFO(GBEM_GEN_LOG_EN, "GBEM: Reboot requested by high-level control");
-//        ECBoot(0);
-    }
-
-
-    //todo crit reboot
-    //if (we have signalled for a reboot
-    // ECBoot
-    //kill thread thread_ec_check - pthread_cancel()
-//    set ec_rxtx_mode == EC_RXTX_MODE_OP to something else
 
     event_data.follow_error = ec_check_for_follow_error(&grc);
     if (grc != E_SUCCESS) {

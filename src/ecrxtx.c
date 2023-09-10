@@ -33,6 +33,7 @@
 #include "map.h"
 #include "ec_functions.h"
 #include "main.h"
+#include "status_control_word_bit_definitions.h"
 
 bool homing_failed = false;
 extern char proc_name[100];
@@ -492,8 +493,7 @@ void ec_rxtx(void *argument) {
                 ec_rxtx_event[CYCLIC_EVENT_SEND_FAIL].active = false;
             }
 
-
-
+         
             /*this prints out DC information */
 //            if ((ecm_status.cycle_count % 250) == 0) {
 //                //should call the last slave in the chain
@@ -505,12 +505,14 @@ void ec_rxtx(void *argument) {
 
 
             if (ec_slave[0].hasdc) {
+
+#if PRINT_DC_TIMESTAMPS == 1
                 if (bus_cycle_tick % 5000 == 0) {
                     print_dc_timestamps();
                     printf("toff:%" PRIi64 "\n", toff);
 
                 }
-
+#endif
 
                 /* calculate toff to get GBC time and DC synced */
                 /*use this for a slave at start of chain that has a 32 bit dc time register */

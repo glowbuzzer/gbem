@@ -19,9 +19,11 @@
 #include "gbem_config.h"
 
 #ifdef GB_APP_LINUX
+
 #include <pthread.h>
 #include "map.h"
 #include "ecm_status.h"
+
 #endif
 
 
@@ -37,6 +39,8 @@
 extern pthread_t thread_ec_rxtx;
 extern pthread_t thread_ec_check;
 extern pthread_t thread_ec_emstat;
+extern pthread_t thread_ec_reboot;
+extern pthread_t thread_ec_drive_error_message;
 
 #endif
 

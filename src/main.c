@@ -24,9 +24,7 @@
 #include <errno.h>        // errno
 #include <netinet/in.h>   // IPPROTO_IP
 #include <net/if.h>       // IFF_*, ifreq
-
-
-
+#include "reboot.h"
 #include "std_headers.h"
 #include "main.h"
 #include "log.h"
@@ -99,6 +97,8 @@ int gbc_pid =0;
 pthread_t thread_ec_rxtx;
 pthread_t thread_ec_check;
 pthread_t thread_ec_emstat;
+pthread_t thread_ec_reboot;
+pthread_t thread_ec_drive_error_message;
 
 /* function forward declarations */
 
@@ -214,10 +214,14 @@ void cleanup(int sig) {
 
     exit(1);
 }
+int main_argc = 0;
+char **main_argv = NULL;
 
 int main(int argc, char *argv[]) {
     int len = 0;
     FILE *fp;
+main_argc = argc;
+main_argv = argv;
 
     signal(SIGTERM, cleanup);
     signal(SIGINT, cleanup);
@@ -691,6 +695,13 @@ int signal_to_send = SIGNAL_TO_SEND;
 
     switch (ecm_status.active_program) {
         case ECM_CYCLIC_PROG:
+            rc = osal_thread_create(&thread_ec_reboot, STACK64K * 2, &ec_reboot, (void *) proc_name);
+            if (rc != 1) {
+                UM_FATAL(
+                        "GBEM: An error occurred whilst creating the pthread (ec_reboot) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
+            }
+
+
             //Create RT thread for cyclic task, inside this function the priority and scheduler params are set
             rc = osal_thread_create_rt(&thread_ec_rxtx, STACK64K * 2, &ec_rxtx, (void *) proc_name);
             if (rc != 1) {
@@ -731,7 +742,8 @@ int signal_to_send = SIGNAL_TO_SEND;
 //        pthread_join(thread_ec_emstat, NULL);
 
         //if emstat isn't running join ec_rxtx by uncommenting the following line
-        pthread_join(thread_ec_rxtx, NULL);
+//        pthread_join(thread_ec_rxtx, NULL);
+        pthread_join(thread_ec_reboot, NULL);
     }
     return 0;
 }
