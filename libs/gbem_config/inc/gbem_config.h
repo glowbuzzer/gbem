@@ -34,7 +34,7 @@
 #define ECRXTX_EXEC_TIME_WARNING_PERCENTAGE             60
 
 /** Enables measure timing code which logs the timing of the main cyclic EtherCAT comms process to stdout (don't enable when not troubleshooting as it can upset realtimeness) */
-#define ECRXTX_MEASURE_EXEC_TIME                        1
+#define ECRXTX_MEASURE_EXEC_TIME                        0
 
 /** Enables printing of slave 1C32 info to stdout */
 #define PRINT_1C32_INFO                                 0
@@ -77,7 +77,7 @@
 
 /** Threshold of cycles after requesting drives change state that the transition must be made */
 //this has to be quite large as it needs to be > maximum time for the drives to stop
-#define CTRL_DRIVE_CHANGE_STATE_TIMEOUT                 100
+#define CTRL_DRIVE_CHANGE_STATE_TIMEOUT                 500
 
 /**CRITICAL! if this is defined then hardware estop is disabled! */
 #define DISABLE_ESTOP_CHECKING                          1
@@ -125,6 +125,8 @@
 
 #define ENABLE_ALL_NON_CORE_FUNCTIONS                  1
 
+
+#define ENABLE_CYCLIC_MESSAGES                          0
 
 /** Max length of string for ec_state to string array */
 #define MAX_EC_STATE_TO_STRING_INDEX                    0x20
