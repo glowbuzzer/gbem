@@ -342,11 +342,12 @@ void ec_rxtx(void *argument) {
         if (ecm_status.gbc_connected) {
             /* do the memcpy to shared mem */
             if (shmp->out_busy == 1) {
-                printf("out busy!\n");
-            }
+                ecm_status.shared_mem_busy_count++;
+            } else {
 
-            memcpy(outA, shmp->sm_buf_out, SIZE_OF_GBC_PDO);
-            memcpy(shmp->sm_buf_in, inA, SIZE_OF_GBC_PDO);
+                memcpy(outA, shmp->sm_buf_out, SIZE_OF_GBC_PDO);
+                memcpy(shmp->sm_buf_in, inA, SIZE_OF_GBC_PDO);
+            }
             /* send the signal to GBC to do the shared mem memcpy */
 
 #if USE_RT_SIGNAL == 1

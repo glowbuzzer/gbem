@@ -112,6 +112,7 @@ typedef struct {
     uint8_t slavecount;
     ecm_status_drive_t drives[MAP_MAX_NUM_DRIVES];
     cia_state_t machine_state;
+    uint64_t shared_mem_busy_count;
 } ecm_status_t;
 
 //#ifdef GB_APP_LINUX
