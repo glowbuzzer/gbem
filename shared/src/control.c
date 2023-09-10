@@ -28,6 +28,8 @@
 #include "cia402.h"
 #include "read_drive_error_code_into_ecm_status.h"
 #include "print_slave_error_messages.h"
+#include "status_control_word_bit_definitions.h"
+#include "ec_functions.h"
 
 //todo review need for semaphores in control.c and ec_rxtx.c
 #define DPM_IN_PROTECT_START
@@ -1411,6 +1413,12 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
 #endif
     gberror_t grc;
 
+    if (BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBEM_REBOOT_BIT_NUM)) {
+        LL_INFO(GBEM_GEN_LOG_EN, "GBEM: Reboot requested by high-level control");
+//        ECBoot(0);
+    }
+
+
     //todo crit reboot
     //if (we have signalled for a reboot
     // ECBoot
@@ -1533,7 +1541,7 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
 //                }
             }
         }
-        
+
         print_slave_error_messages();
     }
 
@@ -1557,8 +1565,9 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
 
     //RT-sensitive
     //output user messages for any faults that have occurred
+#if ENABLE_CYCLIC_MESSAGES == 1
     print_cyclic_user_message(NUM_CONTROL_EVENTS, control_event);
-
+#endif
     DPM_OUT_PROTECT_END
 
 }
@@ -1587,7 +1596,7 @@ static void ctrl_copy_actpos(void) {
  * @param slave_ptrs
  * @param inout_ptrs
  */
-static void ctrl_copy_actvel(void) {
+__attribute__((unused)) static void ctrl_copy_actvel(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_actvel_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_actual_velocity[i] = map_drive_get_actvel_wrd_function_ptr[i](i);
@@ -1604,7 +1613,7 @@ static void ctrl_copy_actvel(void) {
  * @param slave_ptrs
  * @param inout_ptrs
  */
-static void ctrl_copy_acttorq(void) {
+__attribute__((unused)) static void ctrl_copy_acttorq(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_acttorq_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_actual_torque[i] = map_drive_get_acttorq_wrd_function_ptr[i](i);

@@ -26,10 +26,10 @@
 #include "dpm.h"
 #include "ecrxtx.h"
 #include "read_drive_error_code_into_ecm_status.h"
-
 #include "status.h"
+#include "std_defs_and_macros.h"
 #include <unistd.h>
-
+#include "status_control_word_bit_definitions.h"
 
 /** global holding dc delta */
 extern int64 gl_delta;
@@ -480,6 +480,9 @@ gberror_t print_1c32(const uint16_t slave) {
  */
 bool ec_step_1_init(void) {
 
+    //set  the status word STAUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM
+    BIT_SET(dpm_in->machine_word, STAUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM);
+
     /* if we want to use the redundant EtherCAT interface we need two interfaces here is where we enable this */
 #if USE_REDUNDANT_ETHERNET_PORTS == 1
     if (ec_init_redundant(eth_interface1, eth_interface2)){
@@ -723,6 +726,12 @@ bool ec_step_9_op(void) {
         UM_INFO(GBEM_UM_EN, "GBEM: Boot step 9 >success< (transition all slaves to OP state)");
         sleep(1);
 
+        //set the status word STATUS_WORD_GBEM_BOOTED_BIT_NUM
+        BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_BOOTED_BIT_NUM);
+        //clear the status word STAUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM
+        BIT_CLEAR(dpm_in->machine_word, STAUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM);
+
+
         /** read the drive error code into the ecm_status struct */
         for (int i = 0; i < MAP_NUM_DRIVES; i++) {
             read_drive_error_code_into_ecm_status(i);
@@ -755,6 +764,48 @@ void ECBoot(void *argument) {
     } else if (*((int *) argument) == 1) {
         UM_FATAL("argument invalid");
     }
+
+    //kill threads in case this is a reboot
+    int pthread_cancel_rc = 0;
+    pthread_cancel_rc = pthread_cancel(thread_ec_check);
+    if (pthread_cancel_rc != 0) {
+        UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_check");
+    } else {
+        UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_check");
+    }
+    pthread_cancel_rc = pthread_cancel(thread_ec_emstat);
+    if (pthread_cancel_rc != 0) {
+        UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_emstat");
+    } else {
+        UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_emstat");
+    }
+
+    //leave ecrtx thread running but set mode to none
+    ec_rxtx_mode = EC_RXTX_MODE_NONE;
+
+    ecm_status.cyclic_state = ECM_PRE_BOOT;
+    ecm_status.boot_state.init_done = false;
+    ecm_status.boot_state.slaves_found = false;
+    ecm_status.boot_state.all_slaves_pre_op = false;
+    ecm_status.boot_state.error_check_ok = false;
+    ecm_status.boot_state.all_slaves_safe_op = false;
+    ecm_status.boot_state.wkc_check_ok = false;
+    ecm_status.boot_state.slaves_match_ok = false;
+    ecm_status.boot_state.all_slaves_op = false;
+    ecm_status.boot_state.pdo_remap_done = false;
+    ecm_status.boot_state.apply_standard_sdos_done = false;
+
+    ecm_status.cycle_count = 0;
+
+
+
+
+
+
+//    todo crit kill any plc threads
+//    &plc_task_set.tasks[i].id
+
+
 
     /******************** this is the start of the boot phase ********************/
     /* this is a goto label that we return to if boot fails */
@@ -930,11 +981,24 @@ void ECBoot(void *argument) {
         for (int i = 0; i < MAP_NUM_DRIVES; i++) {
             if (map_drive_run_homing[i]) {
                 any_drive_needs_homing = true;
+                BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_HOMING_NEEDED_BIT_NUM);
             }
         }
 
         if (any_drive_needs_homing) {
-            ec_rxtx_mode == EC_RXTX_MODE_HOME;
+
+            //homing
+            BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_WAITING_FOR_START_HOMING_BIT_NUM);
+
+            while (BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBEM_START_HOMING_BIT_NUM)) {
+                UM_INFO(GBEM_UM_EN, "GBEM: Waiting for start homing command to be sent");
+                sleep(5);
+            }
+
+            UM_INFO(GBEM_UM_EN, "GBEM: Homing starting");
+            BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_HOMING_IN_PROGRESS_BIT_NUM);
+
+            ec_rxtx_mode = EC_RXTX_MODE_HOME;
         } else {
 
             ec_rxtx_mode = EC_RXTX_MODE_OP;
@@ -959,7 +1023,7 @@ void ECBoot(void *argument) {
 
 //RT-sensitive
 #if ENABLE_ALL_NON_CORE_FUNCTIONS == 1
-    rc = osal_thread_create_rt(&thread_ec_check, STACK64K * 2, &ec_check, NULL);
+    rc = osal_thread_create(&thread_ec_check, STACK64K * 2, &ec_check, NULL);
     if (rc != 1) {
         UM_FATAL(
                 "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
@@ -969,7 +1033,7 @@ void ECBoot(void *argument) {
 #if ENABLE_ALL_NON_CORE_FUNCTIONS == 1
 #if ENABLE_EMSTAT == 1
     //RT-sensitive
-    rc = osal_thread_create_rt(&thread_ec_emstat, STACK64K * 2, &ec_emstat, NULL);
+    rc = osal_thread_create(&thread_ec_emstat, STACK64K * 2, &ec_emstat, NULL);
     if (rc != 1) {
         UM_FATAL(
                 "GBEM: An error occurred whilst creating the pthread (ec_emstat which is the thread to create JSON status messages) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
