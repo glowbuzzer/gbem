@@ -179,7 +179,8 @@ bool print_repeater_message = false;
 void ec_rxtx(void *argument) {
     bool first_run = true;
     char *proc __attribute__((unused)) = (char *) argument;
-    struct timespec ts, ts_wall;
+    struct timespec ts;
+    struct timespec __attribute__((unused)) ts_wall;
     struct timespec tleft;
     int ht;
     int64 cycletime;
@@ -200,7 +201,7 @@ void ec_rxtx(void *argument) {
     };
 
     //@formatter:off
-    cyclic_event_t ec_rxtx_event[NUM_CYCLIC_EVENTS] = {
+    cyclic_event_t __attribute__((unused)) ec_rxtx_event[NUM_CYCLIC_EVENTS] = {
             [CYCLIC_EVENT_OVERRUN] = {.message="The execution time has overrun!", .type=CYCLIC_MSG_ERROR},
             [CYCLIC_EVENT_TIMEWARN] = {.message="The execution time is over safe threshold", .type=CYCLIC_MSG_WARN},
             [CYCLIC_EVENT_SEND_FAIL] = {.message="Send process data over EtherCAT failed", .type=CYCLIC_MSG_ERROR},
@@ -278,7 +279,7 @@ void ec_rxtx(void *argument) {
     cycletime = ECM_CYCLE_TIME; /* cycletime in ns */
     toff = 0;
 
-    bool print_i_am_alive_message = false;
+    bool __attribute__((unused)) print_i_am_alive_message = false;
 
     ec_rxtx_event[CYCLIC_EVENT_NOT_OPMODE].active = true;
 

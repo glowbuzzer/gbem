@@ -218,8 +218,8 @@ int main_argc = 0;
 char **main_argv = NULL;
 
 int main(int argc, char *argv[]) {
-    int len = 0;
-    FILE *fp;
+    int __attribute__((unused)) len = 0;
+    FILE __attribute__((unused)) *fp;
 main_argc = argc;
 main_argv = argv;
 
@@ -239,7 +239,10 @@ main_argv = argv;
     //key boolean indicating if GBC has a shared mem connection to GBEM
     ecm_status.gbc_connected = false;
 
+    //reset key vars in case this is a reboot
+    ecm_status.shared_mem_busy_count = 0;
     ecm_status.ec_check_found_error = false;
+    ecm_status.cyclic_state = ECM_PRE_BOOT;
 
     //solves missing output in debugger log output (a gdb thing)
     setbuf(stdout, 0);

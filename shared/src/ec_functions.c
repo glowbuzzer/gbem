@@ -768,7 +768,6 @@ void ECBoot(void *argument) {
 
 
     ec_rxtx_mode = EC_RXTX_MODE_NONE;
-
     ecm_status.cyclic_state = ECM_PRE_BOOT;
     ecm_status.boot_state.init_done = false;
     ecm_status.boot_state.slaves_found = false;
