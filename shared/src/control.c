@@ -1180,34 +1180,35 @@ static void cia_generic_entry_action(void *stateData, struct event *event) {
      */
     //first set the overall current state of the gbem statemachine
     //it is ok to do this in the generic entry action as every time we change state we pass through here
+    uint32_t bitmask_for_lower_16 = 0xFFFF0000;
 
-    dpm_in->machine_word = 0;
+    dpm_in->machine_word = dpm_in->machine_word & bitmask_for_lower_16;
     switch ((cia_state_t) stateData) {
         case CIA_NOT_READY_TO_SWITCH_ON:
-            dpm_in->machine_word = CIA_NOT_READY_TO_SWITCH_ON_STATWRD;
+            dpm_in->machine_word = dpm_in->machine_word | CIA_NOT_READY_TO_SWITCH_ON_STATWRD;
             break;
         case CIA_SWITCH_ON_DISABLED:
-            dpm_in->machine_word = CIA_SWITCH_ON_DISABLED_STATWRD;
+            dpm_in->machine_word = dpm_in->machine_word | CIA_SWITCH_ON_DISABLED_STATWRD;
             break;
         case CIA_READY_TO_SWITCH_ON:
-            dpm_in->machine_word = CIA_READY_TO_SWITCH_ON_STATWRD;
+            dpm_in->machine_word = dpm_in->machine_word | CIA_READY_TO_SWITCH_ON_STATWRD;
             break;
         case CIA_SWITCHED_ON:
-            dpm_in->machine_word = CIA_SWITCHED_ON_STATWRD;
+            dpm_in->machine_word = dpm_in->machine_word | CIA_SWITCHED_ON_STATWRD;
             break;
         case CIA_OPERATION_ENABLED:
-            dpm_in->machine_word = CIA_OPERATION_ENABLED_STATWRD;
+            dpm_in->machine_word = dpm_in->machine_word | CIA_OPERATION_ENABLED_STATWRD;
             break;
         case CIA_QUICK_STOP_ACTIVE:
-            dpm_in->machine_word = CIA_QUICK_STOP_ACTIVE_STATWRD;
+            dpm_in->machine_word = dpm_in->machine_word | CIA_QUICK_STOP_ACTIVE_STATWRD;
             break;
         case CIA_FAULT_REACTION_ACTIVE:
-            dpm_in->machine_word = CIA_FAULT_REACTION_ACTIVE_STATWRD;
+            dpm_in->machine_word = dpm_in->machine_word | CIA_FAULT_REACTION_ACTIVE_STATWRD;
             /* trn13 should have called cia_is_fault_condition to set current faults in event struct*/
             dpm_in->fault_history_word = ((event_data_t *) event->data)->fault_cause;
             break;
         case CIA_FAULT:
-            dpm_in->machine_word = CIA_FAULT_STATWRD;
+            dpm_in->machine_word = dpm_in->machine_word | CIA_FAULT_STATWRD;
             break;
     }
 }
