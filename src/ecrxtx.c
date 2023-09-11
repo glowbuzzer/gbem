@@ -493,22 +493,14 @@ void ec_rxtx(void *argument) {
                 ec_rxtx_event[CYCLIC_EVENT_SEND_FAIL].active = false;
             }
 
-         
-            /*this prints out DC information */
-//            if ((ecm_status.cycle_count % 250) == 0) {
-//                //should call the last slave in the chain
-//                print_slave_dc_sysdiff(MAP_EL7211_1);
-//                print_dc_timestamps();
-//            }
-
-
-
-
             if (ec_slave[0].hasdc) {
 
 #if PRINT_DC_TIMESTAMPS == 1
                 if (bus_cycle_tick % 5000 == 0) {
                     print_dc_timestamps();
+                    //                //should call the last slave in the chain
+                    //                print_slave_dc_sysdiff(MAP_EL7211_1);
+
                     printf("toff:%" PRIi64 "\n", toff);
 
                 }
