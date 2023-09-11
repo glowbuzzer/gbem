@@ -21,7 +21,7 @@
 #include "log.h"
 #include "dpm.h"
 #include "ec_functions.h"
-
+#include <unistd.h>
 #include "linux_shm.h"
 #include "user_message.h"
 #include "std_defs_and_macros.h"
@@ -577,9 +577,9 @@ void ec_rxtx(void *argument) {
 #endif
 
         } else {
-//if not do_run
 
-
+//            UM_INFO(GBEM_UM_EN, "GBEM: No mode set for EC_RXTX. Waiting for mode to be set");
+            sleep(1);
         }
     }
 }
