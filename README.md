@@ -77,3 +77,21 @@ the code. Search for the code for "NEW_DRIVE" to find the locations where these 
 When adding a new machine configuration (that uses existing slave and drive functions), you will not need to write any
 functions. Small changes are needed to enable the switching between configurations. These can be found by searching
 for "NEW_MACHINE".
+
+# Real-time behaviour
+
+To achieve real-time behaviour, GBEM needs to avoid outputting debug messages to the console.
+
+There are defines available to prevent this. Like `#define ENABLE_CYCLIC_MESSAGES 0` in `gbem_config.h`.
+
+But getting console messages is important when initially getting your slaves/drives working.
+
+Therefore, we recommend:
+
+* using a 4ms cycle time when debugging with various messages enabled and understand the messages will compromise the
+  real-time behaviour
+* switching off all messages when you are happy with the behaviour of your machine
+
+Often you will find with drives (apart from superfast linear motors etc.) a 4ms cycle time produces acceptable
+accuracy/smoothness
+of motion. But of course you can increase (depending on your hardware) to 2ms or 1ms.
