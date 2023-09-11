@@ -251,6 +251,8 @@ main_argv = argv;
     //    logger_set_log_file("gbem.log", GBEM_UM_EN);
     //    logger_set_syslog("Glowbuzzer");
 
+    //print sizeof ecmstatus struct
+//    UM_INFO(GBEM_UM_EN, "GBEM: sizeof ecm_status_t = [%d]", sizeof(ecm_status_t));
 
     //temp just for testing
 //    len = config_check_and_print(config_summary_json_buffer, &grc);
