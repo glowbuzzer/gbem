@@ -19,7 +19,8 @@
 #include "log.h"
 #include "dpm.h"
 
-bool iomap_get_pdo_in_bool(const ec_datatype_t pdo_type, const uint16_t slave_num, const uint32_t byte_num, const uint8_t bit_num) {
+bool iomap_get_pdo_in_bool(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+                           const uint8_t bit_num) {
     if (pdo_type == ECT_BOOLEAN) {
         return (ec_pdo_get_input_bit(slave_num, bit_num));
     } else {
@@ -35,7 +36,7 @@ bool iomap_get_pdo_in_bool(const ec_datatype_t pdo_type, const uint16_t slave_nu
  * @param byte_num
  * @return value read from PDO
  */
-int32_t iomap_get_pdo_in_int32(const ec_datatype_t pdo_type, const uint16_t slave_num, const uint32_t byte_num) {
+int32_t iomap_get_pdo_in_int32(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num) {
     switch (pdo_type) {
         case ECT_REAL32:
             return ((int32_t) ec_pdo_get_input_float(slave_num, byte_num));
@@ -64,7 +65,7 @@ int32_t iomap_get_pdo_in_int32(const ec_datatype_t pdo_type, const uint16_t slav
  * @param byte_num
  * @return value read from PDO
  */
-uint32_t iomap_get_pdo_in_uint32(const ec_datatype_t pdo_type, const uint16_t slave_num, const uint32_t byte_num) {
+uint32_t iomap_get_pdo_in_uint32(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num) {
     switch (pdo_type) {
         case ECT_REAL32:
             return ((uint32_t) ec_pdo_get_input_float(slave_num, byte_num));
@@ -95,7 +96,8 @@ uint32_t iomap_get_pdo_in_uint32(const ec_datatype_t pdo_type, const uint16_t sl
  * @warning doesn't handle bool to float...
  */
 
-float iomap_get_pdo_in_float(const ec_datatype_t pdo_type, const uint16_t slave_num, const uint32_t byte_num, const float max_val) {
+float iomap_get_pdo_in_float(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+                             const float max_val) {
     switch (pdo_type) {
         case ECT_REAL32:
             return (ec_pdo_get_input_float(slave_num, byte_num));
@@ -118,7 +120,8 @@ float iomap_get_pdo_in_float(const ec_datatype_t pdo_type, const uint16_t slave_
 }
 
 
-void iomap_set_pdo_out_bool(const ec_datatype_t pdo_type, const uint16_t slave_num, const uint32_t byte_num, const uint8_t bit_num, const bool val) {
+void iomap_set_pdo_out_bool(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+                            const uint8_t bit_num, const bool val) {
     if (pdo_type == ECT_BOOLEAN) {
 //        printf("set bit on slave_num [%u] bit_byte [%u] to val [%u]\n", slave_num, bit_byte_num, val);
         ec_pdo_set_output_bit(slave_num, bit_num, val);
@@ -136,7 +139,7 @@ void iomap_set_pdo_out_bool(const ec_datatype_t pdo_type, const uint16_t slave_n
  * @param max_val
  * @param val value to be set
  */
-void iomap_set_pdo_out_float(const ec_datatype_t pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+void iomap_set_pdo_out_float(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
                              const float val, const float max_val) {
     switch (pdo_type) {
         case ECT_REAL32:
@@ -166,7 +169,8 @@ void iomap_set_pdo_out_float(const ec_datatype_t pdo_type, const uint16_t slave_
 }
 
 
-void iomap_set_pdo_out_int32(const ec_datatype_t pdo_type, const uint16_t slave_num, const uint32_t byte_num, const int32_t val, const float max_val) {
+void iomap_set_pdo_out_int32(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+                             const int32_t val, const float max_val) {
     switch (pdo_type) {
         case ECT_INTEGER8:
             ec_pdo_set_output_int8(slave_num, byte_num, (int8_t) val);
@@ -195,7 +199,8 @@ void iomap_set_pdo_out_int32(const ec_datatype_t pdo_type, const uint16_t slave_
 }
 
 
-void iomap_set_pdo_out_uint32(const ec_datatype_t pdo_type, const uint16_t slave_num, const uint32_t byte_num, const uint32_t val, const float max_val) {
+void iomap_set_pdo_out_uint32(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+                              const uint32_t val, const float max_val) {
     switch (pdo_type) {
         case ECT_INTEGER8:
             ec_pdo_set_output_int8(slave_num, byte_num, (int8_t) val);
@@ -224,7 +229,7 @@ void iomap_set_pdo_out_uint32(const ec_datatype_t pdo_type, const uint16_t slave
 }
 
 
-void iomap_set_gbc_in_union(const uint16_t io_num, const ec_datatype_t gbc_type, const ec_datatype_value_t val) {
+void iomap_set_gbc_in_union(const uint16_t io_num, const ec_datatype gbc_type, const ec_datatype_value_t val) {
     switch (gbc_type) {
         case ECT_BOOLEAN:
             if (val.ect_boolean) {
@@ -248,7 +253,7 @@ void iomap_set_gbc_in_union(const uint16_t io_num, const ec_datatype_t gbc_type,
     }
 }
 
-void iomap_set_plc_in_union(const ec_datatype_t plc_type, void *io, const ec_datatype_value_t val) {
+void iomap_set_plc_in_union(const ec_datatype plc_type, void *io, const ec_datatype_value_t val) {
     switch (plc_type) {
         case ECT_BOOLEAN:
             *((bool *) io) = val.ect_boolean;
@@ -277,7 +282,8 @@ void iomap_set_plc_in_union(const ec_datatype_t plc_type, void *io, const ec_dat
     }
 }
 
-void iomap_set_pdo_out_union(const uint16_t slave_num, const uint32_t byte_num, const ec_datatype_t pdo_type, const ec_datatype_value_t val) {
+void iomap_set_pdo_out_union(const uint16_t slave_num, const uint32_t byte_num, const ec_datatype pdo_type,
+                             const ec_datatype_value_t val) {
     switch (pdo_type) {
         case ECT_BOOLEAN:
             ec_pdo_set_output_bit(slave_num, byte_num, val.ect_boolean);
@@ -315,7 +321,8 @@ void iomap_set_pdo_out_union(const uint16_t slave_num, const uint32_t byte_num, 
  * @warning the PDO datatype must be a BOOLEAN
  */
 
-void iomap_set_gbc_digital_in_from_pdo(const ec_datatype_t pdo_type, const uint16_t slave_num, const uint32_t byte_num, uint8_t bit_num, const uint16_t gbc_io_id) {
+void iomap_set_gbc_digital_in_from_pdo(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+                                       uint8_t bit_num, const uint16_t gbc_io_id) {
 
     if (pdo_type == ECT_BOOLEAN) {
         if (ec_pdo_get_input_bit(slave_num, bit_num)) {
@@ -333,6 +340,7 @@ void iomap_set_gbc_digital_in_from_pdo(const ec_datatype_t pdo_type, const uint1
         }
     }
 }
+
 /**
  * @brief sets a gbc int32 (specified by a gbc_io_id) with a value read from a PDO using the PDOs datatype
  * @param pdo_type
@@ -341,7 +349,8 @@ void iomap_set_gbc_digital_in_from_pdo(const ec_datatype_t pdo_type, const uint1
  * @param gbc_io_id
  * @param max_val
  */
-void iomap_set_gbc_in_int32_from_pdo(const ec_datatype_t pdo_type, const uint16_t slave_num, const uint32_t byte_num, const uint16_t gbc_io_id, const float max_val) {
+void iomap_set_gbc_in_int32_from_pdo(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+                                     const uint16_t gbc_io_id, const float max_val) {
     switch (pdo_type) {
         case ECT_INTEGER8:
             dpm_in->integer32[gbc_io_id] = (int32_t) ec_pdo_get_input_int8(slave_num, byte_num);
@@ -379,7 +388,8 @@ void iomap_set_gbc_in_int32_from_pdo(const ec_datatype_t pdo_type, const uint16_
  * @param max_val
  */
 void
-iomap_set_gbc_uint32_in_from_pdo(const ec_datatype_t pdo_type, const uint16_t slave_num, const uint32_t byte_num, const uint16_t gbc_io_id, const float max_val) {
+iomap_set_gbc_uint32_in_from_pdo(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+                                 const uint16_t gbc_io_id, const float max_val) {
     switch (pdo_type) {
         case ECT_INTEGER8:
             dpm_in->unsigned32[gbc_io_id] = (uint32_t) ec_pdo_get_input_int8(slave_num, byte_num);
@@ -417,7 +427,8 @@ iomap_set_gbc_uint32_in_from_pdo(const ec_datatype_t pdo_type, const uint16_t sl
  * @param gbc_io_id
  * @param max_val
  */
-void iomap_set_gbc_float_in_from_pdo(const ec_datatype_t pdo_type, const uint16_t slave_num, const uint32_t byte_num, const uint16_t gbc_io_id,
+void iomap_set_gbc_float_in_from_pdo(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+                                     const uint16_t gbc_io_id,
                                      const float max_val) {
     switch (pdo_type) {
         case ECT_REAL32:

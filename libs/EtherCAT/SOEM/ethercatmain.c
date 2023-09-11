@@ -20,8 +20,6 @@
 #include "osal.h"
 #include "oshw.h"
 #include "ethercat.h"
-//#include "FreeRTOS.h"
-//#include "task.h"
 
 
 /** delay in us for eeprom ready loop */
@@ -109,8 +107,6 @@ ecx_contextt ecx_context = {
         &ec_elist,          // .elist         =
         &ec_idxstack,       // .idxstack      =
         &EcatError,         // .ecaterror     =
-        0,                  // .DCtO          =
-        0,                  // .DCl           =
         &ec_DCtime,         // .DCtime        =
         &ec_SMcommtype[0],  // .SMcommtype    =
         &ec_PDOassign[0],   // .PDOassign     =
@@ -118,7 +114,9 @@ ecx_contextt ecx_context = {
         &ec_SM,             // .eepSM         =
         &ec_FMMU,           // .eepFMMU       =
         NULL,               // .FOEhook()
-        NULL                // .EOEhook()
+        NULL,               // .EOEhook()
+        0,                  // .manualstatechange
+        NULL,               // .userdata
 };
 #endif
 
@@ -327,8 +325,8 @@ uint8 ecx_siigetbyte(ecx_contextt *context, uint16 slave, uint16 address) {
     }
     if (address < EC_MAXEEPBUF) {
         mapw = address >> 5;
-        mapb = address - (mapw << 5);
-        if (context->esimap[mapw] & (uint32) (1 << mapb)) {
+        mapb = (uint16) (address - (mapw << 5));
+        if (context->esimap[mapw] & (1U << mapb)) {
             /* byte is already in buffer */
             retval = context->esibuf[address];
         } else {
@@ -350,10 +348,10 @@ uint8 ecx_siigetbyte(ecx_contextt *context, uint16 slave, uint16 address) {
             }
             /* find bitmap location */
             mapw = eadr >> 4;
-            mapb = (eadr << 1) - (mapw << 5);
+            mapb = (uint16) ((eadr << 1) - (mapw << 5));
             for (lp = 0; lp < cnt; lp++) {
                 /* set bitmap for each byte that is read */
-                context->esimap[mapw] |= (1 << mapb);
+                context->esimap[mapw] |= (1U << mapb);
                 mapb++;
                 if (mapb > 31) {
                     mapb = 0;
@@ -502,7 +500,7 @@ uint16 ecx_siiSM(ecx_contextt *context, uint16 slave, ec_eepromSMt *SM) {
         a = SM->Startpos;
         w = ecx_siigetbyte(context, slave, a++);
         w += (ecx_siigetbyte(context, slave, a++) << 8);
-        SM->nSM = (w / 4);
+        SM->nSM = (uint8) (w / 4);
         SM->PhStart = ecx_siigetbyte(context, slave, a++);
         SM->PhStart += (ecx_siigetbyte(context, slave, a++) << 8);
         SM->Plength = ecx_siigetbyte(context, slave, a++);
@@ -557,7 +555,7 @@ uint16 ecx_siiSMnext(ecx_contextt *context, uint16 slave, ec_eepromSMt *SM, uint
  *  @param[in]  t       = 0=RXPDO 1=TXPDO
  *  @return mapping size in bits of PDO
  */
-int ecx_siiPDO(ecx_contextt *context, uint16 slave, ec_eepromPDOt *PDO, uint8 t) {
+uint32 ecx_siiPDO(ecx_contextt *context, uint16 slave, ec_eepromPDOt *PDO, uint8 t) {
     uint16 a, w, c, e, er, Size;
     uint8 eectl = context->slavelist[slave].eep_pdi;
 
@@ -622,7 +620,7 @@ int ecx_FPRD_multi(ecx_contextt *context, int n, uint16 *configlst, ec_alstatust
     int wkc;
     uint8 idx;
     ecx_portt *port;
-    int sldatapos[MAX_FPRD_MULTI];
+    uint16 sldatapos[MAX_FPRD_MULTI];
     int slcnt;
 
     port = context->port;
@@ -652,6 +650,7 @@ int ecx_FPRD_multi(ecx_contextt *context, int n, uint16 *configlst, ec_alstatust
 }
 
 /** Read all slave states in ec_slave.
+ * @warning The BOOT state is actually higher than INIT and PRE_OP (see state representation)
  * @param[in] context = context struct
  * @return lowest state found
  */
@@ -683,9 +682,9 @@ int ecx_readstate(ecx_contextt *context) {
     }
 
     switch (bitwisestate) {
+        /* Note: BOOT State collides with PRE_OP | INIT and cannot be used here */
         case EC_STATE_INIT:
         case EC_STATE_PRE_OP:
-//      case EC_STATE_BOOT:
         case EC_STATE_SAFE_OP:
         case EC_STATE_OPERATIONAL:
             allslavessamestate = TRUE;
@@ -713,7 +712,7 @@ int ecx_readstate(ecx_contextt *context) {
         lowest = 0xff;
         fslave = 1;
         do {
-            lslave = *(context->slavecount);
+            lslave = (uint16) *(context->slavecount);
             if ((lslave - fslave) >= MAX_FPRD_MULTI) {
                 lslave = fslave + MAX_FPRD_MULTI - 1;
             }
@@ -768,7 +767,12 @@ int ecx_writestate(ecx_contextt *context, uint16 slave) {
 
 /** Check actual slave state.
  * This is a blocking function.
- * To refresh the state of all slaves ecx_readstate()should be called
+ * To refresh the state of all slaves ecx_readstate() should be called
+ * @warning If this is used for slave 0 (=all slaves), the state of all slaves is read by an bitwise OR operation.
+ * The returned value is also the bitwise OR state of all slaves.
+ * This has some implications for the BOOT state. The Boot state representation collides with INIT | PRE_OP so this
+ * function cannot be used for slave = 0 and reqstate = EC_STATE_BOOT and also, if the returned state is BOOT, some
+ * slaves might actually be in INIT and PRE_OP and not in BOOT.
  * @param[in] context     = context struct
  * @param[in] slave       = Slave number, 0 = all slaves (only the "slavelist[0].state" is refreshed)
  * @param[in] reqstate    = Requested state
@@ -799,12 +803,9 @@ uint16 ecx_statecheck(ecx_contextt *context, uint16 slave, uint16 reqstate, int 
         }
         state = rval & 0x000f; /* read slave status */
         if (state != reqstate) {
-
             osal_usleep(1000);
-//    	  vTaskDelay(1000);
         }
     } while ((state != reqstate) && (osal_timer_is_expired(&timer) == FALSE));
-//   while ((state != reqstate));
     context->slavelist[slave].state = rval;
 
     return state;
@@ -850,8 +851,6 @@ int ecx_mbxempty(ecx_contextt *context, uint16 slave, int timeout) {
         wkc = ecx_FPRD(context->port, configadr, ECT_REG_SM0STAT, sizeof(SMstat), &SMstat, EC_TIMEOUTRET);
         SMstat = etohs(SMstat);
         if (((SMstat & 0x08) != 0) && (timeout > EC_LOCALDELAY)) {
-            //warning
-//    	  vTaskDelay(EC_LOCALDELAY);
             osal_usleep(EC_LOCALDELAY);
         }
     } while (((wkc <= 0) || ((SMstat & 0x08) != 0)) && (osal_timer_is_expired(&timer) == FALSE));
@@ -881,7 +880,7 @@ int ecx_mbxsend(ecx_contextt *context, uint16 slave, ec_mbxbuft *mbx, int timeou
         if (ecx_mbxempty(context, slave, timeout)) {
             mbxwo = context->slavelist[slave].mbx_wo;
             /* write slave in mailbox */
-            wkc = ecx_FPWR(context->port, configadr, mbxwo, mbxl, mbx, EC_TIMEOUTRET);
+            wkc = ecx_FPWR(context->port, configadr, mbxwo, mbxl, mbx, EC_TIMEOUTRET3);
         } else {
             wkc = 0;
         }
@@ -921,9 +920,7 @@ int ecx_mbxreceive(ecx_contextt *context, uint16 slave, ec_mbxbuft *mbx, int tim
             wkc = ecx_FPRD(context->port, configadr, ECT_REG_SM1STAT, sizeof(SMstat), &SMstat, EC_TIMEOUTRET);
             SMstat = etohs(SMstat);
             if (((SMstat & 0x08) == 0) && (timeout > EC_LOCALDELAY)) {
-                //dg hack original
                 osal_usleep(EC_LOCALDELAY);
-//        	 vTaskDelay(EC_LOCALDELAY);
             }
         } while (((wkc <= 0) || ((SMstat & 0x08) == 0)) && (osal_timer_is_expired(&timer) == FALSE));
 
@@ -982,8 +979,6 @@ int ecx_mbxreceive(ecx_contextt *context, uint16 slave, ec_mbxbuft *mbx, int tim
                                             EC_TIMEOUTRET);
                             SMstat = etohs(SMstat);
                             if (((SMstat & 0x08) == 0) && (timeout > EC_LOCALDELAY)) {
-                                //warning
-//                    	 vTaskDelay(EC_LOCALDELAY);
                                 osal_usleep(EC_LOCALDELAY);
                             }
                         } while (((wkc2 <= 0) || ((SMstat & 0x08) == 0)) && (osal_timer_is_expired(&timer) == FALSE));
@@ -992,7 +987,8 @@ int ecx_mbxreceive(ecx_contextt *context, uint16 slave, ec_mbxbuft *mbx, int tim
             } while ((wkc <= 0) && (osal_timer_is_expired(&timer) == FALSE)); /* if WKC<=0 repeat */
         } else /* no read mailbox available */
         {
-            wkc = 0;
+            if (wkc > 0)
+                wkc = EC_TIMEOUT;
         }
     }
 
@@ -1005,8 +1001,7 @@ int ecx_mbxreceive(ecx_contextt *context, uint16 slave, ec_mbxbuft *mbx, int tim
  * @param[out] esibuf   = EEPROM data buffer, make sure it is big enough.
  */
 void ecx_esidump(ecx_contextt *context, uint16 slave, uint8 *esibuf) {
-    int address, incr;
-    uint16 configadr;
+    uint16 configadr, address, incr;
     uint64 *p64;
     uint16 *p16;
     uint64 edat;
@@ -1119,14 +1114,13 @@ int ecx_eeprom2pdi(ecx_contextt *context, uint16 slave) {
 }
 
 uint16 ecx_eeprom_waitnotbusyAP(ecx_contextt *context, uint16 aiadr, uint16 *estat, int timeout) {
-    int wkc, cnt = 0, retval = 0;
+    int wkc, cnt = 0;
+    uint16 retval = 0;
     osal_timert timer;
 
     osal_timer_start(&timer, timeout);
     do {
         if (cnt++) {
-            //warning
-//    	  vTaskDelay(EC_LOCALDELAY);
             osal_usleep(EC_LOCALDELAY);
         }
         *estat = 0;
@@ -1173,15 +1167,11 @@ uint64 ecx_readeepromAP(ecx_contextt *context, uint16 aiadr, uint16 eeproma, int
                 wkc = ecx_APWR(context->port, aiadr, ECT_REG_EEPCTL, sizeof(ed), &ed, EC_TIMEOUTRET);
             } while ((wkc <= 0) && (cnt++ < EC_DEFAULTRETRIES));
             if (wkc) {
-                //warning
-//       	  vTaskDelay(EC_LOCALDELAY);
                 osal_usleep(EC_LOCALDELAY);
                 estat = 0x0000;
                 if (ecx_eeprom_waitnotbusyAP(context, aiadr, &estat, timeout)) {
                     if (estat & EC_ESTAT_NACK) {
                         nackcnt++;
-                        //warning
-//            	  vTaskDelay(EC_LOCALDELAY*5);
                         osal_usleep(EC_LOCALDELAY * 5);
                     } else {
                         nackcnt = 0;
@@ -1241,15 +1231,11 @@ int ecx_writeeepromAP(ecx_contextt *context, uint16 aiadr, uint16 eeproma, uint1
                 wkc = ecx_APWR(context->port, aiadr, ECT_REG_EEPCTL, sizeof(ed), &ed, EC_TIMEOUTRET);
             } while ((wkc <= 0) && (cnt++ < EC_DEFAULTRETRIES));
             if (wkc) {
-                //warning
-//       	  vTaskDelay(EC_LOCALDELAY*2);
                 osal_usleep(EC_LOCALDELAY * 2);
                 estat = 0x0000;
                 if (ecx_eeprom_waitnotbusyAP(context, aiadr, &estat, timeout)) {
                     if (estat & EC_ESTAT_NACK) {
                         nackcnt++;
-                        //warning
-//            	  vTaskDelay(EC_LOCALDELAY*5);
                         osal_usleep(EC_LOCALDELAY * 5);
                     } else {
                         nackcnt = 0;
@@ -1265,14 +1251,13 @@ int ecx_writeeepromAP(ecx_contextt *context, uint16 aiadr, uint16 eeproma, uint1
 }
 
 uint16 ecx_eeprom_waitnotbusyFP(ecx_contextt *context, uint16 configadr, uint16 *estat, int timeout) {
-    int wkc, cnt = 0, retval = 0;
+    int wkc, cnt = 0;
+    uint16 retval = 0;
     osal_timert timer;
 
     osal_timer_start(&timer, timeout);
     do {
         if (cnt++) {
-            //warning
-//    	  vTaskDelay(EC_LOCALDELAY);
             osal_usleep(EC_LOCALDELAY);
         }
         *estat = 0;
@@ -1319,15 +1304,11 @@ uint64 ecx_readeepromFP(ecx_contextt *context, uint16 configadr, uint16 eeproma,
                 wkc = ecx_FPWR(context->port, configadr, ECT_REG_EEPCTL, sizeof(ed), &ed, EC_TIMEOUTRET);
             } while ((wkc <= 0) && (cnt++ < EC_DEFAULTRETRIES));
             if (wkc) {
-                //warning
-//       	  vTaskDelay(EC_LOCALDELAY);
                 osal_usleep(EC_LOCALDELAY);
                 estat = 0x0000;
                 if (ecx_eeprom_waitnotbusyFP(context, configadr, &estat, timeout)) {
                     if (estat & EC_ESTAT_NACK) {
                         nackcnt++;
-                        //warning
-//            	  vTaskDelay(EC_LOCALDELAY*5);
                         osal_usleep(EC_LOCALDELAY * 5);
                     } else {
                         nackcnt = 0;
@@ -1386,15 +1367,11 @@ int ecx_writeeepromFP(ecx_contextt *context, uint16 configadr, uint16 eeproma, u
                 wkc = ecx_FPWR(context->port, configadr, ECT_REG_EEPCTL, sizeof(ed), &ed, EC_TIMEOUTRET);
             } while ((wkc <= 0) && (cnt++ < EC_DEFAULTRETRIES));
             if (wkc) {
-                //warning
-//       	  vTaskDelay(EC_LOCALDELAY*2);
                 osal_usleep(EC_LOCALDELAY * 2);
                 estat = 0x0000;
                 if (ecx_eeprom_waitnotbusyFP(context, configadr, &estat, timeout)) {
                     if (estat & EC_ESTAT_NACK) {
                         nackcnt++;
-                        //warning
-//            	  vTaskDelay(EC_LOCALDELAY*5);
                         osal_usleep(EC_LOCALDELAY * 5);
                     } else {
                         nackcnt = 0;
@@ -1465,12 +1442,14 @@ uint32 ecx_readeeprom2(ecx_contextt *context, uint16 slave, int timeout) {
  * @param[in] idx         = Used datagram index.
  * @param[in] data        = Pointer to process data segment.
  * @param[in] length      = Length of data segment in bytes.
+ * @param[in] DCO         = Offset position of DC frame.
  */
-static void ecx_pushindex(ecx_contextt *context, uint8 idx, void *data, uint16 length) {
+static void ecx_pushindex(ecx_contextt *context, uint8 idx, void *data, uint16 length, uint16 DCO) {
     if (context->idxstack->pushed < EC_MAXBUF) {
         context->idxstack->idx[context->idxstack->pushed] = idx;
         context->idxstack->data[context->idxstack->pushed] = data;
         context->idxstack->length[context->idxstack->pushed] = length;
+        context->idxstack->dcoffset[context->idxstack->pushed] = DCO;
         context->idxstack->pushed++;
     }
 }
@@ -1511,18 +1490,21 @@ static void ecx_clearindex(ecx_contextt *context) {
  * In order to recombine the slave response, a stack is used.
  * @param[in]  context        = context struct
  * @param[in]  group          = group number
+ * @param[in]  use_overlap_io = flag if overlapped iomap is used
  * @return >0 if processdata is transmitted.
  */
 static int ecx_main_send_processdata(ecx_contextt *context, uint8 group, boolean use_overlap_io) {
     uint32 LogAdr;
     uint16 w1, w2;
-    int length, sublength;
+    int length;
+    uint16 sublength;
     uint8 idx;
     int wkc;
     uint8 *data;
     boolean first = FALSE;
     uint16 currentsegment = 0;
     uint32 iomapinputoffset;
+    uint16 DCO;
 
     wkc = 0;
     if (context->grouplist[group].hasdc) {
@@ -1556,30 +1538,29 @@ static int ecx_main_send_processdata(ecx_contextt *context, uint8 group, boolean
                 /* segment transfer if needed */
                 do {
                     if (currentsegment == context->grouplist[group].Isegment) {
-                        sublength = context->grouplist[group].IOsegment[currentsegment++] -
-                                    context->grouplist[group].Ioffset;
+                        sublength = (uint16) (context->grouplist[group].IOsegment[currentsegment++] -
+                                              context->grouplist[group].Ioffset);
                     } else {
-                        sublength = context->grouplist[group].IOsegment[currentsegment++];
+                        sublength = (uint16) context->grouplist[group].IOsegment[currentsegment++];
                     }
                     /* get new index */
                     idx = ecx_getindex(context->port);
                     w1 = LO_WORD(LogAdr);
                     w2 = HI_WORD(LogAdr);
+                    DCO = 0;
                     ecx_setupdatagram(context->port, &(context->port->txbuf[idx]), EC_CMD_LRD, idx, w1, w2, sublength,
                                       data);
                     if (first) {
-                        context->DCl = sublength;
                         /* FPRMW in second datagram */
-                        context->DCtO = ecx_adddatagram(context->port, &(context->port->txbuf[idx]), EC_CMD_FRMW, idx,
-                                                        FALSE,
-                                                        context->slavelist[context->grouplist[group].DCnext].configadr,
-                                                        ECT_REG_DCSYSTIME, sizeof(int64), context->DCtime);
+                        DCO = ecx_adddatagram(context->port, &(context->port->txbuf[idx]), EC_CMD_FRMW, idx, FALSE,
+                                              context->slavelist[context->grouplist[group].DCnext].configadr,
+                                              ECT_REG_DCSYSTIME, sizeof(int64), context->DCtime);
                         first = FALSE;
                     }
                     /* send frame */
                     ecx_outframe_red(context->port, idx);
                     /* push index and data pointer on stack */
-                    ecx_pushindex(context, idx, data, sublength);
+                    ecx_pushindex(context, idx, data, sublength, DCO);
                     length -= sublength;
                     LogAdr += sublength;
                     data += sublength;
@@ -1593,29 +1574,28 @@ static int ecx_main_send_processdata(ecx_contextt *context, uint8 group, boolean
                 currentsegment = 0;
                 /* segment transfer if needed */
                 do {
-                    sublength = context->grouplist[group].IOsegment[currentsegment++];
+                    sublength = (uint16) context->grouplist[group].IOsegment[currentsegment++];
                     if ((length - sublength) < 0) {
-                        sublength = length;
+                        sublength = (uint16) length;
                     }
                     /* get new index */
                     idx = ecx_getindex(context->port);
                     w1 = LO_WORD(LogAdr);
                     w2 = HI_WORD(LogAdr);
+                    DCO = 0;
                     ecx_setupdatagram(context->port, &(context->port->txbuf[idx]), EC_CMD_LWR, idx, w1, w2, sublength,
                                       data);
                     if (first) {
-                        context->DCl = sublength;
                         /* FPRMW in second datagram */
-                        context->DCtO = ecx_adddatagram(context->port, &(context->port->txbuf[idx]), EC_CMD_FRMW, idx,
-                                                        FALSE,
-                                                        context->slavelist[context->grouplist[group].DCnext].configadr,
-                                                        ECT_REG_DCSYSTIME, sizeof(int64), context->DCtime);
+                        DCO = ecx_adddatagram(context->port, &(context->port->txbuf[idx]), EC_CMD_FRMW, idx, FALSE,
+                                              context->slavelist[context->grouplist[group].DCnext].configadr,
+                                              ECT_REG_DCSYSTIME, sizeof(int64), context->DCtime);
                         first = FALSE;
                     }
                     /* send frame */
                     ecx_outframe_red(context->port, idx);
                     /* push index and data pointer on stack */
-                    ecx_pushindex(context, idx, data, sublength);
+                    ecx_pushindex(context, idx, data, sublength, DCO);
                     length -= sublength;
                     LogAdr += sublength;
                     data += sublength;
@@ -1633,20 +1613,19 @@ static int ecx_main_send_processdata(ecx_contextt *context, uint8 group, boolean
             }
             /* segment transfer if needed */
             do {
-                sublength = context->grouplist[group].IOsegment[currentsegment++];
+                sublength = (uint16) context->grouplist[group].IOsegment[currentsegment++];
                 /* get new index */
                 idx = ecx_getindex(context->port);
                 w1 = LO_WORD(LogAdr);
                 w2 = HI_WORD(LogAdr);
+                DCO = 0;
                 ecx_setupdatagram(context->port, &(context->port->txbuf[idx]), EC_CMD_LRW, idx, w1, w2, sublength,
                                   data);
                 if (first) {
-                    context->DCl = sublength;
                     /* FPRMW in second datagram */
-                    context->DCtO = ecx_adddatagram(context->port, &(context->port->txbuf[idx]), EC_CMD_FRMW, idx,
-                                                    FALSE,
-                                                    context->slavelist[context->grouplist[group].DCnext].configadr,
-                                                    ECT_REG_DCSYSTIME, sizeof(int64), context->DCtime);
+                    DCO = ecx_adddatagram(context->port, &(context->port->txbuf[idx]), EC_CMD_FRMW, idx, FALSE,
+                                          context->slavelist[context->grouplist[group].DCnext].configadr,
+                                          ECT_REG_DCSYSTIME, sizeof(int64), context->DCtime);
                     first = FALSE;
                 }
                 /* send frame */
@@ -1656,7 +1635,7 @@ static int ecx_main_send_processdata(ecx_contextt *context, uint8 group, boolean
                  * in the IOmap if we use an overlapping IOmap. If a regular IOmap
                  * is used it should always be 0.
                  */
-                ecx_pushindex(context, idx, (data + iomapinputoffset), sublength);
+                ecx_pushindex(context, idx, (data + iomapinputoffset), sublength, DCO);
                 length -= sublength;
                 LogAdr += sublength;
                 data += sublength;
@@ -1709,48 +1688,48 @@ int ecx_send_processdata_group(ecx_contextt *context, uint8 group) {
  * @return Work counter.
  */
 int ecx_receive_processdata_group(ecx_contextt *context, uint8 group, int timeout) {
-    int pos, idx;
+    uint8 idx;
+    int pos;
     int wkc = 0, wkc2;
     uint16 le_wkc = 0;
     int valid_wkc = 0;
     int64 le_DCtime;
-    boolean first = FALSE;
+    ec_idxstackT *idxstack;
+    ec_bufT *rxbuf;
 
-    if (context->grouplist[group].hasdc) {
-        first = TRUE;
-    }
+    /* just to prevent compiler warning for unused group */
+    wkc2 = group;
+
+    idxstack = context->idxstack;
+    rxbuf = context->port->rxbuf;
     /* get first index */
     pos = ecx_pullindex(context);
     /* read the same number of frames as send */
     while (pos >= 0) {
-        idx = context->idxstack->idx[pos];
-        wkc2 = ecx_waitinframe(context->port, context->idxstack->idx[pos], timeout);
+        idx = idxstack->idx[pos];
+        wkc2 = ecx_waitinframe(context->port, idx, timeout);
         /* check if there is input data in frame */
         if (wkc2 > EC_NOFRAME) {
-            if ((context->port->rxbuf[idx][EC_CMDOFFSET] == EC_CMD_LRD) ||
-                (context->port->rxbuf[idx][EC_CMDOFFSET] == EC_CMD_LRW)) {
-                if (first) {
-                    memcpy(context->idxstack->data[pos], &(context->port->rxbuf[idx][EC_HEADERSIZE]), context->DCl);
-                    memcpy(&le_wkc, &(context->port->rxbuf[idx][EC_HEADERSIZE + context->DCl]), EC_WKCSIZE);
+            if ((rxbuf[idx][EC_CMDOFFSET] == EC_CMD_LRD) || (rxbuf[idx][EC_CMDOFFSET] == EC_CMD_LRW)) {
+                if (idxstack->dcoffset[pos] > 0) {
+                    memcpy(idxstack->data[pos], &(rxbuf[idx][EC_HEADERSIZE]), idxstack->length[pos]);
+                    memcpy(&le_wkc, &(rxbuf[idx][EC_HEADERSIZE + idxstack->length[pos]]), EC_WKCSIZE);
                     wkc = etohs(le_wkc);
-                    memcpy(&le_DCtime, &(context->port->rxbuf[idx][context->DCtO]), sizeof(le_DCtime));
+                    memcpy(&le_DCtime, &(rxbuf[idx][idxstack->dcoffset[pos]]), sizeof(le_DCtime));
                     *(context->DCtime) = etohll(le_DCtime);
-                    first = FALSE;
                 } else {
                     /* copy input data back to process data buffer */
-                    memcpy(context->idxstack->data[pos], &(context->port->rxbuf[idx][EC_HEADERSIZE]),
-                           context->idxstack->length[pos]);
+                    memcpy(idxstack->data[pos], &(rxbuf[idx][EC_HEADERSIZE]), idxstack->length[pos]);
                     wkc += wkc2;
                 }
                 valid_wkc = 1;
-            } else if (context->port->rxbuf[idx][EC_CMDOFFSET] == EC_CMD_LWR) {
-                if (first) {
-                    memcpy(&le_wkc, &(context->port->rxbuf[idx][EC_HEADERSIZE + context->DCl]), EC_WKCSIZE);
+            } else if (rxbuf[idx][EC_CMDOFFSET] == EC_CMD_LWR) {
+                if (idxstack->dcoffset[pos] > 0) {
+                    memcpy(&le_wkc, &(rxbuf[idx][EC_HEADERSIZE + idxstack->length[pos]]), EC_WKCSIZE);
                     /* output WKC counts 2 times when using LRW, emulate the same for LWR */
                     wkc = etohs(le_wkc) * 2;
-                    memcpy(&le_DCtime, &(context->port->rxbuf[idx][context->DCtO]), sizeof(le_DCtime));
+                    memcpy(&le_DCtime, &(rxbuf[idx][idxstack->dcoffset[pos]]), sizeof(le_DCtime));
                     *(context->DCtime) = etohll(le_DCtime);
-                    first = FALSE;
                 } else {
                     /* output WKC counts 2 times when using LRW, emulate the same for LWR */
                     wkc += wkc2 * 2;
@@ -1900,11 +1879,12 @@ uint16 ec_siiSMnext(uint16 slave, ec_eepromSMt *SM, uint16 n) {
  *  @return mapping size in bits of PDO
  *  @see ecx_siiPDO
  */
-int ec_siiPDO(uint16 slave, ec_eepromPDOt *PDO, uint8 t) {
+uint32 ec_siiPDO(uint16 slave, ec_eepromPDOt *PDO, uint8 t) {
     return ecx_siiPDO(&ecx_context, slave, PDO, t);
 }
 
 /** Read all slave states in ec_slave.
+ * @warning The BOOT state is actually higher than INIT and PRE_OP (see state representation).
  * @return lowest state found
  * @see ecx_readstate
  */
@@ -1924,6 +1904,12 @@ int ec_writestate(uint16 slave) {
 
 /** Check actual slave state.
  * This is a blocking function.
+ * To refresh the state of all slaves ecx_readstate() should be called.
+ * @warning If this is used for slave 0 (=all slaves), the state of all slaves is read by an bitwise OR operation.
+ * The returned value is also the bitwise OR state of all slaves.
+ * This has some implications for the BOOT state. The Boot state representation collides with INIT | PRE_OP so this
+ * function cannot be used for slave = 0 and reqstate = EC_STATE_BOOT and also, if the returned state is BOOT, some
+ * slaves might actually be in INIT and PRE_OP and not in BOOT.
  * @param[in] slave       = Slave number, 0 = all slaves
  * @param[in] reqstate    = Requested state
  * @param[in] timeout     = Timeout value in us
@@ -2110,7 +2096,6 @@ int ec_send_processdata_group(uint8 group) {
 * In contrast to the base LRW function this function is non-blocking.
 * If the processdata does not fit in one datagram, multiple are used.
 * In order to recombine the slave response, a stack is used.
-* @param[in]  context        = context struct
 * @param[in]  group          = group number
 * @return >0 if processdata is transmitted.
 * @see ecx_send_overlap_processdata_group
@@ -2143,7 +2128,6 @@ int ec_send_overlap_processdata(void) {
 int ec_receive_processdata(int timeout) {
     return ec_receive_processdata_group(0, timeout);
 }
-
 
 /** array mapping ec state to text descriptions*/
 const char *ec_state_to_string[0x21] = {

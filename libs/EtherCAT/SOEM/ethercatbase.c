@@ -30,8 +30,6 @@
  */
 static void ecx_writedatagramdata(void *datagramdata, ec_cmdtype com, uint16 length, const void * data)
 {
-
-
    if (length > 0)
    {
       switch (com)
@@ -105,7 +103,7 @@ int ecx_setupdatagram(ecx_portt *port, void *frame, uint8 com, uint8 idx, uint16
  * @param[in]  data       = databuffer to be copied in datagram
  * @return Offset to data in rx frame, usefull to retrieve data after RX.
  */
-int ecx_adddatagram(ecx_portt *port, void *frame, uint8 com, uint8 idx, boolean more, uint16 ADP, uint16 ADO, uint16 length, void *data)
+uint16 ecx_adddatagram(ecx_portt *port, void *frame, uint8 com, uint8 idx, boolean more, uint16 ADP, uint16 ADO, uint16 length, void *data)
 {
    ec_comt *datagramP;
    uint8 *frameP;
@@ -113,7 +111,7 @@ int ecx_adddatagram(ecx_portt *port, void *frame, uint8 com, uint8 idx, boolean 
 
    frameP = frame;
    /* copy previous frame size */
-   prevlength = port->txbuflength[idx];
+   prevlength = (uint16)port->txbuflength[idx];
    datagramP = (ec_comt*)&frameP[ETH_HEADERSIZE];
    /* add new datagram to ethernet frame size */
    datagramP->elength = htoes( etohs(datagramP->elength) + EC_HEADERSIZE + length );
@@ -188,8 +186,6 @@ int ecx_BRD(ecx_portt *port, uint16 ADP, uint16 ADO, uint16 length, void *data, 
 {
    uint8 idx;
    int wkc;
-
-
 
    /* get fresh index */
    idx = ecx_getindex(port);
@@ -545,7 +541,7 @@ int ec_setupdatagram(void *frame, uint8 com, uint8 idx, uint16 ADP, uint16 ADO, 
    return ecx_setupdatagram (&ecx_port, frame, com, idx, ADP, ADO, length, data);
 }
 
-int ec_adddatagram (void *frame, uint8 com, uint8 idx, boolean more, uint16 ADP, uint16 ADO, uint16 length, void *data)
+uint16 ec_adddatagram (void *frame, uint8 com, uint8 idx, boolean more, uint16 ADP, uint16 ADO, uint16 length, void *data)
 {
    return ecx_adddatagram (&ecx_port, frame, com, idx, more, ADP, ADO, length, data);
 }

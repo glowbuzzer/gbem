@@ -21,7 +21,6 @@
 
 #define EC_MAXFOEDATA 512
 
-
 /** FOE structure.
  * Used for Read, Write, Data, Ack and Error mailbox packets.
  */
@@ -32,7 +31,6 @@ typedef struct PACKED
    uint8         OpCode;
    uint8         Reserved;
    union
-
    {
       uint32        Password;
       uint32        PacketNumber;
@@ -100,7 +98,7 @@ int ecx_FOEread(ecx_contextt *context, uint16 slave, char *filename, uint32 pass
    /* get new mailbox count value, used as session handle */
    cnt = ec_nextmbxcnt(context->slavelist[slave].mbx_cnt);
    context->slavelist[slave].mbx_cnt = cnt;
-   FOEp->MbxHeader.mbxtype = ECT_MBXT_FOE + (cnt << 4); /* FoE */
+   FOEp->MbxHeader.mbxtype = ECT_MBXT_FOE + MBX_HDR_SET_CNT(cnt); /* FoE */
    FOEp->OpCode = ECT_FOE_READ;
    FOEp->Password = htoel(password);
    /* copy filename in mailbox */
@@ -140,7 +138,7 @@ int ecx_FOEread(ecx_contextt *context, uint16 slave, char *filename, uint32 pass
                      /* get new mailbox count value */
                      cnt = ec_nextmbxcnt(context->slavelist[slave].mbx_cnt);
                      context->slavelist[slave].mbx_cnt = cnt;
-                     FOEp->MbxHeader.mbxtype = ECT_MBXT_FOE + (cnt << 4); /* FoE */
+                     FOEp->MbxHeader.mbxtype = ECT_MBXT_FOE + MBX_HDR_SET_CNT(cnt); /* FoE */
                      FOEp->OpCode = ECT_FOE_ACK;
                      FOEp->PacketNumber = htoel(packetnumber);
                      /* send FoE ack to slave */
@@ -229,7 +227,7 @@ int ecx_FOEwrite(ecx_contextt *context, uint16 slave, char *filename, uint32 pas
    /* get new mailbox count value, used as session handle */
    cnt = ec_nextmbxcnt(context->slavelist[slave].mbx_cnt);
    context->slavelist[slave].mbx_cnt = cnt;
-   FOEp->MbxHeader.mbxtype = ECT_MBXT_FOE + (cnt << 4); /* FoE */
+   FOEp->MbxHeader.mbxtype = ECT_MBXT_FOE + MBX_HDR_SET_CNT(cnt); /* FoE */
    FOEp->OpCode = ECT_FOE_WRITE;
    FOEp->Password = htoel(password);
    /* copy filename in mailbox */
@@ -278,13 +276,13 @@ int ecx_FOEwrite(ecx_contextt *context, uint16 slave, char *filename, uint32 pas
                            {
                               dofinalzero = TRUE;
                            }
-                           FOEp->MbxHeader.length = htoes(0x0006 + segmentdata);
+                           FOEp->MbxHeader.length = htoes((uint16)(0x0006 + segmentdata));
                            FOEp->MbxHeader.address = htoes(0x0000);
                            FOEp->MbxHeader.priority = 0x00;
                            /* get new mailbox count value */
                            cnt = ec_nextmbxcnt(context->slavelist[slave].mbx_cnt);
                            context->slavelist[slave].mbx_cnt = cnt;
-                           FOEp->MbxHeader.mbxtype = ECT_MBXT_FOE + (cnt << 4); /* FoE */
+                           FOEp->MbxHeader.mbxtype = ECT_MBXT_FOE + MBX_HDR_SET_CNT(cnt); /* FoE */
                            FOEp->OpCode = ECT_FOE_DATA;
                            sendpacket++;
                            FOEp->PacketNumber = htoel(sendpacket);

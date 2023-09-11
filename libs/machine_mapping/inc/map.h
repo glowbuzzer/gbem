@@ -132,14 +132,14 @@ typedef struct {
     const uint16_t slave_num;
     const uint32_t byte_num;
     const uint8_t bit_num;
-    const ec_datatype_t datatype;
+    const ec_datatype datatype;
     const double max_val; //this is used for float to int conversions
 } map_pdo_object_t;
 
 typedef struct {
     const map_inout_t inout;
     void *io;
-    const ec_datatype_t datatype;
+    const ec_datatype datatype;
     const char linked_task_name[20];
     uint8_t private_linked_task_index;
 } map_plc_object_t;
@@ -151,7 +151,7 @@ typedef struct {
 
 typedef struct {
     const map_inout_t inout;
-    const ec_datatype_t datatype;
+    const ec_datatype datatype;
     const uint16_t ionum;
 } map_gbc_object_t;
 
@@ -247,21 +247,21 @@ bool ec_check_for_internal_limit(gberror_t *gbc);
 bool ec_check_remote(void);
 
 //functions to look-up objects in the iomap
-gberror_t map_get_gbc_iomap_row(map_inout_t inout, uint16_t ionum, ec_datatype_t datatype, mapping_t **row);
+gberror_t map_get_gbc_iomap_row(map_inout_t inout, uint16_t ionum, ec_datatype datatype, mapping_t **row);
 
-uint16_t map_get_gbc_iomap_slave(map_inout_t inout, uint16_t ionum, ec_datatype_t datatype);
+uint16_t map_get_gbc_iomap_slave(map_inout_t inout, uint16_t ionum, ec_datatype datatype);
 
-uint32_t map_get_gbc_iomap_byte_num(map_inout_t inout, uint16_t ionum, ec_datatype_t datatype);
+uint32_t map_get_gbc_iomap_byte_num(map_inout_t inout, uint16_t ionum, ec_datatype datatype);
 
-uint8_t map_get_gbc_iomap_bit_num(map_inout_t inout, uint16_t ionum, ec_datatype_t datatype);
+uint8_t map_get_gbc_iomap_bit_num(map_inout_t inout, uint16_t ionum, ec_datatype datatype);
 
 
 //functions to check for validity of iomap objects
-bool map_is_valid_gbc_datatype(ec_datatype_t type);
+bool map_is_valid_gbc_datatype(ec_datatype type);
 
-bool map_is_valid_pdo_datatype(ec_datatype_t type);
+bool map_is_valid_pdo_datatype(ec_datatype type);
 
-bool map_is_valid_plc_datatype(ec_datatype_t type);
+bool map_is_valid_plc_datatype(ec_datatype type);
 
 
 extern map_pdo_object_t ctrl_estop_din;

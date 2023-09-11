@@ -151,7 +151,7 @@ bool ec_check_remote(void) {
  * @return
  */
 gberror_t
-map_get_gbc_iomap_row(const map_inout_t inout, const uint16_t ionum, const ec_datatype_t datatype, mapping_t **row) {
+map_get_gbc_iomap_row(const map_inout_t inout, const uint16_t ionum, const ec_datatype datatype, mapping_t **row) {
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
         if (map_iomap[i].gbc.inout == inout) {
             if (map_iomap[i].gbc.ionum == ionum) {
@@ -172,7 +172,7 @@ map_get_gbc_iomap_row(const map_inout_t inout, const uint16_t ionum, const ec_da
  * @param datatype
  * @return
  */
-uint16_t map_get_gbc_iomap_slave(const map_inout_t inout, const uint16_t ionum, const ec_datatype_t datatype) {
+uint16_t map_get_gbc_iomap_slave(const map_inout_t inout, const uint16_t ionum, const ec_datatype datatype) {
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
         if (map_iomap[i].gbc.inout == inout) {
             if (map_iomap[i].gbc.ionum == ionum) {
@@ -193,7 +193,7 @@ uint16_t map_get_gbc_iomap_slave(const map_inout_t inout, const uint16_t ionum, 
  * @param datatype
  * @return
  */
-uint32_t map_get_gbc_iomap_byte_num(const map_inout_t inout, const uint16_t ionum, const ec_datatype_t datatype) {
+uint32_t map_get_gbc_iomap_byte_num(const map_inout_t inout, const uint16_t ionum, const ec_datatype datatype) {
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
         if (map_iomap[i].gbc.inout == inout) {
             if (map_iomap[i].gbc.ionum == ionum) {
@@ -208,7 +208,7 @@ uint32_t map_get_gbc_iomap_byte_num(const map_inout_t inout, const uint16_t ionu
 }
 
 
-uint8_t map_get_gbc_iomap_bit_num(const map_inout_t inout, const uint16_t ionum, const ec_datatype_t datatype) {
+uint8_t map_get_gbc_iomap_bit_num(const map_inout_t inout, const uint16_t ionum, const ec_datatype datatype) {
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
         if (map_iomap[i].gbc.inout == inout) {
             if (map_iomap[i].gbc.ionum == ionum) {
@@ -228,7 +228,7 @@ uint8_t map_get_gbc_iomap_bit_num(const map_inout_t inout, const uint16_t ionum,
  * @param type
  * @return
  */
-bool map_is_valid_gbc_datatype(const ec_datatype_t type) {
+bool map_is_valid_gbc_datatype(const ec_datatype type) {
 
     switch (type) {
         case ECT_BOOLEAN:
@@ -249,7 +249,7 @@ bool map_is_valid_gbc_datatype(const ec_datatype_t type) {
  * @param type
  * @return
  */
-bool map_is_valid_pdo_datatype(const ec_datatype_t type) {
+bool map_is_valid_pdo_datatype(const ec_datatype type) {
 
     switch (type) {
         case ECT_BOOLEAN:
@@ -289,7 +289,7 @@ uint16_t map_slave_to_drive(uint16_t slave) {
  * @param type
  * @return
  */
-bool map_is_valid_plc_datatype(const ec_datatype_t type) {
+bool map_is_valid_plc_datatype(const ec_datatype type) {
     switch (type) {
         case ECT_BOOLEAN:
             return true;

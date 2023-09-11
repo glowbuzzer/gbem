@@ -263,7 +263,6 @@ uint32_t ec_pdo_get_input_uint32(uint16_t slave_no, uint8_t byte_no) {
 }
 
 
-
 /**
  * @brief Get uint16 from EtherCAT
  * @param slave_no: Number of slave
@@ -364,7 +363,7 @@ int8_t ec_pdo_get_input_int8(uint16_t slave_no, uint8_t byte_no) {
     /* Move pointer to correct byte index*/
     data_ptr += byte_no;
 
-    return_value = (int8_t )*data_ptr;
+    return_value = (int8_t) *data_ptr;
     return return_value;
 }
 
@@ -757,7 +756,7 @@ int8_t ec_pdo_get_output_int8_rev(uint16_t slave_no, uint8_t byte_no) {
 /* Read value byte by byte since all targets can't handle misaligned
  * addresses
  */
-    return_value = (int8_t )*data_ptr;
+    return_value = (int8_t) *data_ptr;
 
     return return_value;
 }
@@ -805,15 +804,16 @@ void ec_pdo_set_input_bit_rev(uint16_t slave_no, uint8_t bit_no, bool value) {
 }
 
 
-void ec_pdo_set_output_bit_from_byte_slave(uint16_t slave_no, ec_datatype_t datatype, uint8_t byte_no, uint8_t bit_no, bool val){
+void ec_pdo_set_output_bit_from_byte_slave(uint16_t slave_no, ec_datatype datatype, uint8_t byte_no, uint8_t bit_no,
+                                           bool val) {
     uint32_t temp;
     switch (datatype) {
         case ECT_UNSIGNED32:
             //read
             temp = ec_pdo_get_output_uint32_rev(slave_no, byte_no);
-            if (val){
+            if (val) {
                 BIT_SET(temp, bit_no);
-            }else{
+            } else {
                 BIT_CLEAR(temp, bit_no);
             }
             ec_pdo_set_output_uint32(slave_no, byte_no, temp);
@@ -834,45 +834,45 @@ void ec_pdo_set_output_bit_from_byte_slave(uint16_t slave_no, ec_datatype_t data
 }
 
 
-bool ec_pdo_get_input_bit_from_byte_slave(uint16_t slave_no, ec_datatype_t datatype, uint8_t byte_no, uint8_t bit_no){
+bool ec_pdo_get_input_bit_from_byte_slave(uint16_t slave_no, ec_datatype datatype, uint8_t byte_no, uint8_t bit_no) {
     switch (datatype) {
         case ECT_UNSIGNED32:
-            if (BIT_CHECK(ec_pdo_get_input_uint32(slave_no, byte_no), bit_no)){
+            if (BIT_CHECK(ec_pdo_get_input_uint32(slave_no, byte_no), bit_no)) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         case ECT_INTEGER32:
-            if (BIT_CHECK(ec_pdo_get_input_int32(slave_no, byte_no), bit_no)){
+            if (BIT_CHECK(ec_pdo_get_input_int32(slave_no, byte_no), bit_no)) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
 
         case ECT_UNSIGNED16:
-            if (BIT_CHECK(ec_pdo_get_input_uint16(slave_no, byte_no), bit_no)){
+            if (BIT_CHECK(ec_pdo_get_input_uint16(slave_no, byte_no), bit_no)) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         case ECT_INTEGER16:
-            if (BIT_CHECK(ec_pdo_get_input_int16(slave_no, byte_no), bit_no)){
+            if (BIT_CHECK(ec_pdo_get_input_int16(slave_no, byte_no), bit_no)) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
 
         case ECT_UNSIGNED8:
-            if (BIT_CHECK(ec_pdo_get_input_uint8(slave_no, byte_no), bit_no)){
+            if (BIT_CHECK(ec_pdo_get_input_uint8(slave_no, byte_no), bit_no)) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
 
         case ECT_INTEGER8:
-            if (BIT_CHECK(ec_pdo_get_input_int8(slave_no, byte_no), bit_no)){
+            if (BIT_CHECK(ec_pdo_get_input_int8(slave_no, byte_no), bit_no)) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         default:
@@ -880,9 +880,6 @@ bool ec_pdo_get_input_bit_from_byte_slave(uint16_t slave_no, ec_datatype_t datat
     }
 
 }
-
-
-
 
 
 bool ec_sdo_write_uint8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint8_t Value) {
@@ -904,7 +901,8 @@ bool ec_sdo_write_uint8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint8_
         // Checking working counter doesn't mean the COE SDO as such was successful, you need to check for COE SDO issues.
         if (ec_iserror()) {
             LL_ERROR(GBEM_GEN_LOG_EN,
-                     "GBEM: EtherCAT error detected after SDO write to index:0x%04x - sub-index:0x%04x - value:%d. %s", Index,
+                     "GBEM: EtherCAT error detected after SDO write to index:0x%04x - sub-index:0x%04x - value:%d. %s",
+                     Index,
                      SubIndex, Value, ec_elist2string());
             return false;
         }
@@ -934,7 +932,8 @@ bool ec_sdo_write_int8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int8_t 
         // Checking working counter doesn't mean the COE SDO as such was successful, you need to check for COE SDO issues.
         if (ec_iserror()) {
             LL_ERROR(GBEM_GEN_LOG_EN,
-                     "GBEM: EtherCAT error detected after SDO write to index:0x%08x - sub-index:0x%08x - value:%d. %s", Index,
+                     "GBEM: EtherCAT error detected after SDO write to index:0x%08x - sub-index:0x%08x - value:%d. %s",
+                     Index,
                      SubIndex, Value, ec_elist2string());
             return false;
         }
@@ -942,7 +941,7 @@ bool ec_sdo_write_int8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int8_t 
     }
 }
 
-    bool ec_sdo_write_uint16(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint16_t Value) {
+bool ec_sdo_write_uint16(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint16_t Value) {
     int os = sizeof(Value);
     if (ec_printSDO) {
         printf("\tSlave num: %u, ", Slave);
@@ -962,7 +961,8 @@ bool ec_sdo_write_int8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int8_t 
         // Checking working counter doesn't mean the COE SDO as such was successful, you need to check for COE SDO issues.
         if (ec_iserror()) {
             LL_ERROR(GBEM_GEN_LOG_EN,
-                     "GBEM: EtherCAT error detected after SDO write to index:0x%04x - sub-index:0x%04x - value:%d. %s", Index,
+                     "GBEM: EtherCAT error detected after SDO write to index:0x%04x - sub-index:0x%04x - value:%d. %s",
+                     Index,
                      SubIndex, Value, ec_elist2string());
             return false;
 
@@ -991,7 +991,8 @@ bool ec_sdo_write_int16(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int16_
         // Checking working counter doesn't mean the COE SDO as such was successful, you need to check for COE SDO issues.
         if (ec_iserror()) {
             LL_ERROR(GBEM_GEN_LOG_EN,
-                     "GBEM: EtherCAT error detected after SDO write to index:0x%08x - sub-index:0x%08x - value:%d. %s", Index,
+                     "GBEM: EtherCAT error detected after SDO write to index:0x%08x - sub-index:0x%08x - value:%d. %s",
+                     Index,
                      SubIndex, Value, ec_elist2string());
             return false;
         }
@@ -1019,7 +1020,8 @@ bool ec_sdo_write_uint32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint3
         // Checking working counter doesn't mean the COE SDO as such was successful, you need to check for COE SDO issues.
         if (ec_iserror()) {
             LL_ERROR(GBEM_GEN_LOG_EN,
-                     "GBEM: EtherCAT error detected after SDO write to index:0x%08x - sub-index:0x%08x - value:%d. %s", Index,
+                     "GBEM: EtherCAT error detected after SDO write to index:0x%08x - sub-index:0x%08x - value:%d. %s",
+                     Index,
                      SubIndex, Value, ec_elist2string());
             return false;
         }
@@ -1047,7 +1049,8 @@ bool ec_sdo_write_int32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int32_
         // Checking working counter doesn't mean the COE SDO as such was successful, you need to check for COE SDO issues.
         if (ec_iserror()) {
             LL_ERROR(GBEM_GEN_LOG_EN,
-                     "GBEM: EtherCAT error detected after SDO write to index:0x%08x - sub-index:0x%08x - value:%d. %s", Index,
+                     "GBEM: EtherCAT error detected after SDO write to index:0x%08x - sub-index:0x%08x - value:%d. %s",
+                     Index,
                      SubIndex, Value, ec_elist2string());
             return false;
         }
@@ -1069,7 +1072,8 @@ bool ec_sdo_read_int32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int32_t
     return true;
 }
 
-__attribute__(( weak )) bool ec_sdo_read_uint32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint32_t *return_val) {
+__attribute__(( weak )) bool
+ec_sdo_read_uint32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint32_t *return_val) {
     int os = sizeof(uint32_t);
     int rc = ec_SDOread(Slave, Index, SubIndex, false, &os, return_val, EC_TIMEOUTRXM);
 
