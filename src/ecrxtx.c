@@ -34,6 +34,7 @@
 #include "ec_functions.h"
 #include "main.h"
 #include "status_control_word_bit_definitions.h"
+#include "linux_shm.h"
 
 bool homing_failed = false;
 extern char proc_name[100];
@@ -351,16 +352,51 @@ void ec_rxtx(void *argument) {
                 memcpy(shmp->sm_buf_in, inA, SIZE_OF_GBC_PDO);
             }
             /* send the signal to GBC to do the shared mem memcpy */
-
+#if USE_NAMED_SEMAPHORE_NOT_SIGNAL == 0
 #if USE_RT_SIGNAL == 1
             kill_rc = sigqueue((pid_t) gbc_pid, SIGNAL_TO_SEND, (const union sigval) 1);
 #else
             kill_rc = kill((pid_t) gbc_pid, SIGNAL_TO_SEND);
 #endif
 
+
+
+#if USE_RT_SIGNAL == 1
+        //if we have a signal send failure AND we are not in test mode AND gbc is flagged as being connected
+        if (kill_rc != 0 && !ec_rxtx_test_mode && ecm_status.gbc_connected && ec_rxtx_mode == EC_RXTX_MODE_OP) {
+            ecm_status.gbc_connected = false;
+
+            if (errno == ESRCH) {
+                UM_ERROR(GBEM_UM_EN,
+                         "GBEM: Signal sending failure. The GBC process does not exist. This could be because the GBC process has been terminated");
+            } else if (errno == EPERM) {
+                UM_FATAL (
+                        "GBEM: Signal sending failure. The GBEM process does not have permission to send signal to recipient. This error is irrecoverable. GBEM will exit");
+            } else if (errno == EAGAIN) {
+                UM_ERROR (GBEM_UM_EN,
+                          "GBEM: Signal sending failure. The GBEM process has exceeded its signal queue limit.");
+
+                sigset_t pending_signals;
+                // Get the set of pending signals
+                if (sigpending(&pending_signals) == -1) {
+                    UM_ERROR(GBEM_UM_EN, "GBEM: Error getting set of pending signals");
+                } else {
+                    // Clear the pending signals
+                    if (sigprocmask(SIG_SETMASK, &pending_signals, NULL) == -1) {
+                        UM_ERROR(GBEM_UM_EN, "GBEM: Error clearing pending signals");
+
+                    }
+                }
+
+            } else if (errno == EINVAL) {
+                UM_FATAL (
+                        "GBEM: Signal sending failure. The GBEM process has an invalid signal number. This error is irrecoverable. GBEM will exit");
+            } else {
+                UM_FATAL ("GBEM: Unknown error sending signal. This error is irrecoverable. GBEM will exit");
+            }
         }
 
-
+#else
         //if we have a signal send failure AND we are not in test mode AND gbc is flagged as being connected
         if (kill_rc != 0 && !ec_rxtx_test_mode && ecm_status.gbc_connected && ec_rxtx_mode == EC_RXTX_MODE_OP) {
             ecm_status.gbc_connected = false;
@@ -374,7 +410,17 @@ void ec_rxtx(void *argument) {
                 UM_FATAL ("GBEM: Unknown error sending signal. This error is irrecoverable. GBEM will exit");
             }
         }
+#endif
+#else
+            int sem_post_rc = sem_post(gbc_named_semaphore);
 
+            if (sem_post_rc == -1) {
+                UM_FATAL("GBEM: Error posting to named semaphore [%s]. This error is irrecoverable. GBEM will exit",
+                         strerror(errno));
+                // Handle the error, which could include checking errno for specific details
+            }
+#endif
+        }
 
 #if ECRXTX_MEASURE_TIMING == 1
         clock_gettime(CLOCK_MONOTONIC, &startTime);

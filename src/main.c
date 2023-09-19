@@ -19,7 +19,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include "status_control_word_bit_definitions.h"
-
+#include <sys/resource.h>
 #include <sys/ioctl.h>    // SIOCGIFFLAGS
 #include <errno.h>        // errno
 #include <netinet/in.h>   // IPPROTO_IP
@@ -92,7 +92,7 @@ int log_run_level = LOG_LEVEL;
 
 struct shm_msg *shmp;
 int gbc_pid =0;
-
+sem_t *gbc_named_semaphore;
 
 pthread_t thread_ec_rxtx;
 pthread_t thread_ec_check;
@@ -228,6 +228,7 @@ main_argv = argv;
     signal(SIGSEGV, cleanup);
     signal(SIGABRT, cleanup);
 
+
     gberror_t grc = E_GENERAL_FAILURE;
 
     //this is the stack based buffer to hold the json config summary
@@ -280,6 +281,18 @@ main_argv = argv;
     UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***                     Starting GB EtherCAT Master                    ***");
     UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
+
+
+    int which = PRIO_PROCESS; // You can also use PRIO_PGRP or PRIO_USER
+    id_t pid = getpid(); // Get the process ID of the current process
+
+    int nice_value = PROCESS_NICE_VALUE; // Adjust this value as needed, where lower values mean higher priority
+
+    if (setpriority(which, pid, nice_value) == 0) {
+        UM_INFO(GBEM_UM_EN, "GBEM: Process priority set to [%d]", nice_value);
+    } else {
+        UM_FATAL("GBEM: Failed to set process priority with setpriority [%s]", strerror(errno));
+    }
 
 
 /* handy defines to output to console what machine type has been configured */
