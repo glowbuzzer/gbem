@@ -68,12 +68,12 @@
 #define CTRL_HEARTBEAT_TOLERANCE                        50
 
 
-
+/** Not used */
 ///** Bit number in machine controlword that triggers a transition to fault state */
-//#define CTRL_MACHINE_CTRL_WRD_REQUEST_FAULT_BIT_NUM     16
+//#define CTRL_MACHINE_CTRL_WRD_REQUEST_FAULT_BIT_NUM     ???
 
 /**Bit number in machine controlword that triggers a reset of drives and statemachine */
-#define CTRL_MACHINE_CTRL_WRD_REQUEST_RESET_BIT_NUM     ???
+//#define CTRL_MACHINE_CTRL_WRD_REQUEST_RESET_BIT_NUM     ???
 
 /** Threshold of cycles after requesting drives change state that the transition must be made */
 //this has to be quite large as it needs to be > maximum time for the drives to stop
@@ -140,9 +140,16 @@
 #define ECM_IO_MAP_SIZE                                 2048
 
 /** defines if you want GBEM to use a RT signal like SIGRTMIN as the signal sending code is slightly different for RT signals */
+
 #define USE_RT_SIGNAL                                   0
 
 /** defines the use of the clock difference code in ecrtx - this calculates the difference between DC and local clock */
 #define USE_CLOCK_DIFFERENCE                            0
+
+/** defines the nice value for the GBEM process */
+#define PROCESS_NICE_VALUE                              10
+
+/** defines if we use a named semaphore of signal to communicated between GBEM and GBC processes */
+#define USE_NAMED_SEMAPHORE_NOT_SIGNAL                  1
 
 #endif //GBEM_GBEM_CONFIG_H
