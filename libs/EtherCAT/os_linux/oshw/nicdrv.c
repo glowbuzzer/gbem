@@ -133,8 +133,8 @@ int ecx_setupnic(ecx_portt *port, const char *ifname, int secondary) {
         psock = &(port->sockhandle);
     }
     /* we use RAW packet socket, with packet type ETH_P_ECAT */
-//   *psock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ECAT));
-    *psock = socket(PF_PACKET, SOCK_RAW | SOCK_NONBLOCK, htons(ETH_P_ECAT));
+    *psock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ECAT));
+//    *psock = socket(PF_PACKET, SOCK_RAW | SOCK_NONBLOCK, htons(ETH_P_ECAT));
 
     timeout.tv_sec = 0;
     timeout.tv_usec = 1;
