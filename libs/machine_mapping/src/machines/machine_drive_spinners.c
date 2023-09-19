@@ -21,16 +21,16 @@
 
 /* SLAVES */
 //@formatter:off
-//                                          Slave 1                     Slave 2             Slave 3
-//                                          MAP_AZD_CTRL_1              MAP_EK1100_1        MAP_EL1008_1
-//                                          3 axis steepper             Coupler             8 dig in
-MAP_NUM_DRIVES_ATTACHED(                    2,                          0,                  0           );
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            ec_pdo_map_azd3a_ked,       NULL,               NULL        );
-MAP_SLAVE_NVRAM_SDO_FUNCTIONS(              ec_nvram_sdos_azdxa_ked,    NULL,               NULL        );
-MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           NULL,                       NULL,               NULL        );
-MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            ec_initial_pdo_azdxa_ked,   NULL,               NULL        );
-MAP_SLAVE_DC_TYPE(                          EC_DC_0,                    EC_DC_NONE,         EC_DC_NONE  );
-MAP_SLAVE_DC_CYCLE(                         4,                          0,                  0           );
+//                                          Slave 1             Slave 2         Slave 3          Slave 4
+//                                          MAP_EK1100_1        MAP_EL2008_1    MAP_EL1008_1     MAP_AZD_CTRL_1
+//                                          Coupler             8 dig out       8 dig in         3 axis stepper
+MAP_NUM_DRIVES_ATTACHED(                    0,                  0,              0,               2,                          );
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            NULL,               NULL,           NULL,            ec_pdo_map_azd3a_ked,       );
+MAP_SLAVE_NVRAM_SDO_FUNCTIONS(              NULL,               NULL,           NULL,            ec_nvram_sdos_azdxa_ked,    );
+MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           NULL,               NULL,           NULL,            NULL,                       );
+MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            NULL,               NULL,           NULL,            ec_initial_pdo_azdxa_ked,   );
+MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,         EC_DC_NONE,     EC_DC_NONE,      EC_DC_0,                    );
+MAP_SLAVE_DC_CYCLE(                         0,                  0,              0,               1,                          );
 
 /* DRIVES */
 MAP_DRIVE_TO_NAME(                          "AZD1.1",                           "AZD1.2"                            );
@@ -70,15 +70,17 @@ uint16_t map_num_rows_in_iomap = sizeof (map_iomap)/ sizeof(map_iomap[0]);
 /* This must be laid out in the order they appear in netscan */
 const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
         {
+                .name = EK1100_EEP_NAME},
+        {
+                .name = EL2008_EEP_NAME},
+        {
+                .name = EL1008_EEP_NAME},
+        {
             .name = AZD3A_KED_EEP_NAME,
             .eep_id = AZD3A_KED_EEP_ID,
             .eep_man = AZD3A_KED_EEP_MAN,
             .eep_rev = AZD3A_KED_EEP_REV},
 
-        {
-                .name = EK1100_EEP_NAME},
-        {
-                .name = EL1008_EEP_NAME}
 };
 
 /* REVERSE FUNCTIONS - USED FOR UNIT TESTING */
