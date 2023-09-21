@@ -14,13 +14,6 @@ SET(PLC_ENABLE_FORCING 0)
 ##Enables emstat (writing of status json files periodically
 SET(ENABLE_EMSTAT 0)
 
-#defines for which signal to send to GBC */
-SET(SIGNAL_TO_SEND SIGIO)
-#RT signals require some jiggerpokery in GBC
-#SET(SIGNAL_TO_SEND SIGRTMIN)
-
-#N.B. SIGRTMIN is higher priority than SIGRTMAX if you are trying to use the RT signals */
-
 
 SET(GBC_SHARED_MEMORY_NAME "gbc_shared_memory")
 

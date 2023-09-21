@@ -141,7 +141,6 @@
 
 /** defines if you want GBEM to use a RT signal like SIGRTMIN as the signal sending code is slightly different for RT signals */
 
-#define USE_RT_SIGNAL                                   0
 
 /** defines the use of the clock difference code in ecrtx - this calculates the difference between DC and local clock */
 #define USE_CLOCK_DIFFERENCE                            0
@@ -150,6 +149,6 @@
 #define PROCESS_NICE_VALUE                              10
 
 /** defines if we use a named semaphore of signal to communicated between GBEM and GBC processes */
-#define USE_NAMED_SEMAPHORE_NOT_SIGNAL                  1
+//#define USE_NAMED_SEMAPHORE_NOT_SIGNAL                  1
 
 #endif //GBEM_GBEM_CONFIG_H

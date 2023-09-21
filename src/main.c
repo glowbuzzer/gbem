@@ -50,7 +50,7 @@
 
 
 /** storage for gbc process name */
-char proc_name[GBC_PROCESS_NAME_MAX_LENGTH] = {0};
+//char proc_name[GBC_PROCESS_NAME_MAX_LENGTH] = {0};
 
 /** storage for directories and paths for gbc json exchange files */
 char storage_dir_for_gbc_exchange[200];
@@ -79,6 +79,7 @@ ecm_status_t ecm_status;
 pthread_cond_t cond_ec_rxtx = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex_ec_rxtx = PTHREAD_MUTEX_INITIALIZER;
 
+
 uint16_t slave_to_write_nvram = 0;
 
 /** dpm storage - overlaid with dpm structs*/
@@ -91,8 +92,11 @@ uint8_t outB[SIZE_OF_GBC_PDO];
 int log_run_level = LOG_LEVEL;
 
 struct shm_msg *shmp;
-int gbc_pid =0;
-sem_t *gbc_named_semaphore;
+
+sem_t *gbc_named_trigger_semaphore;
+sem_t *gbc_named_mem_protection_semaphore;
+/** Define a mutex to synchronize access to console output*/
+pthread_mutex_t console_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_t thread_ec_rxtx;
 pthread_t thread_ec_check;
@@ -155,15 +159,11 @@ static void main_getopt_usage(void) {
     printf("\t-c | --cyclic: run the GBEM cyclic program (for normal operation)\n");
     printf("\t-w | --write: write SDOs for a specified slave and the trigger a write to slave's NVRAM\n");
     printf("\t-i | --if: interface to use - this is a NIC interface, e.g. eth0 (mandatory)\n");
-    printf("\t-p | --process: the process name to send signals to (this is optional, default is: [%s])\n",
-           GBC_PROCESS_NAME);
     printf("\t-x | --nolimits: run GBEM without any drive limits. WARNING take care with this option!   \n");
     printf("\t-v | --version: show the version of GBEM\n");
     printf("\t-h | --help: GBEM usage information\n");
     printf("\nExample #1: GBEM -n -i eth0 -pGBC-linux = run netscan on eth0\n");
     printf("\nExample #2: GBEM --netscan --if lan1 --process GBC-linux = run cyclic program on lan1\n");
-    printf("\nIf no process name name (-p or --process) is specified the default [%s] will be used\n",
-           GBC_PROCESS_NAME);
     printf("\nAvailable adapters:\n");
 
 
@@ -284,11 +284,11 @@ main_argv = argv;
 
 
     int which = PRIO_PROCESS; // You can also use PRIO_PGRP or PRIO_USER
-    id_t pid = getpid(); // Get the process ID of the current process
+    __pid_t pid = getpid(); // Get the process ID of the current process
 
     int nice_value = PROCESS_NICE_VALUE; // Adjust this value as needed, where lower values mean higher priority
 
-    if (setpriority(which, pid, nice_value) == 0) {
+    if (setpriority(which, (id_t) pid, nice_value) == 0) {
         UM_INFO(GBEM_UM_EN, "GBEM: Process priority set to [%d]", nice_value);
     } else {
         UM_FATAL("GBEM: Failed to set process priority with setpriority [%s]", strerror(errno));
@@ -435,13 +435,12 @@ main_argv = argv;
     strcpy(eth_interface1, "eth0");
     strcpy(eth_interface2, "eth1");
     ecm_status.active_program = ECM_CYCLIC_PROG;
-    strcpy(proc_name, GBC_PROCESS_NAME);
     goto skip_command_line;
 #endif
 
     char ch;
     int index = 0;
-    int proc_name_arg = 0;
+
     int duplicate_arg = 0;
     int help = 0;
     struct option options[] = {
@@ -452,13 +451,12 @@ main_argv = argv;
             {"write",          required_argument, NULL, 'w'},
             {"confcheck",      no_argument,       NULL, 'd'},
             {"if",             required_argument, NULL, 'i'},
-            {"process",        required_argument, NULL, 'p'},
             {"nolimits",       no_argument,       NULL, 'x'},
             {"version",         no_argument,       NULL, 'v'},
             {0, 0, 0,                                   0}
     };
 
-    while (((ch = getopt_long(argc, argv, "hnmcwxv:di:p:", options, &index)) != -1) && (ch != 255)) {
+    while (((ch = getopt_long(argc, argv, "hnmcwxv:di:", options, &index)) != -1) && (ch != 255)) {
         switch (ch) {
             case 'h':
                 main_getopt_usage();
@@ -497,14 +495,7 @@ main_argv = argv;
                     printf("Please specify an interface with -i[name]");
                 }
                 break;
-            case 'p':
-                if (optarg != NULL) {
-                    memcpy(proc_name, optarg, strlen(optarg));
-                    proc_name_arg = 1;
-                } else {
-                    printf("Please specify an process name with -p[name]");
-                }
-                break;
+
             case 'v':
                 UM_INFO(GBEM_UM_EN, "GBEM: Version is [%s]", GIT_TAG);
                 exit(EXIT_SUCCESS);
@@ -523,17 +514,6 @@ main_argv = argv;
         }
     }
 
-    if (!proc_name_arg) {
-        if (GBC_PROCESS_NAME != NULL) {
-            if (strlen(GBC_PROCESS_NAME) < GBC_PROCESS_NAME_MAX_LENGTH - 1) {
-                memcpy(proc_name, GBC_PROCESS_NAME, strlen(GBC_PROCESS_NAME));
-            } else {
-                UM_FATAL("GBEM: GBC_PROCESS_NAME is longer than [%u]", GBC_PROCESS_NAME - 1);
-            }
-        } else {
-            UM_FATAL("GBEM: Invalid GBC_PROCESS_NAME is defined");
-        }
-    }
 
     if (optind == 1) {
         printf("GBEM was called without any command line arguments\n");
@@ -633,14 +613,14 @@ int signal_to_send = SIGNAL_TO_SEND;
 //    os_platform = read_platform_from_ini(&gb_inifile_name[0], PLATFORM_PI, GB_PROGRAM_GBEM);
 
 /* */
-    grc = establish_shared_mem_and_signal_con(&shmp, proc_name, true, &gbc_pid, 1);
+    grc = establish_shared_mem_and_signal_con(&shmp, 1);
     if (grc != E_SUCCESS) {
         ecm_status.gbc_connected = false;
         UM_ERROR(GBEM_UM_EN,
-                 "GBEM: Connection to shared memory & GBC process could not be established - we will continue without a connection to GBC");
+                 "GBEM: Connection to shared memory could not be established - we will continue without a connection to GBC");
     } else {
         ecm_status.gbc_connected = true;
-        UM_INFO(GBEM_UM_EN, "GBEM: We have a connection to shared memory & GBC process >successfully< established ");
+        UM_INFO(GBEM_UM_EN, "GBEM: We have a connection to shared memory >successfully< established ");
         LL_INFO(GBEM_GEN_LOG_EN, "GBEM: Shared memory address [%p] (this is a virtual address so will not match across processes)", shmp);
         memset(shmp->sm_buf_in, 0, sizeof (uint8_t) * SHM_BUF_SIZE);
         memset(shmp->sm_buf_out, 0, sizeof (uint8_t) * SHM_BUF_SIZE);
@@ -713,7 +693,7 @@ int signal_to_send = SIGNAL_TO_SEND;
 
     switch (ecm_status.active_program) {
         case ECM_CYCLIC_PROG:
-            rc = osal_thread_create(&thread_ec_reboot, STACK64K * 2, &ec_reboot, (void *) proc_name);
+            rc = osal_thread_create(&thread_ec_reboot, STACK64K * 2, &ec_reboot, (void *) task_param);
             if (rc != 1) {
                 UM_FATAL(
                         "GBEM: An error occurred whilst creating the pthread (ec_reboot) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
@@ -721,7 +701,7 @@ int signal_to_send = SIGNAL_TO_SEND;
 
 
             //Create RT thread for cyclic task, inside this function the priority and scheduler params are set
-            rc = osal_thread_create_rt(&thread_ec_rxtx, STACK64K * 2, &ec_rxtx, (void *) proc_name);
+            rc = osal_thread_create_rt(&thread_ec_rxtx, STACK64K * 2, &ec_rxtx, (void *) task_param);
             if (rc != 1) {
                 UM_FATAL(
                         "GBEM: An error occurred whilst creating the pthread (ec_rxtx which is the main cyclic process thread) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
