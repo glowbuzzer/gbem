@@ -578,25 +578,6 @@ main_argv = argv;
         (ecm_status.active_program == ECM_WRITE_NVRAM_PROG)) {
         goto program_switch;
     }
-int signal_to_send = SIGNAL_TO_SEND;
-
-    if (signal_to_send > 34) {
-        UM_FATAL(
-                "GBEM: We have a signal number defined (with SIGNAL_TO_SEND) to a number greater than 31. This is outside the range of normal Linux signals. We must exit");
-    }
-    if (signal_to_send <31) {
-        char *str = strdup(sys_siglist[signal_to_send]);
-        if (str) {
-            upcase(str);
-            UM_INFO(GBEM_UM_EN,
-                    "GBEM: We are using Linux signal [SIG %s] (we are sending this out to GBC to advance its cycle)",
-                    str);
-            free(str);
-        } else {
-            UM_ERROR(GBEM_UM_EN, "GBEM: Error matching the signal number [%u], to the standard Linux signals",
-                     signal_to_send);
-        }
-    }
 
     char *username_buf;
     username_buf = (char *) malloc(11 * sizeof(char));

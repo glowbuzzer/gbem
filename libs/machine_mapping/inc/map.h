@@ -18,6 +18,7 @@
 #include "ethercat.h"
 #include "gberror.h"
 #include "map_config.h"
+#include "cia402.h"
 
 
 extern bool nolimits;
@@ -52,6 +53,9 @@ extern bool nolimits;
 #define MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(...) int16_t (*map_drive_get_acttorq_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 
 #define MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(...) gberror_t (*map_drive_set_setpos_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setpos) = {__VA_ARGS__};
+#define MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(...) gberror_t (*map_drive_set_setvel_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setvel) = {__VA_ARGS__};
+#define MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(...) gberror_t (*map_drive_set_settorq_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t settorq) = {__VA_ARGS__};
+
 
 #define MAP_DRIVE_HOMING_EXEC_FUNCTIONS(...) gberror_t (*map_drive_homing_exec_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 
@@ -62,6 +66,7 @@ extern bool nolimits;
 #define MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(...) gberror_t (*map_drive_print_params_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 
 #define MAP_DRIVE_TORQ_LIMIT(...) const int32_t map_drive_torque_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
+#define MAP_DRIVE_MOO(...) const int8_t map_drive_moo[MAP_NUM_DRIVES] = {__VA_ARGS__};
 
 
 //REVERSE FUNCTIONS
@@ -210,6 +215,11 @@ extern int16_t (*map_drive_get_acttorq_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_
 
 extern gberror_t (*map_drive_set_setpos_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setpos);
 
+extern gberror_t (*map_drive_set_setvel_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setvel);
+
+extern gberror_t (*map_drive_set_settorq_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t settorq);
+
+
 extern gberror_t (*map_drive_print_params_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
 
 extern const bool map_drive_run_homing[MAP_NUM_DRIVES];
@@ -221,6 +231,8 @@ extern const int32_t map_drive_neg_limit[MAP_NUM_DRIVES];
 extern const uint8_t map_drive_direction[MAP_NUM_DRIVES];
 
 extern const int32_t map_drive_torque_limit[MAP_NUM_DRIVES];
+extern const int8_t map_drive_moo[MAP_NUM_DRIVES];
+
 
 //REVERSE FUNCTIONS
 extern uint16_t (*map_drive_get_ctrl_wrd_rev_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
