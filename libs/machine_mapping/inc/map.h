@@ -50,7 +50,7 @@ extern bool nolimits;
 #define MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(...) uint16_t (*map_drive_get_stat_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 #define MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(...) int32_t (*map_drive_get_actpos_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 #define MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(...) int32_t (*map_drive_get_actvel_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
-#define MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(...) int16_t (*map_drive_get_acttorq_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
+#define MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(...) int32_t (*map_drive_get_acttorq_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 
 #define MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(...) gberror_t (*map_drive_set_setpos_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setpos) = {__VA_ARGS__};
 #define MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(...) gberror_t (*map_drive_set_setvel_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setvel) = {__VA_ARGS__};
@@ -211,7 +211,7 @@ extern int32_t (*map_drive_get_actpos_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t
 
 extern int32_t (*map_drive_get_actvel_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
 
-extern int16_t (*map_drive_get_acttorq_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
+extern int32_t (*map_drive_get_acttorq_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
 
 extern gberror_t (*map_drive_set_setpos_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setpos);
 
