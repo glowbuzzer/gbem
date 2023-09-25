@@ -166,13 +166,6 @@ static char *config_process_general(char *json_dest, gberror_t *grc) {
         UM_WARN(GBEM_UM_EN, "GBEM: Large global sync offset is set (>1,000,000). Maybe you know what you are up to...");
     }
 
-    UM_INFO(GBEM_UM_EN,
-            "GBEM: GBC_PROCESS_NAME [%s] (This is the hardcoded default process name we try and connect over shared memory with unless one is specified with a -p command line option)",
-            GBC_PROCESS_NAME);
-    json_dest = json_str(json_dest, "gbc_process_name", GBC_PROCESS_NAME);
-    if (strlen(GBC_PROCESS_NAME) < 1) {
-        UM_WARN(GBEM_UM_EN, "GBEM: GBC_PROCESS_NAME is an empty string\n");
-    }
 
     UM_INFO(GBEM_UM_EN,
             "GBEM: ECM_IO_MAP_SIZE [%u] (This is the size in bytes of the in-memory buffer that holds the data r/w to the EtherCAT network, it must be larger than all the pdo data from all the slaves on teh network)",
@@ -924,25 +917,25 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
             config_error = true;
         }
 #if ECM_CHECK_EEP_ID == 1
-        else if (ecm_slave_map[i - 1].eep_id == 0) {
-            UM_ERROR(GBEM_UM_EN,
-                     "GBEM: Slave number: %u is missing its EEP ID in (ecm_slave_map) - as full slave checking is enabled (#define ECM_CHECK_EEP) GBEM will not boot until these are complete in the array ecm_slave_map");
-            config_error = true;
-        }
+            else if (ecm_slave_map[i - 1].eep_id == 0) {
+                UM_ERROR(GBEM_UM_EN,
+                         "GBEM: Slave number: %u is missing its EEP ID in (ecm_slave_map) - as full slave checking is enabled (#define ECM_CHECK_EEP) GBEM will not boot until these are complete in the array ecm_slave_map");
+                config_error = true;
+            }
 #endif
 #if ECM_CHECK_EEP_REV == 1
-        else if (ecm_slave_map[i - 1].eep_rev == 0) {
-            UM_ERROR(GBEM_UM_EN,
-                     "GBEM: Slave number: %u is missing its EEP REVISION in (ecm_slave_map) - as full slave checking is enabled (#define ECM_CHECK_EEP) GBEM will not boot until these are complete in the array ecm_slave_map");
-            config_error = true;
-        }
+            else if (ecm_slave_map[i - 1].eep_rev == 0) {
+                UM_ERROR(GBEM_UM_EN,
+                         "GBEM: Slave number: %u is missing its EEP REVISION in (ecm_slave_map) - as full slave checking is enabled (#define ECM_CHECK_EEP) GBEM will not boot until these are complete in the array ecm_slave_map");
+                config_error = true;
+            }
 #endif
 #if ECM_CHECK_EEP_MAN == 1
-        else if (ecm_slave_map[i - 1].eep_man == 0) {
-            UM_ERROR(GBEM_UM_EN,
-                     "GBEM: Slave number: %u is missing its EEP MANUFACTURER in (ecm_slave_map) - as full slave checking is enabled (#define ECM_CHECK_EEP) GBEM will not boot until these are complete in the array ecm_slave_map");
-            config_error = true;
-        }
+            else if (ecm_slave_map[i - 1].eep_man == 0) {
+                UM_ERROR(GBEM_UM_EN,
+                         "GBEM: Slave number: %u is missing its EEP MANUFACTURER in (ecm_slave_map) - as full slave checking is enabled (#define ECM_CHECK_EEP) GBEM will not boot until these are complete in the array ecm_slave_map");
+                config_error = true;
+            }
 #endif
         else {
             json_dest = json_objOpen(json_dest, NULL);
