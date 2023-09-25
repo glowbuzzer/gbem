@@ -48,6 +48,9 @@ MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_azdxa_ked,        
 MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_azdxa_ked,        ec_set_setpos_wrd_azdxa_ked         );
 MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         NULL,                               NULL                                );
 MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        NULL,                               NULL                                );
+MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         NULL,                               NULL                                );
+MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                               NULL                                );
+MAP_DRIVE_MOO(                              CIA_MOO_CSP,                        CIA_MOO_CSP                         );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                               NULL                                );
 MAP_DRIVE_RUN_HOMING(                       0,                                  0                                   );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               NULL);

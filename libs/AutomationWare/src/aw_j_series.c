@@ -111,7 +111,7 @@ int32_t ec_get_actvel_wrd_aw_j_series(const uint16_t drive) {
  * @param drive
  * @return int32 position
  */
-int16_t ec_get_acttorq_wrd_aw_j_series(const uint16_t drive) {
+int32_t ec_get_acttorq_wrd_aw_j_series(const uint16_t drive) {
 
     return ec_pdo_get_input_int16(map_drive_to_slave[drive], AW_J_SERIES_ACTTORQ_PDO_INDEX);
 

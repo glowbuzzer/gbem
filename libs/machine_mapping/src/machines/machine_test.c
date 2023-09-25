@@ -54,24 +54,27 @@ MAP_SLAVE_DC_CYCLE(                       0,                  0,              0,
 
 
 /* DRIVES */
-MAP_DRIVE_TO_NAME(                          "AZD1.1",                       "AZD1.2",                           "AZD2.1",                        "AKD1");
-MAP_DRIVE_TO_SLAVE(                         MAP_AZD_CTRL_1,                 MAP_AZD_CTRL_1,                     MAP_AZD_CTRL_2,                  MAP_AKD_1);
-MAP_DRIVE_TO_SUBDRIVE(                      1,                              2,                                  1,                               1);
-MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_azdxa_ked,             ec_get_moo_pdo_azdxa_ked,                 ec_get_moo_pdo_azdxa_ked,              NULL);
-MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                           NULL,                               NULL,                            ec_get_moo_sdo_akd);
-MAP_DRIVE_GET_REMOTE_FUNCTIONS(             ec_get_remote_azdxa_ked,              ec_get_remote_azdxa_ked,                  ec_get_remote_azdxa_ked,               ec_get_remote_akd);
-MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_azdxa_ked,        ec_get_follow_error_azdxa_ked,            ec_get_follow_error_azdxa_ked,         ec_get_follow_error_akd);
-MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   ec_get_error_string_pdo_azdxa_ked,    ec_get_error_string_pdo_azdxa_ked,        ec_get_error_string_pdo_azdxa_ked,     NULL );
-MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   NULL,                           NULL,                               NULL,                            ec_get_error_string_sdo_akd);
-MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_azdxa_ked,            ec_set_ctrl_wrd_azdxa_ked,                ec_set_ctrl_wrd_azdxa_ked,             ec_set_ctrl_wrd_akd);
-MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_azdxa_ked,            ec_get_stat_wrd_azdxa_ked,                ec_get_stat_wrd_azdxa_ked,             ec_get_stat_wrd_akd );
-MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_azdxa_ked,          ec_get_actpos_wrd_azdxa_ked,              ec_get_actpos_wrd_azdxa_ked,           ec_get_actpos_wrd_akd);
-MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_azdxa_ked,          ec_set_setpos_wrd_azdxa_ked,              ec_set_setpos_wrd_azdxa_ked,           ec_set_setpos_wrd_akd);
-MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         NULL,                          NULL,                               NULL,                            NULL);                                 );
-MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        NULL,                          NULL,                               NULL,                            NULL);                                 );
-MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                               NULL, NULL, NULL                                );
-MAP_DRIVE_RUN_HOMING(                       0,                                  0,0,0                                   );
-MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               NULL, NULL, NULL);
+MAP_DRIVE_TO_NAME(                          "AZD1.1",                           "AZD1.2",                           "AZD2.1",                           "AKD1");
+MAP_DRIVE_TO_SLAVE(                         MAP_AZD_CTRL_1,                     MAP_AZD_CTRL_1,                     MAP_AZD_CTRL_2,                     MAP_AKD_1);
+MAP_DRIVE_TO_SUBDRIVE(                      1,                                  2,                                  1,                                  1);
+MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_azdxa_ked,           ec_get_moo_pdo_azdxa_ked,           ec_get_moo_pdo_azdxa_ked,           NULL);
+MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                               NULL,                               NULL,                               ec_get_moo_sdo_akd);
+MAP_DRIVE_GET_REMOTE_FUNCTIONS(             ec_get_remote_azdxa_ked,            ec_get_remote_azdxa_ked,            ec_get_remote_azdxa_ked,            ec_get_remote_akd);
+MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_azdxa_ked,      ec_get_follow_error_azdxa_ked,      ec_get_follow_error_azdxa_ked,      ec_get_follow_error_akd);
+MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   ec_get_error_string_pdo_azdxa_ked,  ec_get_error_string_pdo_azdxa_ked,  ec_get_error_string_pdo_azdxa_ked,  NULL );
+MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   NULL,                               NULL,                               NULL,                               ec_get_error_string_sdo_akd);
+MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_azdxa_ked,          ec_set_ctrl_wrd_azdxa_ked,          ec_set_ctrl_wrd_azdxa_ked,          ec_set_ctrl_wrd_akd);
+MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_azdxa_ked,          ec_get_stat_wrd_azdxa_ked,          ec_get_stat_wrd_azdxa_ked,          ec_get_stat_wrd_akd );
+MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_azdxa_ked,        ec_get_actpos_wrd_azdxa_ked,        ec_get_actpos_wrd_azdxa_ked,        ec_get_actpos_wrd_akd);
+MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_azdxa_ked,        ec_set_setpos_wrd_azdxa_ked,        ec_set_setpos_wrd_azdxa_ked,        ec_set_setpos_wrd_akd);
+MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         NULL,                               NULL,                               NULL,                               NULL);                                 );
+MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        NULL,                               NULL,                               NULL,                               NULL);                                 );
+MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         NULL,                               NULL,                               NULL,                               NULL);
+MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                               NULL,                               NULL,                               NULL);
+MAP_DRIVE_MOO(                              CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP );
+MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                               NULL,                               NULL,                               NULL                                );
+MAP_DRIVE_RUN_HOMING(                       0,                                  0,                                  0,                                  0                                   );
+MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               NULL,                               NULL,                               NULL);
 
 
 

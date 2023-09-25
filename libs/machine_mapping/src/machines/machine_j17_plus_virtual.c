@@ -51,10 +51,13 @@ MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   NULL,                               
 MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   ec_get_error_string_sdo_aw_j_series,    NULL,                                NULL,                               NULL,                               NULL,                               NULL,                               );
 MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_aw_j_series,            ec_set_ctrl_wrd_virtual,            ec_set_ctrl_wrd_virtual,            ec_set_ctrl_wrd_virtual,            ec_set_ctrl_wrd_virtual,            ec_set_ctrl_wrd_virtual,            );
 MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_aw_j_series,            ec_get_stat_wrd_virtual,            ec_get_stat_wrd_virtual,            ec_get_stat_wrd_virtual,            ec_get_stat_wrd_virtual,            ec_get_stat_wrd_virtual,            );
-MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(        ec_get_actpos_wrd_aw_j_series,           ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          );
+MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_aw_j_series,          ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          );
 MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         ec_get_actvel_wrd_aw_j_series,          NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               );
 MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        ec_get_acttorq_wrd_aw_j_series,         NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               );
 MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_aw_j_series,          ec_set_setpos_wrd_virtual,          ec_set_setpos_wrd_virtual,          ec_set_setpos_wrd_virtual,          ec_set_setpos_wrd_virtual,          ec_set_setpos_wrd_virtual,          );
+MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         NULL,                                   NULL,                               NULL,                               NULL);
+MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                                   NULL,                               NULL,                               NULL);
+MAP_DRIVE_MOO(                              CIA_MOO_CSP,                            CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                                   NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               );
 MAP_DRIVE_RUN_HOMING(                       0,                                      0,                                  0,                                  0,                                  0,                                  0,                                  );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                                   NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               );
@@ -66,7 +69,6 @@ MAP_DRIVE_NEG_LIMIT(                        -99999999,                          
 MAP_DRIVE_DIRECTION(                        1,                                      1,                                  1,                                  1,                                  1,                                  1                                   );
 //percentage of max torque
 MAP_DRIVE_TORQ_LIMIT(                       20,                                     0,                                  0,                                  0,                                  0,                                  0,                                  );
-MAP_DRIVE_MOO(                              CIA_MOO_CSP,                            CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP                         );
 
 
 extern bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3;

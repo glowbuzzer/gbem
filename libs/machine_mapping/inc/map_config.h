@@ -63,7 +63,9 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 #endif
 
 #if MACHINE_CARTESIAN == 1
+
 #include "machine_cartesian.h"
+
 #endif
 
 #if MACHINE_DRIVE_SPINNERS == 1
@@ -73,7 +75,9 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 #endif
 
 #if MACHINE_IGUS == 1
+
 #include "machine_igus.h"
+
 #endif
 
 #if MACHINE_STAUBLI == 1
@@ -81,7 +85,9 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 #endif
 
 #if  MACHINE_CONVEYORS == 1
+
 #include "machine_conveyors.h"
+
 #endif
 
 #if MACHINE_SINGLE_AKD == 1
