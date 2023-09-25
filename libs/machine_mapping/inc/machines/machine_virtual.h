@@ -15,7 +15,7 @@
 #define GBEM_MACHINE_VIRTUAL_H
 
 
-#define MAP_CYCLE_TIME              (1)
+#define MAP_CYCLE_TIME              (4)
 #define MAP_GLOBAL_DC_SYNC_OFFSET   2000U
 
 /* Slaves must be defined in order that they appear on the EtherCAT network */
@@ -30,9 +30,7 @@
 /** Use a digital input to reset the estop */
 #define USE_ESTOP_RESET             1
 
-/** Defines whether actvel and acttorq are copied from the drive to DPM */
-#define CTRL_COPY_ACTVEL             1
-#define CTRL_COPY_ACTTORQ            1
+
 
 
 ///** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop */

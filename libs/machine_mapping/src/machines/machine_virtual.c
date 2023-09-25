@@ -34,30 +34,32 @@ MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,               NULL,           NU
 MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         NULL,               NULL,           NULL,            );
 MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          NULL,               NULL,           NULL,            );
 MAP_SLAVE_DC_TYPE(                        EC_DC_0,            EC_DC_NONE,     EC_DC_NONE,      );
-MAP_SLAVE_DC_CYCLE(                       1,                  0,              0,               );
+MAP_SLAVE_DC_CYCLE(                       4,                  0,              0,               );
 
 //set moo is in either initial PDO or custom sdos
 
 /* DRIVES */
 MAP_DRIVE_TO_NAME(                          "VIRTUAL"                            );
-MAP_DRIVE_TO_SLAVE(                         0,                         );//????
+MAP_DRIVE_TO_SLAVE(                         0,                                   );//????
 MAP_DRIVE_TO_SUBDRIVE(                      1,                                   );
 MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            NULL,                                );
-MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            ec_get_moo_pdo_virtual,                                );
+MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            ec_get_moo_pdo_virtual,              );
 MAP_DRIVE_GET_REMOTE_FUNCTIONS(             ec_get_remote_virtual,               );
 MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_virtual,         );
-MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   ec_get_error_string_pdo_virtual,                                );
+MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   ec_get_error_string_pdo_virtual,     );
 MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   NULL                                 );
 MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_virtual,             );
 MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_virtual,             );
 MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_virtual,           );
-MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         NULL,                                );
-MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(         NULL,                               );
+MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         ec_get_actvel_wrd_virtual,           );
+MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        ec_get_acttorq_wrd_virtual,          );
 MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_virtual,           );
+MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         ec_set_setvel_wrd_virtual,           );
+MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        ec_set_settorq_wrd_virtual,          );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                                );
 MAP_DRIVE_RUN_HOMING(                       0,                                   );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                                );
-
+MAP_DRIVE_MOO(                              CIA_MOO_CSV,                         );
 
 /* DRIVE PARAMETERS */
 MAP_DRIVE_POS_LIMIT(                        99999999,                                );

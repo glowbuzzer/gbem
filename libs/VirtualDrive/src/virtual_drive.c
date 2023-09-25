@@ -19,18 +19,19 @@
 #include "ethercatsetget.h"
 #include "cia402.h"
 #include "map_config.h"
+#include "map.h"
 
 static void virtual_drive_process_state(uint16_t ctrlwrd, cia_state_t *state);
 
 
-//int32_t virtual_drive_actpos[MAP_MAX_NUM_DRIVES];
-int32_t virtual_drive_position[MAP_MAX_NUM_DRIVES];
+static int32_t virtual_drive_position[MAP_MAX_NUM_DRIVES];
+static int32_t virtual_drive_velocity[MAP_MAX_NUM_DRIVES];
+static int32_t virtual_drive_torque[MAP_MAX_NUM_DRIVES];
+
 uint16_t virtual_drive_controlword[MAP_MAX_NUM_DRIVES];
 uint16_t virtual_drive_statusword[MAP_MAX_NUM_DRIVES];
 
-//todo
-cia_state_t virtual_drive_state[MAP_MAX_NUM_DRIVES] = {CIA_SWITCH_ON_DISABLED, CIA_SWITCH_ON_DISABLED,
-                                                       CIA_SWITCH_ON_DISABLED};
+static cia_state_t virtual_drive_state[MAP_MAX_NUM_DRIVES] = {[0 ... MAP_MAX_NUM_DRIVES - 1]=CIA_SWITCH_ON_DISABLED};
 
 
 /**
@@ -39,19 +40,19 @@ cia_state_t virtual_drive_state[MAP_MAX_NUM_DRIVES] = {CIA_SWITCH_ON_DISABLED, C
  * @return true remote bit is set (ok) false not set
  */
 bool ec_get_remote_virtual(const uint16_t drive) {
-    //remote bit not implemented on AW-J-series drives
+    //remote bit not implemented on virtual drives
     return true;
 }
 
 /**
  * @brief gets the mode of operation (MOO) for virtual drives
  * @param drive_number
- * @return  moo value (8 for CSP)
+ * @return  moo value (e.g. 8 for CSP)
  * @attention handles sub-drives
  */
 int8_t ec_get_moo_pdo_virtual(const uint16_t drive) {
 
-    return CIA_MOO_CSP;
+    return map_drive_moo[drive];
 
 
 }
@@ -67,7 +68,7 @@ bool ec_get_follow_error_virtual(const uint16_t drive) {
 
 
 /**
- * @brief get actpos for an AW-J-Series drive
+ * @brief get actpos for an Virtual drive
  * @param drive
  * @return int32 position
  */
@@ -77,9 +78,32 @@ int32_t ec_get_actpos_wrd_virtual(const uint16_t drive) {
 
 }
 
+/**
+ * @brief get actvel for an Virtual drive
+ * @param drive
+ * @return int32 position
+ */
+int32_t ec_get_actvel_wrd_virtual(const uint16_t drive) {
+
+    return virtual_drive_velocity[drive];
+
+}
+
 
 /**
- * @brief set control word for AW-J-series drive
+ * @brief get acttorq for an Virtual drive
+ * @param drive
+ * @return int32 position
+ */
+int32_t ec_get_acttorq_wrd_virtual(const uint16_t drive) {
+
+    return virtual_drive_velocity[drive];
+
+}
+
+
+/**
+ * @brief set control word for Virtualdrive
  * @param drive
  * @param ctrlwrd
  * @return gberror
@@ -94,7 +118,7 @@ gberror_t ec_set_ctrl_wrd_virtual(const uint16_t drive, const uint16_t ctrlwrd) 
 }
 
 /**
- * @brief set status word for AW-J-series drive
+ * @brief set status word for Virtual drive
  * @param drive
  * @return status word
 
@@ -117,6 +141,35 @@ gberror_t ec_set_setpos_wrd_virtual(const uint16_t drive, const int32_t setpos) 
     return E_SUCCESS;
 }
 
+
+/**
+ * @brief set setvel for an virtual drive
+ * @param drive
+ * @param setpos
+ * @return gberror
+ */
+gberror_t ec_set_setvel_wrd_virtual(const uint16_t drive, const int32_t setvel) {
+
+    virtual_drive_velocity[drive] = setvel;
+    virtual_drive_position[drive] =
+            virtual_drive_position[drive] + (int32_t) ((double) setvel * ((double) MAP_CYCLE_TIME / (double) 1000));
+    return E_SUCCESS;
+}
+
+
+/**
+ * @brief set setvel for an virtual drive
+ * @param drive
+ * @param setpos
+ * @return gberror
+ */
+gberror_t ec_set_settorq_wrd_virtual(const uint16_t drive, const int32_t settorq) {
+
+    virtual_drive_torque[drive] = settorq;
+    return E_SUCCESS;
+
+
+}
 
 /**
  * @brief runs state machine for a single motor
