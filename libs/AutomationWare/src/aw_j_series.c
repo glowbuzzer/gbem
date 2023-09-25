@@ -66,11 +66,13 @@ bool ec_get_follow_error_aw_j_series(const uint16_t drive) {
  */
 gberror_t ec_initial_pdo_aw_j_series(const uint16_t slave) {
 
-    ec_pdo_set_output_int8(slave, AW_J_SERIES_MOOSET_PDO_INDEX, CIA_MOO_CSP);
+    ec_pdo_set_output_int8(slave, AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
 
-    LL_INFO(GBEM_GEN_LOG_EN,
-            "GBEM: Applying initial PDO writes for AW-J-Series drive slave [%u], offset [%u], value [%u]", slave,
-            AW_J_SERIES_MOOSET_PDO_INDEX, CIA_MOO_CSP);
+
+    UM_INFO(GBEM_UM_EN,
+            "GBEM: Setting MOO with PDO write for AW-J-Series drive slave [%u], drive, [%u], offset [%u], value [%u]",
+            slave, map_drive_to_slave[slave],
+            AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
 
     if (ec_iserror()) {
         LL_ERROR(GBEM_GEN_LOG_EN,
@@ -160,6 +162,30 @@ uint16_t ec_get_stat_wrd_aw_j_series(const uint16_t drive) {
 gberror_t ec_set_setpos_wrd_aw_j_series(const uint16_t drive, const int32_t setpos) {
 
     ec_pdo_set_output_int32(map_drive_to_slave[drive], AW_J_SERIES_SETPOS_PDO_INDEX, setpos);
+    return E_SUCCESS;
+}
+
+/**
+ * @brief set setvel for an AW-J-series drive
+ * @param drive
+ * @param setvel
+ * @return gberror
+ */
+gberror_t ec_set_setvel_wrd_aw_j_series(const uint16_t drive, const int32_t setvel) {
+
+    ec_pdo_set_output_int32(map_drive_to_slave[drive], AW_J_SERIES_SETVEL_PDO_INDEX, setvel);
+    return E_SUCCESS;
+}
+
+/**
+ * @brief set settorq for an AW-J-series drive
+ * @param drive
+ * @param settorq
+ * @return gberror
+ */
+gberror_t ec_set_settorq_wrd_aw_j_series(const uint16_t drive, const int32_t settorq) {
+
+    ec_pdo_set_output_int32(map_drive_to_slave[drive], AW_J_SERIES_SETTORQ_PDO_INDEX, settorq);
     return E_SUCCESS;
 }
 

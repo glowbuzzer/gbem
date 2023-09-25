@@ -64,7 +64,7 @@ MAP_DRIVE_POS_LIMIT(                        99999999,                           
 MAP_DRIVE_NEG_LIMIT(                        -99999999,                          );
 MAP_DRIVE_DIRECTION(                        1,                                  );
 //percentage of max torque
-MAP_DRIVE_TORQ_LIMIT(                       7,                                );
+MAP_DRIVE_TORQ_LIMIT(                       15,                                );
 
 //7 % can stop drive by hand
 extern bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3;

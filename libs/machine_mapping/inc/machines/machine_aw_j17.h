@@ -35,9 +35,7 @@
 /** Use a digital input to reset the estop */
 #define USE_ESTOP_RESET             1
 
-/** Defines whether actvel and acttorq are copied from the drive to DPM */
-#define CTRL_COPY_ACTVEL             1
-#define CTRL_COPY_ACTTORQ            1
+
 
 
 ///** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop */
@@ -46,15 +44,5 @@
 ///** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop reset */
 //#define CTRL_ESTOP_RESET_DIN        2
 
-
-//1 rotation = 10,000 ppr
-//x= 133.3333 pulses per mm
-//y= 266.6666 pulses per mm
-//azd limits = (−2147483648) (+2147483648)
-
-//unint8 direction of rotation
-//0: Positive side=Counterclockwise direction
-//1: Positive side=Clockwise direction
-//default value is 1
 
 #endif //GBEM_MACHINE_AW_J17_H

@@ -30,17 +30,14 @@
 /** Use a digital input to reset the estop */
 #define USE_ESTOP_RESET             1
 
-/** Defines whether actvel and acttorq are copied from the drive to DPM */
-#define CTRL_COPY_ACTVEL             1
-#define CTRL_COPY_ACTTORQ            1
 
 
-///** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop */
-//#define CTRL_ESTOP_DIN              1
-//
-///** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop reset */
-//#define CTRL_ESTOP_RESET_DIN        2
 
+/** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop */
+#define CTRL_ESTOP_DIN              1
+
+/** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop reset */
+#define CTRL_ESTOP_RESET_DIN        2
 
 
 #endif //GBEM_MACHINE_J17_PLUS_VIRTUAL_H

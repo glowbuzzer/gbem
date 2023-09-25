@@ -65,8 +65,8 @@ MAP_DRIVE_POS_LIMIT(                        99999999,                           
 MAP_DRIVE_NEG_LIMIT(                        -99999999,                              0,                                  0,                                  0,                                  0,                                  0                                   );
 MAP_DRIVE_DIRECTION(                        1,                                      1,                                  1,                                  1,                                  1,                                  1                                   );
 //percentage of max torque
-MAP_DRIVE_TORQ_LIMIT(                       7,                                      0,                                  0,                                  0,                                  0,                                  0,                                  );
-
+MAP_DRIVE_TORQ_LIMIT(                       20,                                     0,                                  0,                                  0,                                  0,                                  0,                                  );
+MAP_DRIVE_MOO(                              CIA_MOO_CSP,                            CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP                         );
 
 
 extern bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3;
@@ -88,6 +88,7 @@ const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
         {.name = EK1100_EEP_NAME,   .eep_id = EK1100_EEP_ID,   .eep_man = EK1100_EEP_MAN,     .eep_rev = EK1100_EEP_REV },
         {.name = EL2008_EEP_NAME,   .eep_id = EL2008_EEP_ID,   .eep_man = EL2008_EEP_MAN,     .eep_rev = EL2008_EEP_REV },
         {.name = EL1008_EEP_NAME,   .eep_id = EL1008_EEP_ID,   .eep_man = EL1008_EEP_MAN,     .eep_rev = EL1008_EEP_REV },
+        {.name = AW_J17_EEP_NAME,      .eep_id = AW_J17_EEP_ID,      .eep_man = AW_J17_EEP_MAN,        .eep_rev = AW_J17_EEP_REV    }
 };
 
 

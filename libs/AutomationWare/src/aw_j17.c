@@ -114,9 +114,9 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
     //todo
 //set moo
 //    0x6060:0
-    if (!ec_sdo_write_int32(slave, 0x6060, 0, 8)) {
-        return E_SDO_WRITE_FAILURE;
-    }
+//    if (!ec_sdo_write_int32(slave, 0x6060, 0, 8)) {
+//        return E_SDO_WRITE_FAILURE;
+//    }
 
 
     return E_SUCCESS;
