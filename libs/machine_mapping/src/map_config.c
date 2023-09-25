@@ -44,7 +44,8 @@ const char *map_machine_type_strings[MAP_NUM_MACHINES] = {
         "MACHINE_AW_ROBOT_L",
         "MACHINE_VIRTUAL",
         "MACHINE_J17_PLUS_VIRTUAL",
-        "MACHINE_AW_STEWART"
+        "MACHINE_AW_STEWART",
+        "MACHINE_DRIVE_SPINNERS_VIRTUAL",
 };
 
 

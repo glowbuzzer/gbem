@@ -21,7 +21,8 @@
 /* WARNING! Don't enable more than one or bad things happen when linking */
 #define MACHINE_MINI                0
 #define MACHINE_CARTESIAN           0
-#define MACHINE_DRIVE_SPINNERS      1
+#define MACHINE_DRIVE_SPINNERS      0
+#define MACHINE_DRIVE_SPINNERS_VIRTUAL      1
 #define MACHINE_IGUS                0
 #define MACHINE_STAUBLI             0
 #define MACHINE_SINGLE_AKD          0
@@ -51,7 +52,7 @@
 
 /* NEW_MACHINE */
 //If you add a new machine you have to increment this count to match the number above
-#define MAP_NUM_MACHINES            29
+#define MAP_NUM_MACHINES            30
 
 extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
@@ -71,6 +72,12 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 #if MACHINE_DRIVE_SPINNERS == 1
 
 #include "machine_drive_spinners.h"
+
+#endif
+
+#if MACHINE_DRIVE_SPINNERS_VIRTUAL == 1
+
+#include "machine_drive_spinners_virtual.h"
 
 #endif
 
@@ -223,6 +230,7 @@ typedef enum {
     MAP_MACHINE_VIRTUAL,
     MAP_MACHINE_J17_PLUS_VIRTUAL,
     MAP_MACHINE_AW_STEWART,
+    MAP_MACHINE_DRIVE_SPINNERS_VIRTUAL
 } map_machine_type_t;
 
 #define MAX_DRIVE_NAME_LENGTH                   30
