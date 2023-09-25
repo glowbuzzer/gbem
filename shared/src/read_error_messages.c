@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
  * @file           :  read_error_messages
- * @brief          :
+ * @brief          :  thread (low priority) that reads error messages from the drives
  ******************************************************************************
  * @attention
  *
