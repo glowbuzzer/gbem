@@ -189,7 +189,7 @@ uint8_t *ec_get_error_string_sdo_asda_a2(const uint16_t drive) {
 
         for (int i = 0; i < NUM_ASDA_A2_ERROR_CODES; i++) {
             if (asda_a2_error_code_description[i].numeric_code_1 == drive_error_code) {
-                sprintf((char *) error_code_string, "%s", asda_a2_error_code_description);
+                sprintf((char *) error_code_string, "%s", asda_a2_error_code_description[i].description);
                 return error_code_string;
             }
         }
