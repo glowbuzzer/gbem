@@ -30,6 +30,7 @@
 #include "print_slave_error_messages.h"
 #include "status_control_word_bit_definitions.h"
 #include "ec_functions.h"
+#include "pos_vel_acc.h"
 
 //todo review need for semaphores in control.c and ec_rxtx.c
 #define DPM_IN_PROTECT_START
@@ -88,6 +89,8 @@ static void ctrl_copy_acttorq(void);
 
 
 static void ctrl_copy_setpos(void);
+
+static void ctrl_copy_values_to_drives(void);
 
 static void ctrl_copy_drive_statuswords(void);
 
@@ -908,7 +911,7 @@ bool cia_is_fault_condition(struct event *event) {
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
 //        printf("moodisp event data:%i\n", ((event_data_t *) event->data)->moo_disp[i]);
-        if ((((event_data_t *) event->data)->moo_disp[i]) != CIA_MOO_CSP) {
+        if ((((event_data_t *) event->data)->moo_disp[i]) != map_drive_moo[i]) {
             LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > a drive is signalling a moo issue on drive:%d", i);
             BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_MOOERROR_BIT_NUM);
             control_event[CONTROL_EVENT_DRIVE_MOOERROR].active = true;
@@ -1333,12 +1336,12 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     //copy actpos from EC_IN to DPM_IN (write) (do this every cycle irrespective of state)
     ctrl_copy_actpos();
 
-#if CTRL_COPY_ACTVEL == 1
+//#if CTRL_COPY_ACTVEL == 1
     ctrl_copy_actvel();
-#endif
-#if CTRL_COPY_ACTTORQ == 1
+//#endif
+//#if CTRL_COPY_ACTTORQ == 1
     ctrl_copy_acttorq();
-#endif
+//#endif
 
     //copy statuswords from EC_IN to DPM_IN (write)
     ctrl_copy_drive_statuswords();
@@ -1509,20 +1512,21 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
 
     //if we are in FAULT or FAULT reaction active then read error message
     //these are SDO reads and will bugger up our real timeliness
-    if (current_state == CIA_FAULT || current_state == CIA_FAULT_REACTION_ACTIVE) {
-        ctrl_copy_slave_error_to_ecm_status();
-        if ((gbem_heartbeat % 1000) == 0) {
-//            uint8_t *error_code_string;
-            for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-                read_drive_error_code_into_ecm_status(i);
-            }
-        }
-
-        print_slave_error_messages();
-    }
+//    if (current_state == CIA_FAULT || current_state == CIA_FAULT_REACTION_ACTIVE) {
+//        ctrl_copy_slave_error_to_ecm_status();
+//        if ((gbem_heartbeat % 1000) == 0) {
+////            uint8_t *error_code_string;
+//            for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+//                read_drive_error_code_into_ecm_status(i);
+//            }
+//        }
+//
+//        print_slave_error_messages();
+//    }
 
 //copy setpos from DPM_OUT (read) to EC_OUT
-    ctrl_copy_setpos();
+//    ctrl_copy_setpos();
+    ctrl_copy_values_to_drives();
 
 #if CTRL_ENABLE_FORCING == 1
     ctrl_process_forces_out();
@@ -1572,14 +1576,14 @@ static void ctrl_copy_actpos(void) {
  * @param slave_ptrs
  * @param inout_ptrs
  */
-__attribute__((unused)) static void ctrl_copy_actvel(void) {
+static void ctrl_copy_actvel(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_actvel_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_actual_velocity[i] = map_drive_get_actvel_wrd_function_ptr[i](i);
 
         } else {
-            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
-                     "GBEM: Missing function pointer for map_drive_get_actvel_wrd on drive [%u]", i);
+//            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+//                     "GBEM: Missing function pointer for map_drive_get_actvel_wrd on drive [%u]", i);
         }
     }
 }
@@ -1589,14 +1593,14 @@ __attribute__((unused)) static void ctrl_copy_actvel(void) {
  * @param slave_ptrs
  * @param inout_ptrs
  */
-__attribute__((unused)) static void ctrl_copy_acttorq(void) {
+static void ctrl_copy_acttorq(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_acttorq_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_actual_torque[i] = map_drive_get_acttorq_wrd_function_ptr[i](i);
 
         } else {
-            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
-                     "GBEM: Missing function pointer for map_drive_get_acttorq_wrd on drive [%u]", i);
+//            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+//                     "GBEM: Missing function pointer for map_drive_get_acttorq_wrd on drive [%u]", i);
         }
     }
 }
@@ -1613,12 +1617,71 @@ __attribute__((unused)) static void ctrl_check_for_big_pos_jump(uint16_t drive, 
     last_pos[drive] = current_position;
 }
 
+
+/**
+ * Copies correct set values to the drives based on the MOO for the drive
+ */
+static void ctrl_copy_values_to_drives(void) {
+    gberror_t grc;
+    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+
+        switch (map_drive_moo[i]) {
+
+            case CIA_MOO_CSP:
+
+                if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
+                    grc = map_drive_set_setpos_wrd_function_ptr[i](i, dpm_out->joint_set_position[i]);
+/* This function can be used to log nasty jumps in position*/
+                    //            ctrl_check_for_big_pos_jump(i,dpm_out->joint_set_position[i] );
+                    if (grc != E_SUCCESS) {
+                        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setpos function error [%s]", gb_strerror(grc));
+                    }
+                } else {
+                    LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                             "GBEM: Missing function pointer for map_drive_set_setpos_wrd on drive [%u]", i);
+                }
+
+                break;
+
+            case CIA_MOO_CSV:
+
+                if (*map_drive_set_setvel_wrd_function_ptr[i] != NULL) {
+                    grc = map_drive_set_setvel_wrd_function_ptr[i](i, dpm_out->joint_set_velocity[i]);
+                    if (grc != E_SUCCESS) {
+                        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setvel function error [%s]", gb_strerror(grc));
+                    }
+                } else {
+                    LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                             "GBEM: Missing function pointer for map_drive_set_setvel_wrd on drive [%u]", i);
+                }
+
+
+//                if (get_demand_velocity(0) > 0) {
+//                    printf("pos %d\n", get_demand_position(0));
+//                    printf("vel %d\n", get_demand_velocity(0));
+//                    printf("torq %d\n", get_demand_acceleration(0));
+//                }
+
+                break;
+
+            case CIA_MOO_CST:
+
+                break;
+
+            default:
+                UM_FATAL("GBEM: MOO not defined for drive [%u]", i);
+        }
+    }
+
+
+}
+
 /**
  * @brief setpos on drive is set to setpos from GBC (from DPM out) (and update ecm_status for gui)
  * @param slave_ptrs
  * @param inout_ptrs
  */
-static void ctrl_copy_setpos(void) {
+static void __attribute__((unused)) ctrl_copy_setpos(void) {
     gberror_t grc;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
