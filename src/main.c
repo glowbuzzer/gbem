@@ -95,6 +95,7 @@ struct shm_msg *shmp;
 
 sem_t *gbc_named_trigger_semaphore;
 sem_t *gbc_named_mem_protection_semaphore;
+
 /** Define a mutex to synchronize access to console output*/
 pthread_mutex_t console_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -108,14 +109,6 @@ pthread_t thread_ec_error_message;
 
 static void main_getopt_usage(void);
 
-/**
- * @brief function needed by freertos to handle the custom signal we added - in this case this will not be called
- * @param signum
- */
-void __attribute__((unused)) gb_handle_signal(int signum) {
-    (void) signum;
-    LL_FATAL("GBEM: gb_handle signal called, this should never happen");
-}
 
 
 
@@ -133,7 +126,7 @@ bool check_ethernet_link(char *ifname) {
     }
 
     struct ifreq if_req;
-    (void) strncpy(if_req.ifr_name, ifname, sizeof(if_req.ifr_name));
+    (void) strncpy(if_req.ifr_name, ifname, sizeof(if_req.ifr_name) -1);
     int rv = ioctl(socId, SIOCGIFFLAGS, &if_req);
     close(socId);
 
@@ -200,20 +193,30 @@ void main_set_file_paths(void) {
 
 }
 
+
+
+//Catch nasty signals and try and cleanup before exit
 void cleanup(int sig) {
 
 //set status word to zeros to clear things like GBEM_ALIVE bit
     dpm_in->machine_word = 0;
-
-
+//todo crit - memset shared mem?
     /* request INIT state for all slaves */
-    ec_slave[0].state = EC_STATE_INIT;
-    ec_writestate(0);
-    ec_close();
-
-
+    if (ecm_status.slavecount>0) {
+        ec_slave[0].state = EC_STATE_INIT;
+        ec_writestate(0);
+        ec_close();
+    }
     exit(1);
 }
+
+// called from UM_FATAL
+void gb_fatal_cleanup(void) {
+    //todo crit
+    printf("GBEM: UM_FATAL cleanup routine\n");
+    cleanup(0);
+}
+
 int main_argc = 0;
 char **main_argv = NULL;
 
@@ -266,6 +269,8 @@ main_argv = argv;
 //    }
 //    fclose(fp);
 //    exit(0);
+
+
 
 
     //if any drive has the STATUS_WORD_GBEM_HOMING_NEEDED_BIT_NUM set then set the status word: STATUS_WORD_GBEM_HOMING_NEEDED_BIT_NUM
@@ -594,7 +599,7 @@ main_argv = argv;
 //    os_platform = read_platform_from_ini(&gb_inifile_name[0], PLATFORM_PI, GB_PROGRAM_GBEM);
 
 /* */
-    grc = establish_shared_mem_and_signal_con(&shmp, 1);
+    grc = establish_shared_mem_and_signal_con(&shmp, 1, 1);
     if (grc != E_SUCCESS) {
         ecm_status.gbc_connected = false;
         UM_ERROR(GBEM_UM_EN,
