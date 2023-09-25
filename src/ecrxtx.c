@@ -35,6 +35,7 @@
 #include "main.h"
 #include "status_control_word_bit_definitions.h"
 #include "linux_shm.h"
+#include "print_status.h"
 
 bool homing_failed = false;
 extern char proc_name[100];
@@ -286,7 +287,6 @@ void ec_rxtx(void *argument) {
 
     bool time_to_check_gbc = false;
 
-    int kill_rc = 0;
 
     while (1) {
 
@@ -318,12 +318,18 @@ void ec_rxtx(void *argument) {
         /* calculate next cycle start */
         add_timespec(&ts, cycletime + toff);
 
+        //todo crit move from here just for testing
+//        memcpy(shmp->sm_offline_buf_in, &ecm_status, sizeof(ecm_status_t));
+//        if (bus_cycle_tick == 20000) {
+//            print_status(&ecm_status);
+//        }
+
 
         // if gbc is not connected AND we are not in test mode AND it is time to try an connect again to GBC
         if (!ecm_status.gbc_connected && !ec_rxtx_test_mode && time_to_check_gbc && ec_rxtx_mode == EC_RXTX_MODE_OP) {
 
 
-            grc = establish_shared_mem_and_signal_con(&shmp, 1);
+            grc = establish_shared_mem_and_signal_con(&shmp, 1, 1);
             if (grc == E_SUCCESS) {
                 UM_INFO(GBEM_UM_EN, "GBEM: Connection to shared memory >successfully< established ");
                 memset(shmp->sm_buf_in, 0, sizeof(uint8_t) * SHM_BUF_SIZE);
@@ -352,6 +358,7 @@ void ec_rxtx(void *argument) {
                 // Release the semaphore when done
                 sem_post(gbc_named_mem_protection_semaphore);
             } else {
+                UM_ERROR(GBEM_UM_EN, "GBEM: shared mem busy");
                 ecm_status.shared_mem_busy_count++;
             }
 
