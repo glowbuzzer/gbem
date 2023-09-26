@@ -1022,19 +1022,6 @@ void ECBoot(void *argument) {
 
 #endif
 
-#if ENABLE_ALL_NON_CORE_FUNCTIONS == 1
-#if ENABLE_EMSTAT == 1
-    //RT-sensitive
-    rc = osal_thread_create(&thread_ec_emstat, STACK64K * 2, &ec_emstat, NULL);
-    if (rc != 1) {
-        UM_FATAL(
-                "GBEM: An error occurred whilst creating the pthread (ec_emstat which is the thread to create JSON status messages) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
-    }
-#endif
-#endif
-
-//this is needed ONLY if the display / ecmstat is disabled
-//    sleep(10000);
 
 }
 

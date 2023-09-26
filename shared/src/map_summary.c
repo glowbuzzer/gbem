@@ -110,13 +110,12 @@ static gberror_t check_drive_function_ptrs(const uint16_t num_drives) {
 
 /**
  * @brief Examines the general machine config - checks, prints summary and creates JSON config summary
- * @param json_dest
- * @param grc
- * @return
+ * @param
+ * @param
+ * @return gberror_t
  */
-static char *config_process_general(char *json_dest, gberror_t *grc) {
+gberror_t config_process_general(void) {
     bool config_error = false;
-    json_dest = json_objOpen(json_dest, "general");
 
 
     UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
@@ -128,7 +127,7 @@ static char *config_process_general(char *json_dest, gberror_t *grc) {
     UM_INFO(GBEM_UM_EN, "GBEM: ECRXTX_GBC_CONNECTION_CHECK_INTERVAL_MS [%u]", ECRXTX_GBC_CONNECTION_CHECK_INTERVAL_MS);
 
     UM_INFO(GBEM_UM_EN, "GBEM: MAX_NUM_SLAVE_ERROR_MESSAGES [%u]", MAX_NUM_SLAVE_ERROR_MESSAGES);
-    UM_INFO(GBEM_UM_EN, "GBEM: JSON_STATUS_UPDATE_PERIOD_SECS [%u]", JSON_STATUS_UPDATE_PERIOD_SECS);
+
     UM_INFO(GBEM_UM_EN, "GBEM: MAX_NUMBER_MAP_ENTRIES_IN_IOMAP [%u]", MAX_NUMBER_MAP_ENTRIES_IN_IOMAP);
 
 #if FLAVOUR == PLATFORM_PI
@@ -141,16 +140,13 @@ static char *config_process_general(char *json_dest, gberror_t *grc) {
 #endif
 
     UM_INFO(GBEM_UM_EN, "GBEM: Software version [%s]", PROJECT_VER);
-    json_dest = json_str(json_dest, "gbem_version", PROJECT_VER);
 
     UM_INFO(GBEM_UM_EN, "GBEM: Machine map in use [%s]", map_machine_type_strings[map_machine_type]);
-    json_dest = json_str(json_dest, "machine_map_name", map_machine_type_strings[map_machine_type]);
 
     UM_INFO(GBEM_UM_EN,
             "GBEM: MAP_CYCLE_TIME [%u ms] (This is the cycle time for the fieldbus cyclic communication and defines the frequency at which GBC is signalled)",
             MAP_CYCLE_TIME);
 
-    json_dest = json_uint(json_dest, "map_cycle_time", MAP_CYCLE_TIME);
 
     if (!(MAP_CYCLE_TIME == 1 || MAP_CYCLE_TIME == 2 || MAP_CYCLE_TIME == 4 || MAP_CYCLE_TIME == 8)) {
         UM_WARN(GBEM_UM_EN,
@@ -160,7 +156,6 @@ static char *config_process_general(char *json_dest, gberror_t *grc) {
     UM_INFO(GBEM_UM_EN,
             "GBEM: MAP_GLOBAL_DC_SYNC_OFFSET [%u ns] (This is the global offset applied to all EtherCAT DC clocks)",
             MAP_GLOBAL_DC_SYNC_OFFSET);
-    json_dest = json_uint(json_dest, "map_global_dc_sync_offset", MAP_GLOBAL_DC_SYNC_OFFSET);
 
     if (MAP_GLOBAL_DC_SYNC_OFFSET > 1000000) {
         UM_WARN(GBEM_UM_EN, "GBEM: Large global sync offset is set (>1,000,000). Maybe you know what you are up to...");
@@ -171,41 +166,33 @@ static char *config_process_general(char *json_dest, gberror_t *grc) {
             "GBEM: ECM_IO_MAP_SIZE [%u] (This is the size in bytes of the in-memory buffer that holds the data r/w to the EtherCAT network, it must be larger than all the pdo data from all the slaves on teh network)",
             ECM_IO_MAP_SIZE);
 
-    json_dest = json_uint(json_dest, "ecm_io_map_size", ECM_IO_MAP_SIZE);
 
     UM_INFO(GBEM_UM_EN, "GBEM: SIZE_OF_GBC_PDO [%u] (This is the size of the shared memory object shared with GBC)",
             SIZE_OF_GBC_PDO);
-    json_dest = json_uint(json_dest, "size_of_gbc_pdo", SIZE_OF_GBC_PDO);
 
     UM_INFO(GBEM_UM_EN,
             "GBEM: MAP_MAX_NUM_DRIVES [%u] (This is the maximum number of drives that can be configured on GBEM)",
             MAP_MAX_NUM_DRIVES);
-    json_dest = json_uint(json_dest, "map_max_num_drives", MAP_MAX_NUM_DRIVES);
 
     UM_INFO(GBEM_UM_EN,
             "GBEM: CTRL_HEARTBEAT_TOLERANCE [%u] (This is the number of cycles before which the lost heartbeat error control kicks in)",
             CTRL_HEARTBEAT_TOLERANCE);
-    json_dest = json_uint(json_dest, "ctrl_heartbeat_tolerance", CTRL_HEARTBEAT_TOLERANCE);
 
     UM_INFO(GBEM_UM_EN,
             "GBEM: CTRL_DRIVE_CHANGE_STATE_TIMEOUT [%u] (This is the number of cycles a drive must respond to a command before state change error control kicks in - it must be longer than drive stopping time)",
             CTRL_DRIVE_CHANGE_STATE_TIMEOUT);
-    json_dest = json_uint(json_dest, "ctrl_drive_change_state_timeout", CTRL_DRIVE_CHANGE_STATE_TIMEOUT);
 
     UM_INFO(GBEM_UM_EN,
             "GBEM: MAX_DRIVE_NAME_LENGTH [%u] (This is the maximum length of a drive name supported by the system)",
             MAX_DRIVE_NAME_LENGTH);
-    json_dest = json_uint(json_dest, "max_drive_name_length", MAX_DRIVE_NAME_LENGTH);
 
     UM_INFO(GBEM_UM_EN,
             "GBEM: Size of dpm in struct [%u] (This is the size of the struct overlaid on the shared memory)",
             (uint32_t) sizeof(dpm_in_t));
-    json_dest = json_uint(json_dest, "size_of_dpm_in", (uint32_t) sizeof(dpm_in_t));
 
     UM_INFO(GBEM_UM_EN,
             "GBEM: Size of dpm out struct [%u] (This is the size of the struct overlaid on the shared memory)",
             (uint32_t) sizeof(dpm_out_t));
-    json_dest = json_uint(json_dest, "size_of_dpm_out", (uint32_t) sizeof(dpm_out_t));
 
 
     if ((SIZE_OF_GBC_PDO != (uint32_t) sizeof(dpm_in_t)) || (SIZE_OF_GBC_PDO != (uint32_t) sizeof(dpm_out_t))) {
@@ -217,32 +204,23 @@ static char *config_process_general(char *json_dest, gberror_t *grc) {
             "GBEM: MAX_DRIVE_ERROR_MSG_LENGTH [%u] (This is the maximum length in bytes of a drive error message)",
             MAX_DRIVE_ERROR_MSG_LENGTH);
 
-    json_dest = json_uint(json_dest, "max_drive_error_msg_length", MAX_DRIVE_ERROR_MSG_LENGTH);
-    UM_INFO(GBEM_UM_EN,
-            "GBEM: emstat (ENABLE_EMSTAT) is %s", ENABLE_EMSTAT == 1 ? "enabled" : "disabled");
-
-    json_dest = json_bool(json_dest, "emstat_enabled", ENABLE_EMSTAT == 1 ? true : false);
-
 
     if (config_error) {
-        *grc = E_INVALID_CONFIG;
+        return E_INVALID_CONFIG;
     } else {
-        *grc = E_SUCCESS;
+        return E_SUCCESS;
     }
 
-    json_dest = json_objClose(json_dest);
-    return json_dest;
 }
 
 /**
  * @brief Examines the IO configuration - checks, prints summary and creates JSON config summary
- * @param json_dest
- * @param grc
- * @return
+ * @param
+ * @param
+ * @return gberror_t
  */
-static char *config_process_io(char *json_dest, gberror_t *grc) {
+gberror_t config_process_io(void) {
     bool config_error = false;
-    json_dest = json_objOpen(json_dest, "io");
 
     UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***                Step 3 - Examining IO configuration                       ***");
@@ -289,33 +267,30 @@ static char *config_process_io(char *json_dest, gberror_t *grc) {
 
     UM_INFO(GBEM_UM_EN, "GBEM: Max number of GBC digital ins [%u] (DPM_NUM_DIGITAL)",
             DPM_NUM_DIGITALS);
-    json_dest = json_uint(json_dest, "max_gbc_din", DPM_NUM_DIGITALS);
 
     UM_INFO(GBEM_UM_EN, "GBEM: Max number of GBC digital outs [%u] (MAP_GBC_NUM_DIGITAL_OUT)",
             DPM_NUM_DIGITALS);
-    json_dest = json_uint(json_dest, "max_gbc_dout", DPM_NUM_DIGITALS);
+
     UM_INFO(GBEM_UM_EN, "GBEM: Max number of GBC integer32 ins [%u] (MAP_GBC_NUM_INTEGER32_IN)",
             DPM_NUM_INT32S);
-    json_dest = json_uint(json_dest, "max_gbc_i32_in", DPM_NUM_INT32S);
+
     UM_INFO(GBEM_UM_EN, "GBEM: Max number of GBC integer32 outs [%u] (MAP_GBC_NUM_INTEGER32_OUT)",
             DPM_NUM_INT32S);
-    json_dest = json_uint(json_dest, "max_gbc_i32_out", DPM_NUM_INT32S);
+
     UM_INFO(GBEM_UM_EN, "GBEM: Max number of GBC unsigned32 ins [%u] {MAP_GBC_NUM_UNSIGNED32_IN)",
             DPM_NUM_UINT32S);
-    json_dest = json_uint(json_dest, "max_gbc_u32_in", DPM_NUM_UINT32S);
+
     UM_INFO(GBEM_UM_EN, "GBEM: Max number of GBC unsigned outs [%u] (MAP_GBC_NUM_UNSIGNED32_OUT)",
             DPM_NUM_UINT32S);
-    json_dest = json_uint(json_dest, "max_gbc_u32_out", DPM_NUM_UINT32S);
+
     UM_INFO(GBEM_UM_EN, "GBEM: Max number of GBC analogs(float) ins [%u] (MAP_GBC_NUM_FLOAT_IN)",
             DPM_NUM_ANALOGS);
-    json_dest = json_uint(json_dest, "max_gbc_float_in", DPM_NUM_ANALOGS);
+
     UM_INFO(GBEM_UM_EN, "GBEM: Max number of GBC analogs(float) outs  [%u] (MAP_GBC_NUM_FLOAT_OUT)",
             DPM_NUM_ANALOGS);
-    json_dest = json_uint(json_dest, "max_gbc_float_out", DPM_NUM_ANALOGS);
 
 
     UM_INFO(GBEM_UM_EN, "GBEM: Number of rows in io map [%u]", map_num_rows_in_iomap);
-    json_dest = json_uint(json_dest, "num_rows_in_iomap", map_num_rows_in_iomap);
 
 
     UM_INFO(GBEM_UM_EN, "GBEM: Starting iomap checking");
@@ -683,29 +658,6 @@ static char *config_process_io(char *json_dest, gberror_t *grc) {
     UM_INFO(GBEM_UM_EN, "GBEM: End of iomap checking [%d] tests were run and [%d] tests passed, %s", tests_run,
             tests_passed, config_error ? ">ISSUES WERE FOUND<" : "issues were not found");
 
-    json_dest = json_arrOpen(json_dest, "iomap");
-
-    for (int i = 0; i < map_num_rows_in_iomap; i++) {
-        json_dest = json_objOpen(json_dest, NULL);
-        json_dest = json_str(json_dest, "pdo_inout", map_iomap[i].pdo.inout == MAP_IN ? "IN" : "OUT");
-        json_dest = json_uint(json_dest, "pdo_slave_num", map_iomap[i].pdo.slave_num);
-        json_dest = json_uint(json_dest, "pdo_bit_num", map_iomap[i].pdo.bit_num);
-        json_dest = json_uint(json_dest, "pdo_byte_num", map_iomap[i].pdo.byte_num);
-        json_dest = json_str(json_dest, "pdo_type", ec_datatype_string[map_iomap[i].pdo.datatype]);
-        json_dest = json_double(json_dest, "pdo_bit_byte_num", map_iomap[i].pdo.max_val);
-
-        json_dest = json_str(json_dest, "gbc_inout", map_iomap[i].gbc.inout == MAP_IN ? "IN" : "OUT");
-        json_dest = json_str(json_dest, "gbc_type", ec_datatype_string[map_iomap[i].gbc.datatype]);
-        json_dest = json_uint(json_dest, "gbc_ionum", map_iomap[i].gbc.ionum);
-
-        json_dest = json_str(json_dest, "plc_inout", map_iomap[i].plc.inout == MAP_IN ? "IN" : "OUT");
-        json_dest = json_str(json_dest, "plc_type", ec_datatype_string[map_iomap[i].plc.datatype]);
-        json_dest = json_str(json_dest, "plc_type", map_iomap[i].plc.linked_task_name);
-
-        json_dest = json_objClose(json_dest);
-    }
-    json_dest = json_arrClose(json_dest);
-
 
     UM_INFO(GBEM_UM_EN, "GBEM: Summary of iomap:");
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
@@ -853,24 +805,20 @@ static char *config_process_io(char *json_dest, gberror_t *grc) {
     } //end of massive for loop
 
     if (config_error) {
-        *grc = E_INVALID_CONFIG;
+        return E_INVALID_CONFIG;
     } else {
-        *grc = E_SUCCESS;
+        return E_SUCCESS;
     }
-    json_dest = json_objClose(json_dest);
-    return json_dest;
 }
 
 
 /**
  * @brief Examines the slave config - checks, prints summary and creates JSON config summary
- * @param json_dest
- * @param grc
- * @return
+ * @param
+ * @return gberror_t
  */
-static char *config_process_slaves(char *json_dest, gberror_t *grc) {
+gberror_t config_process_slaves(void) {
     bool config_error = false;
-    json_dest = json_objOpen(json_dest, "slaves");
 
     UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***                Step 4 - Examining slave configuration                    ***");
@@ -896,7 +844,6 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
 
     UM_INFO(GBEM_UM_EN, "GBEM: Number of slaves defined [%u]", MAP_NUM_SLAVES);
 
-    json_dest = json_uint(json_dest, "number_of_slaves_defined", MAP_NUM_SLAVES);
 
     if (GET_ARRAY_LEN(map_dc_type) != MAP_NUM_SLAVES) {
         UM_ERROR(GBEM_UM_EN, "GBEM: Not all slaves have a DC type (check map_dc_type[])");
@@ -909,7 +856,6 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
     }
 
     bool dc_on_any_slave = false;
-    json_dest = json_arrOpen(json_dest, "slaves");
     for (int i = 1; i < MAP_NUM_SLAVES + 1; i++) {
 
         if (strlen(ecm_slave_map[i - 1].name) == 0) {
@@ -938,11 +884,8 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
             }
 #endif
         else {
-            json_dest = json_objOpen(json_dest, NULL);
             UM_INFO(GBEM_UM_EN, "GBEM: Slave number [%u]", i);
-            json_dest = json_uint(json_dest, "slave_number", (uint32_t) i);
             UM_INFO(GBEM_UM_EN, "GBEM: \tName [%s]", ecm_slave_map[i - 1].name);
-            json_dest = json_str(json_dest, "slave_name", ecm_slave_map[i - 1].name);
 
             gberror_t etg_lookup_vendor_id_grc = E_GENERAL_FAILURE;
             UM_INFO(GBEM_UM_EN, "GBEM: \tEEP ID [%#.8x], EEP MANUFACTURER [%#.8x] (%s), EEP REVISION [%#.8x]",
@@ -953,7 +896,6 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
 
             UM_INFO(GBEM_UM_EN, "GBEM: \tNumber of drives attached to this slave is [%u]",
                     map_num_drives_attached[i - 1]);
-            json_dest = json_uint(json_dest, "num_drives_attached_to_slave", map_num_drives_attached[i - 1]);
         }
 
         switch (map_dc_type[i - 1]) {
@@ -962,22 +904,18 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
                 config_error = true;
             case EC_DC_NONE:
                 UM_INFO(GBEM_UM_EN, "GBEM: \tSlave does not have DC enabled");
-                json_dest = json_str(json_dest, "slave_dc_type", "none");
                 break;
             case EC_DC_0:
                 UM_INFO(GBEM_UM_EN, "GBEM: \tSlave has DC0 enabled");
                 dc_on_any_slave = true;
-                json_dest = json_str(json_dest, "slave_dc_type", "DC0");
                 break;
             case EC_DC_01:
                 UM_INFO(GBEM_UM_EN, "GBEM: \tSlave has DC01 enabled");
                 dc_on_any_slave = true;
-                json_dest = json_str(json_dest, "slave_dc_type", "DC01");
                 break;
             default:
                 LL_FATAL("GBEM: DC case missing type");
         }
-        json_dest = json_uint(json_dest, "slave_dc_cycle", (unsigned int) map_dc_cycle[i - 1]);
         UM_INFO(GBEM_UM_EN, "GBEM: \tSlave has DC cycle time of [%u]", map_dc_cycle[i - 1]);
         //if the dc cycle time is more than say 12 ms then flag a warning
         if (map_dc_cycle[i - 1] > 12) {
@@ -986,9 +924,7 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
         }
 
 
-        json_dest = json_objClose(json_dest);
     }
-    json_dest = json_arrClose(json_dest);
 
     if (!dc_on_any_slave) {
         UM_WARN(GBEM_UM_EN, "GBEM: There is no slave with a DC configuration, slaves will not be DC synchronised");
@@ -1000,24 +936,20 @@ static char *config_process_slaves(char *json_dest, gberror_t *grc) {
 #endif
 
     if (config_error) {
-        *grc = E_INVALID_CONFIG;
+        return E_INVALID_CONFIG;
     } else {
-        *grc = E_SUCCESS;
+        return E_SUCCESS;
     }
 
-    json_dest = json_objClose(json_dest);
-    return json_dest;
 }
 
 /**
  * @brief Examines the drive config - checks, prints summary and creates JSON config summary
- * @param json_dest
- * @param grc
- * @return
+ * @param
+ * @return gberror_t
  */
-static char *config_process_drives(char *json_dest, gberror_t *grc) {
+gberror_t config_process_drives(void) {
     bool config_error = false;
-    json_dest = json_objOpen(json_dest, "drives");
 
     UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***                Step 2 - Examining drive configuration                    ***");
@@ -1028,7 +960,6 @@ static char *config_process_drives(char *json_dest, gberror_t *grc) {
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Number of drives configured [%u]", MAP_NUM_DRIVES);
     }
-    json_dest = json_uint(json_dest, "drive_total)num", MAP_NUM_DRIVES);
 
     if (GET_ARRAY_LEN(map_drive_to_name) != MAP_NUM_DRIVES) {
         UM_ERROR(GBEM_UM_EN, "GBEM: Incorrect number of drive names in map_drive_names[] (is %u should be %u)",
@@ -1036,9 +967,7 @@ static char *config_process_drives(char *json_dest, gberror_t *grc) {
                  (uint32_t) GET_ARRAY_LEN(map_drive_to_name));
         config_error = true;
     }
-    json_dest = json_arrOpen(json_dest, "drive_data");
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-        json_dest = json_objOpen(json_dest, NULL);
         if (map_drive_to_name[i] == NULL) {
             UM_ERROR(GBEM_UM_EN, "GBEM: Drive[%u] name is NULL please add a map_drive_names entry", i);
             config_error = true;
@@ -1047,24 +976,15 @@ static char *config_process_drives(char *json_dest, gberror_t *grc) {
             config_error = true;
         } else {
             UM_INFO(GBEM_UM_EN, "GBEM: Drive [%u]", i);
-            json_dest = json_uint(json_dest, "drive_num", (uint32_t) i);
             UM_INFO(GBEM_UM_EN, "GBEM: \tName [%s]", map_drive_to_name[i]);
-            json_dest = json_str(json_dest, "drive_name", map_drive_to_name[i]);
             UM_INFO(GBEM_UM_EN, "GBEM: \tDrive is on slave [%u] (%s)", map_drive_to_slave[i],
                     map_drive_to_name[i]);
-            json_dest = json_uint(json_dest, "drive_slave_num", map_drive_to_slave[i]);
-            json_dest = json_str(json_dest, "drive_slave_name", map_drive_to_name[i]);
             UM_INFO(GBEM_UM_EN, "GBEM: \tSub-drive number [%u]", map_drive_to_subdrive[i]);
-            json_dest = json_uint(json_dest, "drive_sub_drive_num", map_drive_to_subdrive[i]);
             UM_INFO(GBEM_UM_EN, "GBEM: \tPositive limit [%d], Negative limit [%d]", map_drive_pos_limit[i],
                     map_drive_neg_limit[i]);
-            json_dest = json_int(json_dest, "drive_pos_limit", map_drive_pos_limit[i]);
-            json_dest = json_int(json_dest, "drive_sub_drive_num", map_drive_neg_limit[i]);
 
         }
-        json_dest = json_objClose(json_dest);
     }
-    json_dest = json_arrClose(json_dest);
 
     if (check_drive_function_ptrs(MAP_NUM_DRIVES) != E_SUCCESS) {
         UM_ERROR(GBEM_UM_EN, "GBEM: One or more drives has problems with its function pointers");
@@ -1078,26 +998,22 @@ static char *config_process_drives(char *json_dest, gberror_t *grc) {
     }
 
     if (config_error) {
-        *grc = E_INVALID_CONFIG;
+        return E_INVALID_CONFIG;
     } else {
-        *grc = E_SUCCESS;
+        return E_SUCCESS;
     }
 
-    json_dest = json_objClose(json_dest);
-    return json_dest;
 }
 
 /**
  * @brief Examines the PLC config - checks, prints summary and creates JSON config summary
- * @param json_dest
- * @param grc
- * @return
+ * @param
+ * @return gberror_t
  */
-char *config_process_plc(char *json_dest, gberror_t *grc) {
+gberror_t config_process_plc(void) {
 
     bool config_error = false;
 
-    json_dest = json_objOpen(json_dest, "plc");
 
     UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***                  Step 5 - Examining PLC configuration                    ***");
@@ -1106,7 +1022,6 @@ char *config_process_plc(char *json_dest, gberror_t *grc) {
 
     UM_INFO(GBEM_UM_EN, "GBEM: Number of PLC tasks defined [%u]", plc_task_set.num_tasks_defined);
 
-    json_dest = json_uint(json_dest, "plc_num_tasks", plc_task_set.num_tasks_defined);
 
     for (int i = 0; i < plc_task_set.num_tasks_defined; i++) {
 
@@ -1117,61 +1032,26 @@ char *config_process_plc(char *json_dest, gberror_t *grc) {
 
 
     if (config_error) {
-        *grc = E_INVALID_CONFIG;
+        return E_INVALID_CONFIG;
     } else {
-        *grc = E_SUCCESS;
+        return E_SUCCESS;
     }
 
-    json_dest = json_objClose(json_dest);
-    return json_dest;
 }
 
 
 /**
- * @brief this creates the status and const json files and prints them to stdout
- *
- * This is a bit of a funny function because the information to properly create the status JSON is not present until the machine is up and running
- *
- * It is really just for testing
- */
-void config_print_json_const_status(void) {
-    char const_json_temp[3000] = {0};
-    char status_json_temp[3000] = {0};
-
-    //create json
-    status_data_to_json(status_json_temp, &ecm_status);
-
-    const_data_to_json(const_json_temp, &ecm_status);
-
-    UM_INFO(GBEM_UM_EN, "GBEM: ***                              STATUS JSON                                 ***");
-    json_print(status_json_temp);
-    UM_INFO(GBEM_UM_EN, "GBEM: ***                              CONST JSON                                  ***");
-    json_print(const_json_temp);
-    main_set_file_paths();
-    write_status_json();
-    write_const_json();
-}
-
-
-/**
- * @brief creates a json buffer of the GBEM config, checks the config and optionally outputs the checking process results and config to stdout
+ * @brief prints the config
  * @param json_buffer
  * @param grc
  * @param print_output
  * @return
  */
-int config_create_check_print(char *json_buffer, gberror_t *grc, bool print_output) {
+gberror_t config_print(void) {
 
     gberror_t local_grc = 0;
     bool map_error = false;
-    char *json_dest = json_buffer;
 
-    //if we have be asked to run without printing the output disable by setting the user message (um) global flag
-    if (!print_output) {
-        um_disable_logging = true;
-    }
-
-    json_dest = json_objOpen(json_dest, NULL);
 
     UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***            Check and print config for [%20s]             ***",
@@ -1182,7 +1062,7 @@ int config_create_check_print(char *json_buffer, gberror_t *grc, bool print_outp
     UM_INFO(GBEM_UM_EN, "GBEM: It also outputs as summary of key configuration information");
 
 
-    json_dest = config_process_general(json_dest, &local_grc);
+    local_grc = config_process_general();
 
     if (local_grc == E_SUCCESS) {
         UM_INFO(GBEM_UM_EN, "GBEM: RESULT: Step 1 >>success<< no errors were found in the general configuration");
@@ -1191,7 +1071,7 @@ int config_create_check_print(char *json_buffer, gberror_t *grc, bool print_outp
         map_error = true;
     }
 
-    json_dest = config_process_drives(json_dest, &local_grc);
+    local_grc = config_process_drives();
 
     if (local_grc == E_SUCCESS) {
         UM_INFO(GBEM_UM_EN, "GBEM: RESULT: Step 2 >>success<< no errors were found in the drive configuration");
@@ -1200,7 +1080,7 @@ int config_create_check_print(char *json_buffer, gberror_t *grc, bool print_outp
         map_error = true;
     }
 
-    json_dest = config_process_io(json_dest, &local_grc);
+    local_grc = config_process_io();
 
     if (local_grc == E_SUCCESS) {
         UM_INFO(GBEM_UM_EN, "GBEM: RESULT: Step 3 >>success<< no errors were found in the IO configuration");
@@ -1209,7 +1089,7 @@ int config_create_check_print(char *json_buffer, gberror_t *grc, bool print_outp
         map_error = true;
     }
 
-    json_dest = config_process_slaves(json_dest, &local_grc);
+    local_grc = config_process_slaves();
 
     if (local_grc == E_SUCCESS) {
         UM_INFO(GBEM_UM_EN, "GBEM: RESULT: Step 4 >>success<< no errors were found in the slave configuration");
@@ -1218,7 +1098,7 @@ int config_create_check_print(char *json_buffer, gberror_t *grc, bool print_outp
         map_error = true;
     }
 
-    json_dest = config_process_plc(json_dest, &local_grc);
+    local_grc = config_process_plc();
 
     if (local_grc == E_SUCCESS) {
         UM_INFO(GBEM_UM_EN, "GBEM: RESULT: Step 5 >>success<< no errors were found in the PLC configuration");
@@ -1239,43 +1119,21 @@ int config_create_check_print(char *json_buffer, gberror_t *grc, bool print_outp
 
 
     UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
-    UM_INFO(GBEM_UM_EN, "GBEM: ***                     Print config JSON file contents                      ***");
-    UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
-
-    //this ouputs a summary of the config json so we can have a look see at it
-    json_print(json_buffer);
-
-    UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***      Print SDOs used to re-map slaves and perform initial slave config   ***");
     UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
 
     map_print_sdos();
 
-    UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
-    UM_INFO(GBEM_UM_EN, "GBEM: ***   Print const and status JSON (will be incomplete as EtherCAT isn't up)  ***");
-    UM_INFO(GBEM_UM_EN, "GBEM: ********************************************************************************");
-
     init_ecm_status();
-    config_print_json_const_status();
 
 
 
 //set the return code
     if (map_error) {
-        *grc = E_GENERAL_FAILURE;
+        return E_GENERAL_FAILURE;
     } else {
-        *grc = E_SUCCESS;
+        return E_SUCCESS;
     }
 
-    json_dest = json_objClose(json_dest);
-
-    json_dest = json_end(json_dest);
-
-    //re-enabled um logging
-    if (!print_output) {
-        um_disable_logging = false;
-    }
-    //return size of json created
-    return (json_dest - json_buffer);
 
 }

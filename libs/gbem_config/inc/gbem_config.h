@@ -54,13 +54,6 @@
 /** defines the size of the PDO buffers IN/OUT (overlaid with the dpm structs) */
 #define SIZE_OF_GBC_PDO                                 200
 
-/*** *** EMSTAT CONFIGURATION *** ***/
-
-/**time in seconds between writing of the JSON status updates to the filesystem */
-#define JSON_STATUS_UPDATE_PERIOD_SECS                  2
-/** Delay in starting to output json status and const data cyclically */
-#define DELAY_TO_START_JSON_OUTPUT_SECS                 10
-
 
 /*** *** CTRL CONFIGURATION *** ***/
 

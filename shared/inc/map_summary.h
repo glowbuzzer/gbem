@@ -17,7 +17,7 @@
 
 #include "gberror.h"
 
-int config_create_check_print(char * json_buffer, gberror_t *grc, bool print_output);
+gberror_t config_print(void);
 
 
 #endif //GBEM_MAP_SUMMARY_H

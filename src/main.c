@@ -53,10 +53,10 @@
 //char proc_name[GBC_PROCESS_NAME_MAX_LENGTH] = {0};
 
 /** storage for directories and paths for gbc json exchange files */
-char storage_dir_for_gbc_exchange[200];
-char full_path_for_emstat_json_const[200];
-char full_path_for_emstat_json_status[200];
-char full_path_for_config_json[200];
+//char storage_dir_for_gbc_exchange[200];
+//char full_path_for_emstat_json_const[200];
+//char full_path_for_emstat_json_status[200];
+//char full_path_for_config_json[200];
 
 /**global var storing the name of the nic read from command lines args */
 char eth_interface1[SIZE_OF_IF_NAME] = {0};
@@ -101,7 +101,6 @@ pthread_mutex_t console_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_t thread_ec_rxtx;
 pthread_t thread_ec_check;
-pthread_t thread_ec_emstat;
 pthread_t thread_ec_reboot;
 pthread_t thread_ec_error_message;
 
@@ -171,27 +170,6 @@ static void main_getopt_usage(void) {
     }
 }
 
-/**
- * @brief based on the value of platform variable sets the file paths for emstat & config json
- */
-void main_set_file_paths(void) {
-//    if (os_platform == PLATFORM_PI) {
-        strcpy(storage_dir_for_gbc_exchange, FILE_STORAGE_DIRECTORY);
-//    } else {
-//        strcpy(storage_dir_for_gbc_exchange, STORAGE_DIR_GENERIC_LINUX);
-//    }
-
-    //strcpy the base paths
-    strcpy(full_path_for_emstat_json_const, storage_dir_for_gbc_exchange);
-    strcpy(full_path_for_emstat_json_status, storage_dir_for_gbc_exchange);
-    strcpy(full_path_for_config_json, storage_dir_for_gbc_exchange);
-
-    //concatenate the filenames onto the base paths
-    strcat(full_path_for_emstat_json_const, JSON_CONST_FILENAME);
-    strcat(full_path_for_emstat_json_status, JSON_STATUS_FILENAME);
-    strcat(full_path_for_config_json, JSON_CONFIG_FILENAME);
-
-}
 
 
 
@@ -234,8 +212,7 @@ main_argv = argv;
 
     gberror_t grc = E_GENERAL_FAILURE;
 
-    //this is the stack based buffer to hold the json config summary
-    char config_summary_json_buffer[SIZE_OF_CONFIG_SUMMARY_JSON_BUFFER];
+
 
     // set STATUS_WORD_GBEM_ALIVE_BIT_NUM bit in status word
     BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_ALIVE_BIT_NUM);
@@ -621,53 +598,7 @@ main_argv = argv;
     UM_WARN(GBEM_UM_EN, "Warning DISABLE_HEARTBEAT_CHECKING is defined! This will disable heartbeat check");
 #endif
 
-#if ENABLE_EMSTAT ==1
-    /* sets the paths for file based exchange with GBC */
-    main_set_file_paths();
 
-    /* outputs the paths that are being used */
-    UM_INFO(GBEM_UM_EN, "GBEM: The path we are using for emstat const file [%s]", full_path_for_emstat_json_const);
-    UM_INFO(GBEM_UM_EN, "GBEM: The path we are using for emstat status file [%s]", full_path_for_emstat_json_status);
-    UM_INFO(GBEM_UM_EN, "GBEM: The path we are using for config file [%s]", full_path_for_config_json);
-
-    /* The directory for file based exchange exists */
-    DIR *dir = opendir(storage_dir_for_gbc_exchange);
-    if (dir) {
-        /* Directory exists. */
-        closedir(dir);
-        UM_INFO(GBEM_UM_EN, "GBEM: [%s] directory exists for file based GBC exchange (JSON files)", storage_dir_for_gbc_exchange);
-    } else if (ENOENT == errno) {
-        /* Directory does not exist. */
-        UM_FATAL(
-                "GBEM: No %s directory exists - please create this directory (maybe a ramdisk) for storing JSON files for GBC exchange. GBEM can't run without this directory so will exit",
-                storage_dir_for_gbc_exchange);
-    } else {
-        /* opendir() failed for some other reason. */
-        UM_FATAL(
-                "GBEM: We could not check if a [%s] directory exists. This implies the Linux system call (opendir) failed. Error message from system call: >>%s<<",
-                storage_dir_for_gbc_exchange, strerror(errno));
-    }
-
-    //check the config, create the json config summary, and optionally print it - in this case don't print. If you want a config summary printed at start-up change to true
-//    len = config_create_check_print(&config_summary_json_buffer[0], &grc, true);
-//
-//
-//    if (grc == E_SUCCESS) {
-//        UM_INFO(GBEM_UM_EN, "GBEM: Size of config json [%d]", len);
-//    } else {
-//        UM_FATAL(
-//                "GBEM: Config checking (and config JSON creation) >failed< .This implies that there is something nasty in either the machine config itself or the process to create it");
-//    }
-
-    //write  config json to file
-    fp = fopen(full_path_for_config_json, "w+");
-    if (fp) {
-        fwrite(config_summary_json_buffer, sizeof(char), (size_t) len, fp);
-        fclose(fp);
-    } else{
-        UM_FATAL("GBEM: Could not open a file to output the config JSON (file name is %s)", full_path_for_config_json);
-    }
-#endif
 
     int *task_param = (int *) malloc(sizeof(int));
     *task_param = 0;
@@ -705,7 +636,7 @@ main_argv = argv;
             ECNetscan(true);
             break;
         case ECM_PRINT_CONFIG_PROG:
-            config_create_check_print(config_summary_json_buffer, &grc, true);
+            grc = config_print();
             if (grc == E_SUCCESS) {
                 return EXIT_SUCCESS;
             } else {
@@ -722,11 +653,7 @@ main_argv = argv;
     }
 
     if (ecm_status.active_program != ECM_NET_SCAN_PROG) {
-        //join the main to the thread to stop it exiting until the thread has finished - pthread jiggerypokery
-//        pthread_join(thread_ec_emstat, NULL);
 
-        //if emstat isn't running join ec_rxtx by uncommenting the following line
-//        pthread_join(thread_ec_rxtx, NULL);
         pthread_join(thread_ec_reboot, NULL);
     }
     return 0;
