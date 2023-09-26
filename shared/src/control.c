@@ -31,6 +31,7 @@
 #include "status_control_word_bit_definitions.h"
 #include "ec_functions.h"
 #include "pos_vel_acc.h"
+#include "p.h"
 
 //todo review need for semaphores in control.c and ec_rxtx.c
 #define DPM_IN_PROTECT_START
@@ -1646,7 +1647,12 @@ static void ctrl_copy_values_to_drives(void) {
             case CIA_MOO_CSV:
 
                 if (*map_drive_set_setvel_wrd_function_ptr[i] != NULL) {
-                    grc = map_drive_set_setvel_wrd_function_ptr[i](i, dpm_out->joint_set_velocity[i]);
+                    //run control loop
+                    int32_t adjusted_velocity = calculateVelocityCommand(dpm_out->joint_set_position[i],
+                                                                         dpm_in->joint_actual_position[i]);
+
+                    grc = map_drive_set_setvel_wrd_function_ptr[i](i,
+                                                                   dpm_out->joint_set_velocity[i] + adjusted_velocity);
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setvel function error [%s]", gb_strerror(grc));
                     }
