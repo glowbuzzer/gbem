@@ -39,6 +39,7 @@ gberror_t ec_pdo_map_azd3a_ked(uint16_t slave);
 
 gberror_t ec_pdo_map_azd4a_ked(uint16_t slave);
 
+gberror_t ec_pdo_map_custom_azd3a_ked(uint16_t slave);
 
 gberror_t ec_initial_pdo_azdxa_ked(uint16_t slave);
 
@@ -59,7 +60,13 @@ uint16_t ec_get_stat_wrd_azdxa_ked(uint16_t drive);
 
 int32_t ec_get_actpos_wrd_azdxa_ked(uint16_t drive);
 
+int32_t ec_get_actvel_wrd_azdxa_ked(uint16_t drive);
+
+
 gberror_t ec_set_setpos_wrd_azdxa_ked(uint16_t drive, int32_t setpos);
+
+gberror_t ec_set_setvel_wrd_azdxa_ked(uint16_t drive, int32_t setvel);
+
 
 bool ec_get_remote_azdxa_ked(uint16_t drive);
 
@@ -148,6 +155,7 @@ extern const azdxa_ked_error_string_t azdxa_ked_alarm_code[NUM_OF_AZD_ERROR_STRI
 
 //static const uint16_t AZDXA_KED_SETPOS_DRIVE_1_INDEX = 2;
 
+#if AZDXA_STANDARD_PDO_MAPPING
 #define AZDXA_KED_SETPOS_PDO_DRIVE1_INDEX        2
 #define AZDXA_KED_SETPOS_PDO_DRIVE2_INDEX        9
 #define AZDXA_KED_SETPOS_PDO_DRIVE3_INDEX        16
@@ -187,6 +195,67 @@ extern const azdxa_ked_error_string_t azdxa_ked_alarm_code[NUM_OF_AZD_ERROR_STRI
 #define AZDXA_KED_ERROR_CODE_PDO_DRIVE2_INDEX    40
 #define AZDXA_KED_ERROR_CODE_PDO_DRIVE3_INDEX    63
 #define AZDXA_KED_ERROR_CODE_PDO_DRIVE4_INDEX    86
+
+#else
+
+#define AZDXA_KED_SETPOS_PDO_DRIVE1_INDEX        2
+#define AZDXA_KED_SETPOS_PDO_DRIVE2_INDEX        13 // 13-2=11
+#define AZDXA_KED_SETPOS_PDO_DRIVE3_INDEX        24 //24-13=11
+#define AZDXA_KED_SETPOS_PDO_DRIVE4_INDEX        35
+
+
+#define AZDXA_KED_SETVEL_PDO_DRIVE1_INDEX        6
+#define AZDXA_KED_SETVEL_PDO_DRIVE2_INDEX        17
+#define AZDXA_KED_SETVEL_PDO_DRIVE3_INDEX        28
+#define AZDXA_KED_SETVEL_PDO_DRIVE4_INDEX        39
+
+
+#define AZDXA_KED_ACTPOS_PDO_DRIVE1_INDEX        2
+#define AZDXA_KED_ACTPOS_PDO_DRIVE2_INDEX        15 // 15-2 = 13
+#define AZDXA_KED_ACTPOS_PDO_DRIVE3_INDEX        28 // 28-15 = 13
+#define AZDXA_KED_ACTPOS_PDO_DRIVE4_INDEX        41
+
+
+#define AZDXA_KED_ACTVEL_PDO_DRIVE1_INDEX        6
+#define AZDXA_KED_ACTVEL_PDO_DRIVE2_INDEX        19
+#define AZDXA_KED_ACTVEL_PDO_DRIVE3_INDEX        32
+#define AZDXA_KED_ACTVEL_PDO_DRIVE4_INDEX        45
+
+
+#define AZDXA_KED_CONTROLWORD_PDO_DRIVE1_INDEX   0
+#define AZDXA_KED_CONTROLWORD_PDO_DRIVE2_INDEX   11
+#define AZDXA_KED_CONTROLWORD_PDO_DRIVE3_INDEX   22
+#define AZDXA_KED_CONTROLWORD_PDO_DRIVE4_INDEX   33
+
+#define AZDXA_KED_STATUSWORD_PDO_DRIVE1_INDEX    0
+#define AZDXA_KED_STATUSWORD_PDO_DRIVE2_INDEX    13
+#define AZDXA_KED_STATUSWORD_PDO_DRIVE3_INDEX    26
+#define AZDXA_KED_STATUSWORD_PDO_DRIVE4_INDEX    39
+
+
+#define AZDXA_KED_MOOSET_PDO_DRIVE1_INDEX        10
+#define AZDXA_KED_MOOSET_PDO_DRIVE2_INDEX        21
+#define AZDXA_KED_MOOSET_PDO_DRIVE3_INDEX        32
+#define AZDXA_KED_MOOSET_PDO_DRIVE4_INDEX        43
+
+#define AZDXA_KED_MOODISP_PDO_DRIVE1_INDEX       10
+#define AZDXA_KED_MOODISP_PDO_DRIVE2_INDEX       23
+#define AZDXA_KED_MOODISP_PDO_DRIVE3_INDEX       36
+#define AZDXA_KED_MOODISP_PDO_DRIVE4_INDEX       49
+
+
+#define AZDXA_KED_ERROR_CODE_PDO_DRIVE1_INDEX    11
+#define AZDXA_KED_ERROR_CODE_PDO_DRIVE2_INDEX    24
+#define AZDXA_KED_ERROR_CODE_PDO_DRIVE3_INDEX    37
+#define AZDXA_KED_ERROR_CODE_PDO_DRIVE4_INDEX    50
+
+//depends on whether AZD-2A, AZD-3A or AZD-4A
+//#define AZDXA_KED_CONTROLLER_COMMAND1_PDO_INDEX   ??
+//#define AZDXA_KED_CONTROLLER_COMMAND2_PDO_INDEX   ??
+//#define AZDXA_KED_CONTROLLER_STATUS1_PDO_INDEX    ??
+//#define AZDXA_KED_CONTROLLER_STATUS2_PDO_INDEX    ??
+
+#endif
 
 
 #define AZDXA_KED_MIN_LIMIT_SDO_DRIVE1_INDEX     (0x607d)

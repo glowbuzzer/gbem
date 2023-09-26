@@ -330,6 +330,328 @@ gberror_t ec_pdo_map_azd4a_ked(const uint16_t slave) {
 }
 
 
+//This is the custom mapping
+//SM2 outputs
+//byte offset   addr.b         index:sub   bitl data_type    name
+//[0          ] [0x0001.0] 0x6040:0x00 0x10 UNSIGNED16   Controlword
+//[2          ] [0x0003.0] 0x607A:0x00 0x20 INTEGER32    Target position
+//[6          ] [0x0007.0] 0x60FF:0x00 0x20 INTEGER32    Target velocity
+//[10         ] [0x000B.0] 0x6060:0x00 0x08 INTEGER8     Modes of operation
+//[11         ] [0x000C.0] 0x6840:0x00 0x10 UNSIGNED16   Controlword
+//[13         ] [0x000E.0] 0x687A:0x00 0x20 INTEGER32    Target position
+//[17         ] [0x0012.0] 0x68FF:0x00 0x20 INTEGER32    Target velocity
+//[21         ] [0x0016.0] 0x6860:0x00 0x08 INTEGER8     Modes of operation
+//[22         ] [0x0017.0] 0x7040:0x00 0x10 UNSIGNED16   Controlword
+//[24         ] [0x0019.0] 0x707A:0x00 0x20 INTEGER32    Target position
+//[28         ] [0x001D.0] 0x70FF:0x00 0x20 INTEGER32    Target velocity
+//[32         ] [0x0021.0] 0x7060:0x00 0x08 INTEGER8     Modes of operation
+//[33         ] [0x0022.0] 0x2F01:0x00 0x08 UNSIGNED8    Controller command 1
+//[34         ] [0x0023.0] 0x2F02:0x00 0x08 UNSIGNED8    Controller command 2
+//SM3 inputs
+//byte offset   addr.b         index:sub   bitl data_type    name
+//[0          ] [0x0025.0] 0x6041:0x00 0x10 UNSIGNED16   Statusword
+//[2          ] [0x0027.0] 0x6064:0x00 0x20 INTEGER32    Position actual value
+//[6          ] [0x002B.0] 0x606C:0x00 0x20 INTEGER32    Velocity actual value
+//[10         ] [0x002F.0] 0x6061:0x00 0x08 INTEGER8     Modes of operation display
+//[11         ] [0x0030.0] 0x603F:0x00 0x10 UNSIGNED16   Error code
+//[13         ] [0x0032.0] 0x6841:0x00 0x10 UNSIGNED16   Statusword
+//[15         ] [0x0034.0] 0x6864:0x00 0x20 INTEGER32    Position actual value
+//[19         ] [0x0038.0] 0x686C:0x00 0x20 INTEGER32    Velocity actual value
+//[23         ] [0x003C.0] 0x6861:0x00 0x08 INTEGER8     Modes of operation display
+//[24         ] [0x003D.0] 0x683F:0x00 0x10 UNSIGNED16   Error code
+//[26         ] [0x003F.0] 0x7041:0x00 0x10 UNSIGNED16   Statusword
+//[28         ] [0x0041.0] 0x7064:0x00 0x20 INTEGER32    Position actual value
+//[32         ] [0x0045.0] 0x706C:0x00 0x20 INTEGER32    Velocity actual value
+//[36         ] [0x0049.0] 0x7061:0x00 0x08 INTEGER8     Modes of operation display
+//[37         ] [0x004A.0] 0x703F:0x00 0x10 UNSIGNED16   Error code
+//[39         ] [0x004C.0] 0x2E31:0x00 0x08 UNSIGNED8    Controller status 1
+//[40         ] [0x004D.0] 0x2E32:0x00 0x08 UNSIGNED8    Controller status 2
+
+/**
+ * @brief this is an a la carte PDO mapping function
+ * @param controller_number
+ * @return
+ */
+gberror_t ec_pdo_map_custom_azd3a_ked(const uint16_t slave) {
+
+    if (!ec_sdo_write_uint8(slave, 0x1C12, 0, 0)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    if (!ec_sdo_write_uint8(slave, 0x1600, 0, 0)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint8(slave, 0x1610, 0, 0)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint8(slave, 0x1620, 0, 0)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint8(slave, 0x1700, 0, 0)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    /* Define RxPdo */
+
+    //Axis 1 0x1600
+    /* 0x6040:1/16bits, control word */
+    if (!ec_sdo_write_uint32(slave, 0x1600, 1, 0x60400010)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    /* 0x607A:2/32bits, target position */
+    if (!ec_sdo_write_uint32(slave, 0x1600, 2, 0x607A0020)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    /* 0x60FF:3/32bits, target velocity */
+    if (!ec_sdo_write_uint32(slave, 0x1600, 3, 0x60FF0020)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+    /* 0x6060:4/8bits, modes of operation */
+    if (!ec_sdo_write_uint32(slave, 0x1600, 4, 0x60600008)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    /* set number of PDO entries for 0x1600 */
+
+    if (!ec_sdo_write_uint8(slave, 0x1600, 0, 4)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+    //Axis 2 - 0x1610
+/* 0x6840:0/16bits, control word */
+    if (!ec_sdo_write_uint32(slave, 0x1610, 1, 0x68400010)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+/* 0x687A:1/32bits, target position */
+    if (!ec_sdo_write_uint32(slave, 0x1610, 2, 0x687A0020)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+/* 0x68FF:2/32bits, target velocity */
+    if (!ec_sdo_write_uint32(slave, 0x1610, 3, 0x68FF0020)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+/* 0x6860:3/8bits, modes of operation */
+    if (!ec_sdo_write_uint32(slave, 0x1610, 4, 0x68600008)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    /* set number of PDO entries for 0x1610 */
+
+    if (!ec_sdo_write_uint8(slave, 0x1610, 0, 4)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+//Axis 3 - 0x1620
+/* 0x7040:0/16bits, control word */
+    if (!ec_sdo_write_uint32(slave, 0x1620, 1, 0x70400010)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+/* 0x707A:1/32bits, target position */
+    if (!ec_sdo_write_uint32(slave, 0x1620, 2, 0x707A0020)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+/* 0x70FF:2/32bits, target velocity */
+    if (!ec_sdo_write_uint32(slave, 0x1620, 3, 0x70FF0020)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+/* 0x7060:3/8bits, modes of operation */
+    if (!ec_sdo_write_uint32(slave, 0x1620, 4, 0x70600008)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    /* set number of PDO entries for 0x1620 */
+
+    if (!ec_sdo_write_uint8(slave, 0x1620, 0, 4)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+    //Controller receive PDO mapping - 0x1700
+/* 0x2F01:1/8bits, controller command 1 */
+
+    if (!ec_sdo_write_uint32(slave, 0x1700, 1, 0x2F010008)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    /* 0x2F02:2/8bits, controller command 2 */
+    if (!ec_sdo_write_uint32(slave, 0x1700, 2, 0x2F020008)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    if (!ec_sdo_write_uint8(slave, 0x1700, 0, 2)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+    //final stage
+
+    if (!ec_sdo_write_uint16(slave, 0x1C12, 1, 0x1600)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, 0x1C12, 2, 0x1610)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, 0x1C12, 3, 0x1620)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, 0x1C12, 4, 0x1700)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    /* set number of RxPDO */
+    if (!ec_sdo_write_uint8(slave, 0x1C12, 0, 4)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+/* Clear TxPdo */
+    if (!ec_sdo_write_uint8(slave, 0x1C13, 0, 0)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint8(slave, 0x1A00, 0, 0)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint8(slave, 0x1A10, 0, 0)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint8(slave, 0x1A20, 0, 0)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint8(slave, 0x1B00, 0, 0)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    /* Define TxPdo */
+
+    //Axis 1 - 1A00
+
+/* 0x6041:1/16bits, status word */
+    if (!ec_sdo_write_uint32(slave, 0x1A00, 1, 0x60410010)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+/* 0x6064:2/32bits, position actual value */
+
+    if (!ec_sdo_write_uint32(slave, 0x1A00, 2, 0x60640020)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+/* 0x606C:3/32bits, velocity actual value */
+    if (!ec_sdo_write_uint32(slave, 0x1A00, 3, 0x606C0020)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    /* 0x6061:4/32bits, moo display */
+    if (!ec_sdo_write_uint32(slave, 0x1A00, 4, 0x60610008)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    /* 0x603Fh:5//16bits, error code */
+    if (!ec_sdo_write_uint32(slave, 0x1A00, 5, 0x603F0010)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+    if (!ec_sdo_write_uint8(slave, 0x1A00, 0, 5)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+//Axis 2 - 1A10
+/* 0x6841:1/16bits, status word */
+    if (!ec_sdo_write_uint32(slave, 0x1A10, 1, 0x68410010)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+/* 0x6864:2/32bits, position actual value */
+    if (!ec_sdo_write_uint32(slave, 0x1A10, 2, 0x68640020)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+/* 0x686C:2/32bits, velocity actual value */
+    if (!ec_sdo_write_uint32(slave, 0x1A10, 3, 0x686C0020)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+/* 0x6861:4/32bits, moo display */
+    if (!ec_sdo_write_uint32(slave, 0x1A10, 4, 0x68610008)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+/* 0x683Fh:5//16bits, error code */
+    if (!ec_sdo_write_uint32(slave, 0x1A10, 5, 0x683F0010)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    if (!ec_sdo_write_uint8(slave, 0x1A10, 0, 5)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+//Axis 3 - 1A20
+/* 0x7041:1/16bits, status word */
+    if (!ec_sdo_write_uint32(slave, 0x1A20, 1, 0x70410010)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+/* 0x7064:2/32bits, position actual value */
+    if (!ec_sdo_write_uint32(slave, 0x1A20, 2, 0x70640020)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+/* 0x706C:3/32bits, velocity actual value */
+    if (!ec_sdo_write_uint32(slave, 0x1A20, 3, 0x706C0020)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+/* 0x7061:4/32bits, moo display */
+    if (!ec_sdo_write_uint32(slave, 0x1A20, 4, 0x70610008)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+/* 0x703Fh:5//16bits, error code */
+    if (!ec_sdo_write_uint32(slave, 0x1A20, 5, 0x703F0010)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    if (!ec_sdo_write_uint8(slave, 0x1A20, 0, 5)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+//Controller transmit PDO mapping - 1B00
+/* 0x2E31:1/8bits, controller status 1 */
+    if (!ec_sdo_write_uint32(slave, 0x1B00, 1, 0x2E310008)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+/* 0x2E32:2/8bits, controller status 2 */
+    if (!ec_sdo_write_uint32(slave, 0x1B00, 2, 0x2E320008)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    if (!ec_sdo_write_uint8(slave, 0x1B00, 0, 2)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+    if (!ec_sdo_write_uint16(slave, 0x1C13, 1, 0x1A00)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    if (!ec_sdo_write_uint16(slave, 0x1C13, 2, 0x1A10)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, 0x1C13, 3, 0x1A20)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, 0x1C13, 4, 0x1B00)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+//    /* set number of TxPDO */
+
+    if (!ec_sdo_write_uint8(slave, 0x1C13, 0, 4)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    return E_SUCCESS;
+}
+
+
 /**
  * @brief gets the mode of operation (MOO) for AZD drives
  * @param drive_number
@@ -405,18 +727,18 @@ gberror_t ec_initial_pdo_azdxa_ked(const uint16_t slave) {
             //this is a drive attached to the slave
             switch (map_drive_to_subdrive[i]) {
                 case 1:
-                    ec_pdo_set_output_int8(slave, AZDXA_KED_MOOSET_PDO_DRIVE1_INDEX, CIA_MOO_CSP);
+                    ec_pdo_set_output_int8(slave, AZDXA_KED_MOOSET_PDO_DRIVE1_INDEX, map_drive_moo[i]);
 //                    printf("mooset azd sub drive 1\n");
                     break;
                 case 2:
-                    ec_pdo_set_output_int8(slave, AZDXA_KED_MOOSET_PDO_DRIVE2_INDEX, CIA_MOO_CSP);
+                    ec_pdo_set_output_int8(slave, AZDXA_KED_MOOSET_PDO_DRIVE2_INDEX, map_drive_moo[i]);
 //                    printf("mooset azd sub drive 2\n");
                     break;
                 case 3:
-                    ec_pdo_set_output_int8(slave, AZDXA_KED_MOOSET_PDO_DRIVE3_INDEX, CIA_MOO_CSP);
+                    ec_pdo_set_output_int8(slave, AZDXA_KED_MOOSET_PDO_DRIVE3_INDEX, map_drive_moo[i]);
                     break;
                 case 4:
-                    ec_pdo_set_output_int8(slave, AZDXA_KED_MOOSET_PDO_DRIVE4_INDEX, CIA_MOO_CSP);
+                    ec_pdo_set_output_int8(slave, AZDXA_KED_MOOSET_PDO_DRIVE4_INDEX, map_drive_moo[i]);
                     break;
                 default:
                     LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
@@ -560,6 +882,29 @@ int32_t ec_get_actpos_wrd_azdxa_ked(const uint16_t drive) {
     }
 }
 
+
+/**
+ * @brief get actvel for an AZD drive
+ * @param drive
+ * @return int32 velocity
+ */
+int32_t ec_get_actvel_wrd_azdxa_ked(const uint16_t drive) {
+    switch (map_drive_to_subdrive[drive]) {
+        case 1:
+            return ec_pdo_get_input_int32(map_drive_to_slave[drive], AZDXA_KED_ACTVEL_PDO_DRIVE1_INDEX);
+        case 2:
+            return ec_pdo_get_input_int32(map_drive_to_slave[drive], AZDXA_KED_ACTVEL_PDO_DRIVE2_INDEX);
+        case 3:
+            return ec_pdo_get_input_int32(map_drive_to_slave[drive], AZDXA_KED_ACTVEL_PDO_DRIVE3_INDEX);
+        case 4:
+            return ec_pdo_get_input_int32(map_drive_to_slave[drive], AZDXA_KED_ACTVEL_PDO_DRIVE4_INDEX);
+        default:
+            LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
+            //return 404 as a magic number error
+            return 404;
+    }
+}
+
 /**
  * @brief get ctrlwrd for for an AZD drive
  * @param drive
@@ -696,6 +1041,37 @@ gberror_t ec_set_setpos_wrd_azdxa_ked(const uint16_t drive, const int32_t setpos
 }
 
 /**
+ * @brief set setvel for an AZD drive
+ * @param drive
+ * @param setvel
+ * @return gberror
+ */
+gberror_t ec_set_setvel_wrd_azdxa_ked(const uint16_t drive, const int32_t setvel) {
+
+    switch (map_drive_to_subdrive[drive]) {
+        case 1:
+            ec_pdo_set_output_int32(map_drive_to_slave[drive], AZDXA_KED_SETVEL_PDO_DRIVE1_INDEX, setvel);
+            break;
+        case 2:
+            ec_pdo_set_output_int32(map_drive_to_slave[drive], AZDXA_KED_SETVEL_PDO_DRIVE2_INDEX, setvel);
+            break;
+        case 3:
+            ec_pdo_set_output_int32(map_drive_to_slave[drive], AZDXA_KED_SETVEL_PDO_DRIVE3_INDEX, setvel);
+            break;
+        case 4:
+            ec_pdo_set_output_int32(map_drive_to_slave[drive], AZDXA_KED_SETVEL_PDO_DRIVE4_INDEX, setvel);
+            break;
+        default:
+            LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
+            return E_SUB_DRIVE_OUT_OF_RANGE;
+
+    }
+    return E_SUCCESS;
+
+}
+
+
+/**
  * @brief set actpos for an AZD drive
  * @param drive
  * @param actpos
@@ -761,17 +1137,21 @@ int32_t ec_get_setpos_word_rev_azdxa_ked(const uint16_t drive) {
 gberror_t ec_set_moo_pdo_rev_azdxa_ked(const uint16_t drive) {
     switch (map_drive_to_subdrive[drive]) {
         case 1:
-            ec_pdo_set_input_int8_rev(map_drive_to_slave[drive], AZDXA_KED_MOODISP_PDO_DRIVE1_INDEX, CIA_MOO_CSP);
+            ec_pdo_set_input_int8_rev(map_drive_to_slave[drive], AZDXA_KED_MOODISP_PDO_DRIVE1_INDEX,
+                                      map_drive_moo[drive]);
             break;
         case 2:
-            ec_pdo_set_input_int8_rev(map_drive_to_slave[drive], AZDXA_KED_MOODISP_PDO_DRIVE2_INDEX, CIA_MOO_CSP);
+            ec_pdo_set_input_int8_rev(map_drive_to_slave[drive], AZDXA_KED_MOODISP_PDO_DRIVE2_INDEX,
+                                      map_drive_moo[drive]);
 
             break;
         case 3:
-            ec_pdo_set_input_int8_rev(map_drive_to_slave[drive], AZDXA_KED_MOODISP_PDO_DRIVE3_INDEX, CIA_MOO_CSP);
+            ec_pdo_set_input_int8_rev(map_drive_to_slave[drive], AZDXA_KED_MOODISP_PDO_DRIVE3_INDEX,
+                                      map_drive_moo[drive]);
             break;
         case 4:
-            ec_pdo_set_input_int8_rev(map_drive_to_slave[drive], AZDXA_KED_MOODISP_PDO_DRIVE4_INDEX, CIA_MOO_CSP);
+            ec_pdo_set_input_int8_rev(map_drive_to_slave[drive], AZDXA_KED_MOODISP_PDO_DRIVE4_INDEX,
+                                      map_drive_moo[drive]);
 
             break;
         default:
