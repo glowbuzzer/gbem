@@ -319,7 +319,7 @@ void ec_rxtx(void *argument) {
         add_timespec(&ts, cycletime + toff);
 
         //todo crit move from here just for testing
-        memcpy(shmp->sm_offline_buf_in, &ecm_status, sizeof(ecm_status_t));
+//        memcpy(shmp->sm_offline_buf_in, &ecm_status, sizeof(ecm_status_t));
 //        if (bus_cycle_tick == 20000) {
 //            print_status(&ecm_status);
 //        }
