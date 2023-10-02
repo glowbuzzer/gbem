@@ -1396,17 +1396,17 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
 #if USE_ESTOP_RESET == 1 && DISABLE_ESTOP_CHECKING != 1
 
-    if (ctrl_estop_din.slave_num < 1){
+    if (ctrl_estop_din.slave_num < 1) {
         UM_FATAL("GBEM: no ctrl_estop_din is defined!");
     }
 
 //    if (!BIT_CHECK(dpm_in->digital, CTRL_ESTOP_DIN)) {
-    if (!ec_pdo_get_input_bit(ctrl_estop_din.slave_num, ctrl_estop_din.bit_num)){
+    if (!ec_pdo_get_input_bit(ctrl_estop_din.slave_num, ctrl_estop_din.bit_num)) {
 //        printf("estop=true");
         estop = true;
     } else {
 //        if (BIT_CHECK(dpm_in->digital, CTRL_ESTOP_RESET_DIN)) {
-if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bit_num)){
+        if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bit_num)) {
             estop = false;
         }
     }
@@ -1887,12 +1887,6 @@ void ctrl_process_iomap_out(const bool zero) {
                         iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
                                                map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
                                                BIT_CHECK(dpm_out->digital, map_iomap[i].gbc.ionum));
-
-                        printf("map_iomap[i].pdo.datatype: %d\n", map_iomap[i].pdo.datatype);
-                        printf("map_iomap[i].pdo.slave_num: %d\n", map_iomap[i].pdo.slave_num);
-                        printf("map_iomap[i].pdo.byte_num: %d\n", map_iomap[i].pdo.byte_num);
-                        printf("map_iomap[i].pdo.bit_num: %d\n", map_iomap[i].pdo.bit_num);
-                        printf("map_iomap[i].gbc.ionum: %d\n", map_iomap[i].gbc.ionum);
 
                     } else {
                         iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
