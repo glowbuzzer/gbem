@@ -19,35 +19,39 @@
 #include "time.h"
 #include "std_defs_and_macros.h"
 #include "log.h"
-//#include "map.h"
-//#include "ethercatsetget.h"
+
+bool plc_din1, plc_din2, plc_din3, plc_din4, plc_din5, plc_din6, plc_din7, plc_din8;
+
+bool plc_dout1, plc_dout2, plc_dout3, plc_dout4, plc_dout5, plc_dout6, plc_dout7, plc_dout8;
 
 
-
-bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3, mydin1_test, mydout1_test;
-
-
-
-
-void *plc_mytask1(void *argument) {
+_Noreturn void *plc_aw_robot_task_1(void *argument) {
 
     //init stuff
 
 
     PLC_TASK_START
 
+        static int counter = 0;
 
+        printf("mytask1\n");
 
+        if (plc_din1) {
+            printf("Button 1 pressed\n");
+        }
+        if (plc_din2) {
+            printf("Button 2 pressed\n");
+        }
 
-//        printf("mytask1\n");
+        counter++;
 
-//        if (plc_din1) {
-//            printf("Button 1 pressed\n");
-//        }
-//        if (plc_din2) {
-//            printf("Button 2 pressed\n");
-//        }
-
+        if (counter % 2 == 0) {
+            printf("LED 1 on\n");
+            plc_dout1 = 0;
+        } else {
+            printf("LED 1 off\n");
+            plc_dout1 = 1;
+        }
 
 
 //plc_signalled_error=false;
