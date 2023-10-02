@@ -36,8 +36,6 @@ pthread_mutex_t plc_task_lock = PTHREAD_MUTEX_INITIALIZER;
 bool plc_task_has_overrun = false;
 
 
-
-
 void plc_force_plc_in(const uint8_t task_index) {
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
         //test if we are processing the task this cycle
@@ -86,21 +84,32 @@ void plc_process_iomap_out(const uint8_t task_index) {
                 }
             }
             if ((map_iomap[i].pdo.inout == MAP_OUT && map_iomap[i].gbc.inout == MAP_UNDEFINED &&
-                 map_iomap[i].plc.inout == MAP_OUT) || (map_iomap[i].pdo.inout == MAP_OUT && map_iomap[i].gbc.inout == MAP_OUT &&
-                                                        map_iomap[i].plc.inout == MAP_OUT)) {
+                 map_iomap[i].plc.inout == MAP_OUT) ||
+                (map_iomap[i].pdo.inout == MAP_OUT && map_iomap[i].gbc.inout == MAP_OUT &&
+                 map_iomap[i].plc.inout == MAP_OUT)) {
                 // pdo(out)=plc(out)
                 switch (map_iomap[i].plc.datatype) {
                     case ECT_BOOLEAN:
-                        iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,  *((bool *) map_iomap[i].plc.io));
+                        iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype,
+                                               map_iomap[i].pdo.slave_num,
+                                               map_iomap[i].pdo.byte_num,
+                                               map_iomap[i].pdo.bit_num,
+                                               *((bool *) map_iomap[i].plc.io));
                         break;
                     case ECT_INTEGER32:
-                        iomap_set_pdo_out_int32(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num, *((int32_t *) map_iomap[i].plc.io), (float) map_iomap[i].pdo.max_val);
+                        iomap_set_pdo_out_int32(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
+                                                map_iomap[i].pdo.byte_num, *((int32_t *) map_iomap[i].plc.io),
+                                                (float) map_iomap[i].pdo.max_val);
                         break;
                     case ECT_UNSIGNED32:
-                        iomap_set_pdo_out_uint32(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num, *((uint32_t *) map_iomap[i].plc.io), (float) map_iomap[i].pdo.max_val);
+                        iomap_set_pdo_out_uint32(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
+                                                 map_iomap[i].pdo.byte_num, *((uint32_t *) map_iomap[i].plc.io),
+                                                 (float) map_iomap[i].pdo.max_val);
                         break;
                     case ECT_REAL32:
-                        iomap_set_pdo_out_float(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num, *((float *) map_iomap[i].plc.io), (float) map_iomap[i].pdo.max_val);
+                        iomap_set_pdo_out_float(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
+                                                map_iomap[i].pdo.byte_num, *((float *) map_iomap[i].plc.io),
+                                                (float) map_iomap[i].pdo.max_val);
                         break;
                     default:
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Invalid iomap datatype in row [%u]", i);
@@ -123,22 +132,33 @@ void plc_process_iomap_in(const uint8_t task_index) {
         if (map_iomap[i].plc.private_linked_task_index == task_index) {
 
             if ((map_iomap[i].pdo.inout == MAP_IN && map_iomap[i].gbc.inout == MAP_UNDEFINED &&
-                 map_iomap[i].plc.inout == MAP_IN) || (map_iomap[i].pdo.inout == MAP_IN && map_iomap[i].gbc.inout == MAP_IN &&
-                                                       map_iomap[i].plc.inout == MAP_IN)) {
+                 map_iomap[i].plc.inout == MAP_IN) ||
+                (map_iomap[i].pdo.inout == MAP_IN && map_iomap[i].gbc.inout == MAP_IN &&
+                 map_iomap[i].plc.inout == MAP_IN)) {
                 //plc(in) = pdo(in)
                 switch (map_iomap[i].plc.datatype) {
                     case ECT_BOOLEAN:
-                        *((bool *) map_iomap[i].plc.io) = iomap_get_pdo_in_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num);
+                        *((bool *) map_iomap[i].plc.io) = iomap_get_pdo_in_bool(map_iomap[i].pdo.datatype,
+                                                                                map_iomap[i].pdo.slave_num,
+                                                                                map_iomap[i].pdo.byte_num,
+                                                                                map_iomap[i].pdo.bit_num);
                         break;
                     case ECT_INTEGER32:
-                        *((int32_t *) map_iomap[i].plc.io) = iomap_get_pdo_in_int32(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num);
+                        *((int32_t *) map_iomap[i].plc.io) = iomap_get_pdo_in_int32(map_iomap[i].pdo.datatype,
+                                                                                    map_iomap[i].pdo.slave_num,
+                                                                                    map_iomap[i].pdo.byte_num);
                         break;
 
                     case ECT_UNSIGNED32:
-                        *((uint32_t *) map_iomap[i].plc.io) = iomap_get_pdo_in_uint32(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num);
+                        *((uint32_t *) map_iomap[i].plc.io) = iomap_get_pdo_in_uint32(map_iomap[i].pdo.datatype,
+                                                                                      map_iomap[i].pdo.slave_num,
+                                                                                      map_iomap[i].pdo.byte_num);
                         break;
                     case ECT_REAL32:
-                        *((float *) map_iomap[i].plc.io) = iomap_get_pdo_in_float(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num, (float) map_iomap[i].pdo.max_val);
+                        *((float *) map_iomap[i].plc.io) = iomap_get_pdo_in_float(map_iomap[i].pdo.datatype,
+                                                                                  map_iomap[i].pdo.slave_num,
+                                                                                  map_iomap[i].pdo.byte_num,
+                                                                                  (float) map_iomap[i].pdo.max_val);
                         break;
                     default:
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Invalid iomap datatype in row [%u]", i);
@@ -186,7 +206,7 @@ void plc_process_iomap_in(const uint8_t task_index) {
  * @param name name of the task
  * @return E_SUCCESS or other gb error code
  */
-gberror_t plc_register_tasks(void *function, const uint8_t cycle_time, const uint8_t priority, const char *name) {
+gberror_t plc_register_tasks(void *function, const uint32_t cycle_time, const uint8_t priority, const char *name) {
 
     if (plc_task_set.num_tasks_defined >= PLC_MAX_NUM_TASKS) {
         return E_ARRAY_OVERFLOW;
@@ -210,6 +230,7 @@ void plc_task_prefix(const int task_index, struct timespec *start_time) {
     pthread_cond_wait(&plc_task_set.tasks[task_index].cond, &plc_task_lock);
     plc_task_set.tasks[task_index].exec.completed = false;
     clock_gettime(CLOCK_MONOTONIC, start_time);
+
     plc_process_iomap_in(task_index);
 #if PLC_ENABLE_FORCING == 1
     plc_force_plc_in(task_index);
@@ -224,7 +245,8 @@ void plc_task_suffix(const int task_index, struct timespec *start_time) {
     clock_gettime(CLOCK_MONOTONIC, &task_end_time);
     plc_task_set.tasks[task_index].exec.last_cycle_time_us = DIFF_NS(*start_time, task_end_time) / 1000;
 
-    if (plc_task_set.tasks[task_index].exec.last_cycle_time_us > plc_task_set.tasks[task_index].exec.max_cycle_time_us) {
+    if (plc_task_set.tasks[task_index].exec.last_cycle_time_us >
+        plc_task_set.tasks[task_index].exec.max_cycle_time_us) {
         plc_task_set.tasks[task_index].exec.max_cycle_time_us = plc_task_set.tasks[task_index].exec.last_cycle_time_us;
     }
 
@@ -258,7 +280,7 @@ void plc_task_exec(void) {
     for (int i = 0; i < plc_task_set.num_tasks_defined; i++) {
         if (trigger_task[i]) {
             if (!plc_task_set.tasks[i].exec.completed) {
-                printf("task overrun!\n");
+                UM_ERROR(GBEM_UM_EN, "GBEM: PLC task has overrun task [%d]", i);
                 plc_task_has_overrun = true;
                 //todo decide what to do here
             }
