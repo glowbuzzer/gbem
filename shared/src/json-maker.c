@@ -45,8 +45,8 @@
   * @param dest Pointer to the null character of the string
   * @param ch Value to be added.
   * @return Pointer to the null character of the destination string. */
-static char* chtoa( char* dest, char ch ) {
-    *dest   = ch;
+static char *chtoa(char *dest, char ch) {
+    *dest = ch;
     *++dest = '\0';
     return dest;
 }
@@ -55,80 +55,89 @@ static char* chtoa( char* dest, char ch ) {
   * @param dest Destination memory block.
   * @param src Source string.
   * @return Pointer to the null character of the destination string. */
-static char* atoa( char* dest, char const* src ) {
-    for( ; *src != '\0'; ++dest, ++src )
+static char *atoa(char *dest, char const *src) {
+    for (; *src != '\0'; ++dest, ++src)
         *dest = *src;
     *dest = '\0';
     return dest;
 }
 
 /* Open a JSON object in a JSON string. */
-char* json_objOpen( char* dest, char const* name ) {
-    if ( NULL == name )
-        dest = chtoa( dest, '{' );
+char *json_objOpen(char *dest, char const *name) {
+    if (NULL == name)
+        dest = chtoa(dest, '{');
     else {
-        dest = chtoa( dest, '\"' );
-        dest = atoa( dest, name );
-        dest = atoa( dest, "\":{" );
+        dest = chtoa(dest, '\"');
+        dest = atoa(dest, name);
+        dest = atoa(dest, "\":{");
     }
     return dest;
 }
 
 /* Close a JSON object in a JSON string. */
-char* json_objClose( char* dest ) {
-    if ( dest[-1] == ',' )
+char *json_objClose(char *dest) {
+    if (dest[-1] == ',')
         --dest;
-    return atoa( dest, "}," );
+    return atoa(dest, "},");
 }
 
 /* Open an array in a JSON string. */
-char* json_arrOpen( char* dest, char const* name ) {
-    if ( NULL == name )
-        dest = chtoa( dest, '[' );
+char *json_arrOpen(char *dest, char const *name) {
+    if (NULL == name)
+        dest = chtoa(dest, '[');
     else {
-        dest = chtoa( dest, '\"' );
-        dest = atoa( dest, name );
-        dest = atoa( dest, "\":[" );
+        dest = chtoa(dest, '\"');
+        dest = atoa(dest, name);
+        dest = atoa(dest, "\":[");
     }
     return dest;
 }
 
 /* Close an array in a JSON string. */
-char* json_arrClose( char* dest ) {
-    if ( dest[-1] == ',' )
+char *json_arrClose(char *dest) {
+    if (dest[-1] == ',')
         --dest;
-    return atoa( dest, "]," );
+    return atoa(dest, "],");
 }
 
 /** Add the name of a text property.
   * @param dest Destination memory.
   * @param name The name of the property.
   * @return Pointer to the next char. */
-static char* strname( char* dest, char const* name ) {
-    dest = chtoa( dest, '\"' );
-    if ( NULL != name ) {
-        dest = atoa( dest, name );
-        dest = atoa( dest, "\":\"" );
+static char *strname(char *dest, char const *name) {
+    dest = chtoa(dest, '\"');
+    if (NULL != name) {
+        dest = atoa(dest, name);
+        dest = atoa(dest, "\":\"");
     }
     return dest;
 }
 
 /** Get the hexadecimal digit of the least significant nibble of a integer. */
-static int nibbletoch( int nibble ) {
-    return "0123456789ABCDEF"[ nibble % 16u ];
+static int nibbletoch(int nibble) {
+    return "0123456789ABCDEF"[(unsigned int) nibble % 16u];
 }
 
 /** Get the escape character of a non-printable.
   * @param ch Character source.
   * @return The escape character or null character if error. */
-static int escape( int ch ) {
+static int escape(int ch) {
     int i;
-    static struct { char code; char ch; } const pair[] = {
-            { '\"', '\"' }, { '\\', '\\' }, { '/',  '/'  }, { 'b',  '\b' },
-            { 'f',  '\f' }, { 'n',  '\n' }, { 'r',  '\r' }, { 't',  '\t' },
+    static struct {
+        char code;
+        char ch;
+    } const pair[] = {
+            {'\"', '\"'},
+            {'\\', '\\'},
+            {'/',  '/'},
+            {'b',  '\b'},
+            {'f',  '\f'},
+            {'n',  '\n'},
+            {'r',  '\r'},
+            {'t',  '\t'},
     };
-    for( i = 0; i < sizeof pair / sizeof *pair; ++i )
-        if ( ch == pair[i].ch )
+    for (i = 0; i < sizeof pair / sizeof *pair; ++i)
+        if (ch == pair[i].ch)
             return pair[i].code;
     return '\0';
 }
@@ -138,22 +147,22 @@ static int escape( int ch ) {
   * @param src Source string.
   * @param len Max length of source. < 0 for unlimit.
   * @return Pointer to the null character of the destination string. */
-static char* atoesc( char* dest, char const* src, int len ) {
+static char *atoesc(char *dest, char const *src, int len) {
     int i;
-    for( i = 0; src[i] != '\0' && ( i < len || 0 > len ); ++dest, ++i ) {
-        if ( src[i] >= ' ' && src[i] != '\"' && src[i] != '\\' && src[i] != '/' )
+    for (i = 0; src[i] != '\0' && (i < len || 0 > len); ++dest, ++i) {
+        if (src[i] >= ' ' && src[i] != '\"' && src[i] != '\\' && src[i] != '/')
             *dest = src[i];
         else {
             *dest++ = '\\';
-            int const esc = escape( src[i] );
-            if ( esc )
+            int const esc = escape(src[i]);
+            if (esc)
                 *dest = esc;
             else {
                 *dest++ = 'u';
                 *dest++ = '0';
                 *dest++ = '0';
-                *dest++ = nibbletoch( src[i] / 16 );
-                *dest++ = nibbletoch( src[i] );
+                *dest++ = nibbletoch(src[i] / 16);
+                *dest++ = nibbletoch(src[i]);
             }
         }
     }
@@ -162,11 +171,11 @@ static char* atoesc( char* dest, char const* src, int len ) {
 }
 
 /* Add a text property in a JSON string. */
-char* json_nstr( char* dest, char const* name, char const* value, int len ) {
+char *json_nstr(char *dest, char const *name, char const *value, int len) {
 
-    dest = strname( dest, name );
-    dest = atoesc( dest, value, len );
-    dest = atoa( dest, "\"," );
+    dest = strname(dest, name);
+    dest = atoesc(dest, value, len);
+    dest = atoa(dest, "\",");
     return dest;
 }
 
@@ -174,32 +183,32 @@ char* json_nstr( char* dest, char const* name, char const* value, int len ) {
   * @param dest Destination memory.
   * @param name The name of the property.
   * @return Pointer to the next char. */
-static char* primitivename( char* dest, char const* name ) {
-    if( NULL == name )
+static char *primitivename(char *dest, char const *name) {
+    if (NULL == name)
         return dest;
-    dest = chtoa( dest, '\"' );
-    dest = atoa( dest, name );
-    dest = atoa( dest, "\":" );
+    dest = chtoa(dest, '\"');
+    dest = atoa(dest, name);
+    dest = atoa(dest, "\":");
     return dest;
 }
 
 /*  Add a boolean property in a JSON string. */
-char* json_bool( char* dest, char const* name, int value ) {
-    dest = primitivename( dest, name );
-    dest = atoa( dest, value ? "true," : "false," );
+char *json_bool(char *dest, char const *name, int value) {
+    dest = primitivename(dest, name);
+    dest = atoa(dest, value ? "true," : "false,");
     return dest;
 }
 
 /* Add a null property in a JSON string. */
-char* json_null( char* dest, char const* name ) {
-    dest = primitivename( dest, name );
-    dest = atoa( dest, "null," );
+char *json_null(char *dest, char const *name) {
+    dest = primitivename(dest, name);
+    dest = atoa(dest, "null,");
     return dest;
 }
 
 /* Used to finish the root JSON object. After call json_objClose(). */
-char* json_end( char* dest ) {
-    if ( ',' == dest[-1] ) {
+char *json_end(char *dest) {
+    if (',' == dest[-1]) {
         dest[-1] = '\0';
         --dest;
     }
@@ -280,7 +289,7 @@ char* json_double( char* dest, char const* name, double value ) {
     X( json_double,   double,        "%g"   ) \
     X( json_uverylong,   unsigned long long,        "%llu"   ) \
 
-#define json_num( funcname, type, fmt )                         \
+#define json_num(funcname, type, fmt)                         \
 char* funcname( char* dest, char const* name, type value ) {    \
     dest = primitivename( dest, name );                         \
     dest += sprintf( dest, fmt, value );                        \
@@ -288,8 +297,10 @@ char* funcname( char* dest, char const* name, type value ) {    \
     return dest;                                                \
 }
 
-#define X( name, type, fmt ) json_num( name, type, fmt )
+#define X(name, type, fmt) json_num( name, type, fmt )
+
 ALL_TYPES
+
 #undef X
 
 
