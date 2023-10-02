@@ -32,17 +32,20 @@
 #define MAP_NUM_DRIVES              1
 #define MAP_NUM_SLAVES              4
 
+
+
 /**CRITICAL! if this is defined then hardware estop is disabled! */
-#define DISABLE_ESTOP_CHECKING                          0
+#define DISABLE_ESTOP_CHECKING      0
+
 
 /** Use a digital input to reset the estop */
-#define USE_ESTOP_RESET             1
+#define USE_ESTOP_RESET             0
 
 
-///** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop */
-//#define CTRL_ESTOP_DIN              1
-//
-///** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop reset */
+/** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop */
+#define CTRL_ESTOP_DIN              1
+
+/** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop reset */
 //#define CTRL_ESTOP_RESET_DIN        2
 
 
