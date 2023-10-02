@@ -14,6 +14,7 @@
  */
 
 #include "ec_functions.h"
+#include "control.h"
 #include "shared.h"
 #include "main.h"
 #include "log.h"
@@ -26,11 +27,11 @@
 #include "dpm.h"
 #include "ecrxtx.h"
 #include "read_drive_error_code_into_ecm_status.h"
-#include "status.h"
 #include "std_defs_and_macros.h"
 #include <unistd.h>
 #include "status_control_word_bit_definitions.h"
 #include "read_error_messages.h"
+#include "print_slave_error_messages.h"
 
 /** global holding dc delta */
 extern int64 gl_delta;
@@ -91,7 +92,7 @@ gberror_t ec_ack_errors(void) {
     for (int i = 1; i <= ec_slavecount; i++) {
 
         ec_group[currentgroup].docheckstate = TRUE;
-        printf("%d - %u\n", i, ec_slave[i].state);
+//        printf("%d - %u\n", i, ec_slave[i].state);
 
         if (ec_slave[i].state == (EC_STATE_SAFE_OP + EC_STATE_ERROR)) {
             UM_WARN(GBEM_UM_EN, "GBEM: Slave [%d] is in SAFE_OP + ERROR, attempting error ack", i);
@@ -124,7 +125,7 @@ gberror_t ec_ack_errors(void) {
  * @param argument (not used)
  * @warning if this is triggered the cyclic task is stopped from running
  */
-void ec_check(void *argument) {
+_Noreturn void ec_check(void *argument) {
     (void) argument;
     int slave;
 //    int test_count=0;
@@ -206,6 +207,13 @@ void ec_check(void *argument) {
                 ecm_status.ec_check_found_error = false;
             }
         }
+
+
+        //we have event_data.slave_reported_error = EcatError; which teh global flag of a slave reporting and error this will clear that flag once we have popped all teh messahes
+        ctrl_copy_slave_error_to_ecm_status();
+        // print_slave_error_messages();
+
+
         //delay before we tick round and run the error check again
 
         //500ms
@@ -425,7 +433,7 @@ gberror_t print_1c32(const uint16_t slave) {
 
 
 // read 1C32:01 unit16 for sync mode
-    if (ec_sdo_read_uint16(slave, 0x1c32, 0x1, &uib16)) {
+    if (ec_sdo_read_uint16(slave, 0x1c32, 0x1, &uib16, true)) {
         if (uib16 <= 2) {
             UM_INFO(GBEM_GEN_LOG_EN, "GBEM: Sync mode read from slave [%d] (0x1c32:1) is [%s]", slave,
                     ec_sync_mode_strings[uib16]);
@@ -437,7 +445,7 @@ gberror_t print_1c32(const uint16_t slave) {
 
 //    read 0x1c32:02 uint32 for cycle time
 
-    if (ec_sdo_read_uint32(slave, 0x1c32, 0x2, &uib32)) {
+    if (ec_sdo_read_uint32(slave, 0x1c32, 0x2, &uib32, true)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Cycle time read from slave(%d) (0x1c32:2) is: [%d]", slave, uib32);
     } else {
         read_error = true;
@@ -446,7 +454,7 @@ gberror_t print_1c32(const uint16_t slave) {
 
 
 // read 1C32:03 unit32 for shift time
-    if (ec_sdo_read_uint32(slave, 0x1c32, 0x3, &uib32)) {
+    if (ec_sdo_read_uint32(slave, 0x1c32, 0x3, &uib32, true)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Shift time read from slave [%d] (0x1c32:3) is [%d]", slave, uib32);
     } else {
         read_error = true;
@@ -454,7 +462,7 @@ gberror_t print_1c32(const uint16_t slave) {
 
 
     // read 1C32:06 unit32 for calc and copy time
-    if (ec_sdo_read_uint32(slave, 0x1c32, 0x6, &uib32)) {
+    if (ec_sdo_read_uint32(slave, 0x1c32, 0x6, &uib32, true)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Calc and copy time read from slave [%d] (0x1c32:6) is [%d]", slave, uib32);
     } else {
         read_error = true;
@@ -572,7 +580,10 @@ bool ec_step_3_preop(void) {
         }
 
         /* Next we will create an IOmap and configure the SyncManager's and FMMU's to link the EtherCAT master and the slaves. */
-        int usedmem = ec_config_map(&IOmap);
+//        int usedmem = ec_config_map(&IOmap);
+        //todo io fiddle
+        int usedmem = ec_config_overlap_map(&IOmap);
+
         /* The above step also requests a transition of the slaves to SAFE OP so the next request is a bit superfluous*/
         if (usedmem >= ECM_IO_MAP_SIZE) {
             UM_FATAL("GBEM: The size of slave io map is greater than the maximum we allow (increase ECM_IO_MAP_SIZE)");
@@ -600,6 +611,7 @@ bool ec_step_5_error_check(void) {
         ec_boot_ecaterror_count++;
         UM_ERROR(GBEM_UM_EN, "GBEM: EtherCAT error detected [%s]", ec_elist2string());
 
+
         usleep(500000);
 
         if (ec_boot_ecaterror_count > 20) {
@@ -607,7 +619,7 @@ bool ec_step_5_error_check(void) {
         }
     }
     if ((ec_boot_ecaterror_count > 20)) {
-        UM_INFO(GBEM_UM_EN,
+        UM_FATAL(
                 "GBEM: Excessive number of EtherCAT slave error messages (>%d) detected during boot (so not all have been outputted)",
                 20);
     }
