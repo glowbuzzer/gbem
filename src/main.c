@@ -49,14 +49,8 @@
 #include "linux_shm.h"
 
 
-/** storage for gbc process name */
-//char proc_name[GBC_PROCESS_NAME_MAX_LENGTH] = {0};
 
-/** storage for directories and paths for gbc json exchange files */
-//char storage_dir_for_gbc_exchange[200];
-//char full_path_for_emstat_json_const[200];
-//char full_path_for_emstat_json_status[200];
-//char full_path_for_config_json[200];
+
 
 /**global var storing the name of the nic read from command lines args */
 char eth_interface1[SIZE_OF_IF_NAME] = {0};
