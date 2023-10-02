@@ -2,17 +2,10 @@
 #this is the process name we try and find to send signals to
 SET(GBC_PROCESS_NAME "GBC")
 
-SET(FILE_STORAGE_DIRECTORY "/tmp/")
-SET(JSON_STATUS_FILENAME "emstat_status.json")
-SET(JSON_CONST_FILENAME "emstat_const.json")
-SET(JSON_CONFIG_FILENAME "config.json")
 
 #defines to enable variable forcing through debugger
 SET(CTRL_ENABLE_FORCING 0)
 SET(PLC_ENABLE_FORCING 0)
-
-##Enables emstat (writing of status json files periodically
-SET(ENABLE_EMSTAT 0)
 
 
 SET(GBC_SHARED_MEMORY_NAME "gbc_shared_memory")

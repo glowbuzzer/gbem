@@ -98,21 +98,18 @@
 
 /* Defines for length of strings, buffers etc. */
 
-/** Max length of string for gbc process name */
-#define GBC_PROCESS_NAME_MAX_LENGTH                     100
 
 /** Max length of string for PLC task names */
 #define PLC_MAX_TASK_NAME_MAX_LENGTH                    20
 
 /** Defines whether PLC functionality is enabled */
-#define ENABLE_PLC                                      1
+#define ENABLE_PLC                                      0
 
 
 /** Defines whether all non-core functions are enable */
 /** This will disable:
  * PLC
  * EtherCAT error checking thread (thread_ec_check - function ec_check)
- * EMSTAT
  *
  */
 #define ENABLE_ALL_NON_CORE_FUNCTIONS                  1
@@ -132,8 +129,6 @@
 /** defines max size of the SOEM iomap data structure - this is a critical define. It defines the size of the iomap - lots of slaves with lots of POO objects will make thsi large*/
 #define ECM_IO_MAP_SIZE                                 2048
 
-/** defines if you want GBEM to use a RT signal like SIGRTMIN as the signal sending code is slightly different for RT signals */
-
 
 /** defines the use of the clock difference code in ecrtx - this calculates the difference between DC and local clock */
 #define USE_CLOCK_DIFFERENCE                            0
@@ -141,7 +136,5 @@
 /** defines the nice value for the GBEM process */
 #define PROCESS_NICE_VALUE                              10
 
-/** defines if we use a named semaphore of signal to communicated between GBEM and GBC processes */
-//#define USE_NAMED_SEMAPHORE_NOT_SIGNAL                  1
 
 #endif //GBEM_GBEM_CONFIG_H
