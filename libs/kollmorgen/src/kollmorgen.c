@@ -88,14 +88,12 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //0x60C2:0x1
 //uint8
     if (!ec_sdo_write_int8(slave, 0x60C2, 0x1, MAP_CYCLE_TIME, true)) {
-        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (interpolation time period)");
         return E_SDO_WRITE_FAILURE;
     }
 
 //FBUS.PARAM02:
 //This parameter activates the synchronization feature of the AKD.
     if (!ec_sdo_write_uint32(slave, 0x36E6, 0x0, 1, true)) {
-        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (activate the synchronization feature)");
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -103,7 +101,6 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //0x36E8:0x0
 //uint32
     if (!ec_sdo_write_uint32(slave, 0x36E8, 0x0, 1, true)) {
-        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (activate the synchronization supervision)");
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -114,8 +111,6 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
     // BIT 4 = Scaling is done using special DS402 - objects (independent on units)
     BIT_SET(uob32, 4);
     if (!ec_sdo_write_uint32(slave, 0x36E9, 0x0, uob32, true)) {
-        LL_ERROR(GBEM_GEN_LOG_EN,
-                 "GBEM: AKD error applying custom sdo (No emergency messages &/or special DS402 objects)");
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -123,7 +118,6 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //0x35B4:0x0
 //int32
     if (!ec_sdo_write_int32(slave, 0x35B4, 0x0, 2, true)) {
-        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (drv op mode)");
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -132,7 +126,6 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //uint32
 //0x1
     if (!ec_sdo_write_uint32(slave, 0x6091, 0x1, 0x1, true)) {
-        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (motor revolutions)");
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -141,7 +134,6 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //uint32
 //0x1
     if (!ec_sdo_write_uint32(slave, 0x6091, 0x2, 0x1, true)) {
-        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (shaft revolutions I)");
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -152,7 +144,6 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 
 //    if (!ec_sdo_write_uint32(slave, 0x6092, 0x1, 0x00100000)) {
     if (!ec_sdo_write_uint32(slave, 0x6092, 0x1, 0x2710, true)) {
-        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (feed)");
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -161,7 +152,6 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //uint32
 //0x1
     if (!ec_sdo_write_uint32(slave, 0x6092, 0x2, 0x1, true)) {
-        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (shaft revolutions II)");
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -178,7 +168,6 @@ value of 32.
  */
 
     if (!ec_sdo_write_int8(slave, AKD_MOO_SET_SDO_INDEX, AKD_MOO_SET_SDO_SUB_INDEX, CIA_MOO_CSP, true)) {
-        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (moo set)");
         return E_SDO_WRITE_FAILURE;
     }
     return E_SUCCESS;
