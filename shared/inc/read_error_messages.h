@@ -13,6 +13,6 @@
 #ifndef GBEM_READ_ERROR_MESSAGES_H
 #define GBEM_READ_ERROR_MESSAGES_H
 
-void ec_read_error_messages(void);
+_Noreturn void ec_read_error_messages(void);
 
 #endif //GBEM_READ_ERROR_MESSAGES_H
