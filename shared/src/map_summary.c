@@ -16,12 +16,10 @@
 #include "dpm.h"
 #include "shared.h"
 #include "map_summary.h"
-#include "json_maker.h"
 #include "log.h"
 #include "version.h"
 #include "user_message.h"
 #include "plc_core.h"
-#include "json_print.h"
 #include "map_SDO_print.h"
 #include "ec_functions.h"
 #include "main.h"
@@ -203,6 +201,20 @@ gberror_t config_process_general(void) {
             "GBEM: MAX_DRIVE_ERROR_MSG_LENGTH [%u] (This is the maximum length in bytes of a drive error message)",
             MAX_DRIVE_ERROR_MSG_LENGTH);
 
+#if ENABLE_PLC == 1
+    UM_INFO(GBEM_UM_EN, "GBEM: PLC is enabled");
+#endif
+
+//    ENABLE_ALL_NON_CORE_FUNCTIONS
+#if  ENABLE_ALL_NON_CORE_FUNCTIONS == 1
+    UM_INFO(GBEM_UM_EN, "GBEM: All non-core functions are enabled");
+#else
+    UM_INFO(GBEM_UM_EN, "GBEM: All non-core functions are disabled");
+#endif
+
+
+    UM_INFO(GBEM_UM_EN, "GBEM: PROCESS_NICE_VALUE [%d]", PROCESS_NICE_VALUE);
+
 
     if (config_error) {
         return E_INVALID_CONFIG;
@@ -240,28 +252,30 @@ gberror_t config_process_io(void) {
 //USE_ESTOP_RESET is a define to control whether GBEM processes the reset signal for estop or whether the estop state is provided by the electricals
 
 #if DISABLE_ESTOP_CHECKING != 1
-    if (ctrl_estop_din.slave_num>1){
-        UM_INFO(GBEM_UM_EN, "GBEM: ESTOP is on slave [%u] and bit number [%u]", ctrl_estop_din.slave_num, ctrl_estop_din.bit_num);
-    } else{
+    if (ctrl_estop_din.slave_num > 1) {
+        UM_INFO(GBEM_UM_EN, "GBEM: ESTOP is on slave [%u] and bit number [%u]", ctrl_estop_din.slave_num,
+                ctrl_estop_din.bit_num);
+    } else {
         UM_ERROR(GBEM_UM_EN, "GBEM: No ESTOP signal is defined. This is an error");
         config_error = true;
     }
 
 #ifdef USE_ESTOP_RESET
-        if (ctrl_estop_reset_din.slave_num>1){
+    if (ctrl_estop_reset_din.slave_num > 1) {
 
-            UM_INFO(GBEM_UM_EN, "GBEM: ESTOP Reset is on slave [%u] and bit number [%u]", ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bit_num);
-            //    UM_INFO(GBEM_UM_EN,
-            //            "GBEM: Estop on Digital In: %d, and requires a reset on Digital In: %d (USE_ESTOP_RESET is #defined)\n",
-        }else{
-            UM_ERROR(GBEM_UM_EN, "GBEM: No ESTOP reset signal is defined. This is an error when USE_ESTOP_RESET is defined");
-            config_error = true;
-        }
+        UM_INFO(GBEM_UM_EN, "GBEM: ESTOP Reset is on slave [%u] and bit number [%u]", ctrl_estop_reset_din.slave_num,
+                ctrl_estop_reset_din.bit_num);
+        //    UM_INFO(GBEM_UM_EN,
+        //            "GBEM: Estop on Digital In: %d, and requires a reset on Digital In: %d (USE_ESTOP_RESET is #defined)\n",
+    } else {
+        UM_ERROR(GBEM_UM_EN,
+                 "GBEM: No ESTOP reset signal is defined. This is an error when USE_ESTOP_RESET is defined");
+        config_error = true;
+    }
 #else
-        UM_INFO(GBEM_UM_EN, "GBEM: Estop on Digital In: %d, and does NOT require a reset signal (USE_ESTOP_RESET is NOT #defined)");
+    UM_INFO(GBEM_UM_EN, "GBEM: Estop on Digital In: %d, and does NOT require a reset signal (USE_ESTOP_RESET is NOT #defined)");
 #endif
 #endif
-    //todo add to json estop info
 
 
     UM_INFO(GBEM_UM_EN, "GBEM: Max number of GBC digital ins [%u] (DPM_NUM_DIGITAL)",
