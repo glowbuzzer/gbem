@@ -660,7 +660,6 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
                 }
 
 
-                printf("netscan_pdo_map_failure [%d]\n", netscan_pdo_map_failure);
                 if (netscan_pdo_map_failure == 1) {
                     UM_ERROR(GBEM_UM_EN, "GBEM: NOT all slaves successfully had their PDO map applied by netscan");
                     exit(0);
