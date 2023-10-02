@@ -21,7 +21,6 @@
 #include "version.h"
 #include "user_message.h"
 #include "plc_core.h"
-#include "status.h"
 #include "json_print.h"
 #include "map_SDO_print.h"
 #include "ec_functions.h"
