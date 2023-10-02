@@ -9,6 +9,6 @@ set(OS "linux")
 add_library(EtherCAT STATIC ${SOURCES})
 target_link_libraries(EtherCAT common-misc Logging pthread)
 target_include_directories(EtherCAT PUBLIC SOEM os_linux/osal os_linux/oshw)
-#IMPORRTANT NOTE - WE ARE SUPRESSING COMPILER WARNINGS HERE
+#IMPORTANT NOTE - WE ARE SUPPRESSING COMPILER WARNINGS HERE
 target_compile_options(EtherCAT PRIVATE -w)
 
