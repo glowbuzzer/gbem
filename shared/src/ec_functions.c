@@ -581,7 +581,7 @@ bool ec_step_3_preop(void) {
 
         /* Next we will create an IOmap and configure the SyncManager's and FMMU's to link the EtherCAT master and the slaves. */
 //        int usedmem = ec_config_map(&IOmap);
-        //todo io fiddle
+
         int usedmem = ec_config_overlap_map(&IOmap);
 
         /* The above step also requests a transition of the slaves to SAFE OP so the next request is a bit superfluous*/
