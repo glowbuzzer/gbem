@@ -32,6 +32,8 @@
 #define MAP_NUM_SLAVES              6
 
 
+/**CRITICAL! if this is defined then hardware estop is disabled! */
+#define DISABLE_ESTOP_CHECKING                          1
 
 #define USE_ESTOP_RESET             0
 

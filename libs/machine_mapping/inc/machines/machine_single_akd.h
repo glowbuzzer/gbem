@@ -24,6 +24,9 @@
 #define MAP_NUM_SLAVES              1
 #define MAP_NUM_DRIVES              1
 
+/**CRITICAL! if this is defined then hardware estop is disabled! */
+#define DISABLE_ESTOP_CHECKING                          1
+
 #define USE_ESTOP_RESET             0
 
 /** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop */

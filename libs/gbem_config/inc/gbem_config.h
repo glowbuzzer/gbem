@@ -72,8 +72,8 @@
 //this has to be quite large as it needs to be > maximum time for the drives to stop
 #define CTRL_DRIVE_CHANGE_STATE_TIMEOUT                 500
 
-/**CRITICAL! if this is defined then hardware estop is disabled! */
-#define DISABLE_ESTOP_CHECKING                          1
+///**CRITICAL! if this is defined then hardware estop is disabled! */
+//#define DISABLE_ESTOP_CHECKING                          1
 /**CRITICAL! if this is defined then heartbeat is disabled! */
 #define DISABLE_HEARTBEAT_CHECKING                      0
 
@@ -105,7 +105,7 @@
 #define PLC_MAX_TASK_NAME_MAX_LENGTH                    20
 
 /** Defines whether PLC functionality is enabled */
-#define ENABLE_PLC                                      0
+#define ENABLE_PLC                                      1
 
 
 /** Defines whether all non-core functions are enable */
