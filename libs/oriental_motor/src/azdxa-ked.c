@@ -1372,14 +1372,12 @@ uint8_t *ec_get_error_string_pdo_azdxa_ked(const uint16_t drive) {
         case 1:
             drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive],
                                                        AZDXA_KED_ERROR_CODE_PDO_DRIVE1_INDEX);
-            //todo crit debug remove
-            printf("Case 1: AZD drive error code is %d\n", drive_error_code);
+
             break;
         case 2:
             drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive],
                                                        AZDXA_KED_ERROR_CODE_PDO_DRIVE2_INDEX);
-            //todo crit debug remove
-            printf("Case 2: AZD drive error code is %d\n", drive_error_code);
+
             break;
         case 3:
             drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive],
