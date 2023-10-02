@@ -1394,33 +1394,36 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
      * if estop digin is false AND estopreset is true estop=false
      */
 
-#if USE_ESTOP_RESET == 1 && DISABLE_ESTOP_CHECKING != 1
 
-    if (ctrl_estop_din.slave_num < 1) {
-        UM_FATAL("GBEM: no ctrl_estop_din is defined!");
-    }
+#if USE_ESTOP_RESET == 1 && DISABLE_ESTOP_CHECKING == 0
+    //using estop din with reset
 
-//    if (!BIT_CHECK(dpm_in->digital, CTRL_ESTOP_DIN)) {
+
+        if (ctrl_estop_din_reset.slave_num < 1){
+            UM_FATAL("GBEM: no ctrl_estop_din_reset is defined!");
+        }
+        if (ctrl_estop_din.slave_num < 1) {
+            UM_FATAL("GBEM: no ctrl_estop_din is defined!");
+        }
+
+    //    if (!BIT_CHECK(dpm_in->digital, CTRL_ESTOP_DIN)) {
+        if (!ec_pdo_get_input_bit(ctrl_estop_din.slave_num, ctrl_estop_din.bit_num)) {
+    //        printf("estop=true");
+            estop = true;
+        } else {
+    //        if (BIT_CHECK(dpm_in->digital, CTRL_ESTOP_RESET_DIN)) {
+            if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bit_num)) {
+                estop = false;
+            }
+        }
+#endif
+
+#if  USE_ESTOP_RESET == 0 && DISABLE_ESTOP_CHECKING == 0
+    //using estop din but no reset
+//Assumes 0 on din forces quickstop
     if (!ec_pdo_get_input_bit(ctrl_estop_din.slave_num, ctrl_estop_din.bit_num)) {
-//        printf("estop=true");
         estop = true;
     } else {
-//        if (BIT_CHECK(dpm_in->digital, CTRL_ESTOP_RESET_DIN)) {
-        if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bit_num)) {
-            estop = false;
-        }
-    }
-#endif
-#if  USE_ESTOP_RESET == 0 && DISABLE_ESTOP_CHECKING != 1
-
-    if (ctrl_estop_din_reset.slave_num < 1){
-        UM_FATAL("GBEM: no ctrl_estop_din_reset is defined!");
-    }
-//    if (!BIT_CHECK(dpm_in->digital, CTRL_ESTOP_DIN)) {
-        if (!ec_pdo_get_input_bit(ctrl_estop_din.slave_num, ctrl_estop_din.bit_num)){
-        estop = true;
-    }
-    else {
         estop = false;
     }
 #endif
@@ -1614,8 +1617,8 @@ static void ctrl_copy_actvel(void) {
             dpm_in->joint_actual_velocity[i] = map_drive_get_actvel_wrd_function_ptr[i](i);
 
         } else {
-//            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
-//                     "GBEM: Missing function pointer for map_drive_get_actvel_wrd on drive [%u]", i);
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                     "GBEM: Missing function pointer for map_drive_get_actvel_wrd on drive [%u]", i);
         }
     }
 }
@@ -1631,8 +1634,8 @@ static void ctrl_copy_acttorq(void) {
             dpm_in->joint_actual_torque[i] = map_drive_get_acttorq_wrd_function_ptr[i](i);
 
         } else {
-//            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
-//                     "GBEM: Missing function pointer for map_drive_get_acttorq_wrd on drive [%u]", i);
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                     "GBEM: Missing function pointer for map_drive_get_acttorq_wrd on drive [%u]", i);
         }
     }
 }
@@ -1643,7 +1646,7 @@ static void ctrl_copy_acttorq(void) {
 __attribute__((unused)) static void ctrl_check_for_big_pos_jump(uint16_t drive, int32_t current_position) {
     static int32_t last_pos[MAP_NUM_DRIVES];
     if ((abs(current_position - last_pos[drive])) > CTRL_POS_JUMP_THRESHOLD) {
-        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Position jump too big for drive [%u] jump [%u]", drive,
+        UM_ERROR(GBEM_UM_EN, "GBEM: Position jump too big for drive [%u] jump [%u]", drive,
                  abs(current_position - last_pos[drive]));
     }
     last_pos[drive] = current_position;
