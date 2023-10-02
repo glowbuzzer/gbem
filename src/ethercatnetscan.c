@@ -432,7 +432,7 @@ int si_siiPDO(uint16 slave, uint8 t, int mapoffset, int bitoffset) {
     for (c = 0; c < EC_MAXSM; c++) PDO->SMbitsize[c] = 0;
     if (t > 1)
         t = 1;
-    PDO->Startpos = ec_siifind(slave, ECT_SII_PDO + t);
+    PDO->Startpos = (uint16) ec_siifind(slave, ECT_SII_PDO + t);
     if (PDO->Startpos > 0) {
         a = PDO->Startpos;
         w = ec_siigetbyte(slave, a++);
