@@ -24,7 +24,7 @@
 #include "plc_core.h"
 #include "iomap_processing.h"
 #include "ecrxtx.h"
-//#include "ethercatsetget.h"
+#include "ethercatsetget.h"
 #include "cia402.h"
 #include "read_drive_error_code_into_ecm_status.h"
 #include "print_slave_error_messages.h"
