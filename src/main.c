@@ -95,6 +95,9 @@ struct shm_msg *shmp;
 
 sem_t *gbc_named_trigger_semaphore;
 sem_t *gbc_named_mem_protection_semaphore;
+sem_t *gbc_named_offline_mem_protection_semaphore;
+
+
 
 /** Define a mutex to synchronize access to console output*/
 pthread_mutex_t console_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -134,6 +137,12 @@ bool check_ethernet_link(char *ifname) {
     }
 
     return (if_req.ifr_flags & IFF_UP) && (if_req.ifr_flags & IFF_RUNNING);
+}
+
+void initialise_ec_circular_slave_error_message(ec_circular_slave_error_message_t *queue) {
+    queue->head = 0;
+    queue->tail = -1;
+    queue->num_slots_full = 0;
 }
 
 
@@ -176,9 +185,14 @@ static void main_getopt_usage(void) {
 //Catch nasty signals and try and cleanup before exit
 void cleanup(int sig) {
 
+    //todo crit - debug remove
+    printf("Performing cleanup\n");
+
 //set status word to zeros to clear things like GBEM_ALIVE bit
     dpm_in->machine_word = 0;
+
 //todo crit - memset shared mem?
+    memset(shmp, 0, sizeof(struct shm_msg));
     /* request INIT state for all slaves */
     if (ecm_status.slavecount>0) {
         ec_slave[0].state = EC_STATE_INIT;
@@ -201,18 +215,16 @@ char **main_argv = NULL;
 int main(int argc, char *argv[]) {
     int __attribute__((unused)) len = 0;
     FILE __attribute__((unused)) *fp;
-main_argc = argc;
-main_argv = argv;
+
+    main_argc = argc;
+    main_argv = argv;
 
     signal(SIGTERM, cleanup);
     signal(SIGINT, cleanup);
     signal(SIGSEGV, cleanup);
     signal(SIGABRT, cleanup);
 
-
     gberror_t grc = E_GENERAL_FAILURE;
-
-
 
     // set STATUS_WORD_GBEM_ALIVE_BIT_NUM bit in status word
     BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_ALIVE_BIT_NUM);
@@ -225,6 +237,9 @@ main_argv = argv;
     ecm_status.ec_check_found_error = false;
     ecm_status.cyclic_state = ECM_PRE_BOOT;
 
+    initialise_ec_circular_slave_error_message(&ecm_status.slave_error_messages);
+
+
     //solves missing output in debugger log output (a gdb thing)
     setbuf(stdout, 0);
 
@@ -236,18 +251,11 @@ main_argv = argv;
     //    logger_set_syslog("Glowbuzzer");
 
     //print sizeof ecmstatus struct
-//    UM_INFO(GBEM_UM_EN, "GBEM: sizeof ecm_status_t = [%d]", sizeof(ecm_status_t));
+    UM_INFO(GBEM_UM_EN, "GBEM: sizeof ecm_status_t = [%d]", sizeof(ecm_status_t));
 
     //temp just for testing
-//    len = config_check_and_print(config_summary_json_buffer, &grc);
-//    fp = fopen("test.json", "w+");
-//    if (fp) {
-//        fwrite(config_summary_json_buffer, sizeof(char), (size_t) len, fp);
-//    }
-//    fclose(fp);
+//    config_check_and_print(config_summary_json_buffer, &grc);
 //    exit(0);
-
-
 
 
     //if any drive has the STATUS_WORD_GBEM_HOMING_NEEDED_BIT_NUM set then set the status word: STATUS_WORD_GBEM_HOMING_NEEDED_BIT_NUM
@@ -541,6 +549,11 @@ main_argv = argv;
         UM_ERROR(GBEM_UM_EN, "GBEM: This is a >serious< issue and GBEM is unlike to run successfully");
     }
 
+
+    //print maximum number of slaves configured in EC_MAXSLAVE
+    UM_INFO(GBEM_UM_EN, "GBEM: Maximum number of slaves configured in EC_MAXSLAVE is [%d]", EC_MAXSLAVE);
+
+
     //RT-Sensitive
 #if ENABLE_ALL_NON_CORE_FUNCTIONS == 1
 #if ENABLE_PLC == 1
@@ -569,13 +582,6 @@ main_argv = argv;
     }
     UM_INFO(GBEM_UM_EN, "GBEM: We are running as user [%s]", username_buf);
 
-
-
-//    char gb_inifile_name[] = "gbem.ini";
-//    /* set global var platform to be the platform value read from the ini file */
-//    os_platform = read_platform_from_ini(&gb_inifile_name[0], PLATFORM_PI, GB_PROGRAM_GBEM);
-
-/* */
     grc = establish_shared_mem_and_signal_con(&shmp, 1, 1);
     if (grc != E_SUCCESS) {
         ecm_status.gbc_connected = false;
@@ -591,14 +597,13 @@ main_argv = argv;
 
 
 
+
 #if DISABLE_ESTOP_CHECKING == 1
     UM_WARN(GBEM_UM_EN, "GBEM: Warning DISABLE_ESTOP_CHECKING is defined! This will override the hardware estop");
 #endif
 #if DISABLE_HEARTBEAT_CHECKING == 1
     UM_WARN(GBEM_UM_EN, "Warning DISABLE_HEARTBEAT_CHECKING is defined! This will disable heartbeat check");
 #endif
-
-
 
     int *task_param = (int *) malloc(sizeof(int));
     *task_param = 0;
@@ -652,6 +657,7 @@ main_argv = argv;
             UM_FATAL("GBEM: An error occurred when we were initialising, we can't figure out what GBEM sub-program you want to run so must exit");
     }
 
+    //todo crit - is this right?
     if (ecm_status.active_program != ECM_NET_SCAN_PROG) {
 
         pthread_join(thread_ec_reboot, NULL);
