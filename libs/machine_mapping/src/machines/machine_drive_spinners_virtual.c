@@ -34,7 +34,7 @@ MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,         EC_DC_NONE,     
 MAP_SLAVE_DC_CYCLE(                         0,                  0,              0,               1,                          );
 
 /* DRIVES */
-MAP_DRIVE_TO_NAME(                          "AZD1.1",                           "AZD1.2"                            "VIRTUAL1",                         "VIRTUAL2",                         "VIRTUAL3",                         "VIRTUAL4",                         );
+MAP_DRIVE_TO_NAME(                          "AZD1.1",                           "AZD1.2",                           "VIRTUAL1",                         "VIRTUAL2",                         "VIRTUAL3",                         "VIRTUAL4",                         );
 MAP_DRIVE_TO_SLAVE(                         MAP_AZD_CTRL_1,                     MAP_AZD_CTRL_1,                     0,                                  0,                                  0,                                  0,                                  );
 MAP_DRIVE_TO_SUBDRIVE(                      1,                                  2,                                  1,                                  1,                                  1,                                  1,                                  );
 MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_azdxa_ked,           ec_get_moo_pdo_azdxa_ked,           NULL,                               NULL,                               NULL,                               NULL,                               );
