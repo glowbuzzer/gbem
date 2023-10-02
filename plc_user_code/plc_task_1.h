@@ -16,6 +16,6 @@
 #define GBEM_PLC_TASK_1_H
 
 
-void * plc_mytask1 (void *argument);
+_Noreturn void *plc_mytask1(void *argument);
 
 #endif //GBEM_PLC_TASK_1_H
