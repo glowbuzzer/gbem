@@ -28,7 +28,7 @@ void printBinaryUint64(uint64_t n) {
     for (int i = numBits - 1; i >= 0; i--) {
         // Use bitwise shift and mask to extract each bit
         uint64_t bit = (n >> i) & 1;
-        printf("%llu", bit); // Print the bit (0 or 1)
+        printf("%lu", bit); // Print the bit (0 or 1)
     }
 }
 
