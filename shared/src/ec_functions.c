@@ -798,12 +798,6 @@ void ECBoot(void *argument) {
 
 
 
-
-//    todo crit kill any plc threads
-//    &plc_task_set.tasks[i].id
-
-
-
     /******************** this is the start of the boot phase ********************/
     /* this is a goto label that we return to if boot fails */
     boot_start_goto_label:
@@ -875,7 +869,8 @@ void ECBoot(void *argument) {
         ec_boot_proceed = ecm_status.boot_state.all_slaves_safe_op;
     }
 
-    gberror_t gbrc;
+    gberror_t gbrc __attribute__((unused));
+    
     sleep(5);
     if (ec_boot_proceed) {
 
