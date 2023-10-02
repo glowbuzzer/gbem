@@ -123,8 +123,8 @@ float iomap_get_pdo_in_float(const ec_datatype pdo_type, const uint16_t slave_nu
 void iomap_set_pdo_out_bool(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
                             const uint8_t bit_num, const bool val) {
     if (pdo_type == ECT_BOOLEAN) {
-//        printf("set bit on slave_num [%u] bit_byte [%u] to val [%u]\n", slave_num, bit_byte_num, val);
         ec_pdo_set_output_bit(slave_num, bit_num, val);
+//        printf("set bit on slave_num [%u] bit_num [%u] to val [%d]\n", slave_num, bit_num, val);
 
     } else {
         ec_pdo_set_output_bit_from_byte_slave(slave_num, pdo_type, byte_num, bit_num, val);
