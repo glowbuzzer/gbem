@@ -22,7 +22,9 @@
 #include <stdlib.h>
 
 static gberror_t nvram_check_for_function(uint16_t slave);
+
 static gberror_t nvram_step_3(uint16_t slave);
+
 static gberror_t nvram_step_2(uint16_t slave);
 
 
@@ -30,21 +32,22 @@ static gberror_t nvram_step_2(uint16_t slave);
  * @brief inits the EtherCAT network then calls the function to write sdos and then trigger the nvram write
  * @return
  */
-gberror_t nvram_step_1(void){
+gberror_t nvram_step_1(void) {
     gberror_t grc;
-    bool nvram_boot_proceed  = ec_step_1_init();
+    bool nvram_boot_proceed = ec_step_1_init();
     /* now let's try and Enumerate and init all slaves.*/
     if (nvram_boot_proceed) {
         nvram_boot_proceed = ec_step_2_config();
-    } else{
+    } else {
         UM_FATAL("GBEM: We have failed to initialise the network interface. This is terminal.");
     }
 
     /* now let's try and Enumerate and init all slaves.*/
     if (nvram_boot_proceed) {
         nvram_boot_proceed = ec_step_2_config();
-    } else{
-        UM_FATAL("GBEM: We have failed to enumerate and initialise the slaves on the EtherCAT network. This is terminal.");
+    } else {
+        UM_FATAL(
+                "GBEM: We have failed to enumerate and initialise the slaves on the EtherCAT network. This is terminal.");
     }
 
     UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
@@ -53,10 +56,10 @@ gberror_t nvram_step_1(void){
 
     grc = nvram_step_2(slave_to_write_nvram);
     if (grc != E_SUCCESS) {
-        printf("GBEM: SDO write and NVRAM write FAILED, error [%s] GBEM will exit\n", gb_strerror(grc));
+        UM_ERROR(GBEM_UM_EN, "GBEM: SDO write and NVRAM write FAILED, error [%s] GBEM will exit\n", gb_strerror(grc));
         exit(EXIT_FAILURE);
     } else {
-        printf("GBEM: SDO write and NVRAM write was successful, GBEM will exit\n");
+        UM_INFO(GBEM_UM_EN, "GBEM: SDO write and NVRAM write was successful, GBEM will exit\n");
         exit(EXIT_SUCCESS);
     }
 }
@@ -95,20 +98,20 @@ static gberror_t nvram_step_3(const uint16_t slave) {
 }
 
 
-
 static gberror_t nvram_step_2(const uint16_t slave) {
     gberror_t grc;
 
-    printf("GBEM: ***         THIS WILL WRITE THE SET SDOS TO THE DRIVE'S NVRAM          ***");
-    printf("GBEM: This will write values to slave [%u] only\n", slave);
+    UM_INFO(GBEM_UM_EN, "GBEM: ***         THIS WILL WRITE THE SET SDOS TO THE DRIVE'S NVRAM          ***");
+    UM_INFO(GBEM_UM_EN, "GBEM: This will write values to slave [%u] only\n", slave);
 
     grc = nvram_check_for_function(slave);
 
     if (grc == E_NO_FUNCTION_FOUND) {
-        printf("GBEM: No function is available to write SDOs to NVRAM to this slave. It could be that the slave does not support this type of operation or that no function has been written yet\n");
+        UM_ERROR(GBEM_UM_EN,
+                 "GBEM: No function is available to write SDOs to NVRAM to this slave. It could be that the slave does not support this type of operation or that no function has been written yet\n");
         return E_NO_FUNCTION_FOUND;
     } else if (grc != E_SUCCESS) {
-        printf("GBEM: Unknown error checking NVRAM write function\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: Unknown error checking NVRAM write function\n");
         return E_UNKNOWN_ERROR;
     }
 
