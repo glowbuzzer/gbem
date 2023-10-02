@@ -23,10 +23,6 @@ extern char **main_argv;
 
 int main(int argc, char *argv[]);
 
-extern char storage_dir_for_gbc_exchange[200];
-extern char full_path_for_emstat_json_const[200];
-extern char full_path_for_emstat_json_status[200];
-extern char full_path_for_config_json[200];
 
 extern struct shm_msg *shmp;
 
