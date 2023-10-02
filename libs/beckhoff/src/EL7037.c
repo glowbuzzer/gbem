@@ -68,24 +68,24 @@ gberror_t ec_pdo_map_el7037(const uint16_t slave) {
                 slave);
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM2_el7037.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM2_el7037.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM3_el7037.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM3_el7037.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     for (int i = 0; i < map_SM2_el7037.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM2_el7037.SM_assignment_index, i + 1,
-                                 map_SM2_index_of_assigned_PDO_el7037[i])) {
+                                 map_SM2_index_of_assigned_PDO_el7037[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     for (int i = 0; i < map_SM3_el7037.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM3_el7037.SM_assignment_index, i + 1,
-                                 map_SM3_index_of_assigned_PDO_el7037[i])) {
+                                 map_SM3_index_of_assigned_PDO_el7037[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -94,12 +94,12 @@ gberror_t ec_pdo_map_el7037(const uint16_t slave) {
      * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
      */
     if (!ec_sdo_write_uint16(slave, map_SM2_el7037.SM_assignment_index, 0,
-                             map_SM2_el7037.number_of_entries)) {
+                             map_SM2_el7037.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint16(slave, map_SM3_el7037.SM_assignment_index, 0,
-                             map_SM3_el7037.number_of_entries)) {
+                             map_SM3_el7037.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -111,39 +111,39 @@ gberror_t ec_pdo_map_el7037(const uint16_t slave) {
 gberror_t ec_standard_sdos_el7037(const uint16_t slave) {
 
     if (!ec_sdo_write_uint16(slave, EL7037_KP_CURRENT_SDO_INDEX, EL7037_KP_CURRENT_SDO_SUB_INDEX,
-                             2 * EL7037_KP_CURRENT_SDO_VALUE)) {
+                             2 * EL7037_KP_CURRENT_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint16(slave, EL7037_MAX_CURRENT_SDO_INDEX, EL7037_MAX_CURRENT_SDO_SUB_INDEX,
-                             EL7037_MAX_CURRENT_SDO_VALUE)) {
+                             EL7037_MAX_CURRENT_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint16(slave, EL7037_REDUCED_CURRENT_SDO_INDEX, EL7037_REDUCED_CURRENT_SDO_SUB_INDEX,
-                             EL7037_REDUCED_CURRENT_SDO_VALUE)) {
+                             EL7037_REDUCED_CURRENT_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint16(slave, EL7037_NOMINAL_VOLTAGE_SDO_INDEX, EL7037_NOMINAL_VOLTAGE_SDO_SUB_INDEX,
-                             EL7037_NOMINAL_VOLTAGE_SDO_VALUE)) {
+                             EL7037_NOMINAL_VOLTAGE_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint16(slave, EL7037_MOTOR_COIL_RESISTANCE_SDO_INDEX, EL7037_MOTOR_COIL_RESISTANCE_SDO_SUB_INDEX,
-                             EL7037_MOTOR_COIL_RESISTANCE_SDO_VALUE)) {
+                             EL7037_MOTOR_COIL_RESISTANCE_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint16(slave, EL7037_MOTOR_FULL_STEPS_SDO_INDEX, EL7037_MOTOR_FULL_STEPS_SDO_SUB_INDEX,
-                             EL7037_MOTOR_FULL_STEPS_SDO_VALUE)) {
+                             EL7037_MOTOR_FULL_STEPS_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint8(slave, EL7037_OPERATION_MODE_SDO_INDEX, EL7037_OPERATION_MODE_SDO_SUB_INDEX,
-                            EL7037_OPERATION_MODE_SDO_VALUE)) {
+                            EL7037_OPERATION_MODE_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint8(slave, EL7037_SPEED_RANGE_SDO_INDEX, EL7037_SPEED_RANGE_SDO_SUB_INDEX,
-                            EL7037_SPEED_RANGE_SDO_VALUE)) {
+                            EL7037_SPEED_RANGE_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint8(slave, EL7037_INVERT_MOTOR_POLARITY_SDO_INDEX, EL7037_INVERT_MOTOR_POLARITY_SDO_SUB_INDEX,
-                            map_drive_direction[slave - 1])) {
+                            map_drive_direction[slave - 1], true)) {
         return E_SDO_WRITE_FAILURE;
     }
     //all applied correctly

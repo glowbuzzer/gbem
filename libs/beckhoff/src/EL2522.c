@@ -63,24 +63,24 @@ gberror_t ec_pdo_map_el2522(const uint16_t slave) {
 
     // map_SM2.SM_assignment_index
 
-    if (!ec_sdo_write_uint16(slave, map_SM2_el2522.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM2_el2522.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM3_el2522.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM3_el2522.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     for (int i = 0; i < map_SM2_el2522.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM2_el2522.SM_assignment_index, i + 1,
-                                 map_SM2_index_of_assigned_PDO_el2522[i])) {
+                                 map_SM2_index_of_assigned_PDO_el2522[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     for (int i = 0; i < map_SM3_el2522.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM3_el2522.SM_assignment_index, i + 1,
-                                 map_SM3_index_of_assigned_PDO_el2522[i])) {
+                                 map_SM3_index_of_assigned_PDO_el2522[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -89,12 +89,12 @@ gberror_t ec_pdo_map_el2522(const uint16_t slave) {
      * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
      */
     if (!ec_sdo_write_uint16(slave, map_SM2_el2522.SM_assignment_index, 0,
-                             map_SM2_el2522.number_of_entries)) {
+                             map_SM2_el2522.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint16(slave, map_SM3_el2522.SM_assignment_index, 0,
-                             map_SM3_el2522.number_of_entries)) {
+                             map_SM3_el2522.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     //all applied correctly
@@ -109,11 +109,11 @@ gberror_t ec_standard_sdos_el2522(const uint16_t slave) {
 //    }
 
     if (!ec_sdo_write_uint8(slave, EL2522_OPERATION_MODE_CH1_SDO_INDEX, EL2522_OPERATION_MODE_CH1_SDO_SUB_INDEX,
-                            EL2522_OPERATION_MODE_CH1_SDO_VALUE)) {
+                            EL2522_OPERATION_MODE_CH1_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint8(slave, EL2522_OPERATION_MODE_CH2_SDO_INDEX, EL2522_OPERATION_MODE_CH2_SDO_SUB_INDEX,
-                            EL2522_OPERATION_MODE_CH2_SDO_VALUE)) {
+                            EL2522_OPERATION_MODE_CH2_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 

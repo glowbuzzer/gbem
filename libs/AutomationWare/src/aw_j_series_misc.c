@@ -27,37 +27,37 @@ gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
     int32_t max_pos = 0;
     ec_sdo_read_int32(map_drive_to_slave[drive], AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
                       AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                      &max_pos);
+                      &max_pos, true);
     UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max. pos [%d] on drive [%d]", max_pos, drive);
 
     int32_t min_pos = 0;
     ec_sdo_read_int32(map_drive_to_slave[drive], AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
                       AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                      &min_pos);
+                      &min_pos, true);
     UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Min. pos  [%d] on drive [%d]", min_pos, drive);
 
     uint16_t max_torque = 0;
     ec_sdo_read_uint16(map_drive_to_slave[drive], AW_J_SERIES_MAX_TORQUE_SDO_INDEX,
-                       AW_J_SERIES_MAX_TORQUE_SDO_SUB_INDEX, &max_torque);
+                       AW_J_SERIES_MAX_TORQUE_SDO_SUB_INDEX, &max_torque, true);
     UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max torque [%d] on drive [%d]", max_torque, drive);
 
     uint32_t motor_rated_torque = 0;
     ec_sdo_read_uint32(map_drive_to_slave[drive], AW_J_SERIES_MOTOR_RATED_TORQUE_SDO_INDEX,
                        AW_J_SERIES_MOTOR_RATED_TORQUE_SDO_SUB_INDEX,
-                       &motor_rated_torque);
+                       &motor_rated_torque, true);
     UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Motor rated torque  [%d] on drive [%d]", motor_rated_torque,
             drive);
 
     uint32_t motor_revolutions = 0;
     ec_sdo_read_uint32(map_drive_to_slave[drive], AW_J_SERIES_MOTOR_REVOLUTIONS_SDO_INDEX,
                        AW_J_SERIES_MOTOR_REVOLUTIONS_SDO_SUB_INDEX,
-                       &motor_revolutions);
+                       &motor_revolutions, true);
     UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Motor revolutions [%d] on drive [%d]", motor_revolutions, drive);
 
     uint32_t shaft_revolutions = 0;
     ec_sdo_read_uint32(map_drive_to_slave[drive], AW_J_SERIES_SHAFT_REVOLUTIONS_SDO_INDEX,
                        AW_J_SERIES_SHAFT_REVOLUTIONS_SDO_SUB_INDEX,
-                       &shaft_revolutions);
+                       &shaft_revolutions, true);
     UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Shaft revolutions [%d] on drive [%d]", shaft_revolutions, drive);
 
     int os = 50;
@@ -76,11 +76,11 @@ gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
     UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Manufacturer software version [%s] on drive [%d]", octet_string,
             drive);
 
-
+//dont print errror here
     uint16_t drive_error_code = 0;
     ec_sdo_read_uint16(map_drive_to_slave[drive], AW_J_SERIES_ERROR_CODE_SDO_INDEX,
                        AW_J_SERIES_ERROR_CODE_SDO_SUB_INDEX,
-                       &drive_error_code);
+                       &drive_error_code, false);
 
     UM_INFO(GBEM_UM_EN, "GBEM:  AW-J-Series - drive error code [%d]", drive_error_code);
 

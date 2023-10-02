@@ -49,6 +49,7 @@ void ctrl_init_statemachine(struct stateMachine *smachine);
 
 void ctrl_main(struct stateMachine *m, bool first_run);
 
+void ctrl_copy_slave_error_to_ecm_status(void);
 
 /* sm helper functions */
 void ctrl_change_all_drives_states(uint16_t controlword);

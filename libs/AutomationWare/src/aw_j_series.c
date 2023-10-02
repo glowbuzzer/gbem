@@ -74,11 +74,6 @@ gberror_t ec_initial_pdo_aw_j_series(const uint16_t slave) {
             slave, map_drive_to_slave[slave],
             AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
 
-    if (ec_iserror()) {
-        LL_ERROR(GBEM_GEN_LOG_EN,
-                 "GBEM: EtherCAT error detected after initial PDO writes: %s", ec_elist2string());
-        return E_ETHERCAT_ERROR_DETECTED;
-    }
 
     return E_SUCCESS;
 }
@@ -195,10 +190,10 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
     memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
     uint16_t drive_error_code = 0;
 
-
+//dont print errror on sdo read here as it pops error from stack - umErrror = false
     if (ec_sdo_read_uint16(map_drive_to_slave[drive], AW_J_SERIES_ERROR_CODE_SDO_INDEX,
                            AW_J_SERIES_ERROR_CODE_SDO_SUB_INDEX,
-                           &drive_error_code)) {
+                           &drive_error_code, false)) {
 
         if (drive_error_code == 0) {
             sprintf((char *) error_code_string, "AW-J-Series: no error on drive. Detailed error report [%s]",
@@ -210,6 +205,11 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
             if (aw_j_series_error[i].error_id == drive_error_code) {
                 sprintf((char *) error_code_string, "AW-J-Series error [%s]. Detailed error report [%s]",
                         aw_j_series_error[i].text_string, ec_get_detailled_error_report_sdo_aw_j_series(drive));
+//todo crit
+//                snprintf(error_code_string, sizeof(error_code_string), "AW-J-Series error [%.*s]. Detailed error report [%.*s]",
+//                         10, aw_j_series_error[i].text_string,
+//                         10, ec_get_detailled_error_report_sdo_aw_j_series(drive));
+
                 return error_code_string;
             }
         }
@@ -236,9 +236,6 @@ uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(const uint16_t drive_numb
                         AW_J_SERIES_ERROR_DESCRIPTION_SDO_SUB_INDEX, false, &os,
                         &octet_string, EC_TIMEOUTRXM);
     if (rc <= 0) {
-        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Could not read SDO index:0x%04x - sub-index:0x%04x (on slave:%u",
-                 AW_J_SERIES_ERROR_DESCRIPTION_SDO_INDEX, AW_J_SERIES_ERROR_DESCRIPTION_SDO_SUB_INDEX,
-                 map_drive_to_slave[drive_number]);
         return failed_error_code_read;
 
     }

@@ -59,25 +59,25 @@ gberror_t ec_apply_standard_sdos_mse_408(const uint16_t slave) {
     if (nolimits) {
         if (!ec_sdo_write_int32(slave, MSE_408_MAX_POSITION_LIMIT_SDO_INDEX,
                                 MSE_408_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                0)) {
+                                0, true)) {
             return E_SDO_WRITE_FAILURE;
         }
 
         if (!ec_sdo_write_int32(slave, MSE_408_MIN_POSITION_LIMIT_SDO_INDEX,
                                 MSE_408_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                0)) {
+                                0, true)) {
             return E_SDO_WRITE_FAILURE;
         }
     } else {
         if (!ec_sdo_write_int32(slave, MSE_408_MAX_POSITION_LIMIT_SDO_INDEX,
                                 MSE_408_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                map_drive_pos_limit[map_slave_to_drive(slave)])) {
+                                map_drive_pos_limit[map_slave_to_drive(slave)], true)) {
             return E_SDO_WRITE_FAILURE;
         }
 
         if (!ec_sdo_write_int32(slave, MSE_408_MIN_POSITION_LIMIT_SDO_INDEX,
                                 MSE_408_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                map_drive_neg_limit[map_slave_to_drive(slave)])) {
+                                map_drive_neg_limit[map_slave_to_drive(slave)], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -89,21 +89,21 @@ gberror_t ec_apply_standard_sdos_mse_408(const uint16_t slave) {
     }
 
     if (!ec_sdo_write_uint8(slave, MSE_408_DIRECTION_SDO_INDEX, MSE_408_DIRECTION_SDO_SUB_INDEX,
-                            polarity)) {
+                            polarity, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 //Max Motor Speed 0x6080 0 U32 RW 1 300 000 0…800 000
     if (!ec_sdo_write_uint32(slave, MSE_408_MAX_MOTOR_SPEED_SDO_INDEX,
                              MSE_408_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
-                             MSE_408_MAX_MOTOR_SPEED)) {
+                             MSE_408_MAX_MOTOR_SPEED, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 //Homing Speeds - Speed during Search for Switch - 0x6099 1 U32 RW 1 0x5DC0 (24000) 16001…400 000
     if (!ec_sdo_write_uint32(slave, MSE_408_HOMING_SPEEDS_SEARCH_FOR_SWITCH_SDO_INDEX,
                              MSE_408_HOMING_SPEEDS_SEARCH_FOR_SWITCH_SDO_SUB_INDEX,
-                             MSE_408_HOMING_SPEED_SEARCH_FOR_SWITCH)) {
+                             MSE_408_HOMING_SPEED_SEARCH_FOR_SWITCH, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -111,7 +111,7 @@ gberror_t ec_apply_standard_sdos_mse_408(const uint16_t slave) {
 //Homing Speeds - Speed during Search for Zero - 0x6099 2 U16 or U32 RW 1 0x0C80 (3200) 0… 16000
     if (!ec_sdo_write_uint32(slave, MSE_408_HOMING_SPEEDS_SEARCH_FOR_ZERO_SDO_INDEX,
                              MSE_408_HOMING_SPEEDS_SEARCH_FOR_ZERO_SDO_SUB_INDEX,
-                             MSE_408_HOMING_SPEED_SEARCH_FOR_ZERO)) {
+                             MSE_408_HOMING_SPEED_SEARCH_FOR_ZERO, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -119,7 +119,7 @@ gberror_t ec_apply_standard_sdos_mse_408(const uint16_t slave) {
 
     if (!ec_sdo_write_uint32(slave, MSE_408_HOMING_ACCELERATION_SDO_INDEX,
                              MSE_408_HOMING_ACCELERATION_SDO_SUB_INDEX,
-                             MSE_408_HOMING_ACCELERATION)) {
+                             MSE_408_HOMING_ACCELERATION, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -128,7 +128,7 @@ gberror_t ec_apply_standard_sdos_mse_408(const uint16_t slave) {
 
     if (!ec_sdo_write_uint32(slave, MSE_408_MOTOR_CODE_SDO_INDEX,
                              MSE_408_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
-                             MSE_408_MOTOR_CODE)) {
+                             MSE_408_MOTOR_CODE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -154,24 +154,24 @@ gberror_t ec_pdo_map_mse_408(const uint16_t slave) {
                 slave);
     }
 
-    if (!ec_sdo_write_uint8(slave, map_SM2_mse_408.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_SM2_mse_408.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint8(slave, map_SM3_mse_408.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_SM3_mse_408.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     for (int i = 0; i < map_SM2_mse_408.number_of_entries; i++) {
         if (!ec_sdo_write_uint8(slave, map_SM2_mse_408.SM_assignment_index, i + 1,
-                                map_SM2_index_of_assigned_PDO_mse_408[i])) {
+                                map_SM2_index_of_assigned_PDO_mse_408[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     for (int i = 0; i < map_SM3_mse_408.number_of_entries; i++) {
         if (!ec_sdo_write_uint8(slave, map_SM3_mse_408.SM_assignment_index, i + 1,
-                                map_SM3_index_of_assigned_PDO_mse_408[i])) {
+                                map_SM3_index_of_assigned_PDO_mse_408[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -180,12 +180,12 @@ gberror_t ec_pdo_map_mse_408(const uint16_t slave) {
      * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
      */
     if (!ec_sdo_write_uint16(slave, map_SM2_mse_408.SM_assignment_index, 0,
-                             map_SM2_mse_408.number_of_entries)) {
+                             map_SM2_mse_408.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint16(slave, map_SM3_mse_408.SM_assignment_index, 0,
-                             map_SM3_mse_408.number_of_entries)) {
+                             map_SM3_mse_408.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -253,11 +253,6 @@ gberror_t ec_initial_pdo_mse_408(const uint16_t slave) {
             "GBEM: Applying initial PDO writes for MSE-408 drive slave [%u], offset [%u], value [%u]", slave,
             MSE_408_MOOSET_PDO_INDEX, CIA_MOO_CSP);
 
-    if (ec_iserror()) {
-        LL_ERROR(GBEM_GEN_LOG_EN,
-                 "GBEM: EtherCAT error detected after initial PDO writes: %s", ec_elist2string());
-        return E_ETHERCAT_ERROR_DETECTED;
-    }
 
     return E_SUCCESS;
 }
@@ -271,7 +266,7 @@ uint8_t *ec_get_error_string_sdo_mse_408(const uint16_t drive) {
 
     if (ec_sdo_read_uint16(map_drive_to_slave[drive], MSE_408_ERROR_CODE_SDO_INDEX,
                            MSE_408_ERROR_CODE_SDO_SUB_INDEX,
-                           &drive_error_code)) {
+                           &drive_error_code, false)) {
 
         if (drive_error_code == 0) {
             sprintf((char *) error_code_string, "MSE-408: no error on drive");

@@ -68,25 +68,25 @@ gberror_t ec_pdo_map_el7031(const uint16_t slave) {
 
     // map_SM2.SM_assignment_index
 
-    if (!ec_sdo_write_uint16(slave, map_SM2_el7031.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM2_el7031.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 
-    if (!ec_sdo_write_uint16(slave, map_SM3_el7031.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM3_el7031.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     for (int i = 0; i < map_SM2_el7031.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM2_el7031.SM_assignment_index, i + 1,
-                                 map_SM2_index_of_assigned_PDO_el7031[i])) {
+                                 map_SM2_index_of_assigned_PDO_el7031[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     for (int i = 0; i < map_SM3_el7031.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM3_el7031.SM_assignment_index, i + 1,
-                                 map_SM3_index_of_assigned_PDO_el7031[i])) {
+                                 map_SM3_index_of_assigned_PDO_el7031[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -95,12 +95,12 @@ gberror_t ec_pdo_map_el7031(const uint16_t slave) {
      * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
      */
     if (!ec_sdo_write_uint16(slave, map_SM2_el7031.SM_assignment_index, 0,
-                             map_SM2_el7031.number_of_entries)) {
+                             map_SM2_el7031.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint16(slave, map_SM3_el7031.SM_assignment_index, 0,
-                             map_SM3_el7031.number_of_entries)) {
+                             map_SM3_el7031.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -114,35 +114,35 @@ gberror_t ec_pdo_map_el7031(const uint16_t slave) {
 gberror_t ec_standard_sdos_el7031(const uint16_t slave) {
 
     if (!ec_sdo_write_uint16(slave, EL7031_MAX_CURRENT_SDO_INDEX, EL7031_MAX_CURRENT_SDO_SUB_INDEX,
-                             EL7031_MAX_CURRENT_SDO_VALUE)) {
+                             EL7031_MAX_CURRENT_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint16(slave, EL7031_REDUCED_CURRENT_SDO_INDEX, EL7031_REDUCED_CURRENT_SDO_SUB_INDEX,
-                             EL7031_REDUCED_CURRENT_SDO_VALUE)) {
+                             EL7031_REDUCED_CURRENT_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint16(slave, EL7031_NOMINAL_VOLTAGE_SDO_INDEX, EL7031_NOMINAL_VOLTAGE_SDO_SUB_INDEX,
-                             EL7031_NOMINAL_VOLTAGE_SDO_VALUE)) {
+                             EL7031_NOMINAL_VOLTAGE_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint16(slave, EL7031_MOTOR_COIL_RESISTANCE_SDO_INDEX, EL7031_MOTOR_COIL_RESISTANCE_SDO_SUB_INDEX,
-                             EL7031_MOTOR_COIL_RESISTANCE_SDO_VALUE)) {
+                             EL7031_MOTOR_COIL_RESISTANCE_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint16(slave, EL7031_MOTOR_FULL_STEPS_SDO_INDEX, EL7031_MOTOR_FULL_STEPS_SDO_SUB_INDEX,
-                             EL7031_MOTOR_FULL_STEPS_SDO_VALUE)) {
+                             EL7031_MOTOR_FULL_STEPS_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint8(slave, EL7031_OPERATION_MODE_SDO_INDEX, EL7031_OPERATION_MODE_SDO_SUB_INDEX,
-                            EL7031_OPERATION_MODE_SDO_VALUE)) {
+                            EL7031_OPERATION_MODE_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint8(slave, EL7031_SPEED_RANGE_SDO_INDEX, EL7031_SPEED_RANGE_SDO_SUB_INDEX,
-                            EL7031_SPEED_RANGE_SDO_VALUE)) {
+                            EL7031_SPEED_RANGE_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_uint8(slave, EL7031_INVERT_MOTOR_POLARITY_SDO_INDEX, EL7031_INVERT_MOTOR_POLARITY_SDO_SUB_INDEX,
-                            map_drive_direction[slave - 1])) {
+                            map_drive_direction[slave - 1], true)) {
         return E_SDO_WRITE_FAILURE;
     }
     //all applied correctly

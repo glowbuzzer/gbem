@@ -37,25 +37,25 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
     if (nolimits) {
         if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
                                 AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                2147483647)) {
+                                2147483647, true)) {
             return E_SDO_WRITE_FAILURE;
         }
 
         if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
                                 AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                -2147483647)) {
+                                -2147483647, true)) {
             return E_SDO_WRITE_FAILURE;
         }
     } else {
         if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
                                 AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                map_drive_pos_limit[map_slave_to_drive(slave)])) {
+                                map_drive_pos_limit[map_slave_to_drive(slave)], true)) {
             return E_SDO_WRITE_FAILURE;
         }
 
         if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
                                 AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                map_drive_neg_limit[map_slave_to_drive(slave)])) {
+                                map_drive_neg_limit[map_slave_to_drive(slave)], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -67,7 +67,7 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
     }
 
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_POLARITY_SDO_INDEX, AW_J_SERIES_POLARITY_SDO_SUB_INDEX,
-                            polarity)) {
+                            polarity, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -93,7 +93,7 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
 
         torque_limit = (uint16_t) (((4016 * torque_limit) / 100));
         if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_TORQUE_SDO_INDEX, AW_J_SERIES_MAX_TORQUE_SDO_SUB_INDEX,
-                                torque_limit)) {
+                                torque_limit, true)) {
             return E_SDO_WRITE_FAILURE;
         }
 
@@ -106,7 +106,7 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
     //set bus cycle time
     //Communication cycle period	0x1006:0	DINT	32			100		readwrite
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_INDEX,
-                            AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_SUB_INDEX, MAP_CYCLE_TIME * 100)) {
+                            AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_SUB_INDEX, MAP_CYCLE_TIME * 100, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 

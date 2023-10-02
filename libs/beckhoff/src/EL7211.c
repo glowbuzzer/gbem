@@ -239,7 +239,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 
 //    0x001B233
 
-    if (!ec_sdo_write_uint32(slave, 0xF081, 0x1, 0x001F2336)) {
+    if (!ec_sdo_write_uint32(slave, 0xF081, 0x1, 0x001F2336, true)) {
 //if (!ec_sdo_write_uint32(slave, 0xF081, 0x1, 0x001B233)){
 
         return E_SDO_WRITE_FAILURE;
@@ -265,7 +265,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
     //0x8010:0x39
     // uint8
     // value - 0x05 = errors
-    if (!ec_sdo_write_uint8(slave, 0x8010, 0x39, 0x05)) {
+    if (!ec_sdo_write_uint8(slave, 0x8010, 0x39, 0x05, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -273,7 +273,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
     //0x8010:0x3A
     // uint8
     // value - 0x06 = warnings
-    if (!ec_sdo_write_uint8(slave, 0x8010, 0x3A, 0x06)) {
+    if (!ec_sdo_write_uint8(slave, 0x8010, 0x3A, 0x06, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -295,7 +295,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //0x8010:52
 //uint16
 //value 0 disable drive function 1 slow down ramp
-    if (!ec_sdo_write_uint16(slave, 0x8010, 0x52, 1)) {
+    if (!ec_sdo_write_uint16(slave, 0x8010, 0x52, 1, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -304,7 +304,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //    uinit16
 // value 0x1 - send emergency messages over CoE
 
-    if (!ec_sdo_write_uint16(slave, 0x10F3, 0x05, 0x1)) {
+    if (!ec_sdo_write_uint16(slave, 0x10F3, 0x05, 0x1, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -321,7 +321,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //0x8011:0x12
 //uint32
 //0x00001F40
-    if (!ec_sdo_write_uint32(slave, 0x8011, 0x12, 0x00001F40)) {
+    if (!ec_sdo_write_uint32(slave, 0x8011, 0x12, 0x00001F40, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -329,7 +329,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //0x8010:17
 //uint32
 //0xa=10
-    if (!ec_sdo_write_uint32(slave, 0x8010, 0x17, 0x0000000A)) {
+    if (!ec_sdo_write_uint32(slave, 0x8010, 0x17, 0x0000000A, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -337,7 +337,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //0x7010:0b
 //uint16
 //0xbb8 =
-    if (!ec_sdo_write_uint16(slave, 0x7010, 0x0b, 0xbb8)) {
+    if (!ec_sdo_write_uint16(slave, 0x7010, 0x0b, 0xbb8, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -345,14 +345,14 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //0x8010:31
 //uint32
 //0x00040000
-    if (!ec_sdo_write_uint32(slave, 0x8010, 0x31, 0x00040000)) {
+    if (!ec_sdo_write_uint32(slave, 0x8010, 0x31, 0x00040000, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 //motor pole pairs
 //0x8011:0x13
 //uint8
 //0x4
-    if (!ec_sdo_write_uint8(slave, 0x8011, 0x13, 0x4)) {
+    if (!ec_sdo_write_uint8(slave, 0x8011, 0x13, 0x4, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -360,7 +360,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //0x8011:0x11
 //uint32
 //0x00008D68 =36000 (mA)
-    if (!ec_sdo_write_uint32(slave, 0x8011, 0x11, 0x00008D68)) {
+    if (!ec_sdo_write_uint32(slave, 0x8011, 0x11, 0x00008D68, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -368,7 +368,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //0x8011:0x16
 //unit32
 //0x0000012C
-    if (!ec_sdo_write_uint32(slave, 0x8011, 0x16, 0x0000012C)) {
+    if (!ec_sdo_write_uint32(slave, 0x8011, 0x16, 0x0000012C, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -376,7 +376,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //0x8011:0x19
 //unit16
 //0x0023
-    if (!ec_sdo_write_uint16(slave, 0x8011, 0x19, 0x0023)) {
+    if (!ec_sdo_write_uint16(slave, 0x8011, 0x19, 0x0023, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -384,14 +384,14 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //0x8011:0x18
 //unit32
 //0x00000442
-    if (!ec_sdo_write_uint32(slave, 0x8011, 0x18, 0x00000442)) {
+    if (!ec_sdo_write_uint32(slave, 0x8011, 0x18, 0x00000442, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 //Motor thermal time constant
 //0x8011:0x2d
 //uint16
 //0x04CE
-    if (!ec_sdo_write_uint16(slave, 0x8011, 0x2d, 0x04CE)) {
+    if (!ec_sdo_write_uint16(slave, 0x8011, 0x2d, 0x04CE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -399,7 +399,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //0x8011:0x15
 //unit16
 //0x010E = 270 (degrees)
-    if (!ec_sdo_write_uint16(slave, 0x8011, 0x15, 0x010E)) {
+    if (!ec_sdo_write_uint16(slave, 0x8011, 0x15, 0x010E, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -408,7 +408,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //unit32
 //0x00000483=1155
 
-    if (!ec_sdo_write_uint32(slave, 0x8011, 0x1b, 0x00000483)) {
+    if (!ec_sdo_write_uint32(slave, 0x8011, 0x1b, 0x00000483, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 //Current loop proportional gain - Kp
@@ -421,7 +421,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //0xc8 = 200 - 20.0
 //2bc = 700 = 70.0
 
-    if (!ec_sdo_write_uint16(slave, 0x8010, 0x13, 0x064)) {
+    if (!ec_sdo_write_uint16(slave, 0x8010, 0x13, 0x064, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 //Current loop integral time - Tn
@@ -429,7 +429,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //uint16
 //0x0005
 //0x1f40=8000=0.8
-    if (!ec_sdo_write_uint16(slave, 0x8010, 0x12, 0x000A)) {
+    if (!ec_sdo_write_uint16(slave, 0x8010, 0x12, 0x000A, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 //Velocity loop proportional gain - Kp
@@ -440,7 +440,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //0x3e8 = 1000
 //0xc8=200=0.2
 
-    if (!ec_sdo_write_uint32(slave, 0x8010, 0x14, 0x96)) {
+    if (!ec_sdo_write_uint32(slave, 0x8010, 0x14, 0x96, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 //Velocity loop integral time
@@ -448,7 +448,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 //unit32
 //0x00000096=150
 //0x1f4=500=
-    if (!ec_sdo_write_uint32(slave, 0x8010, 0x15, 0x000032)) {
+    if (!ec_sdo_write_uint32(slave, 0x8010, 0x15, 0x000032, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -458,7 +458,7 @@ gberror_t ec_standard_sdos_EL7211(const uint16_t slave) {
 
 //mooset
     if (!ec_sdo_write_uint8(slave, EL7211_MOO_SET_SDO_INDEX, EL7211_MOO_SET_SDO_SUB_INDEX,
-                            CIA_MOO_CSP)) {
+                            CIA_MOO_CSP, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -476,12 +476,12 @@ gberror_t ec_pdo_map_EL7211(const uint16_t slave) {
                 slave);
     }
 
-    if (!ec_sdo_write_uint8(slave, map_SM2_EL7211.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_SM2_EL7211.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     osal_usleep(500);
 
-    if (!ec_sdo_write_uint8(slave, map_SM3_EL7211.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_SM3_EL7211.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     osal_usleep(500);
@@ -489,14 +489,14 @@ gberror_t ec_pdo_map_EL7211(const uint16_t slave) {
 
     for (int i = 0; i < map_SM2_EL7211.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM2_EL7211.SM_assignment_index, i + 1,
-                                 map_SM2_index_of_assigned_PDO_EL7211[i])) {
+                                 map_SM2_index_of_assigned_PDO_EL7211[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
     osal_usleep(500);
     for (int i = 0; i < map_SM3_EL7211.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM3_EL7211.SM_assignment_index, i + 1,
-                                 map_SM3_index_of_assigned_PDO_EL7211[i])) {
+                                 map_SM3_index_of_assigned_PDO_EL7211[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -505,13 +505,13 @@ gberror_t ec_pdo_map_EL7211(const uint16_t slave) {
      * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
      */
 
-    if (!ec_sdo_write_uint8(slave, map_SM2_EL7211.SM_assignment_index, 0, map_SM2_EL7211.number_of_entries)) {
+    if (!ec_sdo_write_uint8(slave, map_SM2_EL7211.SM_assignment_index, 0, map_SM2_EL7211.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     osal_usleep(500);
 
-    if (!ec_sdo_write_uint8(slave, map_SM3_EL7211.SM_assignment_index, 0, map_SM3_EL7211.number_of_entries)) {
+    if (!ec_sdo_write_uint8(slave, map_SM3_EL7211.SM_assignment_index, 0, map_SM3_EL7211.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 //all applied correctly
@@ -522,7 +522,8 @@ int8_t ec_get_moo_sdo_EL7211(const uint16_t drive) {
 
     uint8_t uib8;
 
-    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], EL7211_MOO_GET_SDO_INDEX, EL7211_MOO_GET_SDO_SUB_INDEX, &uib8)) {
+    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], EL7211_MOO_GET_SDO_INDEX, EL7211_MOO_GET_SDO_SUB_INDEX, &uib8,
+                           true)) {
         return -1;
     }
     LL_INFO(GBEM_GEN_LOG_EN, "Got MOO for EL7211 (slave %u) - value:%u", map_drive_to_slave[drive], uib8);
@@ -547,7 +548,8 @@ uint8_t *ec_get_error_string_sdo_EL7211(const uint16_t drive) {
 
     bool error_reading_diag = false;
 
-    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], EL7211_ERROR_CODE_SDO_INDEX, 0x04, &new_message_available)) {
+    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], EL7211_ERROR_CODE_SDO_INDEX, 0x04, &new_message_available,
+                           false)) {
         error_reading_diag = true;
         //    printf("EL7211: New message is available: %d\n", uib8);
 
@@ -556,7 +558,7 @@ uint8_t *ec_get_error_string_sdo_EL7211(const uint16_t drive) {
 
 //    // 10F3:01 - uint8 - maximum number of messages - always 50
 
-    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], EL7211_ERROR_CODE_SDO_INDEX, 0x01, &max_num_messages)) {
+    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], EL7211_ERROR_CODE_SDO_INDEX, 0x01, &max_num_messages, false)) {
 
         error_reading_diag = true;
         //    printf("Maximum number of messages:%d\n", uib8);
@@ -567,7 +569,7 @@ uint8_t *ec_get_error_string_sdo_EL7211(const uint16_t drive) {
 
     uint8_t newest_message_index;
 
-    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], EL7211_ERROR_CODE_SDO_INDEX, 0x2, &newest_message_index)) {
+    if (!ec_sdo_read_uint8(map_drive_to_slave[drive], EL7211_ERROR_CODE_SDO_INDEX, 0x2, &newest_message_index, false)) {
         error_reading_diag = true;
         //    printf("Newest message index for diagnostic message:%d\n", newest_message_index);
 

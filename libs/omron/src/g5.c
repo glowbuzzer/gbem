@@ -204,31 +204,31 @@ gberror_t ec_pdo_map_g5(const uint16_t slave) {
 
 
 gberror_t ec_standard_sdos_g5(const uint16_t slave) {
-    if (!ec_sdo_write_int8(slave, G5_MOOSET_SDO_INDEX, G5_MOOSET_SDO_SUB_INDEX, CIA_MOO_CSP)) {
+    if (!ec_sdo_write_int8(slave, G5_MOOSET_SDO_INDEX, G5_MOOSET_SDO_SUB_INDEX, CIA_MOO_CSP, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_int16(slave, G5_DRIVE_PROHIBITION_INPUT_SDO_INDEX, G5_DRIVE_PROHIBITION_INPUT_SDO_SUB_INDEX,
-                            G5_DRIVE_PROHIBITION_INPUT_SDO_VALUE)) {
+                            G5_DRIVE_PROHIBITION_INPUT_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_int32(slave, G5_SOFTWARE_POS_LIMIT_MIN_SDO_INDEX, G5_SOFTWARE_POS_LIMIT_MIN_SDO_SUB_INDEX,
-                            map_drive_neg_limit[slave - 1])) {
+                            map_drive_neg_limit[slave - 1], true)) {
 
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_int32(slave, G5_SOFTWARE_POS_LIMIT_MAX_SDO_INDEX, G5_SOFTWARE_POS_LIMIT_MAX_SDO_SUB_INDEX,
-                            map_drive_pos_limit[slave - 1])) {
+                            map_drive_pos_limit[slave - 1], true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_int32(slave, G5_SHAFT_REVOLUTIONS_SDO_INDEX, G5_SHAFT_REVOLUTIONS_SDO_SUB_INDEX,
-                            G5_SHAFT_REVOLUTIONS_SDO_VALUE)) {
+                            G5_SHAFT_REVOLUTIONS_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_int32(slave, G5_MOTOR_REVOLUTIONS_SDO_INDEX, G5_MOTOR_REVOLUTIONS_SDO_SUB_INDEX,
-                            G5_MOTOR_REVOLUTIONS_SDO_VALUE)) {
+                            G5_MOTOR_REVOLUTIONS_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -238,7 +238,7 @@ gberror_t ec_standard_sdos_g5(const uint16_t slave) {
 
 int8_t ec_get_moo_sdo_g5(const uint16_t drive) {
     int8_t moo;
-    if (!ec_sdo_read_int8(map_drive_to_slave[drive], G5_MOOGET_SDO_INDEX, G5_MOOGET_SDO_SUB_INDEX, &moo)) {
+    if (!ec_sdo_read_int8(map_drive_to_slave[drive], G5_MOOGET_SDO_INDEX, G5_MOOGET_SDO_SUB_INDEX, &moo, true)) {
         return 0;
     } else {
         printf("moo = [%d]\n", moo);

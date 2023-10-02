@@ -66,14 +66,14 @@ gberror_t ec_pdo_map_jvl_mis(const uint16_t slave) {
     }
 
     /* clear TxPdo 0x1a00 */
-    if (!ec_sdo_write_uint8(slave, map_txpdo_object_jvl_mis.PDO_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_txpdo_object_jvl_mis.PDO_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     /* write contents of TxPdo */
     for (int i = 0; i < map_txpdo_object_jvl_mis.number_of_entries; i++) {
         if (!ec_sdo_write_uint32(slave, map_txpdo_object_jvl_mis.PDO_assignment_index, i + 1,
-                                 map_txpdo_contents_jvl_mis[i])) {
+                                 map_txpdo_contents_jvl_mis[i], true)) {
 
             return E_SDO_WRITE_FAILURE;
         }
@@ -81,19 +81,19 @@ gberror_t ec_pdo_map_jvl_mis(const uint16_t slave) {
 
     /* write number of entries in TxPdo 0x1a00 */
     if (!ec_sdo_write_uint8(slave, map_txpdo_object_jvl_mis.PDO_assignment_index, 0,
-                            map_txpdo_object_jvl_mis.number_of_entries)) {
+                            map_txpdo_object_jvl_mis.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     /* clear RxPdo 0x1600 */
-    if (!ec_sdo_write_uint8(slave, map_rxpdo_object_jvl_mis.PDO_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_rxpdo_object_jvl_mis.PDO_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     /* write contents of RxPdo */
     for (int i = 0; i < map_rxpdo_object_jvl_mis.number_of_entries; i++) {
         if (!ec_sdo_write_uint32(slave, map_rxpdo_object_jvl_mis.PDO_assignment_index, i + 1,
-                                 map_rxpdo_contents_jvl_mis[i])) {
+                                 map_rxpdo_contents_jvl_mis[i], true)) {
 
             return E_SDO_WRITE_FAILURE;
         }
@@ -101,7 +101,7 @@ gberror_t ec_pdo_map_jvl_mis(const uint16_t slave) {
 
     /* write number of entries in RxPdo 0x1600 */
     if (!ec_sdo_write_uint8(slave, map_rxpdo_object_jvl_mis.PDO_assignment_index, 0,
-                            map_rxpdo_object_jvl_mis.number_of_entries)) {
+                            map_rxpdo_object_jvl_mis.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -116,17 +116,17 @@ gberror_t ec_standard_sdos_jvl_mis(const uint16_t slave) {
     //INT32_MAX is multiturn encoder limit
 
     if (!ec_sdo_write_int32(slave, JVL_MIS_POS_POSLIMIT_SDO_INDEX, JVL_MIS_POS_POSLIMIT_SDO_SUB_INDEX,
-                            map_drive_pos_limit[slave - 1])) {
+                            map_drive_pos_limit[slave - 1], true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_int32(slave, JVL_MIS_NEG_POSLIMIT_SDO_INDEX, JVL_MIS_NEG_POSLIMIT_SDO_SUB_INDEX,
-                            map_drive_neg_limit[slave - 1])) {
+                            map_drive_neg_limit[slave - 1], true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint8(slave, JVL_MIS_DIRECTION_SDO_INDEX,
-                            JVL_MIS_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave - 1])) {
+                            JVL_MIS_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave - 1], true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -134,7 +134,7 @@ gberror_t ec_standard_sdos_jvl_mis(const uint16_t slave) {
 
 //0x6091:1
     if (!ec_sdo_write_uint32(slave, JVL_MIS_GEAR_MOTOR_REV_SDO_INDEX,
-                             JVL_MIS_GEAR_MOTOR_REV_SDO_SUB_INDEX, JVL_MIS_GEAR_RATIO_MOTOR_REV)) {
+                             JVL_MIS_GEAR_MOTOR_REV_SDO_SUB_INDEX, JVL_MIS_GEAR_RATIO_MOTOR_REV, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -147,13 +147,13 @@ gberror_t ec_standard_sdos_jvl_mis(const uint16_t slave) {
 //feed 0x6092:1 defaults to 409600 & encoder increments (0x608f sub 1 defaults to 409,600)
 //0x6092:1
     if (!ec_sdo_write_uint32(slave, JVL_MIS_FEED_FEED_SDO_INDEX,
-                             JVL_MIS_FEED_FEED_SDO_SUB_INDEX, JVL_MIS_FEED_CONSTANT_FEED)) {
+                             JVL_MIS_FEED_FEED_SDO_SUB_INDEX, JVL_MIS_FEED_CONSTANT_FEED, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 //0x6092:2
     if (!ec_sdo_write_uint32(slave, JVL_MIS_FEED_SHAFT_REV_SDO_INDEX,
-                             JVL_MIS_FEED_SHAFT_REV_SDO_SUB_INDEX, JVL_MIS_FEED_CONSTANT_SHAFT_REV)) {
+                             JVL_MIS_FEED_SHAFT_REV_SDO_SUB_INDEX, JVL_MIS_FEED_CONSTANT_SHAFT_REV, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -177,7 +177,7 @@ gberror_t ec_standard_sdos_jvl_mis(const uint16_t slave) {
     BIT_SET(quickstop_option_code, 2);
 
     if (!ec_sdo_write_int16(slave, JVL_MIS_QUICKSTOP_OPTION_CODE_SDO_INDEX,
-                            JVL_MIS_QUICKSTOP_OPTION_CODE_SDO_SUB_INDEX, quickstop_option_code)) {
+                            JVL_MIS_QUICKSTOP_OPTION_CODE_SDO_SUB_INDEX, quickstop_option_code, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -278,22 +278,22 @@ gberror_t ec_print_params_jvl_mis(const uint16_t drive) {
 
     //Encoder increments - this should not be changed
     uint32_t encoder_increments = 0;
-    ec_sdo_read_uint32(map_drive_to_slave[drive], 0x608f, 1, &encoder_increments);
+    ec_sdo_read_uint32(map_drive_to_slave[drive], 0x608f, 1, &encoder_increments, true);
     //Motor revolutions
     uint32_t motor_revolutions = 0;
-    ec_sdo_read_uint32(map_drive_to_slave[drive], 0x608f, 2, &motor_revolutions);
+    ec_sdo_read_uint32(map_drive_to_slave[drive], 0x608f, 2, &motor_revolutions, true);
 
     //Gear motor: motor revolutions
     uint32_t gear_motor_motor_rev = 0;
-    ec_sdo_read_uint32(map_drive_to_slave[drive], 0x6091, 1, &gear_motor_motor_rev);
+    ec_sdo_read_uint32(map_drive_to_slave[drive], 0x6091, 1, &gear_motor_motor_rev, true);
 
     //Feed constant: feed
     uint32_t feed_constat_feed = 0;
-    ec_sdo_read_uint32(map_drive_to_slave[drive], 0x6092, 1, &feed_constat_feed);
+    ec_sdo_read_uint32(map_drive_to_slave[drive], 0x6092, 1, &feed_constat_feed, true);
 
     //Feed constant: shaft revolutions
     uint32_t feed_constant_shaft_revolutions = 0;
-    ec_sdo_read_uint32(map_drive_to_slave[drive], 0x6092, 2, &feed_constant_shaft_revolutions);
+    ec_sdo_read_uint32(map_drive_to_slave[drive], 0x6092, 2, &feed_constant_shaft_revolutions, true);
 
 
     UM_INFO(GBEM_UM_EN, "GBEM: JVL scaling information for slave [%u]", map_drive_to_slave[drive]);

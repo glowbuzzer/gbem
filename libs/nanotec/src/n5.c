@@ -104,42 +104,42 @@ gberror_t ec_initial_pdo_n5(const uint16_t slave) {
 
 gberror_t ec_standard_sdos_n5(const uint16_t slave) {
     if (!ec_sdo_write_int32(slave, N5_MIN_POS_LIMIT_SDO_INDEX, N5_MIN_POS_LIMIT_SDO_SUB_INDEX,
-                            map_drive_neg_limit[slave - 1])) {
+                            map_drive_neg_limit[slave - 1], true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 
     if (!ec_sdo_write_int32(slave, N5_MAX_POS_LIMIT_SDO_INDEX, N5_MAX_POS_LIMIT_SDO_SUB_INDEX,
-                            map_drive_pos_limit[slave - 1])) {
+                            map_drive_pos_limit[slave - 1], true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint8(slave, N5_DIRECTION_OF_ROTATION_SDO_INDEX, N5_DIRECTION_OF_ROTATION_SDO_SUB_INDEX,
-                            map_drive_direction[slave - 1])) {
+                            map_drive_direction[slave - 1], true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_int32(slave, N5_GEAR_MOTOR_REVOLUTIONS_SDO_INDEX, N5_GEAR_MOTOR_REVOLUTIONS_SDO_SUB_INDEX,
-                            N5_GEAR_MOTOR_REVOLUTIONS_VALUE)) {
+                            N5_GEAR_MOTOR_REVOLUTIONS_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_int32(slave, N5_GEAR_SHAFT_REVOLUTIONS_SDO_INDEX, N5_GEAR_SHAFT_REVOLUTIONS_SDO_SUB_INDEX,
-                            N5_GEAR_SHAFT_REVOLUTIONS_VALUE)) {
+                            N5_GEAR_SHAFT_REVOLUTIONS_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_int32(slave, N5_FEED_CONSTANT_SDO_INDEX, N5_FEED_CONSTANT_SDO_SUB_INDEX,
-                            N5_FEED_CONSTANT_VALUE)) {
+                            N5_FEED_CONSTANT_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_int32(slave, N5_FEED_SHAFT_REVOLUTIONS_SDO_INDEX, N5_FEED_SHAFT_REVOLUTIONS_SDO_SUB_INDEX,
-                            N5_FEED_SHAFT_REVOLUTIONS_VALUE)) {
+                            N5_FEED_SHAFT_REVOLUTIONS_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint8(slave, N5_INTERPOLATION_TIME_PERIOD_SDO_INDEX, N5_INTERPOLATION_TIME_PERIOD_SDO_SUB_INDEX,
-                            4)) {
+                            4, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -182,13 +182,14 @@ uint8_t *ec_get_error_string_sdo_n5(const uint16_t drive) {
     uint8_t num_errors = 0;
 
     if (!ec_sdo_read_uint8(map_drive_to_slave[drive], N5_PREDEFINED_ERROR_NUM_OF_ERRORS_SDO_INDEX,
-                           N5_PREDEFINED_ERROR_NUM_OF_ERRORS_SDO_SUB_INDEX, &num_errors)) {
+                           N5_PREDEFINED_ERROR_NUM_OF_ERRORS_SDO_SUB_INDEX, &num_errors, false)) {
         sprintf((char *) error_code_string, "Can't read error code from N5 drive, %u", drive);
         return error_code_string;
     }
 
     if (num_errors > 0) {
-        if (!ec_sdo_read_uint32(map_drive_to_slave[drive], N5_PREDEFINED_ERROR_SDO_INDEX, 1, &drive_error_code)) {
+        if (!ec_sdo_read_uint32(map_drive_to_slave[drive], N5_PREDEFINED_ERROR_SDO_INDEX, 1, &drive_error_code,
+                                false)) {
             sprintf((char *) error_code_string, "Can't read error code from N5 drive, %u", drive);
             return error_code_string;
         }

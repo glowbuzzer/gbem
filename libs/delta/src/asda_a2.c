@@ -52,24 +52,24 @@ gberror_t ec_pdo_map_asda_a2(const uint16_t slave) {
                 slave);
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM2_asda_a2.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM2_asda_a2.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM3_asda_a2.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM3_asda_a2.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     for (int i = 0; i < map_SM2_asda_a2.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM2_asda_a2.SM_assignment_index, i + 1,
-                                 map_SM2_index_of_assigned_PDO_asda_a2[i])) {
+                                 map_SM2_index_of_assigned_PDO_asda_a2[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     for (int i = 0; i < map_SM3_asda_a2.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM3_asda_a2.SM_assignment_index, i + 1,
-                                 map_SM3_index_of_assigned_PDO_asda_a2[i])) {
+                                 map_SM3_index_of_assigned_PDO_asda_a2[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -78,12 +78,12 @@ gberror_t ec_pdo_map_asda_a2(const uint16_t slave) {
      * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
      */
     if (!ec_sdo_write_uint16(slave, map_SM2_asda_a2.SM_assignment_index, 0,
-                             map_SM2_asda_a2.number_of_entries)) {
+                             map_SM2_asda_a2.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint16(slave, map_SM3_asda_a2.SM_assignment_index, 0,
-                             map_SM3_asda_a2.number_of_entries)) {
+                             map_SM3_asda_a2.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -106,33 +106,33 @@ gberror_t ec_initial_pdo_asda_a2(const uint16_t slave) {
 gberror_t ec_standard_sdos_asda_a2(const uint16_t slave) {
 
     if (!ec_sdo_write_int32(slave, ASDA_A2_INTERPOLATION_TIME_UNITS_SDO_INDEX,
-                            ASDA_A2_INTERPOLATION_TIME_UNITS_SDO_SUB_INDEX, MAP_CYCLE_TIME)) {
+                            ASDA_A2_INTERPOLATION_TIME_UNITS_SDO_SUB_INDEX, MAP_CYCLE_TIME, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 
     if (!ec_sdo_write_int32(slave, ASDA_A2_MIN_LIMIT_SDO_INDEX,
-                            ASDA_A2_MIN_LIMIT_SDO_SUB_INDEX, map_drive_neg_limit[slave])) {
+                            ASDA_A2_MIN_LIMIT_SDO_SUB_INDEX, map_drive_neg_limit[slave], true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_int32(slave, ASDA_A2_MAX_LIMIT_SDO_INDEX,
-                            ASDA_A2_MAX_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[slave])) {
+                            ASDA_A2_MAX_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[slave], true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_int32(slave, ASDA_A2_DIRECTION_SDO_INDEX,
-                            ASDA_A2_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave])) {
+                            ASDA_A2_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave], true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint32(slave, ASDA_A2_POSITION_FACTOR_NUMERATOR_SDO_INDEX,
                              ASDA_A2_POSITION_FACTOR_NUMERATOR_SDO_SUB_INDEX,
-                             ASDA_A2_POSITION_FACTOR_NUMERATOR_VALUE)) {
+                             ASDA_A2_POSITION_FACTOR_NUMERATOR_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 
     if (!ec_sdo_write_uint32(slave, ASDA_A2_DIRECTION_SDO_INDEX,
-                             ASDA_A2_DIRECTION_SDO_SUB_INDEX, ASDA_A2_POSITION_FACTOR_NUMERATOR_VALUE)) {
+                             ASDA_A2_DIRECTION_SDO_SUB_INDEX, ASDA_A2_POSITION_FACTOR_NUMERATOR_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -180,7 +180,7 @@ uint8_t *ec_get_error_string_sdo_asda_a2(const uint16_t drive) {
 
 
     if (!ec_sdo_read_uint16(map_drive_to_slave[drive], ASDA_A2_ERROR_CODE_SDO_INDEX, ASDA_A2_ERROR_CODE_SDO_SUB_INDEX,
-                            &drive_error_code)) {
+                            &drive_error_code, false)) {
 
         if (drive_error_code == 0) {
             sprintf((char *) error_code_string, "ASDA_A2 no error on drive");

@@ -80,21 +80,21 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //interpolation time index
 //0x60C:0x2
 //int8
-    if (!ec_sdo_write_int8(slave, 0x60C2, 0x2, -3)) {
+    if (!ec_sdo_write_int8(slave, 0x60C2, 0x2, -3, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 //interpolation time period
 //0x60C2:0x1
 //uint8
-    if (!ec_sdo_write_int8(slave, 0x60C2, 0x1, MAP_CYCLE_TIME)) {
+    if (!ec_sdo_write_int8(slave, 0x60C2, 0x1, MAP_CYCLE_TIME, true)) {
         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (interpolation time period)");
         return E_SDO_WRITE_FAILURE;
     }
 
 //FBUS.PARAM02:
 //This parameter activates the synchronization feature of the AKD.
-    if (!ec_sdo_write_uint32(slave, 0x36E6, 0x0, 1)) {
+    if (!ec_sdo_write_uint32(slave, 0x36E6, 0x0, 1, true)) {
         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (activate the synchronization feature)");
         return E_SDO_WRITE_FAILURE;
     }
@@ -102,7 +102,7 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //param04 - This parameter enables (1) or disables (0) the synchronization supervision of the CANOpen or EtherCAT fieldbus
 //0x36E8:0x0
 //uint32
-    if (!ec_sdo_write_uint32(slave, 0x36E8, 0x0, 1)) {
+    if (!ec_sdo_write_uint32(slave, 0x36E8, 0x0, 1, true)) {
         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (activate the synchronization supervision)");
         return E_SDO_WRITE_FAILURE;
     }
@@ -113,7 +113,7 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //    BIT_SET(uob32, 11);
     // BIT 4 = Scaling is done using special DS402 - objects (independent on units)
     BIT_SET(uob32, 4);
-    if (!ec_sdo_write_uint32(slave, 0x36E9, 0x0, uob32)) {
+    if (!ec_sdo_write_uint32(slave, 0x36E9, 0x0, uob32, true)) {
         LL_ERROR(GBEM_GEN_LOG_EN,
                  "GBEM: AKD error applying custom sdo (No emergency messages &/or special DS402 objects)");
         return E_SDO_WRITE_FAILURE;
@@ -122,7 +122,7 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //drv.opmode
 //0x35B4:0x0
 //int32
-    if (!ec_sdo_write_int32(slave, 0x35B4, 0x0, 2)) {
+    if (!ec_sdo_write_int32(slave, 0x35B4, 0x0, 2, true)) {
         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (drv op mode)");
         return E_SDO_WRITE_FAILURE;
     }
@@ -131,7 +131,7 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //0x6091:0x1
 //uint32
 //0x1
-    if (!ec_sdo_write_uint32(slave, 0x6091, 0x1, 0x1)) {
+    if (!ec_sdo_write_uint32(slave, 0x6091, 0x1, 0x1, true)) {
         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (motor revolutions)");
         return E_SDO_WRITE_FAILURE;
     }
@@ -140,7 +140,7 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //0x6091:0x2
 //uint32
 //0x1
-    if (!ec_sdo_write_uint32(slave, 0x6091, 0x2, 0x1)) {
+    if (!ec_sdo_write_uint32(slave, 0x6091, 0x2, 0x1, true)) {
         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (shaft revolutions I)");
         return E_SDO_WRITE_FAILURE;
     }
@@ -151,7 +151,7 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //655,360
 
 //    if (!ec_sdo_write_uint32(slave, 0x6092, 0x1, 0x00100000)) {
-    if (!ec_sdo_write_uint32(slave, 0x6092, 0x1, 0x2710)) {
+    if (!ec_sdo_write_uint32(slave, 0x6092, 0x1, 0x2710, true)) {
         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (feed)");
         return E_SDO_WRITE_FAILURE;
     }
@@ -160,7 +160,7 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
 //0x6092:0x2
 //uint32
 //0x1
-    if (!ec_sdo_write_uint32(slave, 0x6092, 0x2, 0x1)) {
+    if (!ec_sdo_write_uint32(slave, 0x6092, 0x2, 0x1, true)) {
         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (shaft revolutions II)");
         return E_SDO_WRITE_FAILURE;
     }
@@ -177,7 +177,7 @@ value of 32.
 
  */
 
-    if (!ec_sdo_write_int8(slave, AKD_MOO_SET_SDO_INDEX, AKD_MOO_SET_SDO_SUB_INDEX, CIA_MOO_CSP)) {
+    if (!ec_sdo_write_int8(slave, AKD_MOO_SET_SDO_INDEX, AKD_MOO_SET_SDO_SUB_INDEX, CIA_MOO_CSP, true)) {
         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: AKD error applying custom sdo (moo set)");
         return E_SDO_WRITE_FAILURE;
     }
@@ -204,27 +204,27 @@ gberror_t ec_pdo_map_akd(const uint16_t slave) {
 
 // map_SM2.SM_assignment_index
 
-    if (!ec_sdo_write_uint8(slave, map_SM2_akd.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_SM2_akd.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     osal_usleep(500);
 
-    if (!ec_sdo_write_uint8(slave, map_SM3_akd.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_SM3_akd.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     osal_usleep(500);
     for (int i = 0; i < map_SM2_akd.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM2_akd.SM_assignment_index, i + 1,
-                                 map_SM2_index_of_assigned_PDO_akd[i])) {
+                                 map_SM2_index_of_assigned_PDO_akd[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
     osal_usleep(500);
     for (int i = 0; i < map_SM3_akd.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM3_akd.SM_assignment_index, i + 1,
-                                 map_SM3_index_of_assigned_PDO_akd[i])) {
+                                 map_SM3_index_of_assigned_PDO_akd[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -232,12 +232,12 @@ gberror_t ec_pdo_map_akd(const uint16_t slave) {
     /*
      * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
      */
-    if (!ec_sdo_write_uint8(slave, map_SM2_akd.SM_assignment_index, 0, map_SM2_akd.number_of_entries)) {
+    if (!ec_sdo_write_uint8(slave, map_SM2_akd.SM_assignment_index, 0, map_SM2_akd.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     osal_usleep(500);
-    if (!ec_sdo_write_uint8(slave, map_SM3_akd.SM_assignment_index, 0, map_SM3_akd.number_of_entries)) {
+    if (!ec_sdo_write_uint8(slave, map_SM3_akd.SM_assignment_index, 0, map_SM3_akd.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -251,19 +251,19 @@ gberror_t ec_pdo_map_akd(const uint16_t slave) {
  * @return
  */
 gberror_t ec_pdo_map_alt_akd(const uint16_t slave) {
-    if (!ec_sdo_write_uint8(slave, 0x1C12, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, 0x1C12, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, 0x1600, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, 0x1600, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, 0x1601, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, 0x1601, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, 0x1602, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, 0x1602, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, 0x1602, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, 0x1602, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -278,27 +278,27 @@ gberror_t ec_pdo_map_alt_akd(const uint16_t slave) {
 
 //    ob32 = 0x60400010;
     /* 0x6040:0/16bits, control word */
-    if (!ec_sdo_write_uint32(slave, 0x1600, 1, 0x60400010)) {
+    if (!ec_sdo_write_uint32(slave, 0x1600, 1, 0x60400010, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     /* 0x60C1:1/32bits */
-    if (!ec_sdo_write_uint32(slave, 0x1600, 2, 0x60C10120)) {
+    if (!ec_sdo_write_uint32(slave, 0x1600, 2, 0x60C10120, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     /* set number of PDO entries for 0x1600 */
-    if (!ec_sdo_write_uint8(slave, 0x1600, 0, 2)) {
+    if (!ec_sdo_write_uint8(slave, 0x1600, 0, 2, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     /* list all RxPdo in 0x1C12:1-4 */
-    if (!ec_sdo_write_uint16(slave, 0x1C12, 1, 0x1600)) {
+    if (!ec_sdo_write_uint16(slave, 0x1C12, 1, 0x1600, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     /* set number of RxPDO */
-    if (!ec_sdo_write_uint8(slave, 0x1C12, 0, 1)) {
+    if (!ec_sdo_write_uint8(slave, 0x1C12, 0, 1, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -306,19 +306,19 @@ gberror_t ec_pdo_map_alt_akd(const uint16_t slave) {
 //    os = sizeof(ob8);
 //    ob8 = 0;
 
-    if (!ec_sdo_write_uint8(slave, 0x1C13, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, 0x1C13, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, 0x1A00, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, 0x1A00, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, 0x1A01, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, 0x1A01, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, 0x1A02, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, 0x1A02, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, 0x1A03, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, 0x1A03, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 //    ec_SDOwrite(slave, 0x1C13, 0, false, os, &ob8, EC_TIMEOUTRXM);
@@ -329,52 +329,52 @@ gberror_t ec_pdo_map_alt_akd(const uint16_t slave) {
 
     /* Define TxPdo */
     /* 0x6041:0/16bits, status word */
-    if (!ec_sdo_write_uint32(slave, 0x1A00, 1, 0x60410010)) {
+    if (!ec_sdo_write_uint32(slave, 0x1A00, 1, 0x60410010, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     /* 0x3470:4/16bits, analog input */
-    if (!ec_sdo_write_uint32(slave, 0x1A00, 2, 0x34700410)) {
+    if (!ec_sdo_write_uint32(slave, 0x1A00, 2, 0x34700410, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 //    /* 0x60FD:0/32bits, digital inputs */
-    if (!ec_sdo_write_uint32(slave, 0x1A00, 3, 0x60FD0020)) {
+    if (!ec_sdo_write_uint32(slave, 0x1A00, 3, 0x60FD0020, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     /* set number of PDO entries for 0x1A00  */
 
-    if (!ec_sdo_write_uint8(slave, 0x1600, 0, 3)) {
+    if (!ec_sdo_write_uint8(slave, 0x1600, 0, 3, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 //    /* 0x606c:0/32bits, act velocity */
-    if (!ec_sdo_write_uint32(slave, 0x1A01, 1, 0x606C0020)) {
+    if (!ec_sdo_write_uint32(slave, 0x1A01, 1, 0x606C0020, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     /* 0x6063:0/32bits, act position */
-    if (!ec_sdo_write_uint32(slave, 0x1A01, 2, 0x60630020)) {
+    if (!ec_sdo_write_uint32(slave, 0x1A01, 2, 0x60630020, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 //    /* set number of PDO entries for 0x1A01  */
-    if (!ec_sdo_write_uint8(slave, 0x1600, 0, 3)) {
+    if (!ec_sdo_write_uint8(slave, 0x1600, 0, 3, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 //    /* list all RxPdo in 0x1C12:1-4 */
-    if (!ec_sdo_write_uint16(slave, 0x1C13, 1, 0x1A00)) {
+    if (!ec_sdo_write_uint16(slave, 0x1C13, 1, 0x1A00, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 //    /* list all RxPdo in 0x1C12:1-4 */
-    if (!ec_sdo_write_uint16(slave, 0x1C13, 2, 0x1A01)) {
+    if (!ec_sdo_write_uint16(slave, 0x1C13, 2, 0x1A01, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 //    /* set number of TxPDO */
 
-    if (!ec_sdo_write_uint8(slave, 0x1C13, 0, 2)) {
+    if (!ec_sdo_write_uint8(slave, 0x1C13, 0, 2, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     return E_SUCCESS;
@@ -412,7 +412,7 @@ __attribute__(( weak ))int8_t ec_get_moo_sdo_akd(const uint16_t drive) {
 
     int8_t ib8;
 
-    if (!ec_sdo_read_int8(map_drive_to_slave[drive], AKD_MOO_GET_SDO_INDEX, AKD_MOO_GET_SDO_SUB_INDEX, &ib8)) {
+    if (!ec_sdo_read_int8(map_drive_to_slave[drive], AKD_MOO_GET_SDO_INDEX, AKD_MOO_GET_SDO_SUB_INDEX, &ib8, true)) {
         return 0;
     } else {
         return (ib8);
@@ -440,7 +440,7 @@ const uint8_t *ec_get_error_string_sdo_akd(const uint16_t drive) {
     static uint8_t error_code_no_error[] = "No error on drive";
 
     //if value is zero then no fault
-    if (!ec_sdo_read_uint32(map_drive_to_slave[drive], AKD_ERROR_CODE_SDO_INDEX, 0, &ib32)) {
+    if (!ec_sdo_read_uint32(map_drive_to_slave[drive], AKD_ERROR_CODE_SDO_INDEX, 0, &ib32, false)) {
         return error_reading_drive_error;
     }
 
@@ -450,7 +450,7 @@ const uint8_t *ec_get_error_string_sdo_akd(const uint16_t drive) {
 
 
     //subindexes 1-a contain faults - here we cheat and just read the first one
-    if (!ec_sdo_read_uint32(map_drive_to_slave[drive], AKD_ERROR_CODE_SDO_INDEX, 1, &ib32)) {
+    if (!ec_sdo_read_uint32(map_drive_to_slave[drive], AKD_ERROR_CODE_SDO_INDEX, 1, &ib32, false)) {
         return error_reading_drive_error;
     }
 
@@ -475,7 +475,7 @@ const uint8_t *ec_get_error_string_sdo_akd(const uint16_t drive) {
 //
 //
 
-    if (!ec_sdo_read_uint32(map_drive_to_slave[drive], AKD_WARNING_CODE_SDO_INDEX, 1, &ib32)) {
+    if (!ec_sdo_read_uint32(map_drive_to_slave[drive], AKD_WARNING_CODE_SDO_INDEX, 1, &ib32, false)) {
         return error_reading_drive_error;
     }
     //todo doesn't do anything with warning codes at the moment
@@ -510,7 +510,7 @@ const uint8_t *ec_get_error_string_sdo_akd(const uint16_t drive) {
 
 gberror_t ec_write_nvram_akd(const uint16_t slave) {
     if (!ec_sdo_write_uint32(map_drive_to_slave[slave], AKD_WRITE_CONFIG_SDO_INDEX,
-                             AKD_WRITE_CONFIG_SDO_SUB_INDEX, AKD_WRITE_CONFIG_SDO_VALUE)) {
+                             AKD_WRITE_CONFIG_SDO_SUB_INDEX, AKD_WRITE_CONFIG_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
     return E_SUCCESS;
@@ -550,15 +550,15 @@ gberror_t ec_nvram_sdos_akd(const uint16_t slave) {
     }
 
     if (!ec_sdo_write_int32(slave, AKD_MIN_LIMIT_SDO_INDEX,
-                            AKD_MIN_LIMIT_SDO_SUB_INDEX, map_drive_neg_limit[slave])) {
+                            AKD_MIN_LIMIT_SDO_SUB_INDEX, map_drive_neg_limit[slave], true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_int32(slave, AKD_MAX_LIMIT_SDO_INDEX,
-                            AKD_MAX_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[slave])) {
+                            AKD_MAX_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[slave], true)) {
         return E_SDO_WRITE_FAILURE;
     }
     if (!ec_sdo_write_int32(slave, AKD_DIRECTION_SDO_INDEX,
-                            AKD_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave])) {
+                            AKD_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave], true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -665,7 +665,7 @@ int32_t ec_get_setpos_word_rev_akd(const uint16_t drive) {
 bool print_akd_sync_params(const uint16_t slave) {
     uint32_t ib32;
 
-    ec_sdo_read_uint32(slave, 0x3496, 0x2, &ib32);
+    ec_sdo_read_uint32(slave, 0x3496, 0x2, &ib32, true);
     LL_INFO(GBEM_GEN_LOG_EN, "GBEM: AKD drive actual sync time [%d]", ib32);
     return true;
 }

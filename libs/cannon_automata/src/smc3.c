@@ -52,24 +52,24 @@ gberror_t ec_pdo_map_smc3(const uint16_t slave) {
                 slave);
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM2_smc3.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM2_smc3.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM3_smc3.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM3_smc3.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     for (int i = 0; i < map_SM2_smc3.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM2_smc3.SM_assignment_index, i + 1,
-                                 map_SM2_index_of_assigned_PDO_smc3[i])) {
+                                 map_SM2_index_of_assigned_PDO_smc3[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     for (int i = 0; i < map_SM3_smc3.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM3_smc3.SM_assignment_index, i + 1,
-                                 map_SM3_index_of_assigned_PDO_smc3[i])) {
+                                 map_SM3_index_of_assigned_PDO_smc3[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -78,12 +78,12 @@ gberror_t ec_pdo_map_smc3(const uint16_t slave) {
      * set the SM2 & SM3 assignment object number of  entries to actual number (sub-index 0)
      */
     if (!ec_sdo_write_uint16(slave, map_SM2_smc3.SM_assignment_index, 0,
-                             map_SM2_smc3.number_of_entries)) {
+                             map_SM2_smc3.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint16(slave, map_SM3_smc3.SM_assignment_index, 0,
-                             map_SM3_smc3.number_of_entries)) {
+                             map_SM3_smc3.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 

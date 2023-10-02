@@ -32,6 +32,7 @@
 #include "ec_functions.h"
 #include "pos_vel_acc.h"
 #include "p.h"
+#include "user_message.h"
 
 //todo review need for semaphores in control.c and ec_rxtx.c
 #define DPM_IN_PROTECT_START
@@ -372,20 +373,36 @@ __attribute__((unused)) static struct state errorState = {
         .entryAction = &sm_error_state_entry_action};
 
 
+// Function to check if the buffer is empty
+int ec_is_empty_circular_slave_error_message(ec_circular_slave_error_message_t *c) {
+    return (c->num_slots_full == 0);
+}
+
+// Function to check if the buffer is full
+int ec_is_full__circular_slave_error_message(ec_circular_slave_error_message_t *c) {
+    return (c->num_slots_full == MAX_NUM_SLAVE_ERROR_MESSAGES);
+}
+
 /**
  * @brief copies an error message into a circular buffer
  * @param c pointer to circular buffer
  * @param slave_error_message (message to add to buffer)
  */
 void ec_push_circular_slave_error_message(ec_circular_slave_error_message_t *c, uint8_t *slave_error_message) {
-    if (c->num_slots_full < MAX_NUM_SLAVE_ERROR_MESSAGES) {
+
+    if (ec_is_full__circular_slave_error_message(c)) {
+        // If the buffer is full, overwrite the oldest message
+        c->head = (c->head + 1) % MAX_NUM_SLAVE_ERROR_MESSAGES;
+    }
+
+    c->tail = (c->tail + 1) % MAX_NUM_SLAVE_ERROR_MESSAGES;
+    strncpy((char *) c->slave_error_message[c->tail], (char *) slave_error_message, EC_MAXERRORNAME - 1);
+    c->slave_error_message[c->tail][EC_MAXERRORNAME - 1] = '\0'; // Ensure null-terminated string
+
+    if (!ec_is_full__circular_slave_error_message(c)) {
         c->num_slots_full++;
     }
-    if (c->head == (MAX_NUM_SLAVE_ERROR_MESSAGES)) {
-        c->head = 0;
-    }
-    memcpy(c->slave_error_message[c->head], slave_error_message, strlen((char *) slave_error_message) + 1);
-    c->head++;
+
 };
 
 /**
@@ -1137,7 +1154,7 @@ void ctrl_change_all_drives_states(uint16_t controlword) {
             LL_TRACE(GBEM_SM_LOG_EN, "sm: Drive: %u, Command: %s", i,
                      cia_command_names[cia_ctrlwrd_to_command(controlword)]);
             if (grc != E_SUCCESS) {
-                LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive set ctrl wrd function error", gb_strerror(grc));
+                LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive set ctrl wrd function error [%s]", gb_strerror(grc));
             }
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_set_ctrl_wrd on drive [%u]",
@@ -1269,16 +1286,27 @@ bool ctrl_check_heartbeat_ok(uint32_t gbem_heartbeat_to_check, uint32_t gbc_hear
     return true;
 }
 
+//todo this function could do with moving out of this file - it is not part of control any more
+
+/**
+ * @brief if an EcatError is detected then copy the slave error message to the ecm_status struct
+ * @warning this is called from the ec_check thread - every 500ms
+ */
 void ctrl_copy_slave_error_to_ecm_status(void) {
     uint8_t EcatError_read_count = 0;
     while (EcatError) {
         EcatError_read_count++;
         char *slave_error_msg = ec_elist2string();
+//        printf("slave_error_msg: %s\n", slave_error_msg);
         if (strlen(slave_error_msg) > 2) {
             ec_push_circular_slave_error_message(&ecm_status.slave_error_messages,
                                                  (uint8_t *) slave_error_msg);
         }
+        osal_usleep(1000);
         if (EcatError_read_count > 30) {
+            //todo crit
+//if an EtherCAT slave is just stuck in error we will be back here spewing out the same error message
+            UM_ERROR(GBEM_UM_EN, "GBEM: EcatError_read_count > 30. We have too many slave error messages to read");
             break;
         }
     }
@@ -1347,6 +1375,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     //copy statuswords from EC_IN to DPM_IN (write)
     ctrl_copy_drive_statuswords();
     //copy digital ins from EC_IN to DPM_IN (write)
+
     ctrl_process_iomap_in();
 
 #if CTRL_ENABLE_FORCING == 1
@@ -1533,11 +1562,13 @@ if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
     ctrl_process_forces_out();
 #endif
 
+
     if (current_state == CIA_OPERATION_ENABLED) {
         ctrl_process_iomap_out(false);
 
     } else {
-        ctrl_process_iomap_out(true);
+        //todo crit do we want to zero?
+        ctrl_process_iomap_out(false);
     }
 
 
@@ -1648,8 +1679,9 @@ static void ctrl_copy_values_to_drives(void) {
 
                 if (*map_drive_set_setvel_wrd_function_ptr[i] != NULL) {
                     //run control loop
-                    int32_t adjusted_velocity = calculateVelocityCommand(dpm_out->joint_set_position[i],
-                                                                         dpm_in->joint_actual_position[i]);
+                    int32_t adjusted_velocity = calculateVelocityCommand(
+                            dpm_out->joint_set_position[i],
+                            dpm_in->joint_actual_position[i]);
 
                     grc = map_drive_set_setvel_wrd_function_ptr[i](i,
                                                                    dpm_out->joint_set_velocity[i] + adjusted_velocity);
@@ -1695,7 +1727,7 @@ static void __attribute__((unused)) ctrl_copy_setpos(void) {
 /* This function can be used to log nasty jumps in position*/
             //            ctrl_check_for_big_pos_jump(i,dpm_out->joint_set_position[i] );
             if (grc != E_SUCCESS) {
-                LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setpos function error", gb_strerror(grc));
+                LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setpos function error [%s]", gb_strerror(grc));
             }
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
@@ -1735,7 +1767,7 @@ void ctrl_copy_drive_controlwords(void) {
             grc = map_drive_set_ctrl_wrd_function_ptr[i](i, dpm_out->joint_controlword[i]);
             ecm_status.drives[i].command = cia_ctrlwrd_to_command(dpm_out->joint_controlword[i]);
             if (grc != E_SUCCESS) {
-                LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive set ctrl wrd function error", gb_strerror(grc));
+                LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive set ctrl wrd function error [%s]", gb_strerror(grc));
             }
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_set_ctrl_wrd on drive [%u]",
@@ -1855,6 +1887,13 @@ void ctrl_process_iomap_out(const bool zero) {
                         iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
                                                map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
                                                BIT_CHECK(dpm_out->digital, map_iomap[i].gbc.ionum));
+
+                        printf("map_iomap[i].pdo.datatype: %d\n", map_iomap[i].pdo.datatype);
+                        printf("map_iomap[i].pdo.slave_num: %d\n", map_iomap[i].pdo.slave_num);
+                        printf("map_iomap[i].pdo.byte_num: %d\n", map_iomap[i].pdo.byte_num);
+                        printf("map_iomap[i].pdo.bit_num: %d\n", map_iomap[i].pdo.bit_num);
+                        printf("map_iomap[i].gbc.ionum: %d\n", map_iomap[i].gbc.ionum);
+
                     } else {
                         iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
                                                map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
