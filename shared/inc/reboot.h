@@ -13,7 +13,7 @@
 #ifndef GBEM_REBOOT_H
 #define GBEM_REBOOT_H
 
-void ec_reboot(void *argument);
+_Noreturn void ec_reboot(void *argument);
 
 
 #endif //GBEM_REBOOT_H
