@@ -88,24 +88,24 @@ gberror_t ec_pdo_map_azd_ked(const uint16_t slave) {
                 slave);
     }
 
-    if (!ec_sdo_write_uint8(slave, map_SM2_azd_ked.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_SM2_azd_ked.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint8(slave, map_SM3_azd_ked.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_SM3_azd_ked.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     for (int i = 0; i < map_SM2_azd_ked.number_of_entries; i++) {
         if (!ec_sdo_write_uint8(slave, map_SM2_azd_ked.SM_assignment_index, i + 1,
-                                map_SM2_index_of_assigned_PDO_azd_ked[i])) {
+                                map_SM2_index_of_assigned_PDO_azd_ked[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     for (int i = 0; i < map_SM3_azd_ked.number_of_entries; i++) {
         if (!ec_sdo_write_uint8(slave, map_SM3_azd_ked.SM_assignment_index, i + 1,
-                                map_SM3_index_of_assigned_PDO_azd_ked[i])) {
+                                map_SM3_index_of_assigned_PDO_azd_ked[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -114,12 +114,12 @@ gberror_t ec_pdo_map_azd_ked(const uint16_t slave) {
      * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
      */
     if (!ec_sdo_write_uint16(slave, map_SM2_azd_ked.SM_assignment_index, 0,
-                             map_SM2_azd_ked.number_of_entries)) {
+                             map_SM2_azd_ked.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint16(slave, map_SM3_azd_ked.SM_assignment_index, 0,
-                             map_SM3_azd_ked.number_of_entries)) {
+                             map_SM3_azd_ked.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -192,11 +192,6 @@ gberror_t ec_initial_pdo_azd_ked(const uint16_t slave) {
             "GBEM: Applying initial PDO writes for AZD-KED drive slave [%u], offset [%u], value [%u]", slave,
             AZD_KED_MOOSET_PDO_INDEX, CIA_MOO_CSP);
 
-    if (ec_iserror()) {
-        LL_ERROR(GBEM_GEN_LOG_EN,
-                 "GBEM: EtherCAT error detected after initial PDO writes: %s", ec_elist2string());
-        return E_ETHERCAT_ERROR_DETECTED;
-    }
 
     return E_SUCCESS;
 }
@@ -244,7 +239,7 @@ gberror_t ec_write_nvram_azd_ked(const uint16_t slave) {
     //this writes stuff to drive NVRAM - DO NOT LEAVE ENABLED - maybe
 
     if (!ec_sdo_write_int8(slave, AZD_KED_WRITE_CONFIG_SDO_INDEX, AZD_KED_WRITE_CONFIG_SDO_SUB_INDEX,
-                           AZD_KED_WRITE_CONFIG_SDO_VALUE)) {
+                           AZD_KED_WRITE_CONFIG_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -375,16 +370,16 @@ gberror_t ec_nvram_sdos_azd_ked(const uint16_t slave) {
         if (map_drive_to_slave[i] == slave) {
 
             if (!ec_sdo_write_int32(slave, AZD_KED_MIN_LIMIT_SDO_INDEX,
-                                    AZD_KED_MIN_LIMIT_SDO_SUB_INDEX, map_drive_neg_limit[i])) {
+                                    AZD_KED_MIN_LIMIT_SDO_SUB_INDEX, map_drive_neg_limit[i], true)) {
                 return E_SDO_WRITE_FAILURE;
             }
 
             if (!ec_sdo_write_int32(slave, AZD_KED_MAX_LIMIT_SDO_INDEX,
-                                    AZD_KED_MAX_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[i])) {
+                                    AZD_KED_MAX_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[i], true)) {
                 return E_SDO_WRITE_FAILURE;
             }
             if (!ec_sdo_write_int32(slave, AZD_KED_DIRECTION_SDO_INDEX,
-                                    AZD_KED_DIRECTION_SDO_SUB_INDEX, map_drive_direction[i])) {
+                                    AZD_KED_DIRECTION_SDO_SUB_INDEX, map_drive_direction[i], true)) {
                 return E_SDO_WRITE_FAILURE;
             }
 

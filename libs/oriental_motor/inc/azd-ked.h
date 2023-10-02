@@ -70,8 +70,14 @@ gberror_t ec_set_moo_pdo_rev_azd_ked(uint16_t drive);
 #define AZD_KED_EEP_REV 0x0
 #define AZD_KED_EEP_ID 0x13e5
 
-
 #define NUM_OF_AZD_ERROR_STRINGS 42
+
+
+
+
+
+
+
 
 /* AZD drive extended statusword bit numbers (CSP) */
 #define AZD_STATUSWORD_TLC_BIT_NUM                            (15)

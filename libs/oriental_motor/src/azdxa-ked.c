@@ -110,6 +110,73 @@ uint16_t map_SM3_index_of_assigned_PDO_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = 
         0x1b00};
 
 
+map_SM_assignment_object_t map_SM2_custom_azd2a_ked = {
+        .number_of_entries = 3,
+        .SM_assignment_index = 0x1c12};
+
+
+map_SM_assignment_object_t map_SM3_custom_azd2a_ked = {
+        .number_of_entries = 3,
+        .SM_assignment_index = 0x1c13};
+
+
+map_SM_assignment_object_t map_SM2_custom_azd3a_ked = {
+        .number_of_entries = 4,
+        .SM_assignment_index = 0x1c12};
+
+
+map_SM_assignment_object_t map_SM3_custom_azd3a_ked = {
+        .number_of_entries = 4,
+        .SM_assignment_index = 0x1c13};
+
+
+map_SM_assignment_object_t map_SM2_custom_azd4a_ked = {
+        .number_of_entries = 5,
+        .SM_assignment_index = 0x1c12};
+
+
+map_SM_assignment_object_t map_SM3_custom_azd4a_ked = {
+        .number_of_entries = 5,
+        .SM_assignment_index = 0x1c13};
+
+
+uint16_t map_sm2_PDO_assignment_indices_azd2a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
+        0x1600,
+        0x1610,
+        0x1700};
+
+uint16_t map_sm3_PDO_assignment_indices_azd2a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
+        0x1a00,
+        0x1a10,
+        0x1b00};
+
+uint16_t map_sm2_PDO_assignment_indices_azd3a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
+        0x1600,
+        0x1610,
+        0x1620,
+        0x1700};
+
+uint16_t map_sm3_PDO_assignment_indices_azd3a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
+        0x1a00,
+        0x1a10,
+        0x1a20,
+        0x1b00};
+
+uint16_t map_sm2_PDO_assignment_indices_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
+        0x1600,
+        0x1610,
+        0x1620,
+        0x1630,
+        0x1700};
+
+uint16_t map_sm3_PDO_assignment_indices_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
+        0x1a00,
+        0x1a10,
+        0x1a20,
+        0x1a30,
+        0x1b00};
+
+
 
 /** this is your standard sdos needed to config a slave applied during the boot process */
 /**
@@ -118,13 +185,59 @@ uint16_t map_SM3_index_of_assigned_PDO_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = 
  * @return gberror_t
  * @retval E_SUCCESS all ok
  */
-gberror_t ec_standard_sdos_azdxa_ked(const uint16_t slave) {
+gberror_t ec_apply_standard_sdos_azdxa_ked(const uint16_t slave) {
 
-    if (ec_printSDO) {
-        UM_INFO(GBEM_UM_EN, "GBEM: No standard SDOs configured for AZD slave [%u]", slave);
-    } else {
-        UM_INFO(GBEM_UM_EN, "GBEM: No standard SDOs configured for AZD slave [%u]", slave);
+    UM_INFO(GBEM_UM_EN, "We have [%u] drives attached to slave [%u] - if more than 1 we have sub-drives",
+            map_num_drives_attached[slave - 1], slave);
+
+    for (int i = 1; i < map_num_drives_attached[slave - 1] + 1; i++) {
+
+        if (!ec_sdo_write_uint8(slave, AZD_KED_CLEAR_ALARM_HISTORY_SDO_INDEX, i,
+                                1, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+
+
+        switch (i) {
+            case 1:
+                if (!ec_sdo_write_uint32(slave, AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_1_SDO_INDEX,
+                                         AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_1_SDO_SUB_INDEX,
+                                         AZD_KED_FOLLOWING_ERROR_WINDOW, true)) {
+                    return E_SDO_WRITE_FAILURE;
+                }
+                break;
+
+            case 2:
+                if (!ec_sdo_write_uint32(slave, AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_2_SDO_INDEX,
+                                         AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_2_SDO_SUB_INDEX,
+                                         AZD_KED_FOLLOWING_ERROR_WINDOW, true)) {
+                    return E_SDO_WRITE_FAILURE;
+                }
+                break;
+
+            case 3:
+                if (!ec_sdo_write_uint32(slave, AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_3_SDO_INDEX,
+                                         AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_3_SDO_SUB_INDEX,
+                                         AZD_KED_FOLLOWING_ERROR_WINDOW, true)) {
+                    return E_SDO_WRITE_FAILURE;
+                }
+                break;
+
+            case 4:
+                if (!ec_sdo_write_uint32(slave, AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_4_SDO_INDEX,
+                                         AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_4_SDO_SUB_INDEX,
+                                         AZD_KED_FOLLOWING_ERROR_WINDOW, true)) {
+                    return E_SDO_WRITE_FAILURE;
+                }
+                break;
+            default:
+                break;
+        }
+
+
     }
+
+
     return E_SUCCESS;
 }
 
@@ -146,24 +259,24 @@ gberror_t ec_pdo_map_azd2a_ked(const uint16_t slave) {
                 slave);
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM2_azd2a_ked.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM2_azd2a_ked.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM3_azd2a_ked.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM3_azd2a_ked.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     for (int i = 0; i < map_SM2_azd2a_ked.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM2_azd2a_ked.SM_assignment_index, i + 1,
-                                 map_SM2_index_of_assigned_PDO_azd2a_ked[i])) {
+                                 map_SM2_index_of_assigned_PDO_azd2a_ked[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     for (int i = 0; i < map_SM3_azd2a_ked.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM3_azd2a_ked.SM_assignment_index, i + 1,
-                                 map_SM3_index_of_assigned_PDO_azd2a_ked[i])) {
+                                 map_SM3_index_of_assigned_PDO_azd2a_ked[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -172,12 +285,12 @@ gberror_t ec_pdo_map_azd2a_ked(const uint16_t slave) {
      * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
      */
     if (!ec_sdo_write_uint16(slave, map_SM2_azd2a_ked.SM_assignment_index, 0,
-                             map_SM2_azd2a_ked.number_of_entries)) {
+                             map_SM2_azd2a_ked.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint16(slave, map_SM3_azd2a_ked.SM_assignment_index, 0,
-                             map_SM3_azd2a_ked.number_of_entries)) {
+                             map_SM3_azd2a_ked.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -232,24 +345,24 @@ gberror_t ec_pdo_map_azd3a_ked(const uint16_t slave) {
      */
 
 
-    if (!ec_sdo_write_uint16(slave, map_SM2_azd3a_ked.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM2_azd3a_ked.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM3_azd3a_ked.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM3_azd3a_ked.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     for (int i = 0; i < map_SM2_azd3a_ked.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM2_azd3a_ked.SM_assignment_index, i + 1,
-                                 map_SM2_index_of_assigned_PDO_azd3a_ked[i])) {
+                                 map_SM2_index_of_assigned_PDO_azd3a_ked[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     for (int i = 0; i < map_SM3_azd3a_ked.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM3_azd3a_ked.SM_assignment_index, i + 1,
-                                 map_SM3_index_of_assigned_PDO_azd3a_ked[i])) {
+                                 map_SM3_index_of_assigned_PDO_azd3a_ked[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -258,12 +371,12 @@ gberror_t ec_pdo_map_azd3a_ked(const uint16_t slave) {
      * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
      */
     if (!ec_sdo_write_uint16(slave, map_SM2_azd3a_ked.SM_assignment_index, 0,
-                             map_SM2_azd3a_ked.number_of_entries)) {
+                             map_SM2_azd3a_ked.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint16(slave, map_SM3_azd3a_ked.SM_assignment_index, 0,
-                             map_SM3_azd3a_ked.number_of_entries)) {
+                             map_SM3_azd3a_ked.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -288,24 +401,24 @@ gberror_t ec_pdo_map_azd4a_ked(const uint16_t slave) {
                 slave);
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM2_azd4a_ked.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM2_azd4a_ked.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint16(slave, map_SM3_azd4a_ked.SM_assignment_index, 0, 0)) {
+    if (!ec_sdo_write_uint16(slave, map_SM3_azd4a_ked.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     for (int i = 0; i < map_SM2_azd4a_ked.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM2_azd4a_ked.SM_assignment_index, i + 1,
-                                 map_SM2_index_of_assigned_PDO_azd4a_ked[i])) {
+                                 map_SM2_index_of_assigned_PDO_azd4a_ked[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
 
     for (int i = 0; i < map_SM3_azd4a_ked.number_of_entries; i++) {
         if (!ec_sdo_write_uint16(slave, map_SM3_azd4a_ked.SM_assignment_index, i + 1,
-                                 map_SM3_index_of_assigned_PDO_azd4a_ked[i])) {
+                                 map_SM3_index_of_assigned_PDO_azd4a_ked[i], true)) {
             return E_SDO_WRITE_FAILURE;
         }
     }
@@ -314,12 +427,12 @@ gberror_t ec_pdo_map_azd4a_ked(const uint16_t slave) {
      * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
      */
     if (!ec_sdo_write_uint16(slave, map_SM2_azd4a_ked.SM_assignment_index, 0,
-                             map_SM2_azd4a_ked.number_of_entries)) {
+                             map_SM2_azd4a_ked.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     if (!ec_sdo_write_uint16(slave, map_SM3_azd4a_ked.SM_assignment_index, 0,
-                             map_SM3_azd4a_ked.number_of_entries)) {
+                             map_SM3_azd4a_ked.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -367,6 +480,438 @@ gberror_t ec_pdo_map_azd4a_ked(const uint16_t slave) {
 //[39         ] [0x004C.0] 0x2E31:0x00 0x08 UNSIGNED8    Controller status 1
 //[40         ] [0x004D.0] 0x2E32:0x00 0x08 UNSIGNED8    Controller status 2
 
+typedef struct {
+    uint16_t index_of_pdo;
+    uint8_t number_of_entries;
+    uint32_t value[ECM_MAX_PDO_MAPPING_ENTRIES];
+} custom_pdo_t;
+
+
+//custom pdo mapping az2a
+//Axis 1 0x1600
+/* 0x6040:1/16bits, control word */
+/* 0x607A:2/32bits, target position */
+/* 0x60FF:3/32bits, target velocity */
+/* 0x6060:4/8bits, modes of operation */
+
+//Axis 2 - 0x1610
+/* 0x6840:0/16bits, control word */
+/* 0x687A:1/32bits, target position */
+/* 0x68FF:2/32bits, target velocity */
+/* 0x6860:3/8bits, modes of operation */
+
+//Controller receive PDO mapping - 0x1700
+/* 0x2F01:1/8bits, controller command 1 */
+/* 0x2F02:2/8bits, controller command 2 */
+
+
+//Axis 1 - 1A00
+/* 0x6041:1/16bits, status word */
+/* 0x6064:2/32bits, position actual value */
+/* 0x606C:3/32bits, velocity actual value */
+/* 0x6061:4/32bits, moo display */
+/* 0x603Fh:5//16bits, error code */
+
+//Axis 2 - 1A10
+/* 0x6841:1/16bits, status word */
+/* 0x6864:2/32bits, position actual value */
+/* 0x686C:2/32bits, velocity actual value */
+/* 0x6861:4/32bits, moo display */
+/* 0x683Fh:5//16bits, error code */
+
+//Controller transmit PDO mapping - 1B00
+/* 0x2E31:1/8bits, controller status 1 */
+/* 0x2E32:2/8bits, controller status 2 */
+
+
+//custom pdo mapping azd3a
+//Axis 1 0x1600
+/* 0x6040:1/16bits, control word */
+/* 0x607A:2/32bits, target position */
+/* 0x60FF:3/32bits, target velocity */
+/* 0x6060:4/8bits, modes of operation */
+
+
+//Axis 2 - 0x1610
+/* 0x6840:0/16bits, control word */
+/* 0x687A:1/32bits, target position */
+/* 0x68FF:2/32bits, target velocity */
+/* 0x6860:3/8bits, modes of operation */
+
+//Axis 3 - 0x1620
+/* 0x7040:0/16bits, control word */
+/* 0x707A:1/32bits, target position */
+/* 0x70FF:2/32bits, target velocity */
+/* 0x7060:3/8bits, modes of operation */
+
+
+//Controller receive PDO mapping - 0x1700
+/* 0x2F01:1/8bits, controller command 1 */
+/* 0x2F02:2/8bits, controller command 2 */
+
+
+//Axis 1 - 1A00
+/* 0x6041:1/16bits, status word */
+/* 0x6064:2/32bits, position actual value */
+/* 0x606C:3/32bits, velocity actual value */
+/* 0x6061:4/32bits, moo display */
+/* 0x603Fh:5//16bits, error code */
+
+//Axis 2 - 1A10
+/* 0x6841:1/16bits, status word */
+/* 0x6864:2/32bits, position actual value */
+/* 0x686C:2/32bits, velocity actual value */
+/* 0x6861:4/32bits, moo display */
+/* 0x683Fh:5//16bits, error code */
+
+//Axis 3 - 1A20
+/* 0x7041:1/16bits, status word */
+/* 0x7064:2/32bits, position actual value */
+/* 0x706C:3/32bits, velocity actual value */
+/* 0x7061:4/32bits, moo display */
+/* 0x703Fh:5//16bits, error code */
+
+//Controller transmit PDO mapping - 1B00
+/* 0x2E31:1/8bits, controller status 1 */
+/* 0x2E32:2/8bits, controller status 2 */
+
+
+//custom pdo mapping az4a
+//custom pdo mapping azd3a
+//Axis 1 0x1600
+/* 0x6040:1/16bits, control word */
+/* 0x607A:2/32bits, target position */
+/* 0x60FF:3/32bits, target velocity */
+/* 0x6060:4/8bits, modes of operation */
+
+
+//Axis 2 - 0x1610
+/* 0x6840:0/16bits, control word */
+/* 0x687A:1/32bits, target position */
+/* 0x68FF:2/32bits, target velocity */
+/* 0x6860:3/8bits, modes of operation */
+
+//Axis 3 - 0x1620
+/* 0x7040:0/16bits, control word */
+/* 0x707A:1/32bits, target position */
+/* 0x70FF:2/32bits, target velocity */
+/* 0x7060:3/8bits, modes of operation */
+
+//Axis 4 - 0x1630
+/* 0x7840:0/16bits, control word */
+/* 0x787A:1/32bits, target position */
+/* 0x78FF:2/32bits, target velocity */
+/* 0x7860:3/8bits, modes of operation */
+
+//Controller receive PDO mapping - 0x1700
+/* 0x2F01:1/8bits, controller command 1 */
+/* 0x2F02:2/8bits, controller command 2 */
+
+
+//Axis 1 - 1A00
+/* 0x6041:1/16bits, status word */
+/* 0x6064:2/32bits, position actual value */
+/* 0x606C:3/32bits, velocity actual value */
+/* 0x6061:4/32bits, moo display */
+/* 0x603Fh:5//16bits, error code */
+
+//Axis 2 - 1A10
+/* 0x6841:1/16bits, status word */
+/* 0x6864:2/32bits, position actual value */
+/* 0x686C:2/32bits, velocity actual value */
+/* 0x6861:4/32bits, moo display */
+/* 0x683Fh:5//16bits, error code */
+
+//Axis 3 - 1A20
+/* 0x7041:1/16bits, status word */
+/* 0x7064:2/32bits, position actual value */
+/* 0x706C:3/32bits, velocity actual value */
+/* 0x7061:4/32bits, moo display */
+/* 0x703Fh:5//16bits, error code */
+
+//Axis 4 - 1A30
+/* 0x7841:1/16bits, status word */
+/* 0x7864:2/32bits, position actual value */
+/* 0x786C:3/32bits, velocity actual value */
+/* 0x7861:4/32bits, moo display */
+/* 0x783Fh:5//16bits, error code */
+
+//Controller transmit PDO mapping - 1B00
+/* 0x2E31:1/8bits, controller status 1 */
+/* 0x2E32:2/8bits, controller status 2 */
+
+
+
+
+custom_pdo_t map_SM2_custom_pdo_velo_axis1_azd2a_ked = {
+        0x1600,
+        4,
+        {0x60400010, 0x607A0020, 0x60FF0020, 0x60600008}
+};
+custom_pdo_t map_SM2_custom_pdo_velo_axis2_azd2a_ked = {
+        0x1610,
+        4,
+        {0x68400010, 0x687A0020, 0x68FF0020, 0x68600008}
+};
+
+custom_pdo_t map_SM2_custom_pdo_velo_controller_azd2a_ked = {
+        0x1700,
+        2,
+        {0x2F010008, 0x2F020008}
+};
+
+
+custom_pdo_t map_SM2_custom_pdo_velo_axis1_azd3a_ked = {
+        0x1600,
+        4,
+        {0x60400010, 0x607A0020, 0x60FF0020, 0x60600008}
+};
+custom_pdo_t map_SM2_custom_pdo_velo_axis2_azd3a_ked = {
+        0x1610,
+        4,
+        {0x68400010, 0x687A0020, 0x68FF0020, 0x68600008}
+};
+custom_pdo_t map_SM2_custom_pdo_velo_axis3_azd3a_ked = {
+        0x1620,
+        4,
+        {0x70400010, 0x707A0020, 0x70FF0020, 0x70600008}
+};
+custom_pdo_t map_SM2_custom_pdo_velo_controller_azd3a_ked = {
+        0x1700,
+        2,
+        {0x2F010008, 0x2F020008}
+};
+
+
+custom_pdo_t map_SM2_custom_pdo_velo_axis1_azd4a_ked = {
+        0x1600,
+        4,
+        {0x60400010, 0x607A0020, 0x60FF0020, 0x60600008}
+};
+custom_pdo_t map_SM2_custom_pdo_velo_axis2_azd4a_ked = {
+        0x1610,
+        4,
+        {0x68400010, 0x687A0020, 0x68FF0020, 0x68600008}
+};
+custom_pdo_t map_SM2_custom_pdo_velo_axis3_azd4a_ked = {
+        0x1620,
+        4,
+        {0x70400010, 0x707A0020, 0x70FF0020, 0x70600008}
+};
+custom_pdo_t map_SM2_custom_pdo_velo_axis4_azd4a_ked = {
+        0x1630,
+        4,
+        {0x78400010, 0x787A0020, 0x78FF0020, 0x78600008}
+};
+
+
+custom_pdo_t map_SM2_custom_pdo_velo_controller_azd4a_ked = {
+        0x1700,
+        2,
+        {0x2F010008, 0x2F020008}
+};
+
+
+custom_pdo_t map_SM3_custom_pdo_velo_axis1_azd2a_ked = {
+        0x1A00,
+        5,
+        {0x60410010, 0x60640020, 0x606C0020, 0x60610008, 0x603F0010}
+};
+
+custom_pdo_t map_SM3_custom_pdo_velo_axis2_azd2a_ked = {
+        0x1A10,
+        5,
+        {0x68410010, 0x68640020, 0x686C0020, 0x68610008, 0x683F0010}
+};
+
+custom_pdo_t map_SM3_custom_pdo_velo_controller_azd2a_ked = {
+        0x1B00,
+        2,
+        {0x2E310008, 0x2E320008}
+};
+
+custom_pdo_t map_SM3_custom_pdo_velo_axis1_azd3a_ked = {
+        0x1A00,
+        5,
+        {0x60410010, 0x60640020, 0x606C0020, 0x60610008, 0x603F0010}
+};
+
+custom_pdo_t map_SM3_custom_pdo_velo_axis2_azd3a_ked = {
+        0x1A10,
+        5,
+        {0x68410010, 0x68640020, 0x686C0020, 0x68610008, 0x683F0010}
+};
+custom_pdo_t map_SM3_custom_pdo_velo_axis3_azd3a_ked = {
+        0x1A20,
+        5,
+        {0x70410010, 0x70640020, 0x706C0020, 0x70610008, 0x703F0010}
+};
+custom_pdo_t map_SM3_custom_pdo_velo_controller_azd3a_ked = {
+        0x1B00,
+        2,
+        {0x2E310008, 0x2E320008}
+};
+
+
+custom_pdo_t map_SM3_custom_pdo_velo_axis1_azd4a_ked = {
+        0x1A00,
+        5,
+        {0x60410010, 0x60640020, 0x606C0020, 0x60610008, 0x603F0010}
+};
+
+custom_pdo_t map_SM3_custom_pdo_velo_axis2_azd4a_ked = {
+        0x1A10,
+        5,
+        {0x68410010, 0x68640020, 0x686C0020, 0x68610008, 0x683F0010}
+};
+custom_pdo_t map_SM3_custom_pdo_velo_axis3_azd4a_ked = {
+        0x1A20,
+        5,
+        {0x70410010, 0x70640020, 0x706C0020, 0x70610008, 0x703F0010}
+};
+
+custom_pdo_t map_SM3_custom_pdo_velo_axis4_azd4a_ked = {
+        0x1A30,
+        5,
+        {0x78400010, 0x787A0020, 0x78FF0020, 0x78600008, 0x783F0010}
+};
+custom_pdo_t map_SM3_custom_pdo_velo_controller_azd4a_ked = {
+        0x1B00,
+        2,
+        {0x2E310008, 0x2E320008}
+};
+
+
+gberror_t apply_custom_pdo(const uint16_t slave, const custom_pdo_t pdo_def) {
+
+    for (int i = 0; i < pdo_def.number_of_entries; i++) {
+        if (!ec_sdo_write_uint32(slave, pdo_def.index_of_pdo, i + 1,
+                                 pdo_def.value[i], true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+    }
+
+    if (!ec_sdo_write_uint8(slave, pdo_def.index_of_pdo, 0, pdo_def.number_of_entries, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    return E_SUCCESS;
+}
+
+
+/**
+ * @brief this is an a la carte PDO mapping function
+ * @param controller_number
+ * @return
+ */
+gberror_t ec_pdo_map_custom_azd2a_ked(const uint16_t slave) {
+
+    if (!ec_sdo_write_uint8(slave, map_SM2_custom_azd2a_ked.SM_assignment_index, 0, 0, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    for (int i = 0; i < map_SM2_custom_azd2a_ked.number_of_entries; i++) {
+        if (!ec_sdo_write_uint8(slave, map_sm2_PDO_assignment_indices_azd2a_ked[i], 0,
+                                0, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+    }
+
+    /* Define RxPdo */
+
+    //Axis 1 0x1600
+    apply_custom_pdo(slave, map_SM2_custom_pdo_velo_axis1_azd2a_ked);
+
+    //Axis 2 - 0x1610
+    apply_custom_pdo(slave, map_SM2_custom_pdo_velo_axis2_azd2a_ked);
+
+
+    //Controller receive PDO mapping - 0x1700
+    apply_custom_pdo(slave, map_SM2_custom_pdo_velo_controller_azd2a_ked);
+
+
+    //final stage
+
+    if (!ec_sdo_write_uint16(slave, map_SM2_custom_azd2a_ked.SM_assignment_index, 1,
+                             map_sm2_PDO_assignment_indices_azd3a_ked[0], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, map_SM2_custom_azd2a_ked.SM_assignment_index, 2,
+                             map_sm2_PDO_assignment_indices_azd2a_ked[1], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, map_SM2_custom_azd2a_ked.SM_assignment_index, 3,
+                             map_sm2_PDO_assignment_indices_azd2a_ked[2], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, map_SM2_custom_azd2a_ked.SM_assignment_index, 4,
+                             map_sm2_PDO_assignment_indices_azd2a_ked[3], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    /* set number of RxPDO */
+    if (!ec_sdo_write_uint8(slave, map_SM2_custom_azd2a_ked.SM_assignment_index, 0,
+                            map_SM2_custom_azd2a_ked.number_of_entries, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+/* Clear TxPdo */
+
+
+    if (!ec_sdo_write_uint8(slave, map_SM3_custom_azd2a_ked.SM_assignment_index, 0, 0, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    for (int i = 0; i < map_SM3_custom_azd2a_ked.number_of_entries; i++) {
+        if (!ec_sdo_write_uint8(slave, map_sm3_PDO_assignment_indices_azd2a_ked[i], 0,
+                                0, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+    }
+
+
+    /* Define TxPdo */
+
+    //Axis 1 - 1A00
+    apply_custom_pdo(slave, map_SM3_custom_pdo_velo_axis1_azd2a_ked);
+
+    //Axis 2 - 1A10
+    apply_custom_pdo(slave, map_SM3_custom_pdo_velo_axis2_azd2a_ked);
+
+
+
+//Controller transmit PDO mapping - 1B002
+    apply_custom_pdo(slave, map_SM3_custom_pdo_velo_controller_azd2a_ked);
+
+
+    if (!ec_sdo_write_uint16(slave, map_SM3_custom_azd2a_ked.SM_assignment_index, 1,
+                             map_sm3_PDO_assignment_indices_azd2a_ked[0], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, map_SM3_custom_azd2a_ked.SM_assignment_index, 2,
+                             map_sm3_PDO_assignment_indices_azd2a_ked[1], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, map_SM3_custom_azd2a_ked.SM_assignment_index, 3,
+                             map_sm3_PDO_assignment_indices_azd2a_ked[2], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, map_SM3_custom_azd2a_ked.SM_assignment_index, 4,
+                             map_sm3_PDO_assignment_indices_azd2a_ked[3], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    /* set number of TxPDO */
+    if (!ec_sdo_write_uint8(slave, map_SM3_custom_azd2a_ked.SM_assignment_index, 0,
+                            map_SM2_custom_azd2a_ked.number_of_entries, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    return E_SUCCESS;
+}
+
+
 /**
  * @brief this is an a la carte PDO mapping function
  * @param controller_number
@@ -374,280 +919,235 @@ gberror_t ec_pdo_map_azd4a_ked(const uint16_t slave) {
  */
 gberror_t ec_pdo_map_custom_azd3a_ked(const uint16_t slave) {
 
-    if (!ec_sdo_write_uint8(slave, 0x1C12, 0, 0)) {
+    if (!ec_sdo_write_uint8(slave, map_SM2_custom_azd3a_ked.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint8(slave, 0x1600, 0, 0)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    if (!ec_sdo_write_uint8(slave, 0x1610, 0, 0)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    if (!ec_sdo_write_uint8(slave, 0x1620, 0, 0)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    if (!ec_sdo_write_uint8(slave, 0x1700, 0, 0)) {
-        return E_SDO_WRITE_FAILURE;
+    for (int i = 0; i < map_SM2_custom_azd3a_ked.number_of_entries; i++) {
+        if (!ec_sdo_write_uint8(slave, map_sm2_PDO_assignment_indices_azd3a_ked[i], 0,
+                                0, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
     }
 
     /* Define RxPdo */
 
     //Axis 1 0x1600
-    /* 0x6040:1/16bits, control word */
-    if (!ec_sdo_write_uint32(slave, 0x1600, 1, 0x60400010)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-    /* 0x607A:2/32bits, target position */
-    if (!ec_sdo_write_uint32(slave, 0x1600, 2, 0x607A0020)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-    /* 0x60FF:3/32bits, target velocity */
-    if (!ec_sdo_write_uint32(slave, 0x1600, 3, 0x60FF0020)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-
-    /* 0x6060:4/8bits, modes of operation */
-    if (!ec_sdo_write_uint32(slave, 0x1600, 4, 0x60600008)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-    /* set number of PDO entries for 0x1600 */
-
-    if (!ec_sdo_write_uint8(slave, 0x1600, 0, 4)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
+    apply_custom_pdo(slave, map_SM2_custom_pdo_velo_axis1_azd3a_ked);
 
     //Axis 2 - 0x1610
-/* 0x6840:0/16bits, control word */
-    if (!ec_sdo_write_uint32(slave, 0x1610, 1, 0x68400010)) {
-        return E_SDO_WRITE_FAILURE;
-    }
+    apply_custom_pdo(slave, map_SM2_custom_pdo_velo_axis2_azd3a_ked);
 
-/* 0x687A:1/32bits, target position */
-    if (!ec_sdo_write_uint32(slave, 0x1610, 2, 0x687A0020)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-/* 0x68FF:2/32bits, target velocity */
-    if (!ec_sdo_write_uint32(slave, 0x1610, 3, 0x68FF0020)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-/* 0x6860:3/8bits, modes of operation */
-    if (!ec_sdo_write_uint32(slave, 0x1610, 4, 0x68600008)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    /* set number of PDO entries for 0x1610 */
-
-    if (!ec_sdo_write_uint8(slave, 0x1610, 0, 4)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-//Axis 3 - 0x1620
-/* 0x7040:0/16bits, control word */
-    if (!ec_sdo_write_uint32(slave, 0x1620, 1, 0x70400010)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-/* 0x707A:1/32bits, target position */
-    if (!ec_sdo_write_uint32(slave, 0x1620, 2, 0x707A0020)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-/* 0x70FF:2/32bits, target velocity */
-    if (!ec_sdo_write_uint32(slave, 0x1620, 3, 0x70FF0020)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-/* 0x7060:3/8bits, modes of operation */
-    if (!ec_sdo_write_uint32(slave, 0x1620, 4, 0x70600008)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    /* set number of PDO entries for 0x1620 */
-
-    if (!ec_sdo_write_uint8(slave, 0x1620, 0, 4)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
+    //Axis 3 - 0x1620
+    apply_custom_pdo(slave, map_SM2_custom_pdo_velo_axis3_azd3a_ked);
 
     //Controller receive PDO mapping - 0x1700
-/* 0x2F01:1/8bits, controller command 1 */
-
-    if (!ec_sdo_write_uint32(slave, 0x1700, 1, 0x2F010008)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    /* 0x2F02:2/8bits, controller command 2 */
-    if (!ec_sdo_write_uint32(slave, 0x1700, 2, 0x2F020008)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-    if (!ec_sdo_write_uint8(slave, 0x1700, 0, 2)) {
-        return E_SDO_WRITE_FAILURE;
-    }
+    apply_custom_pdo(slave, map_SM2_custom_pdo_velo_controller_azd3a_ked);
 
 
     //final stage
 
-    if (!ec_sdo_write_uint16(slave, 0x1C12, 1, 0x1600)) {
+    if (!ec_sdo_write_uint16(slave, map_SM2_custom_azd3a_ked.SM_assignment_index, 1,
+                             map_sm2_PDO_assignment_indices_azd3a_ked[0], true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint16(slave, 0x1C12, 2, 0x1610)) {
+    if (!ec_sdo_write_uint16(slave, map_SM2_custom_azd3a_ked.SM_assignment_index, 2,
+                             map_sm2_PDO_assignment_indices_azd3a_ked[1], true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint16(slave, 0x1C12, 3, 0x1620)) {
+    if (!ec_sdo_write_uint16(slave, map_SM2_custom_azd3a_ked.SM_assignment_index, 3,
+                             map_sm2_PDO_assignment_indices_azd3a_ked[2], true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint16(slave, 0x1C12, 4, 0x1700)) {
+    if (!ec_sdo_write_uint16(slave, map_SM2_custom_azd3a_ked.SM_assignment_index, 4,
+                             map_sm2_PDO_assignment_indices_azd3a_ked[3], true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
     /* set number of RxPDO */
-    if (!ec_sdo_write_uint8(slave, 0x1C12, 0, 4)) {
+    if (!ec_sdo_write_uint8(slave, map_SM2_custom_azd3a_ked.SM_assignment_index, 0,
+                            map_SM2_custom_azd3a_ked.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
+
 /* Clear TxPdo */
-    if (!ec_sdo_write_uint8(slave, 0x1C13, 0, 0)) {
+
+
+    if (!ec_sdo_write_uint8(slave, map_SM3_custom_azd3a_ked.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, 0x1A00, 0, 0)) {
-        return E_SDO_WRITE_FAILURE;
+
+    for (int i = 0; i < map_SM3_custom_azd3a_ked.number_of_entries; i++) {
+        if (!ec_sdo_write_uint8(slave, map_sm3_PDO_assignment_indices_azd3a_ked[i], 0,
+                                0, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
     }
-    if (!ec_sdo_write_uint8(slave, 0x1A10, 0, 0)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    if (!ec_sdo_write_uint8(slave, 0x1A20, 0, 0)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    if (!ec_sdo_write_uint8(slave, 0x1B00, 0, 0)) {
-        return E_SDO_WRITE_FAILURE;
-    }
+
 
     /* Define TxPdo */
 
     //Axis 1 - 1A00
+    apply_custom_pdo(slave, map_SM3_custom_pdo_velo_axis1_azd3a_ked);
 
-/* 0x6041:1/16bits, status word */
-    if (!ec_sdo_write_uint32(slave, 0x1A00, 1, 0x60410010)) {
-        return E_SDO_WRITE_FAILURE;
-    }
+    //Axis 2 - 1A10
+    apply_custom_pdo(slave, map_SM3_custom_pdo_velo_axis2_azd3a_ked);
 
-/* 0x6064:2/32bits, position actual value */
-
-    if (!ec_sdo_write_uint32(slave, 0x1A00, 2, 0x60640020)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-/* 0x606C:3/32bits, velocity actual value */
-    if (!ec_sdo_write_uint32(slave, 0x1A00, 3, 0x606C0020)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-    /* 0x6061:4/32bits, moo display */
-    if (!ec_sdo_write_uint32(slave, 0x1A00, 4, 0x60610008)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-    /* 0x603Fh:5//16bits, error code */
-    if (!ec_sdo_write_uint32(slave, 0x1A00, 5, 0x603F0010)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-
-    if (!ec_sdo_write_uint8(slave, 0x1A00, 0, 5)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-//Axis 2 - 1A10
-/* 0x6841:1/16bits, status word */
-    if (!ec_sdo_write_uint32(slave, 0x1A10, 1, 0x68410010)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-/* 0x6864:2/32bits, position actual value */
-    if (!ec_sdo_write_uint32(slave, 0x1A10, 2, 0x68640020)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-/* 0x686C:2/32bits, velocity actual value */
-    if (!ec_sdo_write_uint32(slave, 0x1A10, 3, 0x686C0020)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-/* 0x6861:4/32bits, moo display */
-    if (!ec_sdo_write_uint32(slave, 0x1A10, 4, 0x68610008)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-/* 0x683Fh:5//16bits, error code */
-    if (!ec_sdo_write_uint32(slave, 0x1A10, 5, 0x683F0010)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-    if (!ec_sdo_write_uint8(slave, 0x1A10, 0, 5)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-
-//Axis 3 - 1A20
-/* 0x7041:1/16bits, status word */
-    if (!ec_sdo_write_uint32(slave, 0x1A20, 1, 0x70410010)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-/* 0x7064:2/32bits, position actual value */
-    if (!ec_sdo_write_uint32(slave, 0x1A20, 2, 0x70640020)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-/* 0x706C:3/32bits, velocity actual value */
-    if (!ec_sdo_write_uint32(slave, 0x1A20, 3, 0x706C0020)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-/* 0x7061:4/32bits, moo display */
-    if (!ec_sdo_write_uint32(slave, 0x1A20, 4, 0x70610008)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-/* 0x703Fh:5//16bits, error code */
-    if (!ec_sdo_write_uint32(slave, 0x1A20, 5, 0x703F0010)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-    if (!ec_sdo_write_uint8(slave, 0x1A20, 0, 5)) {
-        return E_SDO_WRITE_FAILURE;
-    }
+    //Axis 3 - 1A20
+    apply_custom_pdo(slave, map_SM3_custom_pdo_velo_axis3_azd3a_ked);
 
 //Controller transmit PDO mapping - 1B00
-/* 0x2E31:1/8bits, controller status 1 */
-    if (!ec_sdo_write_uint32(slave, 0x1B00, 1, 0x2E310008)) {
+    apply_custom_pdo(slave, map_SM3_custom_pdo_velo_controller_azd3a_ked);
+
+
+    if (!ec_sdo_write_uint16(slave, map_SM3_custom_azd3a_ked.SM_assignment_index, 1,
+                             map_sm3_PDO_assignment_indices_azd3a_ked[0], true)) {
         return E_SDO_WRITE_FAILURE;
     }
-/* 0x2E32:2/8bits, controller status 2 */
-    if (!ec_sdo_write_uint32(slave, 0x1B00, 2, 0x2E320008)) {
+    if (!ec_sdo_write_uint16(slave, map_SM3_custom_azd3a_ked.SM_assignment_index, 2,
+                             map_sm3_PDO_assignment_indices_azd3a_ked[1], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, map_SM3_custom_azd3a_ked.SM_assignment_index, 3,
+                             map_sm3_PDO_assignment_indices_azd3a_ked[2], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, map_SM3_custom_azd3a_ked.SM_assignment_index, 4,
+                             map_sm3_PDO_assignment_indices_azd3a_ked[3], true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint8(slave, 0x1B00, 0, 2)) {
+    /* set number of TxPDO */
+    if (!ec_sdo_write_uint8(slave, map_SM3_custom_azd3a_ked.SM_assignment_index, 0,
+                            map_SM2_custom_azd3a_ked.number_of_entries, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    return E_SUCCESS;
+}
+
+
+/**
+ * @brief this is an a la carte PDO mapping function
+ * @param controller_number
+ * @return
+ */
+gberror_t ec_pdo_map_custom_azd4a_ked(const uint16_t slave) {
+
+    if (!ec_sdo_write_uint8(slave, map_SM2_custom_azd4a_ked.SM_assignment_index, 0, 0, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    for (int i = 0; i < map_SM2_custom_azd4a_ked.number_of_entries; i++) {
+        if (!ec_sdo_write_uint8(slave, map_sm2_PDO_assignment_indices_azd4a_ked[i], 0,
+                                0, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+    }
+
+    /* Define RxPdo */
+
+    //Axis 1 0x1600
+    apply_custom_pdo(slave, map_SM2_custom_pdo_velo_axis1_azd4a_ked);
+
+    //Axis 2 - 0x1610
+    apply_custom_pdo(slave, map_SM2_custom_pdo_velo_axis2_azd4a_ked);
+
+    //Axis 3 - 0x1620
+    apply_custom_pdo(slave, map_SM2_custom_pdo_velo_axis3_azd4a_ked);
+
+    //Axis 4 - 0x1630
+    apply_custom_pdo(slave, map_SM2_custom_pdo_velo_axis4_azd4a_ked);
+
+    //Controller receive PDO mapping - 0x1700
+    apply_custom_pdo(slave, map_SM2_custom_pdo_velo_controller_azd4a_ked);
+
+
+    //final stage
+
+    if (!ec_sdo_write_uint16(slave, map_SM2_custom_azd4a_ked.SM_assignment_index, 1,
+                             map_sm2_PDO_assignment_indices_azd4a_ked[0], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, map_SM2_custom_azd4a_ked.SM_assignment_index, 2,
+                             map_sm2_PDO_assignment_indices_azd4a_ked[1], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, map_SM2_custom_azd4a_ked.SM_assignment_index, 3,
+                             map_sm2_PDO_assignment_indices_azd4a_ked[2], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, map_SM2_custom_azd4a_ked.SM_assignment_index, 4,
+                             map_sm2_PDO_assignment_indices_azd4a_ked[3], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    /* set number of RxPDO */
+    if (!ec_sdo_write_uint8(slave, map_SM2_custom_azd4a_ked.SM_assignment_index, 0,
+                            map_SM2_custom_azd4a_ked.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
 
-    if (!ec_sdo_write_uint16(slave, 0x1C13, 1, 0x1A00)) {
+/* Clear TxPdo */
+
+
+    if (!ec_sdo_write_uint8(slave, map_SM3_custom_azd4a_ked.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    if (!ec_sdo_write_uint16(slave, 0x1C13, 2, 0x1A10)) {
+    for (int i = 0; i < map_SM3_custom_azd4a_ked.number_of_entries; i++) {
+        if (!ec_sdo_write_uint8(slave, map_sm3_PDO_assignment_indices_azd4a_ked[i], 0,
+                                0, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+    }
+
+
+    /* Define TxPdo */
+
+    //Axis 1 - 1A00
+    apply_custom_pdo(slave, map_SM3_custom_pdo_velo_axis1_azd4a_ked);
+
+    //Axis 2 - 1A10
+    apply_custom_pdo(slave, map_SM3_custom_pdo_velo_axis2_azd4a_ked);
+
+    //Axis 3 - 1A20
+    apply_custom_pdo(slave, map_SM3_custom_pdo_velo_axis3_azd4a_ked);
+//Axis 3 - 1A30
+    apply_custom_pdo(slave, map_SM3_custom_pdo_velo_axis4_azd4a_ked);
+
+
+
+
+//Controller transmit PDO mapping - 1B00
+    apply_custom_pdo(slave, map_SM3_custom_pdo_velo_controller_azd4a_ked);
+
+
+    if (!ec_sdo_write_uint16(slave, map_SM3_custom_azd4a_ked.SM_assignment_index, 1,
+                             map_sm3_PDO_assignment_indices_azd4a_ked[0], true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint16(slave, 0x1C13, 3, 0x1A20)) {
+    if (!ec_sdo_write_uint16(slave, map_SM3_custom_azd4a_ked.SM_assignment_index, 2,
+                             map_sm3_PDO_assignment_indices_azd4a_ked[1], true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint16(slave, 0x1C13, 4, 0x1B00)) {
+    if (!ec_sdo_write_uint16(slave, map_SM3_custom_azd4a_ked.SM_assignment_index, 3,
+                             map_sm3_PDO_assignment_indices_azd4a_ked[2], true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint16(slave, map_SM3_custom_azd4a_ked.SM_assignment_index, 4,
+                             map_sm3_PDO_assignment_indices_azd4a_ked[3], true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//    /* set number of TxPDO */
-
-    if (!ec_sdo_write_uint8(slave, 0x1C13, 0, 4)) {
+    /* set number of TxPDO */
+    if (!ec_sdo_write_uint8(slave, map_SM3_custom_azd4a_ked.SM_assignment_index, 0,
+                            map_SM2_custom_azd4a_ked.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
+
     return E_SUCCESS;
 }
 
@@ -747,16 +1247,74 @@ gberror_t ec_initial_pdo_azdxa_ked(const uint16_t slave) {
         }
 
     }
-    if (ec_iserror()) {
-        LL_ERROR(GBEM_GEN_LOG_EN,
-                 "GBEM: EtherCAT error detected after initial PDO writes: %s", ec_elist2string());
-        return E_ETHERCAT_ERROR_DETECTED;
-    }
+
 
     return E_SUCCESS;
 }
 
 
+
+//• Read the alarm history by the "Alarm history (4041h to 404Ah)" via EtherCAT communication.
+//• Clear the history by setting the "Clear alarm history (40C2h)" of EtherCAT communication to 1. (It is enabled when
+//changing from 0 to 1.)
+
+
+uint8_t *ec_get_error_string_sdo_azdxa_ked(const uint16_t drive) {
+
+    static uint8_t error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH];
+
+    memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
+
+    uint16_t drive_error_code = 0;
+    switch (map_drive_to_subdrive[drive]) {
+        case 1:
+
+            ec_sdo_read_uint16(map_drive_to_slave[drive], AZD_KED_ALARM_HISTORY_1_SDO_INDEX, 1, &drive_error_code,
+                               false);
+
+            break;
+        case 2:
+            ec_sdo_read_uint16(map_drive_to_slave[drive], AZD_KED_ALARM_HISTORY_1_SDO_INDEX, 2, &drive_error_code,
+                               false);
+            break;
+        case 3:
+            ec_sdo_read_uint16(map_drive_to_slave[drive], AZD_KED_ALARM_HISTORY_1_SDO_INDEX, 3, &drive_error_code,
+                               false);
+            break;
+        case 4:
+            ec_sdo_read_uint16(map_drive_to_slave[drive], AZD_KED_ALARM_HISTORY_1_SDO_INDEX, 4, &drive_error_code,
+                               false);
+            break;
+        default:
+            LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
+            //return a zero error code
+            return 0;
+    }
+
+
+    if (drive_error_code != 0) {
+        BITMASK_CLEAR(drive_error_code, 0xFF00);
+    }
+    for (int i = 0; i < NUM_OF_AZD_ERROR_STRINGS; i++) {
+        if (azdxa_ked_alarm_code[i].error_id == drive_error_code) {
+            memset(&error_code_string[0], 0, sizeof(error_code_string));
+            size_t source_len = strlen(azdxa_ked_alarm_code[i].text_string);
+            size_t copy_len = sizeof(error_code_string) - 1; // Ensure space for null-terminator
+            if (source_len < copy_len) {
+                copy_len = source_len;
+            }
+            strncpy((char *) &error_code_string[0], azdxa_ked_alarm_code[i].text_string, copy_len);
+            error_code_string[copy_len] = '\0'; // Null-terminate the destination string
+            break;
+        }
+    }
+    return error_code_string;
+
+
+}
+
+
+//Azd alarms get reset on fault reset
 /**
  * @brief reads drive error codes for a specific AZD drive and returns an array of error codes
  * @param drive
@@ -765,6 +1323,46 @@ gberror_t ec_initial_pdo_azdxa_ked(const uint16_t slave) {
 uint8_t *ec_get_error_string_pdo_azdxa_ked(const uint16_t drive) {
 
     static uint8_t error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH];
+//
+//    uint16_t alarm_history_1;
+//    uint16_t alarm_history_2;
+//    uint16_t alarm_history_3;
+//    uint16_t alarm_history_4;
+//    uint16_t alarm_history_5;
+//    uint16_t alarm_history_6;
+//    uint16_t alarm_history_7;
+//    uint16_t alarm_history_8;
+//    uint16_t alarm_history_9;
+//    uint16_t alarm_history_10;
+////    Clear the history by setting the "Clear alarm history (40C2h)" of EtherCAT communication to 1. (It is enabled when
+////    changing from 0 to 1.)
+//
+////axis1
+//    ec_sdo_read_uint16(map_drive_to_slave[drive], 0x4041, 1, &alarm_history_1, true);
+//    ec_sdo_read_uint16(map_drive_to_slave[drive], 0x4042, 1, &alarm_history_2, true);
+//    ec_sdo_read_uint16(map_drive_to_slave[drive], 0x4043, 1, &alarm_history_3, true);
+//    ec_sdo_read_uint16(map_drive_to_slave[drive], 0x4044, 1, &alarm_history_4, true);
+//    ec_sdo_read_uint16(map_drive_to_slave[drive], 0x4045, 1, &alarm_history_5, true);
+//
+//    ec_sdo_read_uint16(map_drive_to_slave[drive], 0x4046, 1, &alarm_history_6, true);
+//
+//    ec_sdo_read_uint16(map_drive_to_slave[drive], 0x4047, 1, &alarm_history_7, true);
+//
+//    ec_sdo_read_uint16(map_drive_to_slave[drive], 0x4048, 1, &alarm_history_8, true);
+//
+//    ec_sdo_read_uint16(map_drive_to_slave[drive], 0x4049, 1, &alarm_history_9, true);
+//    ec_sdo_read_uint16(map_drive_to_slave[drive], 0x404A, 1, &alarm_history_10, true);
+//
+//    printf("alarm history 1 is %d\n", alarm_history_1);
+//    printf("alarm history 2 is %d\n", alarm_history_2);
+//    printf("alarm history 3 is %d\n", alarm_history_3);
+//    printf("alarm history 4 is %d\n", alarm_history_4);
+//    printf("alarm history 5 is %d\n", alarm_history_5);
+//    printf("alarm history 6 is %d\n", alarm_history_6);
+//    printf("alarm history 7 is %d\n", alarm_history_7);
+//    printf("alarm history 8 is %d\n", alarm_history_8);
+//    printf("alarm history 9 is %d\n", alarm_history_9);
+//    printf("alarm history 10 is %d\n", alarm_history_10);
 
 
     memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
@@ -774,10 +1372,14 @@ uint8_t *ec_get_error_string_pdo_azdxa_ked(const uint16_t drive) {
         case 1:
             drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive],
                                                        AZDXA_KED_ERROR_CODE_PDO_DRIVE1_INDEX);
+            //todo crit debug remove
+            printf("Case 1: AZD drive error code is %d\n", drive_error_code);
             break;
         case 2:
             drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive],
                                                        AZDXA_KED_ERROR_CODE_PDO_DRIVE2_INDEX);
+            //todo crit debug remove
+            printf("Case 2: AZD drive error code is %d\n", drive_error_code);
             break;
         case 3:
             drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive],
@@ -792,6 +1394,7 @@ uint8_t *ec_get_error_string_pdo_azdxa_ked(const uint16_t drive) {
             //return a zero error code
             return 0;
     }
+
 
     if (drive_error_code != 0) {
         BITMASK_CLEAR(drive_error_code, 0xFF00);
@@ -825,28 +1428,28 @@ gberror_t ec_write_nvram_azdxa_ked(const uint16_t slave) {
                 case 1:
                     if (!ec_sdo_write_int8(slave, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE1_INDEX,
                                            AZDXA_KED_WRITE_CONFIG_SDO_DRIVE1_SUB_INDEX,
-                                           AZDXA_KED_WRITE_CONFIG_SDO_DRIVE1_VALUE)) {
+                                           AZDXA_KED_WRITE_CONFIG_SDO_DRIVE1_VALUE, true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     break;
                 case 2:
                     if (!ec_sdo_write_int8(slave, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE2_INDEX,
                                            AZDXA_KED_WRITE_CONFIG_SDO_DRIVE2_SUB_INDEX,
-                                           AZDXA_KED_WRITE_CONFIG_SDO_DRIVE2_VALUE)) {
+                                           AZDXA_KED_WRITE_CONFIG_SDO_DRIVE2_VALUE, true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     break;
                 case 3:
                     if (!ec_sdo_write_int8(slave, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE3_INDEX,
                                            AZDXA_KED_WRITE_CONFIG_SDO_DRIVE3_SUB_INDEX,
-                                           AZDXA_KED_WRITE_CONFIG_SDO_DRIVE3_VALUE)) {
+                                           AZDXA_KED_WRITE_CONFIG_SDO_DRIVE3_VALUE, true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     break;
                 case 4:
                     if (!ec_sdo_write_int8(slave, AZDXA_KED_WRITE_CONFIG_SDO_DRIVE4_INDEX,
                                            AZDXA_KED_WRITE_CONFIG_SDO_DRIVE4_SUB_INDEX,
-                                           AZDXA_KED_WRITE_CONFIG_SDO_DRIVE4_VALUE)) {
+                                           AZDXA_KED_WRITE_CONFIG_SDO_DRIVE4_VALUE, true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     break;
@@ -1113,7 +1716,6 @@ int32_t ec_get_setpos_word_rev_azdxa_ked(const uint16_t drive) {
         case 1:
             return ec_pdo_get_output_int32_rev(map_drive_to_slave[drive], AZDXA_KED_SETPOS_PDO_DRIVE1_INDEX);
         case 2:
-//            printf("setpos [%d]\n",ec_pdo_get_output_int32_sim(map_drive_to_slave[drive], AZD_SETPOS_DRIVE_2_INDEX));
             return ec_pdo_get_output_int32_rev(map_drive_to_slave[drive], AZDXA_KED_SETPOS_PDO_DRIVE2_INDEX);
         case 3:
             return ec_pdo_get_output_int32_rev(map_drive_to_slave[drive], AZDXA_KED_SETPOS_PDO_DRIVE3_INDEX);
@@ -1183,57 +1785,57 @@ gberror_t ec_nvram_sdos_azdxa_ked(const uint16_t slave) {
             switch (map_drive_to_subdrive[i]) {
                 case 1:
                     if (!ec_sdo_write_int32(slave, AZDXA_KED_MIN_LIMIT_SDO_DRIVE1_INDEX,
-                                            AZDXA_KED_MIN_LIMIT_SDO_DRIVE1_SUB_INDEX, map_drive_neg_limit[i])) {
+                                            AZDXA_KED_MIN_LIMIT_SDO_DRIVE1_SUB_INDEX, map_drive_neg_limit[i], true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     if (!ec_sdo_write_int32(slave, AZDXA_KED_MAX_LIMIT_SDO_DRIVE1_INDEX,
-                                            AZDXA_KED_MAX_LIMIT_SDO_DRIVE1_SUB_INDEX, map_drive_pos_limit[i])) {
+                                            AZDXA_KED_MAX_LIMIT_SDO_DRIVE1_SUB_INDEX, map_drive_pos_limit[i], true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     if (!ec_sdo_write_int32(slave, AZDXA_KED_DIRECTION_SDO_DRIVE1_INDEX,
-                                            AZDXA_KED_DIRECTION_SDO_DRIVE1_SUB_INDEX, map_drive_direction[i])) {
+                                            AZDXA_KED_DIRECTION_SDO_DRIVE1_SUB_INDEX, map_drive_direction[i], true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     break;
                 case 2:
                     if (!ec_sdo_write_int32(slave, AZDXA_KED_MIN_LIMIT_SDO_DRIVE2_INDEX,
-                                            AZDXA_KED_MIN_LIMIT_SDO_DRIVE2_SUB_INDEX, map_drive_neg_limit[i])) {
+                                            AZDXA_KED_MIN_LIMIT_SDO_DRIVE2_SUB_INDEX, map_drive_neg_limit[i], true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     if (!ec_sdo_write_int32(slave, AZDXA_KED_MAX_LIMIT_SDO_DRIVE2_INDEX,
-                                            AZDXA_KED_MAX_LIMIT_SDO_DRIVE2_SUB_INDEX, map_drive_pos_limit[i])) {
+                                            AZDXA_KED_MAX_LIMIT_SDO_DRIVE2_SUB_INDEX, map_drive_pos_limit[i], true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     if (!ec_sdo_write_int32(slave, AZDXA_KED_DIRECTION_SDO_DRIVE2_INDEX,
-                                            AZDXA_KED_DIRECTION_SDO_DRIVE2_SUB_INDEX, map_drive_direction[i])) {
+                                            AZDXA_KED_DIRECTION_SDO_DRIVE2_SUB_INDEX, map_drive_direction[i], true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     break;
                 case 3:
                     if (!ec_sdo_write_int32(slave, AZDXA_KED_MIN_LIMIT_SDO_DRIVE3_INDEX,
-                                            AZDXA_KED_MIN_LIMIT_SDO_DRIVE3_SUB_INDEX, map_drive_neg_limit[i])) {
+                                            AZDXA_KED_MIN_LIMIT_SDO_DRIVE3_SUB_INDEX, map_drive_neg_limit[i], true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     if (!ec_sdo_write_int32(slave, AZDXA_KED_MAX_LIMIT_SDO_DRIVE3_INDEX,
-                                            AZDXA_KED_MAX_LIMIT_SDO_DRIVE3_SUB_INDEX, map_drive_pos_limit[i])) {
+                                            AZDXA_KED_MAX_LIMIT_SDO_DRIVE3_SUB_INDEX, map_drive_pos_limit[i], true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     if (!ec_sdo_write_int32(slave, AZDXA_KED_DIRECTION_SDO_DRIVE3_INDEX,
-                                            AZDXA_KED_DIRECTION_SDO_DRIVE3_SUB_INDEX, map_drive_direction[i])) {
+                                            AZDXA_KED_DIRECTION_SDO_DRIVE3_SUB_INDEX, map_drive_direction[i], true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     break;
                 case 4:
                     if (!ec_sdo_write_int32(slave, AZDXA_KED_MIN_LIMIT_SDO_DRIVE4_INDEX,
-                                            AZDXA_KED_MIN_LIMIT_SDO_DRIVE4_SUB_INDEX, map_drive_neg_limit[i])) {
+                                            AZDXA_KED_MIN_LIMIT_SDO_DRIVE4_SUB_INDEX, map_drive_neg_limit[i], true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     if (!ec_sdo_write_int32(slave, AZDXA_KED_MAX_LIMIT_SDO_DRIVE4_INDEX,
-                                            AZDXA_KED_MAX_LIMIT_SDO_DRIVE4_SUB_INDEX, map_drive_pos_limit[i])) {
+                                            AZDXA_KED_MAX_LIMIT_SDO_DRIVE4_SUB_INDEX, map_drive_pos_limit[i], true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     if (!ec_sdo_write_int32(slave, AZDXA_KED_DIRECTION_SDO_DRIVE4_INDEX,
-                                            AZDXA_KED_DIRECTION_SDO_DRIVE4_SUB_INDEX, map_drive_direction[i])) {
+                                            AZDXA_KED_DIRECTION_SDO_DRIVE4_SUB_INDEX, map_drive_direction[i], true)) {
                         return E_SDO_WRITE_FAILURE;
                     }
                     break;

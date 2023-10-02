@@ -49,6 +49,8 @@ int8_t ec_get_moo_pdo_azdxa_ked(uint16_t drive);
 
 uint8_t *ec_get_error_string_pdo_azdxa_ked(uint16_t drive);
 
+uint8_t *ec_get_error_string_sdo_azdxa_ked(uint16_t drive);
+
 gberror_t ec_nvram_sdos_azdxa_ked(uint16_t slave);
 
 gberror_t ec_write_nvram_azdxa_ked(uint16_t slave);
@@ -98,6 +100,33 @@ gberror_t ec_set_moo_pdo_rev_azdxa_ked(uint16_t drive);
 #define AZD4A_KED_EEP_MAN ORIENTAL_MOTOR_MAN
 #define AZD4A_KED_EEP_REV 0x13
 #define AZD4A_KED_EEP_ID 0x1
+
+
+/* AZD SDO addresses */
+//6065h 00h Following error window U32 RW No 300 1 to 30,000 (1=0.01 rev) - Axis1
+
+#define AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_1_SDO_INDEX 0x6065
+#define AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_1_SDO_SUB_INDEX 0x0
+
+//6865h 00h Following error window U32 RW No 300 1 to 30,000 (1=0.01 rev) - Axis2
+#define AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_2_SDO_INDEX 0x6865
+#define AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_2_SDO_SUB_INDEX 0x0
+
+//7065h 00h Following error window U32 RW No 300 1 to 30,000 (1=0.01 rev) - Axis3
+#define AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_3_SDO_INDEX 0x7065
+#define AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_3_SDO_SUB_INDEX 0x0
+
+//7865h 00h Following error window U32 RW No 300 1 to 30,000 (1=0.01 rev) - Axis4
+#define AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_4_SDO_INDEX 0x7865
+#define AZD_KED_FOLLOWING_ERROR_WINDOW_AXIS_4_SDO_SUB_INDEX 0x0
+
+#define AZD_KED_FOLLOWING_ERROR_WINDOW 10
+
+#define AZD_KED_ALARM_HISTORY_1_SDO_INDEX 0x4041
+
+
+//    40C2h 00h Clear alarm history Clears alarm history.
+#define AZD_KED_CLEAR_ALARM_HISTORY_SDO_INDEX 0x40C2
 
 
 #define NUM_OF_AZD_ERROR_STRINGS 42
