@@ -104,7 +104,7 @@ static uint32_t __attribute__((unused)) fieldbus_roundtrip(void) {
  */
 static void __attribute__((unused)) print_dc_timestamps(void) {
 
-    LL_INFO(GBEM_GEN_LOG_EN, "GBEM: Process data cycle %12lld , Wck %3d, DCtime %12lld, dt %12lld\n",
+    LL_INFO(GBEM_GEN_LOG_EN, "GBEM: Process data cycle %12ld , Wck %3d, DCtime %12ld, dt %12ld\n",
             ecm_status.cycle_count,
             wkc,
             ec_DCtime, gl_delta);
@@ -318,11 +318,15 @@ void ec_rxtx(void *argument) {
         /* calculate next cycle start */
         add_timespec(&ts, cycletime + toff);
 
-        //todo crit move from here just for testing
-//        memcpy(shmp->sm_offline_buf_in, &ecm_status, sizeof(ecm_status_t));
-//        if (bus_cycle_tick == 20000) {
-//            print_status(&ecm_status);
-//        }
+
+        //this copy does take say 4 useconds... can move into a separate thread but will need another mutex to protect exrxtx writing to ecmstatus
+        if (sem_trywait(gbc_named_offline_mem_protection_semaphore) == 0) {
+            memcpy(shmp->sm_offline_buf_in, &ecm_status, sizeof(ecm_status_t));
+            sem_post(gbc_named_offline_mem_protection_semaphore);
+        } else {
+            //no need to warn here - we will miss a few cycles of offline mem exchange and that is fine
+        }
+
 
 
         // if gbc is not connected AND we are not in test mode AND it is time to try an connect again to GBC
@@ -408,7 +412,7 @@ void ec_rxtx(void *argument) {
         /* use this for a slave at start of chain that has a 32 bit dc time register */
         /* keep_32_bit_dc_time(); */
 
-        //should this be here?
+        //todo should this be here?
         copy_ec_slave_to_ecm_status();
 
         ecm_status.cycle_count++;
@@ -421,6 +425,7 @@ void ec_rxtx(void *argument) {
         if ((ec_rxtx_mode == EC_RXTX_MODE_DORUN) || (ec_rxtx_mode == EC_RXTX_MODE_OP) ||
             (ec_rxtx_mode == EC_RXTX_MODE_HOME)) {
             //wkc global is set here - it is checked in ec_check
+
             wkc = ec_receive_processdata(EC_TIMEOUTRET);
 
 #if ECRXTX_MEASURE_TIMING == 1
@@ -456,9 +461,18 @@ void ec_rxtx(void *argument) {
                     } else {
                         ctrl_main(m, first_run);
                     }
+
+                    //RT-sensitive
+#if ENABLE_ALL_NON_CORE_FUNCTIONS == 1
+#if ENABLE_PLC == 1
+                    plc_task_exec();
+#endif
+#endif
+
                 }
 
                 //this fills out ec_slave struct with the current state
+
                 ec_readstate();
             } else if (ec_rxtx_mode == EC_RXTX_MODE_HOME) {
                 //in homing
@@ -474,15 +488,12 @@ void ec_rxtx(void *argument) {
                 //not in opmode or home
             }
 
-            //RT-sensitive
-#if ENABLE_ALL_NON_CORE_FUNCTIONS == 1
-#if ENABLE_PLC == 1
-            plc_task_exec();
-#endif
-#endif
+
             clock_gettime(CLOCK_MONOTONIC, &t_exec_end);
 
-            rc = ec_send_processdata();
+
+            rc = ec_send_overlap_processdata();
+
             if (rc == 0) {
                 /* hmmm sending process data failed */
                 ec_rxtx_event[CYCLIC_EVENT_SEND_FAIL].active = true;
@@ -575,7 +586,7 @@ void ec_rxtx(void *argument) {
         } else {
 
 //            UM_INFO(GBEM_UM_EN, "GBEM: No mode set for EC_RXTX. Waiting for mode to be set");
-            sleep(1);
+            osal_usleep(100000);
         }
     }
 }
