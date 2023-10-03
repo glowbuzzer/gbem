@@ -24,13 +24,13 @@
 //                                          Slave 1             Slave 2         Slave 3          Slave 4
 //                                          MAP_EK1100_1        MAP_EL2008_1    MAP_EL1008_1     MAP_AZD_CTRL_1
 //                                          Coupler             8 dig out       8 dig in         3 axis stepper
-MAP_NUM_DRIVES_ATTACHED(                    0,                  0,              0,               2,                          );
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            NULL,               NULL,           NULL,            ec_pdo_map_azd3a_ked,       );
-MAP_SLAVE_NVRAM_SDO_FUNCTIONS(              NULL,               NULL,           NULL,            ec_nvram_sdos_azdxa_ked,    );
-MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           NULL,               NULL,           NULL,            NULL,                       );
-MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            NULL,               NULL,           NULL,            ec_initial_pdo_azdxa_ked,   );
-MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,         EC_DC_NONE,     EC_DC_NONE,      EC_DC_0,                    );
-MAP_SLAVE_DC_CYCLE(                         0,                  0,              0,               1,                          );
+MAP_NUM_DRIVES_ATTACHED(                    0,                  0,              0,               2,                                 );
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            NULL,               NULL,           NULL,            ec_pdo_map_custom_azd3a_ked,       );
+MAP_SLAVE_NVRAM_SDO_FUNCTIONS(              NULL,               NULL,           NULL,            ec_nvram_sdos_azdxa_ked,           );
+MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           NULL,               NULL,           NULL,            ec_apply_standard_sdos_azdxa_ked,  );
+MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            NULL,               NULL,           NULL,            ec_initial_pdo_azdxa_ked,          );
+MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,         EC_DC_NONE,     EC_DC_NONE,      EC_DC_0,                           );
+MAP_SLAVE_DC_CYCLE(                         0,                  0,              0,               1,                                 );
 
 /* DRIVES */
 MAP_DRIVE_TO_NAME(                          "AZD1.1",                           "AZD1.2"                            );
