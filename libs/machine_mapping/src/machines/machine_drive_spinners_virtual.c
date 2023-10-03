@@ -26,7 +26,7 @@
 //                                          MAP_EK1100_1        MAP_EL2008_1    MAP_EL1008_1     MAP_AZD_CTRL_1
 //                                          Coupler             8 dig out       8 dig in         3 axis stepper
 MAP_NUM_DRIVES_ATTACHED(                    0,                  0,              0,               2,                          );
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            NULL,               NULL,           NULL,            ec_pdo_map_azd3a_ked,       );
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            NULL,               NULL,           NULL,            ec_pdo_map_custom_azd3a_ked,);
 MAP_SLAVE_NVRAM_SDO_FUNCTIONS(              NULL,               NULL,           NULL,            ec_nvram_sdos_azdxa_ked,    );
 MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           NULL,               NULL,           NULL,            NULL,                       );
 MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            NULL,               NULL,           NULL,            ec_initial_pdo_azdxa_ked,   );
@@ -41,8 +41,8 @@ MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_azdxa_ked,           
 MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                               NULL,                               ec_get_moo_pdo_virtual,             ec_get_moo_pdo_virtual,             ec_get_moo_pdo_virtual,             ec_get_moo_pdo_virtual,             );
 MAP_DRIVE_GET_REMOTE_FUNCTIONS(             ec_get_remote_azdxa_ked,            ec_get_remote_azdxa_ked,            ec_get_remote_virtual,              ec_get_remote_virtual,              ec_get_remote_virtual,              ec_get_remote_virtual,              );
 MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_azdxa_ked,      ec_get_follow_error_azdxa_ked,      ec_get_follow_error_virtual,        ec_get_follow_error_virtual,        ec_get_follow_error_virtual,        ec_get_follow_error_virtual,        );
-MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   ec_get_error_string_pdo_azdxa_ked,  ec_get_error_string_pdo_azdxa_ked,  ec_get_error_string_pdo_virtual,    ec_get_error_string_pdo_virtual,    ec_get_error_string_pdo_virtual,    ec_get_error_string_pdo_virtual,    );
-MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               );
+MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   NULL,                               NULL,                               ec_get_error_string_pdo_virtual,    ec_get_error_string_pdo_virtual,    ec_get_error_string_pdo_virtual,    ec_get_error_string_pdo_virtual,    );
+MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   ec_get_error_string_sdo_azdxa_ked,  ec_get_error_string_sdo_azdxa_ked,  NULL,                               NULL,                               NULL,                               NULL,                               );
 MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_azdxa_ked,          ec_set_ctrl_wrd_azdxa_ked,          ec_set_ctrl_wrd_virtual,            ec_set_ctrl_wrd_virtual,            ec_set_ctrl_wrd_virtual,            ec_set_ctrl_wrd_virtual,            );
 MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_azdxa_ked,          ec_get_stat_wrd_azdxa_ked,          ec_get_stat_wrd_virtual,            ec_get_stat_wrd_virtual,            ec_get_stat_wrd_virtual,            ec_get_stat_wrd_virtual,            );
 MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_azdxa_ked,        ec_get_actpos_wrd_azdxa_ked,        ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          ec_get_actpos_wrd_virtual,          );
