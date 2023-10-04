@@ -278,7 +278,7 @@ int main(int argc, char *argv[]) {
         UM_FATAL("GBEM: Failed to set process priority with setpriority [%s]", strerror(errno));
     }
 
-
+/* NEW_MACHINE - add new print for machine here */
 /* handy defines to output to console what machine type has been configured */
 #if MACHINE_MINI == 1
     map_machine_type = MAP_MACHINE_MINI;
@@ -289,6 +289,10 @@ int main(int argc, char *argv[]) {
 #if MACHINE_DRIVE_SPINNERS == 1
     map_machine_type = MAP_MACHINE_DRIVE_SPINNERS;
 #endif
+#if MACHINE_DRIVE_SPINNERS_VIRTUAL == 1
+    map_machine_type = MAP_MACHINE_DRIVE_SPINNERS_VIRTUAL;
+#endif
+
 #if MACHINE_IGUS == 1
     map_machine_type = MAP_MACHINE_IGUS;
 #endif
