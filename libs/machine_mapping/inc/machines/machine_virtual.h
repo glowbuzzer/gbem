@@ -28,11 +28,8 @@
 #define MAP_NUM_SLAVES              3
 
 
-
-
-
-
-
+/** Number of DINS used to trigger EStop */
+#define MAP_NUMBER_ESTOP_DIN        0
 
 
 #endif //GBEM_MACHINE_VIRTUAL_H

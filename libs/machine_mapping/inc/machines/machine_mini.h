@@ -15,7 +15,6 @@
 #define GBEM_MACHINE_MINI_H
 
 
-
 #define MAP_CYCLE_TIME              (4)
 #define MAP_GLOBAL_DC_SYNC_OFFSET   2000U
 
@@ -32,7 +31,8 @@
 /**CRITICAL! if this is defined then hardware estop is disabled! */
 #define DISABLE_ESTOP_CHECKING                          1
 
-
+/** Number of DINS used to trigger EStop */
+#define MAP_NUMBER_ESTOP_DIN        0
 
 
 
