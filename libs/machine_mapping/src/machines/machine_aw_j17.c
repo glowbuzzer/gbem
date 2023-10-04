@@ -20,7 +20,7 @@
 
 
 //@formatter:off
-map_pdo_object_t ctrl_estop_din = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1008_1, .bit_num=1};
+map_pdo_object_t ctrl_estop_din_1 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1008_1, .bit_num=1};
 
 
 /* SLAVES */
@@ -62,11 +62,15 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series         
 
 
 /* DRIVE PARAMETERS */
-MAP_DRIVE_POS_LIMIT(                        99999999,                           );
-MAP_DRIVE_NEG_LIMIT(                        -99999999,                          );
+//FOR AW DRIVES THESE ARE IN DEGREES
+MAP_DRIVE_POS_LIMIT(                        90,                                  );
+MAP_DRIVE_NEG_LIMIT(                        -90,                                 );
+
+
+
 MAP_DRIVE_DIRECTION(                        1,                                  );
 //percentage of max torque
-MAP_DRIVE_TORQ_LIMIT(                       6,                                );
+MAP_DRIVE_TORQ_LIMIT(                       6,                                  );
 
 //7 % can stop drive by hand
 extern bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3;
