@@ -24,6 +24,70 @@
 
 gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
 
+    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Printing SDOs for drive [%d]", drive);
+
+    uint32_t enc1_res = 0;
+    ec_sdo_read_uint32(map_drive_to_slave[drive], AW_J_SERIES_RESOLUTION_ENC1_SDO_INDEX,
+                       AW_J_SERIES_RESOLUTION_ENC1_SDO_SUB_INDEX,
+                       &enc1_res, true);
+
+    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Encoder 1 resolution [%d] on drive [%d]", enc1_res, drive);
+
+
+    uint32_t enc2_res = 0;
+    ec_sdo_read_uint32(map_drive_to_slave[drive], AW_J_SERIES_RESOLUTION_ENC2_SDO_INDEX,
+                       AW_J_SERIES_RESOLUTION_ENC2_SDO_SUB_INDEX,
+                       &enc2_res, true);
+    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Encoder 2 resolution [%d] on drive [%d]", enc2_res, drive);
+
+
+
+
+    //SI unit velocity	0x60A9:0	UDINT	32
+    uint32_t si_unit_velocity = 0;
+    ec_sdo_read_uint32(map_drive_to_slave[drive], AW_J_SERIES_SI_UNIT_VELOCITY_SDO_INDEX,
+                       AW_J_SERIES_SI_UNIT_VELOCITY_SDO_SUB_INDEX,
+                       &si_unit_velocity, true);
+
+    if (si_unit_velocity == 11814656) {
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - SI unit velocity [RPM] on drive [%d]", drive);
+    } else if (si_unit_velocity == 4290004736) {
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - SI unit velocity [0.1 * RPM] on drive [%d]", drive);
+    } else if (si_unit_velocity == 4273227520) {
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - SI unit velocity [0.01 * RPM] on drive [%d]", drive);
+    } else if (si_unit_velocity == 4256450304) {
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - SI unit velocity [0.001 * RPM] on drive [%d]", drive);
+    } else if (si_unit_velocity == 11797248) {
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - SI unit velocity [RPS] on drive [%d]", drive);
+    } else if (si_unit_velocity == 4289987328) {
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - SI unit velocity [0.1 * RPS] on drive [%d]", drive);
+    } else if (si_unit_velocity == 4273210112) {
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - SI unit velocity [0.01 * RPS] on drive [%d]", drive);
+    } else if (si_unit_velocity == 4256432896) {
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - SI unit velocity [0.001 * RPS] on drive [%d]", drive);
+    } else {
+        UM_ERROR(GBEM_UM_EN, "GBEM: AW-J-Series - SI unit velocity not recognised on drive [%d]", drive);
+    }
+
+
+    //    Max motor speed	0x6080:0	UDINT	32	0		1000	rpm	readwrite
+    //Think need to divide by 51 to get shaft speed
+    uint32_t max_motor_speed = 0;
+    ec_sdo_read_uint32(map_drive_to_slave[drive], AW_J_SERIES_MAX_MOTOR_SPEED_SDO_INDEX,
+                       AW_J_SERIES_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
+                       &max_motor_speed, true);
+    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max motor speed [%d] on drive [%d]", max_motor_speed, drive);
+
+
+    //not sure why this does not exist in the object dictionary
+//    uint32_t feed_constant = 0;
+//    ec_sdo_read_uint32(map_drive_to_slave[drive], AW_J_SERIES_FEED_CONSTANT_SDO_INDEX,
+//                       AW_J_SERIES_FEED_CONSTANT_SDO_SUB_INDEX,
+//                       &feed_constant, true);
+//
+//    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Feed constant [%d] on drive [%d]", feed_constant, drive);
+
+
     int32_t max_pos = 0;
     ec_sdo_read_int32(map_drive_to_slave[drive], AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
                       AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
@@ -76,11 +140,11 @@ gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
     UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Manufacturer software version [%s] on drive [%d]", octet_string,
             drive);
 
-//dont print errror here
+
     uint16_t drive_error_code = 0;
     ec_sdo_read_uint16(map_drive_to_slave[drive], AW_J_SERIES_ERROR_CODE_SDO_INDEX,
                        AW_J_SERIES_ERROR_CODE_SDO_SUB_INDEX,
-                       &drive_error_code, false);
+                       &drive_error_code, true);
 
     UM_INFO(GBEM_UM_EN, "GBEM:  AW-J-Series - drive error code [%d]", drive_error_code);
 
@@ -93,6 +157,19 @@ gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
 
 // 20 bit encoder =
 //    DEG_TO_INC: DINT := 2912
+
+
+//aw-j17
+//    [INFO     ] GBEM: AW-J-Series - SI unit velocity [0.001 * RPM] on drive [0]
+//    [INFO     ] GBEM: AW-J-Series - Max motor speed [3000000] on drive [0]
+//    [INFO     ] GBEM: AW-J-Series - Max. pos [99999999] on drive [0]
+//    [INFO     ] GBEM: AW-J-Series - Min. pos  [-99999999] on drive [0]
+//    [INFO     ] GBEM: AW-J-Series - Max torque [240] on drive [0]
+//    [INFO     ] GBEM: AW-J-Series - Motor rated torque  [620] on drive [0]
+//    [INFO     ] GBEM: AW-J-Series - Motor revolutions [51] on drive [0]
+//    [INFO     ] GBEM: AW-J-Series - Shaft revolutions [1] on drive [0]
+//    [INFO     ] GBEM: AW-J-Series - Manufacturer software version [v5.0.9] on drive [0]
+
 
     return E_SUCCESS;
 }
