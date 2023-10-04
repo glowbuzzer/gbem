@@ -37,7 +37,7 @@
 /**CRITICAL! if this is defined then hardware estop is disabled! */
 #define DISABLE_ESTOP_CHECKING      0
 
-
+#define MAP_NUMBER_ESTOP_DIN        1
 
 
 #endif //GBEM_MACHINE_AW_J17_H
