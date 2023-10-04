@@ -67,8 +67,8 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               
 
 
 /* DRIVE PARAMETERS */
-MAP_DRIVE_POS_LIMIT(                        99999999,                               99999999,                               99999999,                               99999999,                               99999999,                               99999999                                );
-MAP_DRIVE_NEG_LIMIT(                        -99999999,                              -99999999,                              -99999999,                              -99999999,                              -99999999,                              -99999999                               );
+MAP_DRIVE_POS_LIMIT(                        90,                                     45,                                     45,                                     180,                                    90,                                     180                                     );
+MAP_DRIVE_NEG_LIMIT(                        -90,                                    -45,                                    -45,                                   -180,                                   -90,                                    -180                                     );
 MAP_DRIVE_DIRECTION(                        1,                                      1,                                      1,                                      1,                                      1,                                      1                                       );
 MAP_DRIVE_TORQ_LIMIT(                       10,                                     10,                                     10,                                     10,                                     10,                                     10,                                     );
 
