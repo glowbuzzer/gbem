@@ -18,41 +18,63 @@
 #include "plc_core.h"
 #include "time.h"
 #include "std_defs_and_macros.h"
-#include "log.h"
+#include "user_message.h"
 
-bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3, mydin1_test, mydout1_test;
+bool plc_in_1_SS1_CMD_SW;
+bool plc_in_2_STOP_CMD_SW;
+bool plc_in_3_ARM_48V_SUPPLY;
+bool plc_in_4_RC_LIGHT_SIGNAL;
+bool plc_in_5_BRAKE_CHOPPER_ERROR;
+bool plc_in_6_IN_TOOL_1;
+bool plc_in_7_IN_TOOL_2;
 
+/*
+ * Inputs
+ * 1 SS1_CMD_SW - this triggers the quick stop
+ * 2 STOP_CMD_SW - this triggers the quick stop too
+ * 3 ARM_48V_SUPPLY
+ * 4 RC_LIGHT_SIGNAL
+ * 5 BRAKE_CHOPPER_ERROR
+ * 6 IN_TOOL_1 - feedback from gripper
+ * 7 IN_TOOL_2 - feedback from gripper
+ */
 
-_Noreturn void *plc_mytask1(void *argument) {
+bool plc_out_1_SW_HEARTBYTE_CH1;
+bool plc_out_2_SW_HEARTBYTE_CH2;
+bool plc_out_3_SS1_CMD_SW_FB;
+bool plc_out_4_STOP_CMD_SW_FB;
+bool plc_out_5_SPARE;
+bool plc_out_6_OUT_TOOL_1;
+bool plc_out_7_OUT_TOOL_2;
 
-    //init stuff
-
+_Noreturn void *plc_aw_robot_task_1(void *argument) {
 
     PLC_TASK_START
 
-        static int counter = 0;
+        printf("plc_aw_robot_task_1\n");
 
-        printf("mytask1\n");
+        //These signals have to be set HIGH during the normal operation to inform the “S-PLC” that the “EEMC” is working
+        plc_out_1_SW_HEARTBYTE_CH1 = true;
+        plc_out_2_SW_HEARTBYTE_CH2 = true;
 
-        if (plc_din1) {
-            printf("Button 1 pressed\n");
-        }
-        if (plc_din2) {
-            printf("Button 2 pressed\n");
-        }
+        //This signal has to be set to replicate the status of the IN1. It is the feedback signal to the “S-PLC” needed to verify that the “EEMC” has received and managed the SS 1-t command via IN1/In2
+        plc_out_3_SS1_CMD_SW_FB = plc_in_1_SS1_CMD_SW;
+        plc_out_4_STOP_CMD_SW_FB = plc_in_2_STOP_CMD_SW;
 
-        counter++;
-
-        if (counter % 2 == 0) {
-            printf("LED 1 on\n");
-            plc_dout1 = 0;
+        //handle plc_in_5_BRAKE_CHOPPER_ERROR in front end or in plc?
+        if (plc_in_5_BRAKE_CHOPPER_ERROR) {
+            plc_signalled_error = true;
         } else {
-            printf("LED 1 off\n");
-            plc_dout1 = 1;
+            plc_signalled_error = false;
+        }
+
+        if (!plc_in_3_ARM_48V_SUPPLY) {
+            //?
         }
 
 
-//plc_signalled_error=false;
+
+
 
 //        plc_task_set.tasks[task_index].exec.completed=true;
 
