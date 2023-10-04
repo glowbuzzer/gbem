@@ -1402,10 +1402,10 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
 
 #if MAP_NUMBER_ESTOP_DIN == 0
-    UM_FATAL("GBEM: no ctrl_estop_din is defined!");
+    UM_FATAL("GBEM: MAP_NUMBER_ESTOP_DIN not defined");
 #endif
 #if MAP_NUMBER_ESTOP_DIN > 2
-    UM_FATAL("GBEM: too many ctrl_estop_din are defined!");
+    UM_FATAL("GBEM: too many MAP_NUMBER_ESTOP_DIN are defined!");
 #endif
 
 #if MAP_NUMBER_ESTOP_DIN == 1
