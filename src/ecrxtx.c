@@ -586,7 +586,9 @@ void ec_rxtx(void *argument) {
         } else {
 
 //            UM_INFO(GBEM_UM_EN, "GBEM: No mode set for EC_RXTX. Waiting for mode to be set");
-            osal_usleep(100000);
+
+            osal_usleep(MAP_CYCLE_TIME * 1000);
+
         }
     }
 }
