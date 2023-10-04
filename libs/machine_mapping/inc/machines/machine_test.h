@@ -38,13 +38,8 @@
 #define MAP_AKD_1                   9
 
 
-#define USE_ESTOP_RESET             1
 
-/** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop */
-#define CTRL_ESTOP_DIN              1
 
-/** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop reset */
-#define CTRL_ESTOP_RESET_DIN        2
 
 
 

@@ -22,12 +22,12 @@
 #define MAP_EK1100_1                1
 #define MAP_EL2808_1                2
 #define MAP_EL1808_1                3
-#define MAP_AW_J17_CTRL_1           4
-#define MAP_AW_J20_CTRL_1           5
-#define MAP_AW_J20_CTRL2            6
+#define MAP_AW_J40LP_CTRL_1         4
+#define MAP_AW_J40HP_CTRL_1         5
+#define MAP_AW_J32_CTRL_1           6
 #define MAP_AW_J25_CTRL_1           7
-#define MAP_AW_J32_CTRL_1           8
-#define MAP_AW_J32_CTRL_2           9
+#define MAP_AW_J25_CTRL_2           8
+#define MAP_AW_J20_CTRL_1           9
 
 
 #define ECM_CHECK_EEP_MAN           0
@@ -36,23 +36,13 @@
 
 
 #define MAP_NUM_DRIVES              6
-#define MAP_NUM_SLAVES              10
+#define MAP_NUM_SLAVES              9
 
 /**CRITICAL! if this is defined then hardware estop is disabled! */
-#define DISABLE_ESTOP_CHECKING                          0
-
-/** Use a digital input to reset the estop */
-#define USE_ESTOP_RESET             1
+#define DISABLE_ESTOP_CHECKING      0
 
 
-
-
-///** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop */
-//#define CTRL_ESTOP_DIN              1
-//
-///** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop reset */
-//#define CTRL_ESTOP_RESET_DIN        2
-
+#define MAP_NUMBER_ESTOP_DIN        1
 
 
 #endif //GBEM_MACHINE_AW_ROBOT_M_H

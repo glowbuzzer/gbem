@@ -249,32 +249,47 @@ gberror_t config_process_io(void) {
     UM_INFO(GBEM_UM_EN, "GBEM: Heartbeat checking is >not< disabled");
 #endif
 
-//USE_ESTOP_RESET is a define to control whether GBEM processes the reset signal for estop or whether the estop state is provided by the electricals
 
 #if DISABLE_ESTOP_CHECKING != 1
-    if (ctrl_estop_din.slave_num > 1) {
-        UM_INFO(GBEM_UM_EN, "GBEM: ESTOP is on slave [%u] and bit number [%u]", ctrl_estop_din.slave_num,
-                ctrl_estop_din.bit_num);
+
+#if MAP_NUMBER_ESTOP_DIN == 0
+    UM_ERROR(GBEM_UM_EN, "GBEM: No MAP_NUMBER_ESTOP_DIN is 0. This is an error");
+#endif
+
+#if MAP_NUMBER_ESTOP_DIN > 2
+    UM_ERROR(GBEM_UM_EN, "GBEM: No MAP_NUMBER_ESTOP_DIN > 2. This is an error");
+#endif
+
+#if MAP_NUMBER_ESTOP_DIN == 1
+    if (ctrl_estop_din_1.slave_num > 1) {
+        UM_INFO(GBEM_UM_EN, "GBEM: ESTOP is on slave [%u] and bit number [%u]", ctrl_estop_din_1.slave_num,
+                ctrl_estop_din_1.bit_num);
     } else {
         UM_ERROR(GBEM_UM_EN, "GBEM: No ESTOP signal is defined. This is an error");
         config_error = true;
     }
+#endif
 
-#ifdef USE_ESTOP_RESET
-    if (ctrl_estop_reset_din.slave_num > 1) {
-
-        UM_INFO(GBEM_UM_EN, "GBEM: ESTOP Reset is on slave [%u] and bit number [%u]", ctrl_estop_reset_din.slave_num,
-                ctrl_estop_reset_din.bit_num);
-        //    UM_INFO(GBEM_UM_EN,
-        //            "GBEM: Estop on Digital In: %d, and requires a reset on Digital In: %d (USE_ESTOP_RESET is #defined)\n",
+#if MAP_NUMBER_ESTOP_DIN == 2
+    if (ctrl_estop_din_1.slave_num > 1) {
+        UM_INFO(GBEM_UM_EN, "GBEM: ESTOP 1 is on slave [%u] and bit number [%u]", ctrl_estop_din_1.slave_num,
+                ctrl_estop_din_1.bit_num);
     } else {
-        UM_ERROR(GBEM_UM_EN,
-                 "GBEM: No ESTOP reset signal is defined. This is an error when USE_ESTOP_RESET is defined");
+        UM_ERROR(GBEM_UM_EN, "GBEM: No ESTOP 1 signal is defined. This is an error");
         config_error = true;
     }
-#else
-    UM_INFO(GBEM_UM_EN, "GBEM: Estop on Digital In: %d, and does NOT require a reset signal (USE_ESTOP_RESET is NOT #defined)");
+      if (ctrl_estop_din_2.slave_num > 1) {
+        UM_INFO(GBEM_UM_EN, "GBEM: ESTOP 2 is on slave [%u] and bit number [%u]", ctrl_estop_din_2.slave_num,
+                ctrl_estop_din_2.bit_num);
+    } else {
+        UM_ERROR(GBEM_UM_EN, "GBEM: No ESTOP 2 signal is defined. This is an error");
+        config_error = true;
+    }
+
+
 #endif
+
+
 #endif
 
 

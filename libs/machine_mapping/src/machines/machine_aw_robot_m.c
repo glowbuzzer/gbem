@@ -18,37 +18,32 @@
 #include "automationware.h"
 #include "beckhoff.h"
 
-//LARGE
-//J20 -> J25 -> J32 ->J40HP -> J40-LP
+//This config is for "L20" - medium sized 20kg payload
+//J40LP -> J40HP -> J32 ->J25 -> J25 ->J20 - 1.4m
 
-//MEDIUM
-//J17 -> J20 -> J20 ->J25 -> J32 ->J32
-
-//SMALL
-//J17 -> J17 -> J20 ->J25 -> J32 -> J25
+/* ESTOP (QUICK STOP) CONFIG */
 
 //@formatter:off
-map_pdo_object_t ctrl_estop_din = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1808_1, .bit_num=1};
-map_pdo_object_t ctrl_estop_reset_din = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1808_1, .bit_num=2};
-
+map_pdo_object_t ctrl_estop_din_1 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1808_1, .bit_num=1};
+map_pdo_object_t ctrl_estop_din_2 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1808_1, .bit_num=2};
 
 /* SLAVES */
-//                                        Slave 1             Slave 2         Slave 3          Slave 4                          Slave 5                         Slave 6                         Slave 7                         Slave 8                         Slave 9
-//                                        MAP_EK1100_1        MAP_EL2808_1    MAP_EL1808_1     MAP_AW_J17_CTRL_1                MAP_AW_J20_CTRL_1               MAP_AW_J20_CTRL_2               MAP_AW_J25_CTRL_1               MAP_AW_J32_CTRL_1               MAP_AW_J32_CTRL_2
-//                                        Coupler             8 dig out       8 dig in         J17 joint                        J20 joint                       J20 joint                       J25 joint                       J32 joint                       J32 joint
-MAP_NUM_DRIVES_ATTACHED(                  0,                  0,              0,               1,                               1,                              1,                              1,                              1,                              1                                   );
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,               NULL,           NULL,            NULL,                            NULL,                           NULL,                           NULL,                           NULL,                           NULL                                );
-MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,               NULL,           NULL,            NULL,                            NULL,                           NULL,                           NULL,                           NULL,                           NULL                                );
-MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         NULL,               NULL,           NULL,            ec_apply_standard_sdos_aw_j17,   ec_apply_standard_sdos_aw_j20,  ec_apply_standard_sdos_aw_j20,  ec_apply_standard_sdos_aw_j25,  ec_apply_standard_sdos_aw_j32,  ec_apply_standard_sdos_aw_j32       );
-MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          NULL,               NULL,           NULL,            ec_initial_pdo_aw_j_series,      ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series          );
-MAP_SLAVE_DC_TYPE(                        EC_DC_NONE,         EC_DC_NONE,     EC_DC_NONE,      EC_DC_0,                         EC_DC_0,                        EC_DC_0,                        EC_DC_0,                        EC_DC_0,                        EC_DC_0                             );
-MAP_SLAVE_DC_CYCLE(                       0,                  0,              0,               4,                               4,                              4,                              4,                              4,                              4                                   );
+//                                        Slave 1             Slave 2         Slave 3          Slave 4                           Slave 5                           Slave 6                         Slave 7                         Slave 8                         Slave 9
+//                                        MAP_EK1100_1        MAP_EL2808_1    MAP_EL1808_1     MAP_AW_J40LP_CTRL_1               MAP_AW_J40LP_CTRL_1               MAP_AW_J32_CTRL_1               MAP_AW_J25_CTRL_1               MAP_AW_J25_CTRL_2               MAP_AW_J20_CTRL_1
+//                                        Coupler             8 dig out       8 dig in         J40LP joint                       J40HP joint                       J32 joint                       J25 joint                       J25 joint                       J20 joint
+MAP_NUM_DRIVES_ATTACHED(                  0,                  0,              0,               1,                                1,                                1,                              1,                              1,                              1                                   );
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,               NULL,           NULL,            NULL,                             NULL,                             NULL,                           NULL,                           NULL,                           NULL                                );
+MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,               NULL,           NULL,            NULL,                             NULL,                             NULL,                           NULL,                           NULL,                           NULL                                );
+MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         NULL,               NULL,           NULL,            ec_apply_standard_sdos_aw_j40_lp, ec_apply_standard_sdos_aw_j40_hp, ec_apply_standard_sdos_aw_j32,  ec_apply_standard_sdos_aw_j25,  ec_apply_standard_sdos_aw_j25,  ec_apply_standard_sdos_aw_j20       );
+MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          NULL,               NULL,           NULL,            ec_initial_pdo_aw_j_series,       ec_initial_pdo_aw_j_series,       ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series          );
+MAP_SLAVE_DC_TYPE(                        EC_DC_NONE,         EC_DC_NONE,     EC_DC_NONE,      EC_DC_0,                          EC_DC_0,                          EC_DC_0,                        EC_DC_0,                        EC_DC_0,                        EC_DC_0                             );
+MAP_SLAVE_DC_CYCLE(                       0,                  0,              0,               4,                                4,                                4,                              4,                              4,                              4                                   );
 
 //set moo is in either initial PDO or custom sdos
 
 /* DRIVES */
 MAP_DRIVE_TO_NAME(                          "J1",                                   "J2",                                   "J3",                                   "J4",                                   "J5",                                   "J6"                                    );
-MAP_DRIVE_TO_SLAVE(                         MAP_AW_J17_CTRL_1,                      MAP_AW_J20_CTRL_1,                      MAP_AW_J20_CTRL2,                       MAP_AW_J25_CTRL_1,                      MAP_AW_J32_CTRL_1,                      MAP_AW_J32_CTRL_2                       );
+MAP_DRIVE_TO_SLAVE(                         MAP_AW_J40LP_CTRL_1,                    MAP_AW_J40LP_CTRL_1,                    MAP_AW_J32_CTRL_1,                      MAP_AW_J25_CTRL_1,                      MAP_AW_J25_CTRL_2,                      MAP_AW_J20_CTRL_1                       );
 MAP_DRIVE_TO_SUBDRIVE(                      1,                                      1,                                      1,                                      1,                                      1,                                      1                                       );
 MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_aw_j_series,             ec_get_moo_pdo_aw_j_series,             ec_get_moo_pdo_aw_j_series,             ec_get_moo_pdo_aw_j_series,             ec_get_moo_pdo_aw_j_series,             ec_get_moo_pdo_aw_j_series              );
 MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL                                    );
@@ -75,30 +70,64 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               
 MAP_DRIVE_POS_LIMIT(                        99999999,                               99999999,                               99999999,                               99999999,                               99999999,                               99999999                                );
 MAP_DRIVE_NEG_LIMIT(                        -99999999,                              -99999999,                              -99999999,                              -99999999,                              -99999999,                              -99999999                               );
 MAP_DRIVE_DIRECTION(                        1,                                      1,                                      1,                                      1,                                      1,                                      1                                       );
+MAP_DRIVE_TORQ_LIMIT(                       10,                                     10,                                     10,                                     10,                                     10,                                     10,                                     );
 
+/* PLC IO CONFIG */
 
+extern bool plc_in_1_SS1_CMD_SW;
+extern bool plc_in_2_STOP_CMD_SW;
+extern bool plc_in_3_ARM_48V_SUPPLY;
+extern bool plc_in_4_RC_LIGHT_SIGNAL;
+extern bool plc_in_5_BRAKE_CHOPPER_ERROR;
+extern bool plc_in_6_IN_TOOL_1;
+extern bool plc_in_7_IN_TOOL_2;
+/*
+ * Inputs
+ * 1 SS1_CMD_SW - this triggers the quick stop
+ * 2 STOP_CMD_SW - this triggers the quick stop too
+ * 3 ARM_48V_SUPPLY
+ * 4 RC_LIGHT_SIGNAL
+ * 5 BRAKE_CHOPPER_ERROR
+ * 6 IN_TOOL_1 - feedback from gripper
+ * 7 IN_TOOL_2 - feedback from gripper
+ */
 
-extern bool plc_din1, plc_din2, plc_din3, plc_din4, plc_din5, plc_din7, plc_din8, plc_dout1, plc_dout2, plc_dout3, plc_dout4, plc_dout5, plc_dout6, plc_dout7, plc_dout8;
+extern bool plc_out_1_SW_HEARTBYTE_CH1;
+extern bool plc_out_2_SW_HEARTBYTE_CH2;
+extern bool plc_out_3_SS1_CMD_SW_FB;
+extern bool plc_out_4_STOP_CMD_SW_FB;
+extern bool plc_out_5_SPARE;
+extern bool plc_out_6_OUT_TOOL_1;
+extern bool plc_out_7_OUT_TOOL_2;
+
+/*
+ * Outputs
+ * 1 SW_HEARTBYTE_CH1 - must be high to inform safety PLC that EEMC is working
+ * 2 SW_HEARTBYTE_CH2 - must be high to inform safety PLC that EEMC is working
+ * 3 SS1_CMD_SW_FB - must mirror the signal on SS1_CMD_SW
+ * 4 STOP_CMD_SW_FB - must mirror the signal on STOP_CMD_SW
+ * 5 SPARE
+ * 6 OUT_TOOL_1 - command to gripper
+ * 7 OUT_TOOL_2 - command to gripper
+ */
 
 
 /*IO MAP*/
-mapping_t map_iomap[16] = {
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=1, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=0},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din1, .linked_task_name="Task1"}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=2, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din2, .linked_task_name="Task1"}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=3, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din3, .linked_task_name="Task1"}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=4, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=3},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din4, .linked_task_name="Task1"}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=5, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=4},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din5, .linked_task_name="Task1"}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=6, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=5},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din6, .linked_task_name="Task1"}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=7, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=6},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din7, .linked_task_name="Task1"}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=8, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=7},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din8, .linked_task_name="Task1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=1, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=0},    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_dout1, .linked_task_name="Task1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=2, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=1},    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_dout2, .linked_task_name="Task1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=3, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=2},    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_dout3, .linked_task_name="Task1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=4, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=3},    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_dout4, .linked_task_name="Task1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=5, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=4},    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_dout5, .linked_task_name="Task1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=6, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=5},    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_dout6, .linked_task_name="Task1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=7, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=6},    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_dout7, .linked_task_name="Task1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=8, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=7},    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_dout8, .linked_task_name="Task1"}},
+mapping_t map_iomap[14] = {
+        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=1, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=0},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_1_SS1_CMD_SW, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=2, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_2_STOP_CMD_SW, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=3, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_3_ARM_48V_SUPPLY, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=4, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=3},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_4_RC_LIGHT_SIGNAL, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=5, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=4},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_5_BRAKE_CHOPPER_ERROR, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=6, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=5},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_6_IN_TOOL_1, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=7, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=6},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_7_IN_TOOL_2, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=1, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_1_SW_HEARTBYTE_CH1, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=2, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_2_SW_HEARTBYTE_CH2, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=3, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_3_SS1_CMD_SW_FB, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=4, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_4_STOP_CMD_SW_FB, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=5, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_5_SPARE, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=6, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_6_OUT_TOOL_1, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=7, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_7_OUT_TOOL_2, .linked_task_name="AwRobotTask1"}},
         };
 
 uint16_t map_num_rows_in_iomap = sizeof (map_iomap)/ sizeof(map_iomap[0]);

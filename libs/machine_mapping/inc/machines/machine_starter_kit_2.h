@@ -31,13 +31,9 @@
 /**CRITICAL! if this is defined then hardware estop is disabled! */
 #define DISABLE_ESTOP_CHECKING                          1
 
-#define USE_ESTOP_RESET             0
 
-/** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop */
-#define CTRL_ESTOP_DIN              2
 
-/** Number of DIN (0-63 as defined in GBC layout ) that corresponds  to estop reset */
-#define CTRL_ESTOP_RESET_DIN        1
+
 
 
 

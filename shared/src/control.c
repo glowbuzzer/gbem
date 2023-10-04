@@ -1395,37 +1395,50 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
      */
 
 
-#if USE_ESTOP_RESET == 1 && DISABLE_ESTOP_CHECKING == 0
-    //using estop din with reset
 
-
-        if (ctrl_estop_din_reset.slave_num < 1){
-            UM_FATAL("GBEM: no ctrl_estop_din_reset is defined!");
-        }
-        if (ctrl_estop_din.slave_num < 1) {
-            UM_FATAL("GBEM: no ctrl_estop_din is defined!");
-        }
-
-    //    if (!BIT_CHECK(dpm_in->digital, CTRL_ESTOP_DIN)) {
-        if (!ec_pdo_get_input_bit(ctrl_estop_din.slave_num, ctrl_estop_din.bit_num)) {
-    //        printf("estop=true");
-            estop = true;
-        } else {
-    //        if (BIT_CHECK(dpm_in->digital, CTRL_ESTOP_RESET_DIN)) {
-            if (ec_pdo_get_input_bit(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bit_num)) {
-                estop = false;
-            }
-        }
-#endif
-
-#if  USE_ESTOP_RESET == 0 && DISABLE_ESTOP_CHECKING == 0
+#if  DISABLE_ESTOP_CHECKING == 0
     //using estop din but no reset
 //Assumes 0 on din forces quickstop
-    if (!ec_pdo_get_input_bit(ctrl_estop_din.slave_num, ctrl_estop_din.bit_num)) {
+
+
+#if MAP_NUMBER_ESTOP_DIN == 0
+    UM_FATAL("GBEM: no ctrl_estop_din is defined!");
+#endif
+#if MAP_NUMBER_ESTOP_DIN > 2
+    UM_FATAL("GBEM: too many ctrl_estop_din are defined!");
+#endif
+
+#if MAP_NUMBER_ESTOP_DIN == 1
+
+    if (ctrl_estop_din_1.slave_num < 1) {
+        UM_FATAL("GBEM: no ctrl_estop_din is defined! (slave number less thhan 1)");
+    }
+
+    if (!ec_pdo_get_input_bit(ctrl_estop_din_1.slave_num, ctrl_estop_din_1.bit_num)) {
         estop = true;
     } else {
         estop = false;
     }
+#endif
+
+#if MAP_NUMBER_ESTOP_DIN == 2
+
+    if (ctrl_estop_din_1.slave_num < 1) {
+        UM_FATAL("GBEM: no ctrl_estop_din_1 is defined! (slave number less thhan 1)");
+    }
+    if (ctrl_estop_din_2.slave_num < 1) {
+        UM_FATAL("GBEM: no ctrl_estop_din_2 is defined! (slave number less thhan 1)");
+    }
+
+    if (!ec_pdo_get_input_bit(ctrl_estop_din_1.slave_num, ctrl_estop_din_1.bit_num) ||
+        !ec_pdo_get_input_bit(ctrl_estop_din_2.slave_num, ctrl_estop_din_2.bit_num)) {
+        estop = true;
+    } else {
+        estop = false;
+    }
+#endif
+
+
 #endif
 
     DPM_IN_PROTECT_END

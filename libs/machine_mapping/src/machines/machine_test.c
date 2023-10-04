@@ -37,7 +37,6 @@ bool  slave_1_pdo_map(uint16_t slave){
 //@formatter:off
 
 map_pdo_object_t ctrl_estop_din = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1008_1, .bit_num=1};
-map_pdo_object_t ctrl_estop_reset_din = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1008_1, .bit_num=2};
 
 
 /* SLAVES - must be defined in order that they appear on the EtherCAT network */
