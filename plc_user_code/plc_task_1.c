@@ -21,13 +21,13 @@
 #include "log.h"
 #include "map_config.h"
 
-#if MACHINE_AW_ROBOT_M != 0
+#if MACHINE_AW_ROBOT_M == 0
 
 //bool plc_din1, plc_din2, plc_din3, plc_din4, plc_din5, plc_din6, plc_din7, plc_din8;
-//
+
 //bool plc_dout1, plc_dout2, plc_dout3, plc_dout4, plc_dout5, plc_dout6, plc_dout7, plc_dout8;
-//
-//
+
+
 _Noreturn void *plc_mytask1(void *argument) {
 
     //init stuff
