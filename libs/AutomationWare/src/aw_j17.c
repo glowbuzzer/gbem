@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file           :  aw-j17.c
+ * @file           :  aw_j17.c
  * @brief          :  AutomationWare J17 control functions
  ******************************************************************************
  * @attention
@@ -14,9 +14,6 @@
 
 #include "aw_j17.h"
 #include "aw_j_series.h"
-#include "std_headers.h"
-#include "std_defs_and_macros.h"
-#include "log.h"
 #include "user_message.h"
 #include "ethercatsetget.h"
 #include "cia402.h"
@@ -35,6 +32,12 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
     //Min position limit	0x607D:1	DINT	32			2147483648	Inc	readwrite	Receive PDO (Outputs)
     //Max position limit	0x607D:2	DINT	32			2147483647	Inc	readwrite	Receive PDO (Outputs)
 
+    //encoder is 2^20  1048576 counts per rev
+
+
+    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Applying standard SDOs to slave [%u]", slave);
+
+
     if (nolimits) {
         if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
                                 AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
@@ -48,17 +51,30 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
             return E_SDO_WRITE_FAILURE;
         }
     } else {
+
         if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
                                 AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                map_drive_pos_limit[map_slave_to_drive(slave)], true)) {
+                                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
+                                           ((double) map_drive_pos_limit[map_slave_to_drive(slave)] / (double) 360)),
+                                true)) {
             return E_SDO_WRITE_FAILURE;
         }
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max position limit [%d] on drive [%d]",
+                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
+                           ((double) map_drive_pos_limit[map_slave_to_drive(slave)] / (double) 360)),
+                map_slave_to_drive(slave));
 
         if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
                                 AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                map_drive_neg_limit[map_slave_to_drive(slave)], true)) {
+                                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
+                                           ((double) map_drive_neg_limit[map_slave_to_drive(slave)] / (double) 360)),
+                                true)) {
             return E_SDO_WRITE_FAILURE;
         }
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Min position limit [%d] on drive [%d]",
+                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
+                           ((double) map_drive_neg_limit[map_slave_to_drive(slave)] / (double) 360)),
+                map_slave_to_drive(slave));
     }
 
     //Polarity	0x607E:0	USINT	8
@@ -67,6 +83,7 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
     if (map_drive_direction[map_slave_to_drive(slave)] == 0) {
         polarity = 128;
     }
+    //todo crit velocity polarity
 
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_POLARITY_SDO_INDEX, AW_J_SERIES_POLARITY_SDO_SUB_INDEX,
                             polarity, true)) {
@@ -101,18 +118,15 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
 
     }
 
+//    Max motor speed	0x6080:0	UDINT	32	0		1000	rpm	readwrite
+
+
     //set bus cycle time
     //Communication cycle period	0x1006:0	DINT	32			100		readwrite
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_INDEX,
                             AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_SUB_INDEX, MAP_CYCLE_TIME * 100, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-
-//set moo in sdo (currently set in PDO)
-//    0x6060:0
-//    if (!ec_sdo_write_int32(slave, 0x6060, 0, 8)) {
-//        return E_SDO_WRITE_FAILURE;
-//    }
 
     return E_SUCCESS;
 }
