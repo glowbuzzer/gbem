@@ -61,12 +61,6 @@
 #define CTRL_HEARTBEAT_TOLERANCE                        50
 
 
-/** Not used */
-///** Bit number in machine controlword that triggers a transition to fault state */
-//#define CTRL_MACHINE_CTRL_WRD_REQUEST_FAULT_BIT_NUM     ???
-
-/**Bit number in machine controlword that triggers a reset of drives and statemachine */
-//#define CTRL_MACHINE_CTRL_WRD_REQUEST_RESET_BIT_NUM     ???
 
 /** Threshold of cycles after requesting drives change state that the transition must be made */
 //this has to be quite large as it needs to be > maximum time for the drives to stop

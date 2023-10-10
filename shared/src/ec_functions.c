@@ -489,8 +489,8 @@ gberror_t print_1c32(const uint16_t slave) {
  */
 bool ec_step_1_init(void) {
 
-    //set  the status word STAUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM
-    BIT_SET(dpm_in->machine_word, STAUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM);
+    //set  the status word STATUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM
+    BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM);
 
     /* if we want to use the redundant EtherCAT interface we need two interfaces here is where we enable this */
 #if USE_REDUNDANT_ETHERNET_PORTS == 1
@@ -741,8 +741,8 @@ bool ec_step_9_op(void) {
 
         //set the status word STATUS_WORD_GBEM_BOOTED_BIT_NUM
         BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_BOOTED_BIT_NUM);
-        //clear the status word STAUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM
-        BIT_CLEAR(dpm_in->machine_word, STAUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM);
+        //clear the status word STATUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM
+        BIT_CLEAR(dpm_in->machine_word, STATUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM);
 
 
         /** read the drive error code into the ecm_status struct */
@@ -870,7 +870,7 @@ void ECBoot(void *argument) {
     }
 
     gberror_t gbrc __attribute__((unused));
-    
+
     sleep(5);
     if (ec_boot_proceed) {
 

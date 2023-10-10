@@ -143,7 +143,7 @@ static void sm_error_state_entry_action(void *stateData, struct event *event);
 /* sm transition action functions */
 static void cia_set_current_fault_causes_action(void *oldStateData, struct event *event, void *newStateData);
 
-/* Forward declaration of sm states so that they can be defined in an logical order: */
+/* Forward declaration of sm states so that they can be defined in a logical order: */
 static struct state cia_not_ready_to_switch_on_state, cia_switch_on_disabled_state, cia_ready_to_switch_on_state, cia_switched_on_state, cia_operation_enabled_state, cia_quick_stop_active_state,
         cia_fault_reaction_active_state, cia_fault_state, sm_error_state;
 
@@ -839,12 +839,14 @@ bool cia_is_fault_condition(struct event *event) {
         control_event[CONTROL_EVENT_ESTOP].active = true;
         have_fault = true;
     }
+    //CONTROL_WORD_GBC_REQUEST_FAULT_BIT_NUM
     if (((event_data_t *) event->data)->machine_request_error == true) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > machine word is requesting error state");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_GBC_FAULT_REQUEST_BIT_NUM);
         control_event[CONTROL_EVENT_GBC_FAULT_REQUEST].active = true;
         have_fault = true;
     }
+    //CONTROL_WORD_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM
     if (((event_data_t *) event->data)->machine_move_not_op_enabled_fault_req == true) {
         LL_TRACE(GBEM_SM_LOG_EN,
                  "sm: Fault > machine word is requesting an error because a move has been attempted and we are not in operation enabled");
@@ -852,8 +854,7 @@ bool cia_is_fault_condition(struct event *event) {
         control_event[CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST].active = true;
         have_fault = true;
     }
-//    CTRL_GBC_INTERNAL_FAULT_REQ_BIT_NUM
-
+//    CONTROL_WORD_GBC_INTERNAL_FAULT_REQ_BIT_NUM
     if (((event_data_t *) event->data)->gbc_internal_fault == true) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > machine word is signalling GBC had an internal fault");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_GBC_INTERNAL_ERROR_BIT_NUM);
@@ -874,7 +875,7 @@ bool cia_is_fault_condition(struct event *event) {
         have_fault = true;
     }
     if (ctrl_state_change_cycle_count > ctrl_state_change_timeout) {
-        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > one or more drives took too long reponding to a state change request");
+        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > one or more drives took too long responding to a state change request");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_STATE_CHANGE_TIMEOUT_BIT_NUM);
         control_event[CONTROL_EVENT_DRIVE_STATE_CHANGE_TIMEOUT].active = true;
         have_fault = true;
@@ -1474,20 +1475,22 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
         UM_ERROR(GBEM_UM_EN, "GBEM: error checking drive for internal limit [%s]", gb_strerror(grc));
     }
     event_data.machine_move_not_op_enabled_fault_req = BIT_CHECK(dpm_out->machine_word,
-                                                                 CTRL_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM);
+                                                                 CONTROL_WORD_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM);
 
 
-    event_data.machine_request_error = BIT_CHECK(dpm_out->machine_word, CTRL_MACHINE_CTRL_WRD_REQUEST_FAULT_BIT_NUM);
+    event_data.machine_request_error = BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBC_REQUEST_FAULT_BIT_NUM);
 
     //gbc_internal_fault
-    event_data.gbc_internal_fault = BIT_CHECK(dpm_out->machine_word, CTRL_GBC_INTERNAL_FAULT_REQ_BIT_NUM);
+    event_data.gbc_internal_fault = BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBC_INTERNAL_FAULT_REQ_BIT_NUM);
 
     event_data.ec_check_error = (ecm_status.ec_check_found_error == true) ? true : false;
+
     event_data.slave_reported_error = EcatError;
 
     event_data.plc_signalled_error = plc_signalled_error;
 
     event_data.homing_failed = homing_failed;
+
     DPM_OUT_PROTECT_END
 
     volatile int8_t moo_disp;
