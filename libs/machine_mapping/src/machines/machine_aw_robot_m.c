@@ -43,7 +43,7 @@ MAP_SLAVE_DC_CYCLE(                       0,                  0,              0,
 
 /* DRIVES */
 MAP_DRIVE_TO_NAME(                          "J1",                                   "J2",                                   "J3",                                   "J4",                                   "J5",                                   "J6"                                    );
-MAP_DRIVE_TO_SLAVE(                         MAP_AW_J40LP_CTRL_1,                    MAP_AW_J40LP_CTRL_1,                    MAP_AW_J32_CTRL_1,                      MAP_AW_J25_CTRL_1,                      MAP_AW_J25_CTRL_2,                      MAP_AW_J20_CTRL_1                       );
+MAP_DRIVE_TO_SLAVE(                         MAP_AW_J40LP_CTRL_1,                    MAP_AW_J40HP_CTRL_1,                    MAP_AW_J32_CTRL_1,                      MAP_AW_J25_CTRL_1,                      MAP_AW_J25_CTRL_2,                      MAP_AW_J20_CTRL_1                       );
 MAP_DRIVE_TO_SUBDRIVE(                      1,                                      1,                                      1,                                      1,                                      1,                                      1                                       );
 MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_aw_j_series,             ec_get_moo_pdo_aw_j_series,             ec_get_moo_pdo_aw_j_series,             ec_get_moo_pdo_aw_j_series,             ec_get_moo_pdo_aw_j_series,             ec_get_moo_pdo_aw_j_series              );
 MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL                                    );
@@ -62,15 +62,15 @@ MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                               
 MAP_DRIVE_MOO(                              CIA_MOO_CSP,                            CIA_MOO_CSP,                            CIA_MOO_CSP,                            CIA_MOO_CSP,                            CIA_MOO_CSP,                            CIA_MOO_CSP                             );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL                                    );
 MAP_DRIVE_RUN_HOMING(                       0,                                      0,                                      0,                                      0,                                      0,                                      0                                       );
-MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL                                    );
+MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series             );
 
 
 
 /* DRIVE PARAMETERS */
-MAP_DRIVE_POS_LIMIT(                        90,                                     45,                                     45,                                     180,                                    90,                                     180                                     );
-MAP_DRIVE_NEG_LIMIT(                        -90,                                    -45,                                    -45,                                   -180,                                   -90,                                    -180                                     );
-MAP_DRIVE_DIRECTION(                        1,                                      1,                                      1,                                      1,                                      1,                                      1                                       );
-MAP_DRIVE_TORQ_LIMIT(                       10,                                     10,                                     10,                                     10,                                     10,                                     10,                                     );
+MAP_DRIVE_POS_LIMIT(                        90,                                     45,                                     135,                                     180,                                    0,                                     180                                     );
+MAP_DRIVE_NEG_LIMIT(                        -90,                                    -45,                                    45,                                   -180,                                   -180,                                    -180                                     );
+MAP_DRIVE_DIRECTION(                        1,                                      1,                                      0,                                      1,                                      1,                                      1                                       );
+MAP_DRIVE_TORQ_LIMIT(                       20,                                     20,                                     20,                                     20,                                     20,                                     20,                                     );
 
 /* PLC IO CONFIG */
 
