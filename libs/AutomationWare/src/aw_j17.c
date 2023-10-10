@@ -107,10 +107,15 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
 
     //use percentage of default max torque in array
     uint16_t torque_limit = map_drive_torque_limit[map_slave_to_drive(slave)];
+#define AW_J17_MAX_TORQUE 4016
+
 
     if (torque_limit > 0) {
 
-        torque_limit = (uint16_t) (((4016 * torque_limit) / 100));
+        torque_limit = (uint16_t) ((((double) AW_J17_MAX_TORQUE * (double) torque_limit) / (double) 100));
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max torque limit [%d] on drive [%d]",
+                torque_limit,
+                map_slave_to_drive(slave));
         if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_TORQUE_SDO_INDEX, AW_J_SERIES_MAX_TORQUE_SDO_SUB_INDEX,
                                 torque_limit, true)) {
             return E_SDO_WRITE_FAILURE;
@@ -119,6 +124,19 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
     }
 
 //    Max motor speed	0x6080:0	UDINT	32	0		1000	rpm	readwrite
+//BUT  AW-J-Series - SI unit velocity [0.001 * RPM] on drive [0]
+
+//by default max motor speed = 3000000 = 3000 rpm = 50 rps but this is before the 51 ratio gear box so is 0.98 rps
+
+//for testing 5 degrees per second  so roughly 3000000 * 5/360 = 41666
+
+    if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_INDEX, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
+                            41666, true)) {
+
+        return E_SDO_WRITE_FAILURE;
+
+    }
+
 
 
     //set bus cycle time
