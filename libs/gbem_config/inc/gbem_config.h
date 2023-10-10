@@ -70,7 +70,7 @@
 
 /** Threshold of cycles after requesting drives change state that the transition must be made */
 //this has to be quite large as it needs to be > maximum time for the drives to stop
-#define CTRL_DRIVE_CHANGE_STATE_TIMEOUT                 500
+#define CTRL_DRIVE_CHANGE_STATE_TIMEOUT                 1000
 
 ///**CRITICAL! if this is defined then hardware estop is disabled! */
 //#define DISABLE_ESTOP_CHECKING                          1
@@ -103,7 +103,7 @@
 #define PLC_MAX_TASK_NAME_MAX_LENGTH                    20
 
 /** Defines whether PLC functionality is enabled */
-#define ENABLE_PLC                                      0
+#define ENABLE_PLC                                      1
 
 
 /** Defines whether all non-core functions are enable */
