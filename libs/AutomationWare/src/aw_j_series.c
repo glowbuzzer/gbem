@@ -69,7 +69,7 @@ gberror_t ec_initial_pdo_aw_j_series(const uint16_t slave) {
 
     UM_INFO(GBEM_UM_EN,
             "GBEM: Setting MOO with PDO write for AW-J-Series drive slave [%u], drive, [%u], offset [%u], value [%u]",
-            slave, map_drive_to_slave[slave],
+            slave, map_slave_to_drive(slave),
             AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
 
     return E_SUCCESS;
