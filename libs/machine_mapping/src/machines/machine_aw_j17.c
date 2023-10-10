@@ -76,25 +76,64 @@ MAP_DRIVE_TORQ_LIMIT(                       6,                                  
 extern bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3;
 
 
+/* PLC IO CONFIG */
+
+extern bool plc_in_1_SS1_CMD_SW;
+extern bool plc_in_2_STOP_CMD_SW;
+extern bool plc_in_3_ARM_48V_SUPPLY;
+extern bool plc_in_4_RC_LIGHT_SIGNAL;
+extern bool plc_in_5_BRAKE_CHOPPER_ERROR;
+extern bool plc_in_6_IN_TOOL_1;
+extern bool plc_in_7_IN_TOOL_2;
+/*
+ * Inputs
+ * 1 SS1_CMD_SW - this triggers the quick stop
+ * 2 STOP_CMD_SW - this triggers the quick stop too
+ * 3 ARM_48V_SUPPLY
+ * 4 RC_LIGHT_SIGNAL
+ * 5 BRAKE_CHOPPER_ERROR
+ * 6 IN_TOOL_1 - feedback from gripper
+ * 7 IN_TOOL_2 - feedback from gripper
+ */
+
+extern bool plc_out_1_SW_HEARTBYTE_CH1;
+extern bool plc_out_2_SW_HEARTBYTE_CH2;
+extern bool plc_out_3_SS1_CMD_SW_FB;
+extern bool plc_out_4_STOP_CMD_SW_FB;
+extern bool plc_out_5_SPARE;
+extern bool plc_out_6_OUT_TOOL_1;
+extern bool plc_out_7_OUT_TOOL_2;
+
+/*
+ * Outputs
+ * 1 SW_HEARTBYTE_CH1 - must be high to inform safety PLC that EEMC is working
+ * 2 SW_HEARTBYTE_CH2 - must be high to inform safety PLC that EEMC is working
+ * 3 SS1_CMD_SW_FB - must mirror the signal on SS1_CMD_SW
+ * 4 STOP_CMD_SW_FB - must mirror the signal on STOP_CMD_SW
+ * 5 SPARE
+ * 6 OUT_TOOL_1 - command to gripper
+ * 7 OUT_TOOL_2 - command to gripper
+ */
+
+
 /*IO MAP*/
-mapping_t map_iomap[16] = {
-        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=1, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=0},     {}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=2, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1},     {}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=3, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2},     {}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=4, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=3},     {}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=5, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=4},     {}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=6, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=5},     {}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=7, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=6},     {}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=8, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=7},     {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=1, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=0},    {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=2, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=1},    {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=3, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=2},    {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=4, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=3},    {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=5, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=4},    {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=6, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=5},    {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=7, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=6},    {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=8, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=7},    {}},
-        };
+mapping_t map_iomap[14] = {
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=1, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=0},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_1_SS1_CMD_SW, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=2, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_2_STOP_CMD_SW, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=3, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_3_ARM_48V_SUPPLY, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=4, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=3},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_4_RC_LIGHT_SIGNAL, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=5, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=4},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_5_BRAKE_CHOPPER_ERROR, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=6, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=5},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_6_IN_TOOL_1, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=7, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=6},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_7_IN_TOOL_2, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=1, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_1_SW_HEARTBYTE_CH1, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=2, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_2_SW_HEARTBYTE_CH2, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=3, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_3_SS1_CMD_SW_FB, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=4, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_4_STOP_CMD_SW_FB, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=5, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_5_SPARE, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=6, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_6_OUT_TOOL_1, .linked_task_name="AwRobotTask1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=7, .datatype=ECT_BOOLEAN},                          {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_7_OUT_TOOL_2, .linked_task_name="AwRobotTask1"}},
+};
+
 
 uint16_t map_num_rows_in_iomap = sizeof (map_iomap)/ sizeof(map_iomap[0]);
 
