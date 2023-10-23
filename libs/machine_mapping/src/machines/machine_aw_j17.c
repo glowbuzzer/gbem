@@ -43,34 +43,35 @@ MAP_DRIVE_TO_SLAVE(                         MAP_AW_J17_CTRL,                    
 MAP_DRIVE_TO_SUBDRIVE(                      1,                                  );
 MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_aw_j_series,         );
 MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                               );
-MAP_DRIVE_GET_REMOTE_FUNCTIONS(             ec_get_remote_aw_j_series,          );
-MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_aw_j_series,    );
-MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   NULL,                               );
-MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   ec_get_error_string_sdo_aw_j_series );
-MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_aw_j_series,        );
-MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_aw_j_series,        );
-MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_aw_j_series,      );
-MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         ec_get_actvel_wrd_aw_j_series,      );
-MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        ec_get_acttorq_wrd_aw_j_series,     );
-MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_aw_j_series,      );
-MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         NULL,                               );
-MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                               );
-MAP_DRIVE_MOO(                              CIA_MOO_CSP,                        );
-MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                               );
-MAP_DRIVE_RUN_HOMING(                       0,                                  );
-MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series         );
+MAP_DRIVE_GET_REMOTE_FUNCTIONS(             ec_get_remote_aw_j_series,              );
+MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_aw_j_series,        );
+MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   NULL,                                   );
+MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   ec_get_error_string_sdo_aw_j_series     );
+MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_aw_j_series,            );
+MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_aw_j_series,            );
+MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_aw_j_series,          );
+MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         ec_get_actvel_wrd_aw_j_series,          );
+MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        ec_get_acttorq_wrd_aw_j_series,         );
+MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_aw_j_series,          );
+MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         ec_set_setvel_wrd_aw_j_series,          );
+MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        ec_set_settorq_wrd_aw_j_series,         );
+MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  ec_set_settorqoffset_wrd_aw_j_series   );
+MAP_DRIVE_MOO(                              CIA_MOO_CSV,                            );
+MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                                   );
+MAP_DRIVE_RUN_HOMING(                       0,                                      );
+MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series             );
 
 
 /* DRIVE PARAMETERS */
 //FOR AW DRIVES THESE ARE IN DEGREES
-MAP_DRIVE_POS_LIMIT(                        90,                                  );
-MAP_DRIVE_NEG_LIMIT(                        -90,                                 );
+MAP_DRIVE_POS_LIMIT(                        999999,                                  );
+MAP_DRIVE_NEG_LIMIT(                        -999999,                                 );
 
 
 
 MAP_DRIVE_DIRECTION(                        1,                                  );
 //percentage of max torque
-MAP_DRIVE_TORQ_LIMIT(                       6,                                  );
+MAP_DRIVE_TORQ_LIMIT(                       30,                                  );
 
 //7 % can stop drive by hand
 extern bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3;

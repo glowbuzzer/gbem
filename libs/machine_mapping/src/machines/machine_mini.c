@@ -55,6 +55,7 @@ MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         ec_get_actvel_wrd_azdxa_ked,        
 MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        NULL,                               NULL                                );
 MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         ec_set_setvel_wrd_azdxa_ked,        ec_set_setvel_wrd_azdxa_ked         );
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                               NULL,                               );
+MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  NULL,                               NULL,                               );
 MAP_DRIVE_MOO(                              CIA_MOO_CSV,                        CIA_MOO_CSV,                        );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                               NULL                                );
 MAP_DRIVE_RUN_HOMING(                       0,                                  0                                   );
@@ -73,11 +74,11 @@ extern bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3;
 
 
 /*IO MAP*/
-mapping_t map_iomap[3] = {
+mapping_t map_iomap[4] = {
         {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=1, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din1, .linked_task_name="Task1"}},
         {{.inout=MAP_IN, .slave_num=MAP_EL1008_1,.bit_num=2, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_din2, .linked_task_name="Task1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=5, .datatype=ECT_BOOLEAN},                          {},    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_dout1, .linked_task_name="Task1"}},
-//        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=2, .datatype=ECT_BOOLEAN},                          {},    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_dout2, .linked_task_name="Task1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=1, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=0},    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_dout1, .linked_task_name="Task1"}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2008_1,.bit_num=2, .datatype=ECT_BOOLEAN},                          {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=1},    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_dout2, .linked_task_name="Task1"}},
         };
 
 uint16_t map_num_rows_in_iomap = sizeof (map_iomap)/ sizeof(map_iomap[0]);

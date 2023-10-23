@@ -56,6 +56,7 @@ MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        ec_get_acttorq_wrd_aw_j_series,     
 MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_aw_j_series,          ec_set_setpos_wrd_virtual,          ec_set_setpos_wrd_virtual,          ec_set_setpos_wrd_virtual,          ec_set_setpos_wrd_virtual,          ec_set_setpos_wrd_virtual,          );
 MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         NULL,                                   NULL,                               NULL,                               NULL);
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                                   NULL,                               NULL,                               NULL);
+MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  NULL,                                   NULL,                               NULL,                               NULL);
 MAP_DRIVE_MOO(                              CIA_MOO_CSP,                            CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                                   NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               );
 MAP_DRIVE_RUN_HOMING(                       0,                                      0,                                  0,                                  0,                                  0,                                  0,                                  );
