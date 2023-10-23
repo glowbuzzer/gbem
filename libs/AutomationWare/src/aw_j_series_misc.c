@@ -148,6 +148,14 @@ gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
 
     UM_INFO(GBEM_UM_EN, "GBEM:  AW-J-Series - drive error code [%d]", drive_error_code);
 
+
+    int32_t torque_constant = 0;
+    ec_sdo_read_int32(map_drive_to_slave[drive], AW_J_SERIES_TORQUE_CONSTANT_SDO_INDEX,
+                      AW_J_SERIES_TORQUE_CONSTANT_SDO_SUB_INDEX,
+                      &torque_constant, true);
+    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Torque constant [%d] on drive [%d]", torque_constant, drive);
+
+
 //default max pos: 2147483647
 //    default min pos: -2147483648
 //    default max torque: 4016

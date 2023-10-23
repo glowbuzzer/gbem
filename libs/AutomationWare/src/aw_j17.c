@@ -19,6 +19,14 @@
 #include "cia402.h"
 
 
+typedef struct {
+    ec_datatype datatype;
+    uint16_t index;
+    uint8_t subindex;
+    ec_datatype_value_t value;
+} standard_sdo_t;
+
+
 /**
  * @brief perform SDOs writes during boot to configure an AW-J17 drive
  * @param slave
@@ -27,67 +35,13 @@
  */
 gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
 
-    //nolimits is a global variable set by running gbem with a command line option - x and is used when the drive is beyond the normal limits
-
-    //Min position limit	0x607D:1	DINT	32			2147483648	Inc	readwrite	Receive PDO (Outputs)
-    //Max position limit	0x607D:2	DINT	32			2147483647	Inc	readwrite	Receive PDO (Outputs)
-
-    //encoder is 2^20  1048576 counts per rev
-
 
     UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Applying standard SDOs to slave [%u]", slave);
 
+    gberror_t grc = ec_apply_standard_sdos_aw_j_series(slave);
 
-    if (nolimits) {
-        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                2147483647, true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-
-        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                -2147483647, true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-    } else {
-
-        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
-                                           ((double) map_drive_pos_limit[map_slave_to_drive(slave)] / (double) 360)),
-                                true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max position limit [%d] on drive [%d]",
-                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
-                           ((double) map_drive_pos_limit[map_slave_to_drive(slave)] / (double) 360)),
-                map_slave_to_drive(slave));
-
-        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
-                                           ((double) map_drive_neg_limit[map_slave_to_drive(slave)] / (double) 360)),
-                                true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Min position limit [%d] on drive [%d]",
-                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
-                           ((double) map_drive_neg_limit[map_slave_to_drive(slave)] / (double) 360)),
-                map_slave_to_drive(slave));
-    }
-
-    //Polarity	0x607E:0	USINT	8
-
-    uint8_t polarity = 0;
-    if (map_drive_direction[map_slave_to_drive(slave)] == 0) {
-        polarity = 128;
-    }
-    //todo crit velocity polarity
-
-    if (!ec_sdo_write_int32(slave, AW_J_SERIES_POLARITY_SDO_INDEX, AW_J_SERIES_POLARITY_SDO_SUB_INDEX,
-                            polarity, true)) {
-        return E_SDO_WRITE_FAILURE;
+    if (grc != E_SUCCESS) {
+        return grc;
     }
 
 
@@ -127,24 +81,21 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
 //BUT  AW-J-Series - SI unit velocity [0.001 * RPM] on drive [0]
 
 //by default max motor speed = 3000000 = 3000 rpm = 50 rps but this is before the 51 ratio gear box so is 0.98 rps
-
+//not sure gearbox plays a roll here as it is scaled by feed constant
 //for testing 5 degrees per second  so roughly 3000000 * 5/360 = 41666
+//for testing 10 degrees per second  so roughly 3000000 * 10/360 = 83332
+
+//for testing 20 degrees per second  so roughly 3000000 * 20/360 = 166664
+
+
 
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_INDEX, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
-                            41666, true)) {
+                            300000, true)) {
 
         return E_SDO_WRITE_FAILURE;
 
     }
 
-
-
-    //set bus cycle time
-    //Communication cycle period	0x1006:0	DINT	32			100		readwrite
-    if (!ec_sdo_write_int32(slave, AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_INDEX,
-                            AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_SUB_INDEX, MAP_CYCLE_TIME * 100, true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
 
     return E_SUCCESS;
 }

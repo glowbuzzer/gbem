@@ -57,6 +57,13 @@ int32_t ec_get_setpos_word_rev_aw_j_series(uint16_t drive);
 
 gberror_t ec_set_moo_pdo_rev_aw_j_series(uint16_t drive);
 
+gberror_t ec_set_setvel_wrd_aw_j_series(uint16_t drive, int32_t setvel);
+
+gberror_t ec_set_settorq_wrd_aw_j_series(uint16_t drive, int32_t settorq);
+
+gberror_t ec_set_settorqoffset_wrd_aw_j_series(uint16_t drive, int32_t settorq_offset);
+
+gberror_t ec_apply_standard_sdos_aw_j_series(uint16_t slave);
 
 //Number of error strings and error report strings for the AW J series drives
 #define NUM_OF_AW_J_SERIES_ERROR_STRINGS 26
@@ -188,6 +195,14 @@ SM3 inputs
 #define AW_J_SERIES_RESOLUTION_ENC2_SDO_SUB_INDEX  0x3
 
 #define AW_J_SERIES_ENCODER_COUNTS_PER_REV 1048576
+
+//torque constant	0x2003:2	DINT	32			1	μNm/A	readwrite
+#define AW_J_SERIES_TORQUE_CONSTANT_SDO_INDEX      0x2003
+#define AW_J_SERIES_TORQUE_CONSTANT_SDO_SUB_INDEX  0x2
+
+//Order	0x2027:2	USINT	8	0	31	3		readwrite
+#define AW_J_SERIES_FIR_ORDER_SDO_INDEX      0x2027
+#define AW_J_SERIES_FIR_ORDER_SDO_SUB_INDEX  0x2
 
 
 //Typedefs for the error strings and error report strings for the AW J series drives

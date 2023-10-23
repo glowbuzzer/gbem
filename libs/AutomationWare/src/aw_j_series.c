@@ -19,6 +19,101 @@
 #include "cia402.h"
 
 
+gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
+
+    //set bus cycle time
+    //Communication cycle period	0x1006:0	DINT	32			100		readwrite
+    if (!ec_sdo_write_int32(slave, AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_INDEX,
+                            AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_SUB_INDEX, MAP_CYCLE_TIME * 100, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+    switch (MAP_CYCLE_TIME) {
+        case 1:
+            if (!ec_sdo_write_uint8(slave, AW_J_SERIES_FIR_ORDER_SDO_INDEX, AW_J_SERIES_FIR_ORDER_SDO_SUB_INDEX, 3,
+                                    true)) {
+                return E_SDO_WRITE_FAILURE;
+            }
+            break;
+        case 2:
+            if (!ec_sdo_write_uint8(slave, AW_J_SERIES_FIR_ORDER_SDO_INDEX, AW_J_SERIES_FIR_ORDER_SDO_SUB_INDEX, 3,
+                                    true)) {
+                return E_SDO_WRITE_FAILURE;
+            }
+            break;
+        case 4:
+            if (!ec_sdo_write_uint8(slave, AW_J_SERIES_FIR_ORDER_SDO_INDEX, AW_J_SERIES_FIR_ORDER_SDO_SUB_INDEX, 15,
+                                    true)) {
+                return E_SDO_WRITE_FAILURE;
+            }
+        default:
+            break;
+    }
+
+    //nolimits is a global variable set by running gbem with a command line option - x and is used when the drive is beyond the normal limits
+
+    //Min position limit	0x607D:1	DINT	32			2147483648	Inc	readwrite	Receive PDO (Outputs)
+    //Max position limit	0x607D:2	DINT	32			2147483647	Inc	readwrite	Receive PDO (Outputs)
+
+    //encoder is 2^20  1048576 counts per rev
+
+
+    if (nolimits) {
+        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
+                                AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
+                                2147483647, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+
+        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
+                                AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
+                                -2147483647, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+    } else {
+
+        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
+                                AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
+                                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
+                                           ((double) map_drive_pos_limit[map_slave_to_drive(slave)] / (double) 360)),
+                                true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max position limit [%d] on drive [%d]",
+                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
+                           ((double) map_drive_pos_limit[map_slave_to_drive(slave)] / (double) 360)),
+                map_slave_to_drive(slave));
+
+        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
+                                AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
+                                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
+                                           ((double) map_drive_neg_limit[map_slave_to_drive(slave)] / (double) 360)),
+                                true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Min position limit [%d] on drive [%d]",
+                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
+                           ((double) map_drive_neg_limit[map_slave_to_drive(slave)] / (double) 360)),
+                map_slave_to_drive(slave));
+    }
+
+    //Polarity	0x607E:0	USINT	8
+
+    uint8_t polarity = 0;
+    if (map_drive_direction[map_slave_to_drive(slave)] == 0) {
+        polarity = 128;
+    }
+    //todo crit velocity polarity
+
+    if (!ec_sdo_write_int32(slave, AW_J_SERIES_POLARITY_SDO_INDEX, AW_J_SERIES_POLARITY_SDO_SUB_INDEX,
+                            polarity, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    return E_SUCCESS;
+}
+
 /**
  * @brief get the value of the remote bit from an AW-J-series drive
  * @param drive
@@ -105,7 +200,14 @@ int32_t ec_get_actvel_wrd_aw_j_series(const uint16_t drive) {
  */
 int32_t ec_get_acttorq_wrd_aw_j_series(const uint16_t drive) {
 
-    return ec_pdo_get_input_int16(map_drive_to_slave[drive], AW_J_SERIES_ACTTORQ_PDO_INDEX);
+    int16_t acttorq = ec_pdo_get_input_int16(map_drive_to_slave[drive], AW_J_SERIES_ACTTORQ_PDO_INDEX);
+//    int32_t acttorq = ec_pdo_get_input_int16(map_drive_to_slave[drive], AW_J_SERIES_TORQ_DEMAND_PDO_INDEX);
+
+
+    //    if (drive == 1) {
+//        printf("acttorq: %d\n", acttorq);
+//    }
+    return acttorq;
 
 }
 
@@ -177,7 +279,23 @@ gberror_t ec_set_setvel_wrd_aw_j_series(const uint16_t drive, const int32_t setv
  */
 gberror_t ec_set_settorq_wrd_aw_j_series(const uint16_t drive, const int32_t settorq) {
 
-    ec_pdo_set_output_int32(map_drive_to_slave[drive], AW_J_SERIES_SETTORQ_PDO_INDEX, settorq);
+    ec_pdo_set_output_int16(map_drive_to_slave[drive], AW_J_SERIES_SETTORQ_PDO_INDEX, (int16_t) settorq);
+
+//    printf("settorq [%d]\n", settorq);
+
+    return E_SUCCESS;
+}
+
+/**
+ * @brief set settorqoffset for an AW-J-series drive
+ * @param drive
+ * @param settorqoffset
+ * @return gberror
+ */
+
+gberror_t ec_set_settorqoffset_wrd_aw_j_series(const uint16_t drive, const int32_t settorqoffset) {
+
+    ec_pdo_set_output_int16(map_drive_to_slave[drive], AW_J_SERIES_SETORQ_OFFSET_PDO_INDEX, settorqoffset);
     return E_SUCCESS;
 }
 
