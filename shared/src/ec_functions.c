@@ -513,11 +513,11 @@ bool ec_step_1_init(void) {
  * @return
  */
 bool ec_step_2_config(void) {
-//added fidding with AW-Joints reboot mailbox issue
     ec_slave[0].state = EC_STATE_BOOT;
     ec_writestate(0);
     usleep(1000000);
 
+    RESTART_SCAN:
     if (ec_config_init(FALSE)) {
 
         if (ec_slavecount == 0) {
@@ -528,9 +528,13 @@ bool ec_step_2_config(void) {
         UM_INFO(GBEM_UM_EN, "GBEM: We found [%d] slaves on the EtherCAT network", ec_slavecount);
 
         if (ec_slavecount != MAP_NUM_SLAVES) {
-            UM_FATAL(
-                    "GBEM: The number of slaves found on the EtherCAT network [%d] does not match the number configured in the machine map (MAP_NUM_SLAVES) [%d]",
-                    ec_slavecount, MAP_NUM_SLAVES);
+            UM_ERROR(GBEM_UM_EN,
+                     "GBEM: The number of slaves found on the EtherCAT network [%d] does not match the number configured in the machine map (MAP_NUM_SLAVES) [%d]",
+                     ec_slavecount, MAP_NUM_SLAVES);
+            UM_ERROR(GBEM_UM_EN,
+                     "GBEM: We will scan the network again in 10 seconds, please check the EtherCAT network");
+            sleep(10);
+            goto RESTART_SCAN;
         }
 
 
