@@ -34,6 +34,8 @@ uint16_t virtual_drive_statusword[MAP_MAX_NUM_DRIVES];
 static cia_state_t virtual_drive_state[MAP_MAX_NUM_DRIVES] = {[0 ... MAP_MAX_NUM_DRIVES - 1]=CIA_SWITCH_ON_DISABLED};
 
 
+#define VIRTUAL_DRIVE_MOMENT_OF_INERTIA 0.1
+
 /**
  * @brief get the value of the remote bit from an virtual drive
  * @param drive
@@ -97,7 +99,7 @@ int32_t ec_get_actvel_wrd_virtual(const uint16_t drive) {
  */
 int32_t ec_get_acttorq_wrd_virtual(const uint16_t drive) {
 
-    return virtual_drive_velocity[drive];
+    return virtual_drive_torque[drive];
 
 }
 
@@ -158,13 +160,23 @@ gberror_t ec_set_setvel_wrd_virtual(const uint16_t drive, const int32_t setvel) 
 
 
 /**
- * @brief set setvel for an virtual drive
+ * @brief set settorq for an virtual drive
  * @param drive
- * @param setpos
+ * @param settorq
  * @return gberror
  */
 gberror_t ec_set_settorq_wrd_virtual(const uint16_t drive, const int32_t settorq) {
 
+    double angular_acceleration = (double) settorq / (double) VIRTUAL_DRIVE_MOMENT_OF_INERTIA;
+
+    virtual_drive_velocity[drive] =
+            virtual_drive_velocity[drive] +
+            (int32_t) (angular_acceleration * ((double) MAP_CYCLE_TIME / (double) 1000));
+
+    virtual_drive_position[drive] =
+            virtual_drive_position[drive] +
+            (int32_t) ((double) virtual_drive_velocity[drive] * ((double) MAP_CYCLE_TIME / (double) 1000));
+    
     virtual_drive_torque[drive] = settorq;
     return E_SUCCESS;
 
