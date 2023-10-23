@@ -33,6 +33,7 @@
 #include "pos_vel_acc.h"
 #include "p.h"
 #include "user_message.h"
+#include "controller.h"
 
 //todo review need for semaphores in control.c and ec_rxtx.c
 #define DPM_IN_PROTECT_START
@@ -92,7 +93,7 @@ static void ctrl_copy_acttorq(void);
 
 static void ctrl_copy_setpos(void);
 
-static void ctrl_copy_values_to_drives(void);
+static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current_state);
 
 static void ctrl_copy_drive_statuswords(void);
 
@@ -1575,7 +1576,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
 //copy setpos from DPM_OUT (read) to EC_OUT
 //    ctrl_copy_setpos();
-    ctrl_copy_values_to_drives();
+    ctrl_copy_values_to_drives(ecm_status.cycle_count, current_state);
 
 #if CTRL_ENABLE_FORCING == 1
     ctrl_process_forces_out();
@@ -1672,38 +1673,79 @@ __attribute__((unused)) static void ctrl_check_for_big_pos_jump(uint16_t drive, 
 /**
  * Copies correct set values to the drives based on the MOO for the drive
  */
-static void ctrl_copy_values_to_drives(void) {
+static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current_state) {
+
+//    static uint64_t ms_counter = 0;
+//    ms_counter ++;
+
+
     gberror_t grc;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
 
         switch (map_drive_moo[i]) {
 
             case CIA_MOO_CSP:
-
                 if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
                     grc = map_drive_set_setpos_wrd_function_ptr[i](i, dpm_out->joint_set_position[i]);
-/* This function can be used to log nasty jumps in position*/
+                    /* This function can be used to log nasty jumps in position*/
                     //            ctrl_check_for_big_pos_jump(i,dpm_out->joint_set_position[i] );
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setpos function error [%s]", gb_strerror(grc));
                     }
+
                 } else {
                     LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                              "GBEM: Missing function pointer for map_drive_set_setpos_wrd on drive [%u]", i);
                 }
 
+                if (*map_drive_set_setvel_wrd_function_ptr[i] != NULL) {
+
+//                    printf("setvel [%d]\n", dpm_out->joint_set_velocity[i]);
+//                    printf("actvel [%d]\n", dpm_in->joint_actual_velocity[i]);
+                    grc = map_drive_set_setvel_wrd_function_ptr[i](i, dpm_out->joint_set_velocity[i]);
+                    if (grc != E_SUCCESS) {
+                        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setvel function error [%s]", gb_strerror(grc));
+                    }
+                } else {
+                    /*
+                     * this is not an error it just means you have decided to not add a function for setvel because the drive doesnt support it or you dont want to
+                     *  LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_set_setvel_wrd on drive [%u]", i);
+                     */
+                }
+                if (*map_drive_set_settorqoffset_wrd_function_ptr[i] != NULL) {
+
+//todo crit change to settorqoffset
+                    grc = map_drive_set_settorqoffset_wrd_function_ptr[i](i, dpm_out->joint_set_torque[i]);
+
+
+                    if (grc != E_SUCCESS) {
+                        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive settorqoffset function error [%s]", gb_strerror(grc));
+                    }
+                } else {
+                    /*
+                     * this is not an error it just means you have decided to not add a function for settorqoffset because the drive doesnt support it or you dont want to
+                     *  LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_set_settorqoffset_wrd on drive [%u]", i);
+                     */
+                }
+
+
                 break;
 
             case CIA_MOO_CSV:
 
+                if (current_state != CIA_OPERATION_ENABLED && current_state != CIA_SWITCHED_ON) {
+                    reset_velocity_controller(i);
+                }
+
                 if (*map_drive_set_setvel_wrd_function_ptr[i] != NULL) {
                     //run control loop
-                    int32_t adjusted_velocity = calculateVelocityCommand(
-                            dpm_out->joint_set_position[i],
-                            dpm_in->joint_actual_position[i]);
+                    int32_t velocity = (int32_t) velocity_controller(cycle_count, i, dpm_out->joint_set_position[i],
+                                                                     dpm_out->joint_set_velocity[i],
+                                                                     dpm_in->joint_actual_position[i]);
 
+//                    printf("velocity [%d]\n", velocity);
                     grc = map_drive_set_setvel_wrd_function_ptr[i](i,
-                                                                   dpm_out->joint_set_velocity[i] + adjusted_velocity);
+                                                                   velocity);
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setvel function error [%s]", gb_strerror(grc));
                     }
@@ -1713,15 +1755,47 @@ static void ctrl_copy_values_to_drives(void) {
                 }
 
 
-//                if (get_demand_velocity(0) > 0) {
-//                    printf("pos %d\n", get_demand_position(0));
-//                    printf("vel %d\n", get_demand_velocity(0));
-//                    printf("torq %d\n", get_demand_acceleration(0));
-//                }
-
                 break;
 
             case CIA_MOO_CST:
+
+                if (current_state != CIA_OPERATION_ENABLED && current_state != CIA_SWITCHED_ON) {
+                    reset_torque_controller(i);
+                }
+
+                if (*map_drive_set_settorq_wrd_function_ptr[i] != NULL) {
+
+                    bool pos_vel_control = true; // set from control word
+
+                    int32_t torque = (int32_t) torque_controller(cycle_count, i, pos_vel_control,
+                                                                 dpm_out->joint_set_position[i],
+                                                                 dpm_out->joint_set_velocity[i],
+                                                                 dpm_out->joint_set_torque[i],
+                                                                 dpm_in->joint_actual_position[i],
+                                                                 dpm_in->joint_actual_velocity[i]);
+
+//                    if (i == 0) {
+//                        printf("torque [%d] \n", torque);
+//                    }
+                    grc = map_drive_set_settorq_wrd_function_ptr[i](i, torque);
+                    if (grc != E_SUCCESS) {
+                        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive settorque function error [%s]", gb_strerror(grc));
+                    }
+
+                } else {
+                    LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                             "GBEM: Missing function pointer for map_drive_set_setvel_wrd on drive [%u]", i);
+                }
+
+                if (*map_drive_set_settorqoffset_wrd_function_ptr[i] != NULL) {
+//                    todo crit
+//                    grc = map_drive_set_settorqoffset_wrd_function_ptr[i](i, dpm_out->joint_set_torque_offset[i]);
+
+                } else {
+                    LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                             "GBEM: Missing function pointer for map_drive_set_settorqoffset_wrd on drive [%u]", i);
+                }
+
 
                 break;
 
