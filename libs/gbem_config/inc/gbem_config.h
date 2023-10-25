@@ -52,7 +52,7 @@
 
 
 /** defines the size of the PDO buffers IN/OUT (overlaid with the dpm structs) */
-#define SIZE_OF_GBC_PDO                                 200
+#define SIZE_OF_GBC_PDO                                 240
 
 
 /*** *** CTRL CONFIGURATION *** ***/
