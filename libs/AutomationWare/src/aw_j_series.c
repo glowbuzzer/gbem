@@ -37,7 +37,7 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
             }
             break;
         case 2:
-            if (!ec_sdo_write_uint8(slave, AW_J_SERIES_FIR_ORDER_SDO_INDEX, AW_J_SERIES_FIR_ORDER_SDO_SUB_INDEX, 3,
+            if (!ec_sdo_write_uint8(slave, AW_J_SERIES_FIR_ORDER_SDO_INDEX, AW_J_SERIES_FIR_ORDER_SDO_SUB_INDEX, 7,
                                     true)) {
                 return E_SDO_WRITE_FAILURE;
             }
@@ -269,6 +269,19 @@ gberror_t ec_set_setvel_wrd_aw_j_series(const uint16_t drive, const int32_t setv
 
     ec_pdo_set_output_int32(map_drive_to_slave[drive], AW_J_SERIES_SETVEL_PDO_INDEX, setvel);
     return E_SUCCESS;
+}
+
+/**
+ * @brief set setveloffset for an AW-J-series drive
+ * @param drive
+ * @param setveloffset
+ * @return gberror
+ */
+gberror_t ec_set_setveloffset_wrd_aw_j_series(const uint16_t drive, const int32_t setveloffset) {
+
+    ec_pdo_set_output_int32(map_drive_to_slave[drive], AW_J_SERIES_SETVEL_OFFSET_PDO_INDEX, setveloffset);
+    return E_SUCCESS;
+
 }
 
 /**

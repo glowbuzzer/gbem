@@ -59,6 +59,8 @@ gberror_t ec_set_moo_pdo_rev_aw_j_series(uint16_t drive);
 
 gberror_t ec_set_setvel_wrd_aw_j_series(uint16_t drive, int32_t setvel);
 
+gberror_t ec_set_setveloffset_wrd_aw_j_series(const uint16_t drive, const int32_t setveloffset);
+
 gberror_t ec_set_settorq_wrd_aw_j_series(uint16_t drive, int32_t settorq);
 
 gberror_t ec_set_settorqoffset_wrd_aw_j_series(uint16_t drive, int32_t settorq_offset);
@@ -122,6 +124,7 @@ SM3 inputs
 #define AW_J_SERIES_SETVEL_PDO_INDEX        9
 #define AW_J_SERIES_ACTVEL_PDO_INDEX        7
 #define AW_J_SERIES_VEL_DEMAND_PDO_INDEX    41
+#define AW_J_SERIES_SETVEL_OFFSET_PDO_INDEX 31
 
 #define AW_J_SERIES_SETTORQ_PDO_INDEX       3
 #define AW_J_SERIES_SETORQ_OFFSET_PDO_INDEX 13
