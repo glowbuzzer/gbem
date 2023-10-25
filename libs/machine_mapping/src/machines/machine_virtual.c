@@ -56,10 +56,12 @@ MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_virtual,          
 MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         ec_set_setvel_wrd_virtual,           );
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        ec_set_settorq_wrd_virtual,          );
 MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  ec_set_settorqoffset_wrd_virtual,    );
+MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(  ec_set_setveloffset_wrd_virtual,     );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                                );
 MAP_DRIVE_RUN_HOMING(                       0,                                   );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                                );
 MAP_DRIVE_MOO(                              CIA_MOO_CSV,                         );
+
 
 /* DRIVE PARAMETERS */
 MAP_DRIVE_POS_LIMIT(                        99999999,                                );

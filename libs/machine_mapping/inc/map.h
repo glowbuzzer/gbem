@@ -56,6 +56,8 @@ extern bool nolimits;
 #define MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(...) gberror_t (*map_drive_set_setvel_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setvel) = {__VA_ARGS__};
 #define MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(...) gberror_t (*map_drive_set_settorq_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t settorq) = {__VA_ARGS__};
 #define MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(...) gberror_t (*map_drive_set_settorqoffset_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t settorqoffset) = {__VA_ARGS__};
+#define MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(...) gberror_t (*map_drive_set_setveloffset_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setveloffset) = {__VA_ARGS__};
+
 
 #define MAP_DRIVE_HOMING_EXEC_FUNCTIONS(...) gberror_t (*map_drive_homing_exec_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 
@@ -220,6 +222,8 @@ extern gberror_t (*map_drive_set_setvel_wrd_function_ptr[MAP_NUM_DRIVES])(uint16
 extern gberror_t (*map_drive_set_settorq_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t settorq);
 
 extern gberror_t (*map_drive_set_settorqoffset_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t settorqoffset);
+
+extern gberror_t (*map_drive_set_setveloffset_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setveloffset);
 
 
 extern gberror_t (*map_drive_print_params_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);

@@ -56,6 +56,7 @@ MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        NULL,                               
 MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         ec_set_setvel_wrd_azdxa_ked,        ec_set_setvel_wrd_azdxa_ked         );
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                               NULL,                               );
 MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  NULL,                               NULL,                               );
+MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(   NULL,                               NULL,                               );
 MAP_DRIVE_MOO(                              CIA_MOO_CSV,                        CIA_MOO_CSV,                        );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                               NULL                                );
 MAP_DRIVE_RUN_HOMING(                       0,                                  0                                   );

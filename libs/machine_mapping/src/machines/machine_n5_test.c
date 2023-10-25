@@ -50,6 +50,7 @@ MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        NULL                            );
 MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         NULL,                           );
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                           );
 MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  NULL,                           );
+MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(   NULL,                           );
 MAP_DRIVE_MOO(                              CIA_MOO_CSP,                    );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL                            );
 MAP_DRIVE_RUN_HOMING(                       0                               );

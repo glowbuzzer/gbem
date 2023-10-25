@@ -220,6 +220,8 @@ int main(int argc, char *argv[]) {
 
     gberror_t grc = E_GENERAL_FAILURE;
 
+
+
     // set STATUS_WORD_GBEM_ALIVE_BIT_NUM bit in status word
     BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_ALIVE_BIT_NUM);
 
@@ -246,6 +248,8 @@ int main(int argc, char *argv[]) {
 
     //print sizeof ecmstatus struct
     UM_INFO(GBEM_UM_EN, "GBEM: sizeof ecm_status_t = [%d]", sizeof(ecm_status_t));
+
+
 
     //temp just for testing
 //    config_check_and_print(config_summary_json_buffer, &grc);
