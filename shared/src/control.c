@@ -52,6 +52,8 @@ uint32_t gbem_heartbeat = 0;
 bool estop = true;
 cia_state_t current_state = CIA_NOT_READY_TO_SWITCH_ON;
 
+static bool cst_csv_position_limit_error = false;
+
 
 //@formatter:off
 cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
@@ -73,6 +75,7 @@ cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
         [CONTROL_EVENT_ECAT_SLAVE_ERROR] = {.message="An error has been detected [EtherCAT slave]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_PLC_SIGNALLED_ERROR] = {.message="An error has been detected [PLC signalled an error]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_HOMING_ERROR] = {.message="\"An error has been detected [Homing error]", .type=CYCLIC_MSG_ERROR},
+        [CONTROL_EVENT_CST_CSV_POSITION_LIMIT_ERROR] = {.message="An error has been detected [CST CSV position limit error]", .type=CYCLIC_MSG_ERROR},
 };
 
 //@formatter:on
@@ -928,6 +931,13 @@ bool cia_is_fault_condition(struct event *event) {
         have_fault = true;
     }
 
+    if (((event_data_t *) event->data)->cst_csv_position_limit_error == true) {
+        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > the position error triggered in CST/CSV mode");
+        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_CST_CSV_POSITION_LIMIT_ERROR_BIT_NUM);
+        control_event[CONTROL_EVENT_CST_CSV_POSITION_LIMIT_ERROR].active = true;
+        have_fault = true;
+    }
+
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
 //        printf("moodisp event data:%i\n", ((event_data_t *) event->data)->moo_disp[i]);
@@ -1492,6 +1502,8 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
     event_data.homing_failed = homing_failed;
 
+    event_data.cst_csv_position_limit_error = cst_csv_position_limit_error;
+
     DPM_OUT_PROTECT_END
 
     volatile int8_t moo_disp;
@@ -1670,6 +1682,24 @@ __attribute__((unused)) static void ctrl_check_for_big_pos_jump(uint16_t drive, 
 }
 
 
+static bool ctrl_check_position_bounds_ok(uint16_t drive, int32_t current_position) {
+
+//scale positions
+
+//    if (current_position > map_drive_max_pos[drive]) {
+//        UM_ERROR(GBEM_UM_EN, "GBEM: Position too big for drive [%u] position [%d]", drive, current_position);
+//        return false;
+//    }
+//    if (current_position < map_drive_min_pos[drive]) {
+//        UM_ERROR(GBEM_UM_EN, "GBEM: Position too small for drive [%u] position [%d]", drive, current_position);
+//return false;
+//    }
+
+//todo crit
+    return true;
+}
+
+
 /**
  * Copies correct set values to the drives based on the MOO for the drive
  */
@@ -1681,6 +1711,14 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
 
     gberror_t grc;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+
+        if (ctrl_check_position_bounds_ok(i, dpm_out->joint_set_position[i]) == false) {
+            //we have exceeded bounds error drives
+            cst_csv_position_limit_error = true;
+        } else {
+            cst_csv_position_limit_error = false;
+        }
+
 
         switch (map_drive_moo[i]) {
 
@@ -1698,14 +1736,16 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                              "GBEM: Missing function pointer for map_drive_set_setpos_wrd on drive [%u]", i);
                 }
 
-                if (*map_drive_set_setvel_wrd_function_ptr[i] != NULL) {
+                if (*map_drive_set_setveloffset_wrd_function_ptr[i] != NULL) {
 
 //                    printf("setvel [%d]\n", dpm_out->joint_set_velocity[i]);
 //                    printf("actvel [%d]\n", dpm_in->joint_actual_velocity[i]);
-                    grc = map_drive_set_setvel_wrd_function_ptr[i](i, dpm_out->joint_set_velocity[i]);
-                    if (grc != E_SUCCESS) {
-                        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setvel function error [%s]", gb_strerror(grc));
-                    }
+
+//todo crit disable for now
+//                    grc = map_drive_set_setveloffset_wrd_function_ptr[i](i, dpm_out->joint_set_velocity[i]);
+//                    if (grc != E_SUCCESS) {
+//                        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setveloffset function error [%s]", gb_strerror(grc));
+//                    }
                 } else {
                     /*
                      * this is not an error it just means you have decided to not add a function for setvel because the drive doesnt support it or you dont want to
@@ -1714,10 +1754,8 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                 }
                 if (*map_drive_set_settorqoffset_wrd_function_ptr[i] != NULL) {
 
-//todo crit change to settorqoffset
-                    grc = map_drive_set_settorqoffset_wrd_function_ptr[i](i, dpm_out->joint_set_torque[i]);
-
-
+                    grc = map_drive_set_settorqoffset_wrd_function_ptr[i](i, dpm_out->joint_set_torque_offset[i]);
+                    printf("torq offset [%d] on drive [%d]\n", dpm_out->joint_set_torque_offset[i], i);
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive settorqoffset function error [%s]", gb_strerror(grc));
                     }
@@ -1763,6 +1801,7 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                     reset_torque_controller(i);
                 }
 
+
                 if (*map_drive_set_settorq_wrd_function_ptr[i] != NULL) {
 
                     bool pos_vel_control = true; // set from control word
@@ -1784,27 +1823,21 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
 
                 } else {
                     LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
-                             "GBEM: Missing function pointer for map_drive_set_setvel_wrd on drive [%u]", i);
+                             "GBEM: Missing function pointer for map_drive_set_settorque_wrd on drive [%u]", i);
                 }
 
                 if (*map_drive_set_settorqoffset_wrd_function_ptr[i] != NULL) {
-//                    todo crit
-//                    grc = map_drive_set_settorqoffset_wrd_function_ptr[i](i, dpm_out->joint_set_torque_offset[i]);
 
+                    grc = map_drive_set_settorqoffset_wrd_function_ptr[i](i, dpm_out->joint_set_torque_offset[i]);
                 } else {
                     LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                              "GBEM: Missing function pointer for map_drive_set_settorqoffset_wrd on drive [%u]", i);
                 }
-
-
                 break;
-
             default:
                 UM_FATAL("GBEM: MOO not defined for drive [%u]", i);
         }
     }
-
-
 }
 
 /**
