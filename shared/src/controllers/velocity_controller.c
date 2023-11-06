@@ -12,8 +12,14 @@
  */
 
 #include "controller.h"
+#include <stdio.h>
 
-static pid_params_t pid_params_position[MAP_MAX_NUM_DRIVES] = {{2.0, 0.002, 0.0, 2000.0, -2000.0, 20}};
+static pid_params_t pid_params_position[MAP_MAX_NUM_DRIVES] = {{50.0, 5000.0, 0.0, 2900.0, -2000.0, 20}};
+
+
+
+//when integral gets to 2000 drive errors
+
 
 static scale_t scale = {
         .scale_position = 166886,
@@ -46,20 +52,25 @@ double v_updatePositionController(uint64_t cycle_counter, uint16_t drive_num, do
     if (cycle_counter % (pid_params_position[drive_num].sample_time / MAP_CYCLE_TIME) == 0) {
 
 
+        printf("target_position: %f\n", target_position);
+        printf("act_position: %f\n", act_position);
+        printf("pos error: %f\n", target_position - act_position);
         // Position PID control
         double position_error = target_position - act_position;
+
+
         position_integral[drive_num] += position_error * pid_params_position[drive_num].sample_time;
 
         // Limit the integral term
-//        if (position_integral[drive_num] > pid_params_position[drive_num].max_integral) {
-//            printf("limit integral max\n");
-//            position_integral[drive_num] = pid_params_position[drive_num].max_integral;
-//        } else if (position_integral[drive_num] < pid_params_position[drive_num].min_integral) {
-//            printf("limit integral min\n");
-//            position_integral[drive_num] = pid_params_position[drive_num].min_integral;
-//        }
+        if (position_integral[drive_num] > pid_params_position[drive_num].max_integral) {
+            printf("limit integral max\n");
+            position_integral[drive_num] = pid_params_position[drive_num].max_integral;
+        } else if (position_integral[drive_num] < pid_params_position[drive_num].min_integral) {
+            printf("limit integral min\n");
+            position_integral[drive_num] = pid_params_position[drive_num].min_integral;
+        }
 
-//        printf("position_integral: %f\n", position_integral[drive_num]);
+        printf("position_integral: %f\n", position_integral[drive_num]);
 
         double position_derivative =
                 (position_error - position_prev_error[drive_num]) / pid_params_position[drive_num].sample_time;
