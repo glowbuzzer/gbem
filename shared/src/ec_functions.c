@@ -20,7 +20,7 @@
 #include "log.h"
 #include "ethercatmain.h"
 #include "ethercatsetget.h"
-//#include "ethercatnetscan.h"
+#include "shared_mem_types.h"
 #include "log.h"
 #include "user_message.h"
 #include "gberror.h"
@@ -32,6 +32,7 @@
 #include "status_control_word_bit_definitions.h"
 #include "read_error_messages.h"
 #include "print_slave_error_messages.h"
+
 
 /** global holding dc delta */
 extern int64 gl_delta;
@@ -1154,6 +1155,8 @@ void init_ecm_status(void) {
         } else {
             strcpy(ecm_status.drives[i].name, map_drive_to_name[i]);
         }
+        ecm_status.drives[i].cmd_moo = map_drive_moo[i];
+        ecm_status.drives[i].act_moo = 0;
     }
 }
 
