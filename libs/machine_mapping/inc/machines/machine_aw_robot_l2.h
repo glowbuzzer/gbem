@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
- * @file           :  machine_aw_robot_m.h
- * @brief          :  machine map for aw medium sized robot with EK1100 + El1808 + EL2908
+ * @file           :  machine_aw_robot_l2.h
+ * @brief          :  machine map for aw l2 sized robot with EK1100 + El1808 + EL2908
  ******************************************************************************
  * @attention
  *
@@ -11,8 +11,8 @@
  ******************************************************************************
  */
 
-#ifndef GBEM_MACHINE_AW_ROBOT_M_H
-#define GBEM_MACHINE_AW_ROBOT_M_H
+#ifndef GBEM_MACHINE_AW_ROBOT_L2_H
+#define GBEM_MACHINE_AW_ROBOT_L2_H
 
 
 #define MAP_CYCLE_TIME              (4)
@@ -45,4 +45,4 @@
 #define MAP_NUMBER_ESTOP_DIN        1
 
 
-#endif //GBEM_MACHINE_AW_ROBOT_M_H
+#endif //GBEM_MACHINE_AW_ROBOT_L2_H

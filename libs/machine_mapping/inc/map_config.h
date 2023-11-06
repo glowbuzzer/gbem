@@ -41,9 +41,9 @@
 #define MACHINE_ASDA_A2_TEST                0
 #define MACHINE_SMC3_TEST                   0
 #define MACHINE_AX5101_TEST                 0
-#define MACHINE_AW_J17                      1
+#define MACHINE_AW_J17                      0
 #define MACHINE_AW_ROBOT_S                  0
-#define MACHINE_AW_ROBOT_M                  0
+#define MACHINE_AW_ROBOT_L2                 1
 #define MACHINE_AW_ROBOT_L                  0
 #define MACHINE_VIRTUAL                     0
 #define MACHINE_J17_PLUS_VIRTUAL            0
@@ -170,9 +170,9 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 #include "machine_aw_robot_s.h"
 #endif
 
-#if MACHINE_AW_ROBOT_M == 1
+#if MACHINE_AW_ROBOT_L2 == 1
 
-#include "machine_aw_robot_m.h"
+#include "machine_aw_robot_l2.h"
 
 #endif
 
@@ -225,7 +225,7 @@ typedef enum {
     MAP_MACHINE_AX5101_TEST,
     MAP_MACHINE_AW_J17,
     MAP_MACHINE_AW_ROBOT_S,
-    MAP_MACHINE_AW_ROBOT_M,
+    MAP_MACHINE_AW_ROBOT_L2,
     MAP_MACHINE_AW_ROBOT_L,
     MAP_MACHINE_VIRTUAL,
     MAP_MACHINE_J17_PLUS_VIRTUAL,

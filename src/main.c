@@ -40,6 +40,7 @@
 #include "map_summary.h"
 #include "version.h"
 #include "ecrxtx.h"
+#include "shared_mem_types.h"
 
 #include "std_utils.h"
 #include "map_SDO_print.h"
@@ -371,8 +372,8 @@ int main(int argc, char *argv[]) {
     map_machine_type = MAP_MACHINE_AW_ROBOT_S;
 #endif
 
-#if MACHINE_AW_ROBOT_M == 1
-    map_machine_type = MAP_MACHINE_AW_ROBOT_M;
+#if MACHINE_AW_ROBOT_L2 == 1
+    map_machine_type = MAP_MACHINE_AW_ROBOT_L2;
 #endif
 #if MACHINE_AW_ROBOT_L == 1
     map_machine_type = MAP_MACHINE_AW_ROBOT_L;
