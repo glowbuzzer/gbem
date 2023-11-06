@@ -57,7 +57,9 @@ MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(  NULL, NULL                           
 MAP_DRIVE_POS_LIMIT(                        999,                            999                                 );
 MAP_DRIVE_NEG_LIMIT(                        -999,                           -999                                );
 MAP_DRIVE_DIRECTION(                        1,                              1                                   );
-
+MAP_DRIVE_TORQ_LIMIT(                       0,                              0                                   );
+MAP_DRIVE_VEL_LIMIT(                        0,                              0                                   );
+MAP_DRIVE_SCALES(                           {0},                            {0}                                 );
 
 
 extern bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3;

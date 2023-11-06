@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
- * @file           :  machine_aw_robot_m.c
- * @brief          :  machine map for aw medium sized robot with EK1100 + El1808 + EL2908
+ * @file           :  machine_aw_robot_l2.c
+ * @brief          :  machine map for aw l2 sized robot with EK1100 + El1808 + EL2908
  ******************************************************************************
  * @attention
  *
@@ -57,7 +57,7 @@ MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         NULL,                               
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               NULL                                );
 MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               NULL                                );
 MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(   NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               NULL                                );
-MAP_DRIVE_MOO(                              CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP                         );
+MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(            NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               NULL                                );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               NULL                                );
 MAP_DRIVE_RUN_HOMING(                       0,                                  0,                                  0,                                  0,                                  0,                                  0                                   );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               NULL,                               NULL,                               NULL,                               NULL,                               NULL                                );
@@ -68,6 +68,9 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               
 MAP_DRIVE_POS_LIMIT(                        99999999,                               99999999,                               99999999,                               99999999,                               99999999,                               99999999                                );
 MAP_DRIVE_NEG_LIMIT(                        -99999999,                              -99999999,                              -99999999,                              -99999999,                              -99999999,                              -99999999                               );
 MAP_DRIVE_DIRECTION(                        1,                                      1,                                      1,                                      1,                                      1,                                      1                                       );
+MAP_DRIVE_TORQ_LIMIT(                       0,                                      0,                                      0,                                      0,                                      0,                                      0                                       );
+MAP_DRIVE_VEL_LIMIT(                        0,                                      0,                                      0,                                      0,                                      0,                                      0                                       );
+MAP_DRIVE_SCALES(                           {0},                                    {0}  ,                                  {0},                                    {0},                                    {0},                                    {0},                                    );
 
 
 
@@ -113,4 +116,4 @@ MAP_DRIVE_SET_MOO_REV_FUNCTIONS(            ec_set_moo_pdo_rev_mse_408,        e
 
 //@formatter:on
 
-#endif //MACHINE_AW_ROBOT_M
+#endif //MACHINE_AW_ROBOT_L2

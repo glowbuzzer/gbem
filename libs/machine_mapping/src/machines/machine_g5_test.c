@@ -50,7 +50,7 @@ MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         NULL,                           );
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                           );
 MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  NULL,                           );
 MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(   NULL,                           );
-MAP_DRIVE_MOO(                              CIA_MOO_CSP,                    );
+MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(            NULL,                           );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL                            );
 MAP_DRIVE_RUN_HOMING(                       0                               );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_g5              );
@@ -59,7 +59,9 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_g5              );
 MAP_DRIVE_POS_LIMIT(                        1073741823                      );
 MAP_DRIVE_NEG_LIMIT(                        -1073741823                     );
 MAP_DRIVE_DIRECTION(                        0,                              );
-
+MAP_DRIVE_TORQ_LIMIT(                       0,                              );
+MAP_DRIVE_VEL_LIMIT(                        0,                              );
+MAP_DRIVE_SCALES(                           {0},                            );
 
 
 /* IO MAP */

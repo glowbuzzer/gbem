@@ -72,7 +72,7 @@ MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         NULL,                               
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                               NULL,                               NULL,                               NULL);
 MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  NULL,                               NULL,                               NULL,                               NULL);
 MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(  NULL,                               NULL,                               NULL,                               NULL);
-MAP_DRIVE_MOO(                              CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP,                        CIA_MOO_CSP );
+MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(            NULL,                               NULL,                               NULL,                               NULL);
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                               NULL,                               NULL,                               NULL                                );
 MAP_DRIVE_RUN_HOMING(                       0,                                  0,                                  0,                                  0                                   );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               NULL,                               NULL,                               NULL);
@@ -83,7 +83,9 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               
 MAP_DRIVE_POS_LIMIT(                        999,                            999,                                999,                            999);
 MAP_DRIVE_NEG_LIMIT(                        -999,                           -999,                               -999,                           -999);
 MAP_DRIVE_DIRECTION(                        1,                              1,                                  0,                              1);
-
+MAP_DRIVE_TORQ_LIMIT(                       0,                              0,                                  0,                              0);
+MAP_DRIVE_VEL_LIMIT(                        0,                              0,                                  0,                              0);
+MAP_DRIVE_SCALES(                           {0},                            {0},                                {0},                            {0});
 
 extern bool mydin1_test, mydin2_test, mydout1_test, mydout2_test, plc_din1;
 
