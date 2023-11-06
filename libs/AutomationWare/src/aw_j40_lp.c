@@ -52,7 +52,7 @@ gberror_t ec_apply_standard_sdos_aw_j40_lp(const uint16_t slave) {
 
     //use percentage of default max torque in array
     uint16_t torque_limit = map_drive_torque_limit[map_slave_to_drive(slave)];
-#define AW_J40_LP_MAX_TORQUE 4012
+
 
     if (torque_limit > 0) {
 
@@ -69,13 +69,13 @@ gberror_t ec_apply_standard_sdos_aw_j40_lp(const uint16_t slave) {
 
     //    Max motor speed	0x6080:0	UDINT	32	0		1000	rpm	readwrite
 //BUT  AW-J-Series - SI unit velocity [0.001 * RPM] on drive [0]
-#define AW_J40_LP_MAX_SPEED 2500000
+
 
 
 //for testing 5 degrees per second  so roughly 2500000 * 5/360 = 34722
 
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_INDEX, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
-                            80000, true)) {
+                            160000, true)) {
 
         return E_SDO_WRITE_FAILURE;
 

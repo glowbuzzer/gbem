@@ -61,7 +61,6 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
 
     //use percentage of default max torque in array
     uint16_t torque_limit = map_drive_torque_limit[map_slave_to_drive(slave)];
-#define AW_J17_MAX_TORQUE 4016
 
 
     if (torque_limit > 0) {
@@ -90,7 +89,7 @@ gberror_t ec_apply_standard_sdos_aw_j17(const uint16_t slave) {
 
 
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_INDEX, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
-                            300000, true)) {
+                            3000000, true)) {
 
         return E_SDO_WRITE_FAILURE;
 

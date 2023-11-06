@@ -50,7 +50,7 @@ gberror_t ec_apply_standard_sdos_aw_j40_hp(const uint16_t slave) {
     //Default value is 3000 (300% of rated torque).
 
     //J42 HP
-#define AW_J40_HP_MAX_TORQUE 4056
+
 
 
     //use percentage of default max torque in array
@@ -58,7 +58,7 @@ gberror_t ec_apply_standard_sdos_aw_j40_hp(const uint16_t slave) {
 
     if (torque_limit > 0) {
 
-        torque_limit = (uint16_t) ((((double) AW_J40_HP_MAX_TORQUE * (double) torque_limit) / (double) 100));
+        torque_limit = (uint16_t)((((double) AW_J40_HP_MAX_TORQUE * (double) torque_limit) / (double) 100));
         UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max torque limit [%d] on drive [%d]",
                 torque_limit,
                 map_slave_to_drive(slave));
@@ -71,13 +71,13 @@ gberror_t ec_apply_standard_sdos_aw_j40_hp(const uint16_t slave) {
 
     //    Max motor speed	0x6080:0	UDINT	32	0		1000	rpm	readwrite
 //BUT  AW-J-Series - SI unit velocity [0.001 * RPM] on drive [0]
-#define AW_J40_HP_MAX_SPEED 1400000
+
 
 
 //for testing 5 degrees per second  so roughly 1400000 * 5/360 = 19444
 
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_INDEX, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
-                            80000, true)) {
+                            160000, true)) {
 
         return E_SDO_WRITE_FAILURE;
 

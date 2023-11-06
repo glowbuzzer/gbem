@@ -48,7 +48,7 @@ gberror_t ec_apply_standard_sdos_aw_j20(const uint16_t slave) {
 
     //J20
 
-#define AW_J20_MAX_TORQUE 1220
+
 
     //use percentage of default max torque in array
     uint16_t torque_limit = map_drive_torque_limit[map_slave_to_drive(slave)];
@@ -73,11 +73,16 @@ gberror_t ec_apply_standard_sdos_aw_j20(const uint16_t slave) {
 //for testing 5 degrees per second  so roughly 3500000 * 5/360 = 48611
 
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_INDEX, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
-                            80000, true)) {
+                            160000, true)) {
 
         return E_SDO_WRITE_FAILURE;
 
     }
+
+//    1) via SDO you configure the output pin to allow it to control an LED strip by setting the value 26 in register 0x2210 subindex 1;
+//    2) via SDO configure the supply voltage of the output pin to 5V by setting the value 2 in register 0x2214 subindex 1;
+
+
 
 
     return E_SUCCESS;

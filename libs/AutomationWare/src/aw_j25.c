@@ -49,7 +49,7 @@ gberror_t ec_apply_standard_sdos_aw_j25(const uint16_t slave) {
 
     //J25
 
-#define AW_J25_MAX_TORQUE 3991
+
 
 
     //use percentage of default max torque in array
@@ -70,12 +70,12 @@ gberror_t ec_apply_standard_sdos_aw_j25(const uint16_t slave) {
 
     //    Max motor speed	0x6080:0	UDINT	32	0		1000	rpm	readwrite
 //BUT  AW-J-Series - SI unit velocity [0.001 * RPM] on drive [0]
-#define AW_J25_MAX_SPEED 2500000
+
 
 //for testing 5 degrees per second  so roughly 2500000 * 5/360 = 43722
 
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_INDEX, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
-                            80000, true)) {
+                            160000, true)) {
 
         return E_SDO_WRITE_FAILURE;
 
