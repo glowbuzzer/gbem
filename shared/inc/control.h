@@ -24,8 +24,7 @@
 /** sm event data (passed in with each call to execute the state machine ) */
 typedef struct {
     bool follow_error;
-    bool machine_request_error; //bit 16 of machine controlword
-    bool machine_move_not_op_enabled_fault_req; //bit 17 of machine controlword
+    bool machine_request_error;
     bool gbc_internal_fault;
     bool estop;
     bool heartbeat_lost;
@@ -39,6 +38,7 @@ typedef struct {
     bool ec_check_error;
     uint32_t fault_cause;
     bool cst_csv_position_limit_error;
+    bool cst_csv_velocity_limit_error;
 } event_data_t;
 
 
@@ -89,7 +89,7 @@ typedef enum {
     CONTROL_EVENT_ESTOP,
     CONTROL_EVENT_DRIVE_FAULT,
     CONTROL_EVENT_GBC_FAULT_REQUEST,
-    CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST,
+//    CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST,
     CONTROL_EVENT_GBC_INTERNAL_FAULT,
     CONTROL_EVENT_HEARTBEAT_LOST,
     CONTROL_EVENT_LIMIT_REACHED,
@@ -103,7 +103,8 @@ typedef enum {
     CONTROL_EVENT_ECAT_SLAVE_ERROR,
     CONTROL_EVENT_PLC_SIGNALLED_ERROR,
     CONTROL_EVENT_HOMING_ERROR,
-    CONTROL_EVENT_CST_CSV_POSITION_LIMIT_ERROR
+    CONTROL_EVENT_CST_CSV_POSITION_LIMIT_ERROR,
+    CONTROL_EVENT_CST_CSV_VELOCITY_LIMIT_ERROR
 } control_event_type_t;
 
 #endif /* INC_CONTROL_H_ */
