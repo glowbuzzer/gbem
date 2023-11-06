@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include "main.h"
 #include "plc_core.h"
+#include "shared_mem_types.h"
 
 
 _Noreturn void ec_reboot(void *argument) {
