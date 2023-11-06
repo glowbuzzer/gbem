@@ -13,10 +13,91 @@
 
 #include "aw_j_series.h"
 #include "std_headers.h"
+#include "map_config_custom_pdo.h"
 #include "std_defs_and_macros.h"
 #include "user_message.h"
 #include "ethercatsetget.h"
 #include "cia402.h"
+#include <math.h>
+
+map_custom_pdo_t aw_j_series_custom_pdo_map = {
+        .sm2_assignment_object = 0x1C12,
+        .num_sm2_assignments = 3,
+        .rxpdo = {
+                {
+                        .pdo_assignment_object = 0x1600,
+                        .num_assignments = 7,
+                        .assignments = {
+                                {.datatype = ECT_UNSIGNED16, .index = 0x6040}, //Controlword
+                                {.datatype = ECT_INTEGER8, .index = 0x6060}, //Modes of operation
+                                {.datatype = ECT_INTEGER16, .index = 0x6071}, //Target Torque
+                                {.datatype = ECT_INTEGER32, .index = 0x607A}, //Target position
+                                {.datatype = ECT_INTEGER32, .index = 0x60FF}, //Target velocity
+                                {.datatype = ECT_INTEGER16, .index = 0x60B2}, //Torque offset
+                                {.datatype = ECT_UNSIGNED32, .index = 0x2701}, //Tuning command
+                        }
+                },
+                {.pdo_assignment_object=0x1601,
+                        .num_assignments=2,
+                        .assignments = {
+                                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset=0x1}, //Physical outputs
+                                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset=0x2}, //Bit mask
+                        }},
+                {.pdo_assignment_object=0x1602,
+                        .num_assignments=3,
+                        .assignments= {
+                                {.datatype = ECT_UNSIGNED32, .index = 0x2703}, //User MOSI
+                                {.datatype = ECT_INTEGER32, .index = 0x60B1}, //Velocity offset
+                                {.datatype = ECT_UNSIGNED32, .index = 0x2215, .offset=0x1}, //LED colour
+                        }
+                }
+        },
+        .sm3_assignment_object = 0x1C13,
+        .num_sm3_assignments = 4,
+        .txpdo = {{
+                          .pdo_assignment_object = 0x1A00,
+                          .num_assignments = 5,
+                          .assignments ={
+                                  {.datatype=ECT_UNSIGNED16, .index=0x6041}, //Statusword
+                                  {.datatype=ECT_INTEGER8, .index=0x6061}, //Modes of operation display
+                                  {.datatype=ECT_INTEGER32, .index=0x6064}, //Position actual value
+                                  {.datatype=ECT_INTEGER32, .index=0x606C}, //Velocity actual value
+                                  {.datatype=ECT_INTEGER16, .index=0x6077}, //Torque actual value
+                          }
+                  },
+                  {.pdo_assignment_object=0x1A01,
+                          .num_assignments=5,
+                          .assignments={
+                                  {.datatype=ECT_UNSIGNED16, .index=0x2401}, //Analog input 1
+                                  {.datatype=ECT_UNSIGNED16, .index=0x2402}, // Analog input 2
+                                  {.datatype=ECT_UNSIGNED16, .index=0x2403}, //Analog input 3
+                                  {.datatype=ECT_UNSIGNED16, .index=0x2404}, //Analog input 4
+                                  {.datatype=ECT_UNSIGNED32, .index=0x2702}, //Tuning status
+                          }
+                  },
+                  {.pdo_assignment_object=0x1A02,
+                          .num_assignments=1,
+                          .assignments={
+                                  {.datatype=ECT_UNSIGNED32, .index=0x60FD}, //Digital inputs
+                          }
+                  },
+                  {.pdo_assignment_object=0x1A03,
+                          .num_assignments=5,
+                          .assignments={
+                                  {.datatype=ECT_UNSIGNED32, .index=0x2704}, //User MISO
+                                  {.datatype=ECT_UNSIGNED32, .index=0x20F0}, //Timestamp
+                                  {.datatype=ECT_INTEGER32, .index=0x60FC}, //Position demand internal value
+                                  {.datatype=ECT_INTEGER32, .index=0x606B}, //Velocity demand value
+                                  {.datatype=ECT_INTEGER16, .index=0x6074} //Torque demand
+                          }
+                  }
+        }
+};
+
+
+gberror_t ec_pdo_map_aw_j_series(const uint16_t slave) {
+    return map_apply_custom_pdo_mapping(slave, aw_j_series_custom_pdo_map);
+}
 
 
 gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
@@ -75,26 +156,36 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
 
         if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
                                 AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
-                                           ((double) map_drive_pos_limit[map_slave_to_drive(slave)] / (double) 360)),
+                                (int32_t) (
+                                        ((double) map_drive_scales[map_slave_to_drive(slave)].position_scale)
+                                        *
+                                        ((double) map_drive_pos_limit[map_slave_to_drive(slave)] * (M_PI /
+                                                                                                    180.0))),
                                 true)) {
             return E_SDO_WRITE_FAILURE;
         }
         UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max position limit [%d] on drive [%d]",
-                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
-                           ((double) map_drive_pos_limit[map_slave_to_drive(slave)] / (double) 360)),
+                (int32_t) (((double) map_drive_scales[map_slave_to_drive(slave)].position_scale)
+                           *
+                           ((double) map_drive_pos_limit[map_slave_to_drive(slave)] * (M_PI /
+                                                                                       180.0))),
                 map_slave_to_drive(slave));
 
         if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
                                 AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
-                                           ((double) map_drive_neg_limit[map_slave_to_drive(slave)] / (double) 360)),
+                                (int32_t) (
+                                        ((double) map_drive_scales[map_slave_to_drive(slave)].position_scale)
+                                        *
+                                        ((double) map_drive_neg_limit[map_slave_to_drive(slave)] * (M_PI /
+                                                                                                    180.0))),
                                 true)) {
             return E_SDO_WRITE_FAILURE;
         }
         UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Min position limit [%d] on drive [%d]",
-                (int32_t) ((double) AW_J_SERIES_ENCODER_COUNTS_PER_REV *
-                           ((double) map_drive_neg_limit[map_slave_to_drive(slave)] / (double) 360)),
+                (int32_t) (((double) map_drive_scales[map_slave_to_drive(slave)].position_scale)
+                           *
+                           ((double) map_drive_neg_limit[map_slave_to_drive(slave)] * (M_PI /
+                                                                                       180.0))),
                 map_slave_to_drive(slave));
     }
 
@@ -108,6 +199,19 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
 
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_POLARITY_SDO_INDEX, AW_J_SERIES_POLARITY_SDO_SUB_INDEX,
                             polarity, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+    //Configure LED gpio output pin
+    if (!ec_sdo_write_uint8(slave, AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_INDEX, AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_SUB_INDEX,
+                            AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_VALUE, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    //Configure LED gpio output pin voltage
+    if (!ec_sdo_write_uint8(slave, AW_J_SERIES_LED_OP_PIN_VOLTAGE_SDO_INDEX,
+                            AW_J_SERIES_LED_OP_PIN_VOLTAGE_SDO_SUB_INDEX,
+                            AW_J_SERIES_LED_OP_PIN_VOLTAGE_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -151,6 +255,19 @@ bool ec_get_follow_error_aw_j_series(const uint16_t drive) {
     return false;
 }
 
+/**
+ * @brief Perform PDO writes for AW-J-series drives of the MOO
+ * @param slave - drive number to send PDO writes
+ * @retval E_SUCCESS - Normal
+ * @attention
+ */
+
+gberror_t ec_set_moo_pdo_aw_j_series(const uint16_t drive, int8_t moo) {
+
+    ec_pdo_set_output_int8(map_drive_to_slave[drive], AW_J_SERIES_MOOSET_PDO_INDEX, moo);
+
+    return E_SUCCESS;
+}
 
 /**
  * @brief Perform first cycle PDO writes for AW-J-series drives
@@ -160,12 +277,12 @@ bool ec_get_follow_error_aw_j_series(const uint16_t drive) {
  */
 gberror_t ec_initial_pdo_aw_j_series(const uint16_t slave) {
 
-    ec_pdo_set_output_int8(slave, AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
-
-    UM_INFO(GBEM_UM_EN,
-            "GBEM: Setting MOO with PDO write for AW-J-Series drive slave [%u], drive, [%u], offset [%u], value [%u]",
-            slave, map_slave_to_drive(slave),
-            AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
+//    ec_pdo_set_output_int8(slave, AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
+//
+//    UM_INFO(GBEM_UM_EN,
+//            "GBEM: Setting MOO with PDO write for AW-J-Series drive slave [%u], drive, [%u], offset [%u], value [%u]",
+//            slave, map_slave_to_drive(slave),
+//            AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
 
     return E_SUCCESS;
 }

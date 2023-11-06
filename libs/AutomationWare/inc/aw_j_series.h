@@ -47,6 +47,8 @@ bool ec_get_remote_aw_j_series(uint16_t drive);
 
 bool ec_get_follow_error_aw_j_series(uint16_t drive);
 
+gberror_t ec_set_moo_pdo_aw_j_series(uint16_t drive, int8_t moo);
+
 uint16_t ec_get_ctrl_wrd_rev_aw_j_series(uint16_t drive);
 
 gberror_t ec_set_stat_wrd_rev_aw_j_series(uint16_t drive, uint16_t statwrd);
@@ -59,13 +61,15 @@ gberror_t ec_set_moo_pdo_rev_aw_j_series(uint16_t drive);
 
 gberror_t ec_set_setvel_wrd_aw_j_series(uint16_t drive, int32_t setvel);
 
-gberror_t ec_set_setveloffset_wrd_aw_j_series(const uint16_t drive, const int32_t setveloffset);
+gberror_t ec_set_setveloffset_wrd_aw_j_series(uint16_t drive, int32_t setveloffset);
 
 gberror_t ec_set_settorq_wrd_aw_j_series(uint16_t drive, int32_t settorq);
 
 gberror_t ec_set_settorqoffset_wrd_aw_j_series(uint16_t drive, int32_t settorq_offset);
 
 gberror_t ec_apply_standard_sdos_aw_j_series(uint16_t slave);
+
+gberror_t ec_pdo_map_aw_j_series(uint16_t slave);
 
 //Number of error strings and error report strings for the AW J series drives
 #define NUM_OF_AW_J_SERIES_ERROR_STRINGS 26
@@ -197,7 +201,6 @@ SM3 inputs
 #define AW_J_SERIES_RESOLUTION_ENC2_SDO_INDEX      0x2112
 #define AW_J_SERIES_RESOLUTION_ENC2_SDO_SUB_INDEX  0x3
 
-#define AW_J_SERIES_ENCODER_COUNTS_PER_REV 1048576
 
 //torque constant	0x2003:2	DINT	32			1	μNm/A	readwrite
 #define AW_J_SERIES_TORQUE_CONSTANT_SDO_INDEX      0x2003
@@ -206,6 +209,33 @@ SM3 inputs
 //Order	0x2027:2	USINT	8	0	31	3		readwrite
 #define AW_J_SERIES_FIR_ORDER_SDO_INDEX      0x2027
 #define AW_J_SERIES_FIR_ORDER_SDO_SUB_INDEX  0x2
+
+//Led output pin config USINT	0x2210:1 26
+#define AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_INDEX      0x2210
+#define AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_SUB_INDEX  0x1
+#define AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_VALUE      26
+
+//Led output pin voltage   USINT  0x2214:1 2
+#define AW_J_SERIES_LED_OP_PIN_VOLTAGE_SDO_INDEX      0x2214
+#define AW_J_SERIES_LED_OP_PIN_VOLTAGE_SDO_SUB_INDEX  0x1
+#define AW_J_SERIES_LED_OP_PIN_VOLTAGE_SDO_VALUE      2
+
+
+
+
+/** Max torques and speeds */
+#define AW_J17_MAX_TORQUE       4016
+#define AW_J17_MAX_SPEED        3000000
+#define AW_J20_MAX_TORQUE       1220
+#define AW_J20_MAX_SPEED        3500000
+#define AW_J25_MAX_TORQUE       3991
+#define AW_J25_MAX_SPEED        2500000
+#define AW_J32_MAX_TORQUE       4012
+#define AW_J32_MAX_SPEED        2500000
+#define AW_J40_HP_MAX_TORQUE    4056
+#define AW_J40_HP_MAX_SPEED     1400000
+#define AW_J40_LP_MAX_TORQUE    4012
+#define AW_J40_LP_MAX_SPEED     2500000
 
 
 //Typedefs for the error strings and error report strings for the AW J series drives

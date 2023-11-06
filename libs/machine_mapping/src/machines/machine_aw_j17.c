@@ -28,7 +28,7 @@ map_pdo_object_t ctrl_estop_din_1 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slav
 //                                        MAP_EK1100_1        MAP_EL2008_1    MAP_EL1008_1     MAP_AW_J17_CTRL
 //                                        Coupler             8 dig out       8 dig in         J17 joint
 MAP_NUM_DRIVES_ATTACHED(                  0,                  0,              0,               1                                                  );
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,               NULL,           NULL,            NULL                                               );
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,               NULL,           NULL,            ec_pdo_map_aw_j_series                             );
 MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,               NULL,           NULL,            NULL                                               );
 MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         NULL,               NULL,           NULL,            ec_apply_standard_sdos_aw_j17                      );
 MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          NULL,               NULL,           NULL,            ec_initial_pdo_aw_j_series                         );
@@ -57,7 +57,7 @@ MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         ec_set_setvel_wrd_aw_j_series,      
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        ec_set_settorq_wrd_aw_j_series,         );
 MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  ec_set_settorqoffset_wrd_aw_j_series    );
 MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(   ec_set_setveloffset_wrd_aw_j_series     );
-MAP_DRIVE_MOO(                              CIA_MOO_CSV,                            );
+MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(            ec_set_moo_pdo_aw_j_series,             );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                                   );
 MAP_DRIVE_RUN_HOMING(                       0,                                      );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series             );
@@ -65,14 +65,14 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series         
 
 /* DRIVE PARAMETERS */
 //FOR AW DRIVES THESE ARE IN DEGREES
-MAP_DRIVE_POS_LIMIT(                        999999,                                  );
-MAP_DRIVE_NEG_LIMIT(                        -999999,                                 );
-
-
-
+MAP_DRIVE_POS_LIMIT(                        9999,                                  );
+MAP_DRIVE_NEG_LIMIT(                        -9999,                                 );
 MAP_DRIVE_DIRECTION(                        1,                                  );
 //percentage of max torque
 MAP_DRIVE_TORQ_LIMIT(                       30,                                  );
+MAP_DRIVE_VEL_LIMIT(                        50,                                  );
+MAP_DRIVE_SCALES(                           {166886,9549,32.67});
+
 
 //7 % can stop drive by hand
 extern bool plc_din1, plc_din2, plc_din3, plc_dout1, plc_dout2, plc_dout3;

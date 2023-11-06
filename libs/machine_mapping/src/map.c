@@ -26,6 +26,9 @@
 map_machine_type_t map_machine_type = MAP_MACHINE_UNKNOWN;
 
 
+int8_t map_drive_moo[MAP_NUM_DRIVES];
+
+
 /**
  * @brief This checks the warning bit on ALL drives
  * @param void
