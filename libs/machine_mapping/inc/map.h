@@ -35,6 +35,8 @@ extern bool nolimits;
 #define MAP_SLAVE_DC_CYCLE(...) const int8_t map_dc_cycle[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_SLAVE_EEP(...) const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {__VA_ARGS__};
 
+
+
 /* DRIVES */
 #define MAP_DRIVE_TO_NAME(...) const char map_drive_to_name[MAP_NUM_DRIVES][MAX_DRIVE_NAME_LENGTH] = {__VA_ARGS__};
 #define MAP_DRIVE_TO_SLAVE(...) const uint16_t map_drive_to_slave[MAP_NUM_DRIVES] = {__VA_ARGS__};
@@ -42,6 +44,8 @@ extern bool nolimits;
 #define MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(...) int8_t (*map_drive_get_moo_pdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 #define MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(...) int8_t (*map_drive_get_moo_sdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 #define MAP_DRIVE_GET_REMOTE_FUNCTIONS(...)  bool (*map_drive_get_remote_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
+#define MAP_DRIVE_SCALES(...) const map_drive_scales_t map_drive_scales[MAP_NUM_DRIVES] = {__VA_ARGS__};
+
 
 #define MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(...) bool (*map_drive_get_follow_error_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 #define MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(...)  uint8_t *(*map_drive_get_error_string_pdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
@@ -67,9 +71,11 @@ extern bool nolimits;
 #define MAP_DRIVE_RUN_HOMING(...) const bool map_drive_run_homing[MAP_NUM_DRIVES] = {__VA_ARGS__};
 #define MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(...) gberror_t (*map_drive_print_params_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 
-#define MAP_DRIVE_TORQ_LIMIT(...) const int32_t map_drive_torque_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
-#define MAP_DRIVE_MOO(...) const int8_t map_drive_moo[MAP_NUM_DRIVES] = {__VA_ARGS__};
+#define MAP_DRIVE_VEL_LIMIT(...) const int32_t map_drive_vel_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
 
+#define MAP_DRIVE_TORQ_LIMIT(...) const int32_t map_drive_torque_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
+//#define MAP_DRIVE_MOO(...) int8_t map_drive_moo[MAP_NUM_DRIVES] = {__VA_ARGS__};
+#define MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(...) gberror_t (*map_drive_set_moo_pdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int8_t moo) = {__VA_ARGS__};
 
 //REVERSE FUNCTIONS
 #define MAP_DRIVE_GET_CTRL_WRD_REV_FUNCTIONS(...) uint16_t (*map_drive_get_ctrl_wrd_rev_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
@@ -92,6 +98,13 @@ typedef struct {
     /** revision from EEprom */
     uint32_t eep_rev;
 } map_slave_map_t;
+
+
+typedef struct {
+    double position_scale;
+    double velocity_scale;
+    double torque_scale;
+} map_drive_scales_t;
 
 typedef enum {
     EC_DC_UNCONFIGURED,
@@ -170,6 +183,7 @@ typedef struct {
     map_force_object_t force;
 } mapping_t;
 
+extern const map_drive_scales_t map_drive_scales[MAP_NUM_DRIVES];
 extern const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES];
 extern map_machine_type_t map_machine_type;
 
@@ -225,6 +239,7 @@ extern gberror_t (*map_drive_set_settorqoffset_wrd_function_ptr[MAP_NUM_DRIVES])
 
 extern gberror_t (*map_drive_set_setveloffset_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setveloffset);
 
+extern gberror_t (*map_drive_set_moo_pdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int8_t moo);
 
 extern gberror_t (*map_drive_print_params_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
 
@@ -237,7 +252,8 @@ extern const int32_t map_drive_neg_limit[MAP_NUM_DRIVES];
 extern const uint8_t map_drive_direction[MAP_NUM_DRIVES];
 
 extern const int32_t map_drive_torque_limit[MAP_NUM_DRIVES];
-extern const int8_t map_drive_moo[MAP_NUM_DRIVES];
+extern const int32_t map_drive_vel_limit[MAP_NUM_DRIVES];
+extern int8_t map_drive_moo[MAP_NUM_DRIVES];
 
 
 //REVERSE FUNCTIONS
