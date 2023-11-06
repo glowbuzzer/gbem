@@ -34,6 +34,7 @@
 #include "p.h"
 #include "user_message.h"
 #include "controller.h"
+#include "shared_mem_types.h"
 
 //todo review need for semaphores in control.c and ec_rxtx.c
 #define DPM_IN_PROTECT_START
@@ -53,14 +54,14 @@ bool estop = true;
 cia_state_t current_state = CIA_NOT_READY_TO_SWITCH_ON;
 
 static bool cst_csv_position_limit_error = false;
-
+static bool cst_csv_velocity_limit_error = false;
 
 //@formatter:off
 cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
         [CONTROL_EVENT_ESTOP] = {.message="An error has been detected [ESTOP event]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_DRIVE_FAULT] = {.message="An error has been detected [Drive fault]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_GBC_FAULT_REQUEST] = {.message="An error has been detected [GBC requesting fault state]", .type=CYCLIC_MSG_ERROR},
-        [CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST] = {.message="An error has been detected [Move when not in op en]", .type=CYCLIC_MSG_ERROR},
+//        [CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST] = {.message="An error has been detected [Move when not in op en]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_GBC_INTERNAL_FAULT] = {.message="An error has been detected [GBC internal fault]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_HEARTBEAT_LOST] = {.message="An error has been detected [Heartbeat to GBC lost]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_LIMIT_REACHED] = {.message="An error has been detected [Drive reached limit]", .type=CYCLIC_MSG_ERROR},
@@ -76,6 +77,7 @@ cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
         [CONTROL_EVENT_PLC_SIGNALLED_ERROR] = {.message="An error has been detected [PLC signalled an error]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_HOMING_ERROR] = {.message="\"An error has been detected [Homing error]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_CST_CSV_POSITION_LIMIT_ERROR] = {.message="An error has been detected [CST CSV position limit error]", .type=CYCLIC_MSG_ERROR},
+        [CONTROL_EVENT_CST_CSV_VELOCITY_LIMIT_ERROR] = {.message="An error has been detected [CST CSV velocity limit error]", .type=CYCLIC_MSG_ERROR},
 };
 
 //@formatter:on
@@ -107,6 +109,7 @@ void ctrl_process_forces_out(void);
 
 static void ctrl_check_for_big_pos_jump(uint16_t drive, int32_t current_position);
 
+static void ctrl_set_moo_pdo(void);
 
 /* sm guard functions */
 static bool cia_trn13_guard(void *condition, struct event *event);
@@ -816,6 +819,8 @@ static bool cia_trn16_guard(void *condition, struct event *event) {
  */
 bool cia_is_fault_condition(struct event *event) {
 
+    static uint64_t wrong_moo_count[MAP_NUM_DRIVES] = {0};
+
     ((event_data_t *) event->data)->fault_cause = 0;
 
     //reset all control events (errors)
@@ -850,19 +855,19 @@ bool cia_is_fault_condition(struct event *event) {
         control_event[CONTROL_EVENT_GBC_FAULT_REQUEST].active = true;
         have_fault = true;
     }
-    //CONTROL_WORD_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM
-    if (((event_data_t *) event->data)->machine_move_not_op_enabled_fault_req == true) {
-        LL_TRACE(GBEM_SM_LOG_EN,
-                 "sm: Fault > machine word is requesting an error because a move has been attempted and we are not in operation enabled");
-        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_MOVE_NOT_OP_EN_BIT_NUM);
-        control_event[CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST].active = true;
-        have_fault = true;
-    }
+//    //CONTROL_WORD_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM
+//    if (((event_data_t *) event->data)->machine_move_not_op_enabled_fault_req == true) {
+//        LL_TRACE(GBEM_SM_LOG_EN,
+//                 "sm: Fault > machine word is requesting an error because a move has been attempted and we are not in operation enabled");
+//        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_MOVE_NOT_OP_EN_BIT_NUM);
+//        control_event[CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST].active = true;
+//        have_fault = true;
+//    }
 //    CONTROL_WORD_GBC_INTERNAL_FAULT_REQ_BIT_NUM
     if (((event_data_t *) event->data)->gbc_internal_fault == true) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > machine word is signalling GBC had an internal fault");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_GBC_INTERNAL_ERROR_BIT_NUM);
-        control_event[CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST].active = true;
+        control_event[CONTROL_EVENT_GBC_INTERNAL_FAULT].active = true;
         have_fault = true;
     }
 
@@ -938,15 +943,31 @@ bool cia_is_fault_condition(struct event *event) {
         have_fault = true;
     }
 
+    if (((event_data_t *) event->data)->cst_csv_velocity_limit_error == true) {
+        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > the velocity error triggered in CST/CSV mode");
+        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_CST_CSV_VELOCITY_LIMIT_ERROR_BIT_NUM);
+        control_event[CONTROL_EVENT_CST_CSV_VELOCITY_LIMIT_ERROR].active = true;
+        have_fault = true;
+    }
+
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
 //        printf("moodisp event data:%i\n", ((event_data_t *) event->data)->moo_disp[i]);
         if ((((event_data_t *) event->data)->moo_disp[i]) != map_drive_moo[i]) {
+            wrong_moo_count[i]++;
+        } else {
+            wrong_moo_count[i] = 0;
+        }
+
+        if (wrong_moo_count[i] > 5) {
             LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > a drive is signalling a moo issue on drive:%d", i);
             BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_MOOERROR_BIT_NUM);
             control_event[CONTROL_EVENT_DRIVE_MOOERROR].active = true;
             have_fault = true;
+
         }
+
+
     }
 
     dpm_in->active_fault_word = ((event_data_t *) event->data)->fault_cause;
@@ -1364,8 +1385,9 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
             if (*map_drive_get_moo_sdo_function_ptr[i] != NULL) {
                 moo_disp = (*map_drive_get_moo_sdo_function_ptr[i])(i);
 //                printf("moo_disp: %d", moo_disp);
-                if (moo_disp > 0)
-                    event_data.moo_disp[i] = moo_disp;
+                ecm_status.drives[i].act_moo = moo_disp;
+
+                event_data.moo_disp[i] = moo_disp;
             } else {
                 LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                          "GBEM: Missing function pointer for map_drive_get_moo_sdo on drive [%u]", i);
@@ -1485,14 +1507,14 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     if (grc != E_SUCCESS) {
         UM_ERROR(GBEM_UM_EN, "GBEM: error checking drive for internal limit [%s]", gb_strerror(grc));
     }
-    event_data.machine_move_not_op_enabled_fault_req = BIT_CHECK(dpm_out->machine_word,
-                                                                 CONTROL_WORD_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM);
+//    event_data.machine_move_not_op_enabled_fault_req = BIT_CHECK(dpm_out->machine_word,
+//                                                                 CONTROL_WORD_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM);
 
 
     event_data.machine_request_error = BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBC_REQUEST_FAULT_BIT_NUM);
 
     //gbc_internal_fault
-    event_data.gbc_internal_fault = BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBC_INTERNAL_FAULT_REQ_BIT_NUM);
+    event_data.gbc_internal_fault = BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBC_REQUEST_FAULT_BIT_NUM);
 
     event_data.ec_check_error = (ecm_status.ec_check_found_error == true) ? true : false;
 
@@ -1503,6 +1525,9 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     event_data.homing_failed = homing_failed;
 
     event_data.cst_csv_position_limit_error = cst_csv_position_limit_error;
+    event_data.cst_csv_velocity_limit_error = cst_csv_velocity_limit_error;
+
+
 
     DPM_OUT_PROTECT_END
 
@@ -1511,8 +1536,8 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
         if (*map_drive_get_moo_pdo_function_ptr[i] != NULL) {
             moo_disp = (*map_drive_get_moo_pdo_function_ptr[i])(i);
 //            printf("moo disp pdo: %u (drive %u)\n", moo_disp, i);
-            if (moo_disp > 0)
-                event_data.moo_disp[i] = moo_disp;
+            ecm_status.drives[i].act_moo = moo_disp;
+            event_data.moo_disp[i] = moo_disp;
         } else {
 
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
@@ -1585,6 +1610,11 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 //
 //        print_slave_error_messages();
 //    }
+
+
+//loops over all drives setting MOO
+    ctrl_set_moo_pdo();
+
 
 //copy setpos from DPM_OUT (read) to EC_OUT
 //    ctrl_copy_setpos();
@@ -1682,23 +1712,44 @@ __attribute__((unused)) static void ctrl_check_for_big_pos_jump(uint16_t drive, 
 }
 
 
-static bool ctrl_check_position_bounds_ok(uint16_t drive, int32_t current_position) {
+static bool ctrl_check_velocity_bounds_ok(uint16_t drive, int32_t act_velocity) {
 
-//scale positions
+    //todo crit remove
+    return true;
 
-//    if (current_position > map_drive_max_pos[drive]) {
-//        UM_ERROR(GBEM_UM_EN, "GBEM: Position too big for drive [%u] position [%d]", drive, current_position);
-//        return false;
-//    }
-//    if (current_position < map_drive_min_pos[drive]) {
-//        UM_ERROR(GBEM_UM_EN, "GBEM: Position too small for drive [%u] position [%d]", drive, current_position);
-//return false;
-//    }
+    if (act_velocity > map_drive_scales[drive].velocity_scale * map_drive_vel_limit[drive]) {
+        UM_ERROR(GBEM_UM_EN, "GBEM: Velocity above upper limit for drive [%u] velocity [%d]", drive, act_velocity);
+        return false;
+    }
+    if (act_velocity < map_drive_scales[drive].velocity_scale * -map_drive_vel_limit[drive]) {
+        UM_ERROR(GBEM_UM_EN, "GBEM: Velocity below lower limit for drive [%u] velocity [%d]", drive, act_velocity);
+        return false;
+    }
 
-//todo crit
     return true;
 }
 
+static bool ctrl_check_position_bounds_ok(uint16_t drive, int32_t act_position, int32_t current_velocity) {
+
+    //todo crit remov
+    return true;
+
+    if (act_position > map_drive_scales[drive].position_scale * map_drive_pos_limit[drive]) {
+        UM_ERROR(GBEM_UM_EN, "GBEM: Position too big for drive [%u] position [%d]", drive,
+                 act_position * map_drive_scales[drive].position_scale);
+        return false;
+    }
+    if (act_position < map_drive_scales[drive].position_scale * map_drive_neg_limit[drive]) {
+        UM_ERROR(GBEM_UM_EN, "GBEM: Position too small for drive [%u] position [%d]", drive,
+                 act_position * map_drive_scales[drive].position_scale);
+        return false;
+    }
+
+    return true;
+}
+
+
+//mode = (control_word >> 1) & 0x0F;
 
 /**
  * Copies correct set values to the drives based on the MOO for the drive
@@ -1712,18 +1763,17 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
     gberror_t grc;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
 
-        if (ctrl_check_position_bounds_ok(i, dpm_out->joint_set_position[i]) == false) {
-            //we have exceeded bounds error drives
-            cst_csv_position_limit_error = true;
-        } else {
-            cst_csv_position_limit_error = false;
-        }
+//        bool pos_vel_control_active = false;
 
 
         switch (map_drive_moo[i]) {
 
+            case CIA_MOO_OP_DISABLED:
+                break;
+
             case CIA_MOO_CSP:
                 if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
+
                     grc = map_drive_set_setpos_wrd_function_ptr[i](i, dpm_out->joint_set_position[i]);
                     /* This function can be used to log nasty jumps in position*/
                     //            ctrl_check_for_big_pos_jump(i,dpm_out->joint_set_position[i] );
@@ -1741,11 +1791,10 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
 //                    printf("setvel [%d]\n", dpm_out->joint_set_velocity[i]);
 //                    printf("actvel [%d]\n", dpm_in->joint_actual_velocity[i]);
 
-//todo crit disable for now
-//                    grc = map_drive_set_setveloffset_wrd_function_ptr[i](i, dpm_out->joint_set_velocity[i]);
-//                    if (grc != E_SUCCESS) {
-//                        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setveloffset function error [%s]", gb_strerror(grc));
-//                    }
+                    grc = map_drive_set_setveloffset_wrd_function_ptr[i](i, dpm_out->joint_set_velocity[i]);
+                    if (grc != E_SUCCESS) {
+                        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setveloffset function error [%s]", gb_strerror(grc));
+                    }
                 } else {
                     /*
                      * this is not an error it just means you have decided to not add a function for setvel because the drive doesnt support it or you dont want to
@@ -1754,8 +1803,9 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                 }
                 if (*map_drive_set_settorqoffset_wrd_function_ptr[i] != NULL) {
 
-                    grc = map_drive_set_settorqoffset_wrd_function_ptr[i](i, dpm_out->joint_set_torque_offset[i]);
-                    printf("torq offset [%d] on drive [%d]\n", dpm_out->joint_set_torque_offset[i], i);
+                    grc = map_drive_set_settorqoffset_wrd_function_ptr[i](i, dpm_out->joint_set_torque_offset[i] +
+                                                                             dpm_out->joint_set_torque[i]);
+//                    printf("torq offset [%d] on drive [%d]\n", dpm_out->joint_set_torque_offset[i], i);
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive settorqoffset function error [%s]", gb_strerror(grc));
                     }
@@ -1771,19 +1821,37 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
 
             case CIA_MOO_CSV:
 
-                if (current_state != CIA_OPERATION_ENABLED && current_state != CIA_SWITCHED_ON) {
-                    reset_velocity_controller(i);
+//                if (current_state != CIA_OPERATION_ENABLED && current_state != CIA_SWITCHED_ON) {
+//                    reset_velocity_controller(i);
+//                    printf("reset vec controller\n");
+//                }
+
+
+                if (ctrl_check_position_bounds_ok(i, dpm_out->joint_set_position[i], dpm_out->joint_set_velocity[i]) ==
+                    false) {
+                    //we have exceeded bounds error drives
+                    cst_csv_position_limit_error = true;
+                } else {
+                    cst_csv_position_limit_error = false;
                 }
+
+                if (ctrl_check_velocity_bounds_ok(i, dpm_out->joint_set_velocity[i]) == false) {
+                    //we have exceeded bounds error drives
+                    cst_csv_velocity_limit_error = true;
+                } else {
+                    cst_csv_velocity_limit_error = false;
+                }
+
 
                 if (*map_drive_set_setvel_wrd_function_ptr[i] != NULL) {
                     //run control loop
-                    int32_t velocity = (int32_t) velocity_controller(cycle_count, i, dpm_out->joint_set_position[i],
-                                                                     dpm_out->joint_set_velocity[i],
-                                                                     dpm_in->joint_actual_position[i]);
-
+//                    int32_t velocity = (int32_t) velocity_controller(cycle_count, i, dpm_out->joint_set_position[i],
+//                                                                     dpm_out->joint_set_velocity[i],
+//                                                                     dpm_in->joint_actual_position[i]);
+//
 //                    printf("velocity [%d]\n", velocity);
                     grc = map_drive_set_setvel_wrd_function_ptr[i](i,
-                                                                   velocity);
+                                                                   dpm_out->joint_set_velocity[i]);
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setvel function error [%s]", gb_strerror(grc));
                     }
@@ -1797,26 +1865,49 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
 
             case CIA_MOO_CST:
 
-                if (current_state != CIA_OPERATION_ENABLED && current_state != CIA_SWITCHED_ON) {
-                    reset_torque_controller(i);
+
+//                if (current_state != CIA_OPERATION_ENABLED && current_state != CIA_SWITCHED_ON) {
+//                    reset_torque_controller(i);
+//                }
+
+                if (ctrl_check_position_bounds_ok(i, dpm_out->joint_set_position[i], dpm_out->joint_set_velocity[i]) ==
+                    false) {
+                    //we have exceeded bounds error drives
+                    cst_csv_position_limit_error = true;
+                } else {
+                    cst_csv_position_limit_error = false;
+                }
+                if (ctrl_check_velocity_bounds_ok(i, dpm_out->joint_set_velocity[i]) == false) {
+                    //we have exceeded bounds error drives
+                    cst_csv_velocity_limit_error = true;
+                } else {
+                    cst_csv_velocity_limit_error = false;
                 }
 
 
                 if (*map_drive_set_settorq_wrd_function_ptr[i] != NULL) {
 
-                    bool pos_vel_control = true; // set from control word
+//                    if (BIT_CHECK(dpm_out->joint_controlword[i], JOINT_CONTROL_WORD_CST_POS_VEL_DISABLE_BIT)) {
+//                        pos_vel_control_active = false;
+//                    } else {
+//                        pos_vel_control_active = true;
+//                    }
 
-                    int32_t torque = (int32_t) torque_controller(cycle_count, i, pos_vel_control,
-                                                                 dpm_out->joint_set_position[i],
-                                                                 dpm_out->joint_set_velocity[i],
-                                                                 dpm_out->joint_set_torque[i],
-                                                                 dpm_in->joint_actual_position[i],
-                                                                 dpm_in->joint_actual_velocity[i]);
+//                    pos_vel_control_active = false;
+
+
+//                    int32_t torque = (int32_t) torque_controller(cycle_count, i, pos_vel_control_active,
+//                                                                 dpm_out->joint_set_position[i],
+//                                                                 dpm_out->joint_set_velocity[i],
+//                                                                 dpm_out->joint_set_torque[i],
+//                                                                 dpm_in->joint_actual_position[i],
+//                                                                 dpm_in->joint_actual_velocity[i]);
 
 //                    if (i == 0) {
 //                        printf("torque [%d] \n", torque);
 //                    }
-                    grc = map_drive_set_settorq_wrd_function_ptr[i](i, torque);
+
+                    grc = map_drive_set_settorq_wrd_function_ptr[i](i, dpm_out->joint_set_torque[i]);
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive settorque function error [%s]", gb_strerror(grc));
                     }
@@ -1833,6 +1924,20 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                     LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                              "GBEM: Missing function pointer for map_drive_set_settorqoffset_wrd on drive [%u]", i);
                 }
+
+                /* also write position to drive for transition back to CSP*/
+                if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
+                    grc = map_drive_set_setpos_wrd_function_ptr[i](i, dpm_out->joint_set_position[i]);
+                    if (grc != E_SUCCESS) {
+                        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setpos function error [%s]", gb_strerror(grc));
+                    }
+
+                } else {
+                    LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                             "GBEM: Missing function pointer for map_drive_set_setpos_wrd on drive [%u]", i);
+                }
+
+
                 break;
             default:
                 UM_FATAL("GBEM: MOO not defined for drive [%u]", i);
@@ -2045,3 +2150,29 @@ void ctrl_process_iomap_out(const bool zero) {
     } //for loop
 }
 
+/**
+ * @brief set moo on all drives based on whatever is set in map_drive_moo array
+ * @attention some drives don't support setting moo with a PDO
+ */
+void ctrl_set_moo_pdo(void) {
+
+    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+
+        if (*map_drive_set_moo_pdo_function_ptr[i] != NULL) {
+
+            int8_t moo = 0;
+            moo = (dpm_out->joint_controlword[i]) & 0x0F;
+            map_drive_moo[i] = moo;
+
+
+//todo crit - enable to set moo from gbc controlled joint control word
+//            (*map_drive_set_moo_pdo_function_ptr[i])(i, moo);
+//            ecm_status.drives[i].cmd_moo = moo;
+//
+
+            (*map_drive_set_moo_pdo_function_ptr[i])(i, map_drive_moo[i]);
+            ecm_status.drives[i].cmd_moo = map_drive_moo[i];
+        }
+    }
+
+}
