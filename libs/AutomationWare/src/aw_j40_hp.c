@@ -36,7 +36,7 @@ gberror_t ec_apply_standard_sdos_aw_j40_hp(const uint16_t slave) {
         return grc;
     }
 
-
+#if MACHINE_AW_ROBOT_L2 == 1
 
 
     //Max torque	0x6072:0	UINT	16	0	32767	3000		readwrite
@@ -58,7 +58,7 @@ gberror_t ec_apply_standard_sdos_aw_j40_hp(const uint16_t slave) {
 
     if (torque_limit > 0) {
 
-        torque_limit = (uint16_t)((((double) AW_J40_HP_MAX_TORQUE * (double) torque_limit) / (double) 100));
+        torque_limit = (uint16_t) ((((double) AW_J40_HP_MAX_TORQUE * (double) torque_limit) / (double) 100));
         UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max torque limit [%d] on drive [%d]",
                 torque_limit,
                 map_slave_to_drive(slave));
@@ -83,7 +83,7 @@ gberror_t ec_apply_standard_sdos_aw_j40_hp(const uint16_t slave) {
 
     }
 
-
+#endif
     return E_SUCCESS;
 }
 

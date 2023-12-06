@@ -34,7 +34,7 @@ gberror_t ec_apply_standard_sdos_aw_j20(const uint16_t slave) {
         return grc;
     }
 
-
+#if MACHINE_AW_ROBOT_L2 == 1
 
     //Max torque	0x6072:0	UINT	16	0	32767	3000		readwrite
 
@@ -72,6 +72,7 @@ gberror_t ec_apply_standard_sdos_aw_j20(const uint16_t slave) {
 
 //for testing 5 degrees per second  so roughly 3500000 * 5/360 = 48611
 
+
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_INDEX, AW_J_SERIES_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
                             160000, true)) {
 
@@ -79,10 +80,7 @@ gberror_t ec_apply_standard_sdos_aw_j20(const uint16_t slave) {
 
     }
 
-//    1) via SDO you configure the output pin to allow it to control an LED strip by setting the value 26 in register 0x2210 subindex 1;
-//    2) via SDO configure the supply voltage of the output pin to 5V by setting the value 2 in register 0x2214 subindex 1;
-
-
+#endif
 
 
     return E_SUCCESS;

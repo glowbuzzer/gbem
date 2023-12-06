@@ -35,7 +35,7 @@ gberror_t ec_apply_standard_sdos_aw_j40_lp(const uint16_t slave) {
         return grc;
     }
 
-
+#if MACHINE_AW_ROBOT_L2 == 1
 
 
     //Max torque	0x6072:0	UINT	16	0	32767	3000		readwrite
@@ -81,7 +81,7 @@ gberror_t ec_apply_standard_sdos_aw_j40_lp(const uint16_t slave) {
 
     }
 
-
+#endif
     return E_SUCCESS;
 }
 
