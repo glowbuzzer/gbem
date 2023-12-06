@@ -1611,6 +1611,9 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 //        print_slave_error_messages();
 //    }
 
+//    printf("in out 0 [%d]\n", dpm_out->unsigned32[0]);
+
+
 
 //loops over all drives setting MOO
     ctrl_set_moo_pdo();
@@ -1903,9 +1906,6 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
 //                                                                 dpm_in->joint_actual_position[i],
 //                                                                 dpm_in->joint_actual_velocity[i]);
 
-//                    if (i == 0) {
-//                        printf("torque [%d] \n", torque);
-//                    }
 
                     grc = map_drive_set_settorq_wrd_function_ptr[i](i, dpm_out->joint_set_torque[i]);
                     if (grc != E_SUCCESS) {
@@ -2136,6 +2136,7 @@ void ctrl_process_iomap_out(const bool zero) {
                                              map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num,
                                              dpm_out->unsigned32[map_iomap[i].gbc.ionum],
                                              (float) map_iomap[i].pdo.max_val);
+
                     break;
                 case ECT_REAL32:
                     iomap_set_pdo_out_float(map_iomap[i].pdo.datatype,
