@@ -18,7 +18,7 @@
 #include "automationware.h"
 #include "beckhoff.h"
 
-//This config is for "L20" - medium sized 20kg payload
+//This config is for "L2" -  20kg payload
 //J40LP -> J40HP -> J32 ->J25 -> J25 ->J20 - 1.4m
 
 /* ESTOP (QUICK STOP) CONFIG */
@@ -32,7 +32,7 @@ map_pdo_object_t ctrl_estop_din_2 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slav
 //                                        MAP_EK1100_1        MAP_EL2808_1    MAP_EL1808_1     MAP_AW_J40LP_CTRL_1               MAP_AW_J40LP_CTRL_1               MAP_AW_J32_CTRL_1               MAP_AW_J25_CTRL_1               MAP_AW_J25_CTRL_2               MAP_AW_J20_CTRL_1
 //                                        Coupler             8 dig out       8 dig in         J40LP joint                       J40HP joint                       J32 joint                       J25 joint                       J25 joint                       J20 joint
 MAP_NUM_DRIVES_ATTACHED(                  0,                  0,              0,               1,                                1,                                1,                              1,                              1,                              1                                   );
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,               NULL,           NULL,            NULL,                             NULL,                             NULL,                           NULL,                           NULL,                           NULL                                );
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,               NULL,           NULL,            NULL,                             NULL,                             NULL,                           NULL,                           NULL,                           ec_pdo_map_aw_j_series              );
 MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,               NULL,           NULL,            NULL,                             NULL,                             NULL,                           NULL,                           NULL,                           NULL                                );
 MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         NULL,               NULL,           NULL,            ec_apply_standard_sdos_aw_j40_lp, ec_apply_standard_sdos_aw_j40_hp, ec_apply_standard_sdos_aw_j32,  ec_apply_standard_sdos_aw_j25,  ec_apply_standard_sdos_aw_j25,  ec_apply_standard_sdos_aw_j20       );
 MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          NULL,               NULL,           NULL,            ec_initial_pdo_aw_j_series,       ec_initial_pdo_aw_j_series,       ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series          );
@@ -90,9 +90,9 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series,        
 MAP_DRIVE_POS_LIMIT(                        90,                                     55,                                     135,                                     180,                                   -5,                                      180                                    );
 MAP_DRIVE_NEG_LIMIT(                        -90,                                    -55,                                    45,                                     -180,                                   -175,                                    -180                                    );
 MAP_DRIVE_DIRECTION(                        1,                                      1,                                      1,                                      1,                                      1,                                      1                                       );
-MAP_DRIVE_TORQ_LIMIT(                       20,                                     20,                                     20,                                     20,                                     20,                                     20,                                     );
-MAP_DRIVE_VEL_LIMIT(                        20,                                     20,                                     20,                                     20,                                     20,                                     20,                                     );
-MAP_DRIVE_SCALES(                           {166886,9549,3.414},                          {166886,9549,2.54},                  {166886,9549,4.3},                      {166886,9549,4.3},                   {166886,9549,3.414},                 {166886,9549,16.07}                     );
+MAP_DRIVE_TORQ_LIMIT(                       60,                                     60,                                     60,                                     60,                                     60,                                     60,                                     );
+MAP_DRIVE_VEL_LIMIT(                        40,                                     40,                                     40,                                     40,                                     40,                                     40,                                     );
+MAP_DRIVE_SCALES(                           {166886,9549,3.414},                    {166886,9549,2.54},                    {166886,9549,4.3},                      {166886,9549,4.3},                       {166886,9549,3.414},                    {166886,9549,16.07}                     );
 
 /* PLC IO CONFIG */
 
@@ -135,7 +135,7 @@ extern bool plc_out_7_OUT_TOOL_2;
 
 
 /*IO MAP*/
-mapping_t map_iomap[14] = {
+mapping_t map_iomap[15] = {
         {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=1, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=0},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_1_SS1_CMD_SW, .linked_task_name="AwRobotTask1"}},
         {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=2, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_2_STOP_CMD_SW, .linked_task_name="AwRobotTask1"}},
         {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=3, .datatype=ECT_BOOLEAN},                           {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_3_ARM_48V_SUPPLY, .linked_task_name="AwRobotTask1"}},
@@ -150,7 +150,7 @@ mapping_t map_iomap[14] = {
         {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=5, .datatype=ECT_BOOLEAN},                         {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_5_SPARE, .linked_task_name="AwRobotTask1"}},
         {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=6, .datatype=ECT_BOOLEAN},                         {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_6_OUT_TOOL_1, .linked_task_name="AwRobotTask1"}},
         {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=7, .datatype=ECT_BOOLEAN},                         {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_7_OUT_TOOL_2, .linked_task_name="AwRobotTask1"}},
-//        {{.inout=MAP_OUT, .slave_num=MAP_AW_J20_CTRL_1, .byte_num=25, .datatype=ECT_UNSIGNED32},              {.inout=MAP_OUT, .datatype=ECT_UNSIGNED32, .ionum=0}, {}                                                                                                  }
+        {{.inout=MAP_OUT, .slave_num=MAP_AW_J20_CTRL_1, .byte_num=35, .datatype=ECT_UNSIGNED32},              {.inout=MAP_OUT, .datatype=ECT_UNSIGNED32, .ionum=0}, {}                                                                                                  }
         };
 
 uint16_t map_num_rows_in_iomap = sizeof (map_iomap)/ sizeof(map_iomap[0]);
