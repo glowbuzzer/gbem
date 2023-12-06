@@ -139,7 +139,7 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
 
     //encoder is 2^20  1048576 counts per rev
 
-
+#if MACHINE_AW_ROBOT_L2 == 1
     if (nolimits) {
         if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
                                 AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
@@ -189,6 +189,7 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
                 map_slave_to_drive(slave));
     }
 
+
     //Polarity	0x607E:0	USINT	8
 
     uint8_t polarity = 0;
@@ -202,6 +203,7 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
         return E_SDO_WRITE_FAILURE;
     }
 
+#endif
 
     //Configure LED gpio output pin
     if (!ec_sdo_write_uint8(slave, AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_INDEX, AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_SUB_INDEX,
