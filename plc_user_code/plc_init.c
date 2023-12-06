@@ -19,8 +19,8 @@
 
 /** Used to register new PLC tasks - user to add their tasks here */
 void plc_register_tasks_user(void) {
-
-#if MACHINE_AW_ROBOT_L2 == 1 || MACHINE_AW_J17 == 1
+//#if MACHINE_AW_ROBOT_L2 == 1 || MACHINE_AW_J17 == 1
+#if MACHINE_AW_ROBOT_L2 == 1 || MACHINE_AW_J17 == 1 || MACHINE_AW_ROBOT_L == 1
     plc_register_tasks(plc_aw_robot_task_1, 50, 1, "AwRobotTask1");
 #else
     plc_register_tasks(plc_mytask1, 5000, 1, "Task1");

@@ -21,7 +21,8 @@
 #include "log.h"
 #include "map_config.h"
 
-#if MACHINE_AW_ROBOT_L2 == 0
+//#if MACHINE_AW_ROBOT_L2 == 0
+#if MACHINE_AW_ROBOT_L2 == 0 || MACHINE_AW_ROBOT_L == 0
 
 bool plc_din1, plc_din2, plc_din3, plc_din4, plc_din5, plc_din6, plc_din7, plc_din8;
 
