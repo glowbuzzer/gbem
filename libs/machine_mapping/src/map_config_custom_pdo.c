@@ -62,6 +62,9 @@ uint32_t map_calc_index_length(ec_datatype datatype, uint16_t index, uint8_t off
 
 gberror_t map_apply_custom_pdo_mapping(const uint16_t slave, map_custom_pdo_t map) {
 
+//    printf("map_apply_custom_pdo_mapping for slave [%d]\n", slave);
+
+
     /* clear SM assignment objects */
 
     if (!ec_sdo_write_uint16(slave, map.sm2_assignment_object, 0, 0, true)) {
