@@ -43,8 +43,8 @@
 #define MACHINE_AX5101_TEST                 0
 #define MACHINE_AW_J17                      0
 #define MACHINE_AW_ROBOT_S                  0
-#define MACHINE_AW_ROBOT_L2                 1
-#define MACHINE_AW_ROBOT_L                  0
+#define MACHINE_AW_ROBOT_L2                 0
+#define MACHINE_AW_ROBOT_L                  1
 #define MACHINE_VIRTUAL                     0
 #define MACHINE_J17_PLUS_VIRTUAL            0
 #define MACHINE_AW_STEWART                  0
@@ -177,7 +177,9 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 #endif
 
 #if MACHINE_AW_ROBOT_L == 1
+
 #include "machine_aw_robot_l.h"
+
 #endif
 
 #if MACHINE_VIRTUAL == 1
