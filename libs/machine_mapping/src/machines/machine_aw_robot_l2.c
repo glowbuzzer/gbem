@@ -87,8 +87,8 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series,        
  */
 
 /* DRIVE PARAMETERS */
-MAP_DRIVE_POS_LIMIT(                        90,                                     55,                                     135,                                     180,                                   -5,                                      180                                    );
-MAP_DRIVE_NEG_LIMIT(                        -90,                                    -55,                                    45,                                     -180,                                   -175,                                    -180                                    );
+MAP_DRIVE_POS_LIMIT(                        90,                                     55,                                     135,                                     180,                                   -5,                                     300                                    );
+MAP_DRIVE_NEG_LIMIT(                        -90,                                    -55,                                    45,                                     -180,                                   -175,                                   -300                                    );
 MAP_DRIVE_DIRECTION(                        1,                                      1,                                      1,                                      1,                                      1,                                      1                                       );
 MAP_DRIVE_TORQ_LIMIT(                       60,                                     60,                                     60,                                     60,                                     60,                                     60,                                     );
 MAP_DRIVE_VEL_LIMIT(                        40,                                     40,                                     40,                                     40,                                     40,                                     40,                                     );
