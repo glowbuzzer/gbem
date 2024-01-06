@@ -61,10 +61,9 @@
 #define CTRL_HEARTBEAT_TOLERANCE                        50
 
 
-
 /** Threshold of cycles after requesting drives change state that the transition must be made */
 //this has to be quite large as it needs to be > maximum time for the drives to stop
-#define CTRL_DRIVE_CHANGE_STATE_TIMEOUT                 1000
+#define CTRL_DRIVE_CHANGE_STATE_TIMEOUT                 5000
 
 ///**CRITICAL! if this is defined then hardware estop is disabled! */
 //#define DISABLE_ESTOP_CHECKING                          1
