@@ -19,12 +19,12 @@
 #include "log.h"
 #include "dpm.h"
 
-bool iomap_get_pdo_in_bool(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+bool iomap_get_pdo_in_bool(bool byte_slave, const uint16_t slave_num, const uint32_t byte_num,
                            const uint8_t bit_num) {
-    if (pdo_type == ECT_BOOLEAN) {
+    if (!byte_slave) {
         return (ec_pdo_get_input_bit(slave_num, bit_num));
     } else {
-        return (ec_pdo_get_input_bit_from_byte_slave(slave_num, pdo_type, byte_num, bit_num));
+        return (ec_pdo_get_input_bit_from_byte_slave(slave_num, byte_num, bit_num));
     }
 }
 
@@ -120,14 +120,15 @@ float iomap_get_pdo_in_float(const ec_datatype pdo_type, const uint16_t slave_nu
 }
 
 
-void iomap_set_pdo_out_bool(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+void iomap_set_pdo_out_bool(bool byte_slave, const uint16_t slave_num, const uint32_t byte_num,
                             const uint8_t bit_num, const bool val) {
-    if (pdo_type == ECT_BOOLEAN) {
+    if (!byte_slave) {
         ec_pdo_set_output_bit(slave_num, bit_num, val);
 //        printf("set bit on slave_num [%u] bit_num [%u] to val [%d]\n", slave_num, bit_num, val);
 
     } else {
-        ec_pdo_set_output_bit_from_byte_slave(slave_num, pdo_type, byte_num, bit_num, val);
+//        printf("set bit on slave_num [%u] byte_num [%u] bit_num [%u] to val [%d]\n", slave_num, byte_num, bit_num, val);
+        ec_pdo_set_output_bit_from_byte_slave(slave_num, byte_num, bit_num, val);
     }
 }
 
@@ -321,23 +322,24 @@ void iomap_set_pdo_out_union(const uint16_t slave_num, const uint32_t byte_num, 
  * @warning the PDO datatype must be a BOOLEAN
  */
 
-void iomap_set_gbc_digital_in_from_pdo(const ec_datatype pdo_type, const uint16_t slave_num, const uint32_t byte_num,
+void iomap_set_gbc_digital_in_from_pdo(bool byte_slave, const uint16_t slave_num, const uint32_t byte_num,
                                        uint8_t bit_num, const uint16_t gbc_io_id) {
 
-    if (pdo_type == ECT_BOOLEAN) {
+    if (!byte_slave) {
         if (ec_pdo_get_input_bit(slave_num, bit_num)) {
             BIT_SET(dpm_in->digital, gbc_io_id);
         } else {
             BIT_CLEAR(dpm_in->digital, gbc_io_id);
         }
     } else {
-        if (ec_pdo_get_input_bit_from_byte_slave(slave_num, pdo_type, byte_num, bit_num)) {
-            if (ec_pdo_get_input_bit(slave_num, bit_num)) {
-                BIT_SET(dpm_in->digital, gbc_io_id);
-            } else {
-                BIT_CLEAR(dpm_in->digital, gbc_io_id);
-            }
+        if (ec_pdo_get_input_bit_from_byte_slave(slave_num, byte_num, bit_num)) {
+
+//            if (ec_pdo_get_input_bit(slave_num, bit_num)) {
+            BIT_SET(dpm_in->digital, gbc_io_id);
+        } else {
+            BIT_CLEAR(dpm_in->digital, gbc_io_id);
         }
+//        }
     }
 }
 
@@ -456,3 +458,4 @@ void iomap_set_gbc_float_in_from_pdo(const ec_datatype pdo_type, const uint16_t 
             LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Invalid datatype in iomap");
     }
 }
+//todo crit fix unions with byte slaves

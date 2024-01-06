@@ -17,7 +17,7 @@
 
 #include "map.h"
 
-bool iomap_get_pdo_in_bool(ec_datatype pdo_type, uint16_t slave_num, uint32_t byte_num, uint8_t bit_num);
+bool iomap_get_pdo_in_bool(bool byte_slave, uint16_t slave_num, uint32_t byte_num, uint8_t bit_num);
 
 int32_t iomap_get_pdo_in_int32(ec_datatype pdo_type, uint16_t slave_num, uint32_t byte_num);
 
@@ -25,7 +25,7 @@ uint32_t iomap_get_pdo_in_uint32(ec_datatype pdo_type, uint16_t slave_num, uint3
 
 float iomap_get_pdo_in_float(ec_datatype pdo_type, uint16_t slave_num, uint32_t byte_num, float max_val);
 
-void iomap_set_pdo_out_bool(ec_datatype pdo_type, uint16_t slave_num, uint32_t byte_num, uint8_t bit_num, bool val);
+void iomap_set_pdo_out_bool(bool byte_slave, uint16_t slave_num, uint32_t byte_num, uint8_t bit_num, bool val);
 
 void iomap_set_pdo_out_int32(ec_datatype pdo_type, uint16_t slave_num, uint32_t byte_num, int32_t val, float max_val);
 
@@ -39,7 +39,7 @@ void iomap_set_gbc_in_union(uint16_t io_num, ec_datatype gbc_type, ec_datatype_v
 
 void iomap_set_plc_in_union(ec_datatype plc_type, void *io, ec_datatype_value_t val);
 
-void iomap_set_gbc_digital_in_from_pdo(ec_datatype pdo_type, uint16_t slave_num, uint32_t byte_num, uint8_t bit_num,
+void iomap_set_gbc_digital_in_from_pdo(bool byte_slave, uint16_t slave_num, uint32_t byte_num, uint8_t bit_num,
                                        uint16_t gbc_io_id);
 
 void iomap_set_gbc_in_int32_from_pdo(ec_datatype pdo_type, uint16_t slave_num, uint32_t byte_num, uint16_t gbc_io_id,
