@@ -36,13 +36,15 @@
 #include "EL1134.h"
 #include "EL1144.h"
 #include "EL1808.h"
-#include "EL1094.h"
 #include "EL1114.h"
 #include "EL1124.h"
 #include "EL1134.h"
 #include "EL1144.h"
 #include "EL1808.h"
 #include "EL1809.h"
+#include "EL6900.h"
+#include "EL1904.h"
+#include "EL2904.h"
 
 /* EL2xxx - EtherCAT digital output */
 #include "EL1002.h"
@@ -109,7 +111,6 @@
 /* Drives */
 
 #include "AX5101.h"
-
 
 
 #endif /* INC_BECKHOFF_H_ */
