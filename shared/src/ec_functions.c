@@ -253,6 +253,16 @@ static int custom_slave_config(uint16 slave) {
 
     UM_INFO(GBEM_UM_EN, "GBEM: Running custom_slave_config for slave [%u] (PREOP->SAFEOP hook)", slave);
 
+
+    if (*map_slave_custom_fmmu_sm_function_ptr[slave - 1] != NULL) {
+        if ((*map_slave_custom_fmmu_sm_function_ptr[slave - 1])(slave) == E_SUCCESS) {
+            UM_INFO(GBEM_UM_EN, "GBEM: Custom FMMU/SM mapping by netscan succeeded for slave [%u]", slave);
+        } else {
+            UM_ERROR(GBEM_UM_EN, "GBEM: Custom FMMU/SM mapping by netscan  failed for slave [%u]", slave);
+       
+        }
+    }
+
     //if the function pointer for the current slave is not null call it
 //    printf("slave for fp %u", slave);
     if (*map_slave_pdo_map_function_ptr[slave - 1] != NULL) {
@@ -589,6 +599,7 @@ bool ec_step_3_preop(void) {
 
         int usedmem = ec_config_overlap_map(&IOmap);
 
+        UM_INFO(GBEM_UM_EN, "GBEM: Size of IOmap [%d]", usedmem);
         /* The above step also requests a transition of the slaves to SAFE OP so the next request is a bit superfluous*/
         if (usedmem >= ECM_IO_MAP_SIZE) {
             UM_FATAL("GBEM: The size of slave io map is greater than the maximum we allow (increase ECM_IO_MAP_SIZE)");

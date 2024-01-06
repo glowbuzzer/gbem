@@ -21,6 +21,7 @@
 #include "time.h"
 #include "main.h"
 #include <unistd.h>
+#include "ethercatsetget.h"
 
 //char IOmap[4096];
 ec_ODlistt ODlist;
@@ -583,7 +584,8 @@ void si_sdo(int cnt) {
 }
 
 static int netscan_slave_config(uint16 slave) {
-    UM_INFO(GBEM_UM_EN, "GBEM: In PO2SO hook");
+    UM_INFO(GBEM_UM_EN, "GBEM: In PO2SO hook for slave [%u]", slave);
+
     if (*map_slave_pdo_map_function_ptr[slave - 1] != NULL) {
         if ((*map_slave_pdo_map_function_ptr[slave - 1])(slave) == E_SUCCESS) {
             UM_INFO(GBEM_UM_EN, "GBEM: PDO mapping by netscan succeeded for slave [%u]", slave);
@@ -592,6 +594,17 @@ static int netscan_slave_config(uint16 slave) {
             netscan_pdo_map_failure = 1;
         }
     }
+
+    if (*map_slave_custom_fmmu_sm_function_ptr[slave - 1] != NULL) {
+        if ((*map_slave_custom_fmmu_sm_function_ptr[slave - 1])(slave) == E_SUCCESS) {
+            UM_INFO(GBEM_UM_EN, "GBEM: Custom FMMU/SM mapping by netscan succeeded for slave [%u]", slave);
+        } else {
+            UM_ERROR(GBEM_UM_EN, "GBEM: Custom FMMU/SM mapping by netscan  failed for slave [%u]", slave);
+            netscan_pdo_map_failure = 1;
+        }
+    }
+
+
     return 0;
 }
 
@@ -611,7 +624,8 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
         UM_INFO(GBEM_UM_EN, "GBEM: We are going to apply the configured PDO mapping to all slaves");
     } else {
         UM_INFO(GBEM_UM_EN,
-                "GBEM: We are NOT going to apply any PDO mapping to the slaves. Slaves will be scanned in their un-configured state");
+                "GBEM: We are NOT going to apply any PDO mapping to the slaves. Slaves will be scanned in their un-configured state")
+        ;
     }
 
     //   /* initialise SOEM, bind socket to ifname */
@@ -621,11 +635,11 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
 
 
         if (ec_config_init(FALSE)) {
-
             if (ec_slavecount == 0) {
                 UM_ERROR(GBEM_UM_EN, "GBEM: We failed to find any slaves on the EtherCAT network");
-
             }
+            //            printf("turn off complete access\n");
+            //            ec_slave[1].CoEdetails &= ~ECT_COEDET_SDOCA;
 
             while (EcatError) {
                 ecm_status.net_scan_state = ECM_NET_SCAN_ERROR;
@@ -637,6 +651,7 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
             UM_INFO(GBEM_UM_EN, "GBEM: netscan found [%d] slaves and configured them", ec_slavecount);
             expectedWKC = (ec_group[0].outputsWKC * 2) + ec_group[0].inputsWKC;
             UM_INFO(GBEM_UM_EN, "GBEM: netscan calculated a workcounter of [%d]", expectedWKC);
+
 
             if (apply_pdo_mapping) {
                 UM_INFO(GBEM_UM_EN, "GBEM: netscan applying PDO mapping");
@@ -656,6 +671,7 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
                     } else {
                         UM_INFO(GBEM_UM_EN, "GBEM: No DC capable slaves found");
                     }
+
                     ec_config_map(&IOmap);
                 }
 
@@ -669,7 +685,6 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
             }
 
 
-
             //EcatError is global error saying error is available in error stack
             while (EcatError) {
                 ecm_status.net_scan_state = ECM_NET_SCAN_ERROR;
@@ -677,32 +692,33 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
                 osal_usleep(1000000);
             }
 
-//todo crit - not sure we want this transition at all here
-//			ec_slave[0].state = (EC_STATE_SAFE_OP);
-//			ec_writestate(0);
-//
-//			/* wait for all slaves to reach SAFE_OP state */
-//			ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 3);
-//			if (ec_slave[0].state != EC_STATE_SAFE_OP) {
-//				UM_ERROR(GBEM_UM_EN, "GBEM: netscan failed to transition all slaves SAFE-OP state");
-//				ec_readstate();
-//				for (i = 1; i <= ec_slavecount; i++) {
-//					if (ec_slave[i].state != EC_STATE_SAFE_OP) {
-//					    UM_INFO(GBEM_UM_EN, "GBEM: netscan found a slave not in safe-op - Slave [%d] State [%s] StatusCode [%4x : %s]", i, ec_state_to_string[ec_slave[i].state], ec_slave[i].ALstatuscode, ec_ALstatuscode2string(ec_slave[i].ALstatuscode));
-//					    UM_ERROR(GBEM_UM_EN, "GBEM: netscan error [%s]", ec_elist2string());
-//					}
-//				}
-//			}
+            //todo crit - not sure we want this transition at all here
+            //			ec_slave[0].state = (EC_STATE_SAFE_OP);
+            //			ec_writestate(0);
+            //
+            //			/* wait for all slaves to reach SAFE_OP state */
+            //			ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 3);
+            //			if (ec_slave[0].state != EC_STATE_SAFE_OP) {
+            //				UM_ERROR(GBEM_UM_EN, "GBEM: netscan failed to transition all slaves SAFE-OP state");
+            //				ec_readstate();
+            //				for (i = 1; i <= ec_slavecount; i++) {
+            //					if (ec_slave[i].state != EC_STATE_SAFE_OP) {
+            //					    UM_INFO(GBEM_UM_EN, "GBEM: netscan found a slave not in safe-op - Slave [%d] State [%s] StatusCode [%4x : %s]", i, ec_state_to_string[ec_slave[i].state], ec_slave[i].ALstatuscode, ec_ALstatuscode2string(ec_slave[i].ALstatuscode));
+            //					    UM_ERROR(GBEM_UM_EN, "GBEM: netscan error [%s]", ec_elist2string());
+            //					}
+            //				}
+            //			}
 
             ec_readstate();
 
 
             printf("*** Starting network scanning output ***");
             for (cnt = 1; cnt <= ec_slavecount; cnt++) {
-                printf("\nSlave: %d\n Name: %s\n Output size: %dbits\n Input size: %dbits\n State: %d\n Delay: %d[ns]\n Has DC: %d\n",
-                       cnt, ec_slave[cnt].name, ec_slave[cnt].Obits,
-                       ec_slave[cnt].Ibits,
-                       ec_slave[cnt].state, ec_slave[cnt].pdelay, ec_slave[cnt].hasdc);
+                printf(
+                    "\nSlave: %d\n Name: %s\n Output size: %dbits\n Input size: %dbits\n State: %d\n Delay: %d[ns]\n Has DC: %d\n",
+                    cnt, ec_slave[cnt].name, ec_slave[cnt].Obits,
+                    ec_slave[cnt].Ibits,
+                    ec_slave[cnt].state, ec_slave[cnt].pdelay, ec_slave[cnt].hasdc);
                 if (ec_slave[cnt].hasdc)
                     printf(" DCParentport: %d\n", ec_slave[cnt].parentport);
                 printf(" Activeports: %d.%d.%d.%d\n", (ec_slave[cnt].activeports & 0x01) > 0,
@@ -765,7 +781,6 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
             printf("*** End of eeprom output ***\n");
 
             ecm_status.net_scan_state = ECM_NET_SCAN_FINISHED;
-
         } else {
             ecm_status.net_scan_state = ECM_NET_SCAN_NO_SLAVES_FOUND;
             UM_ERROR(GBEM_UM_EN, "GBEM: netscan found no slaves found!");
