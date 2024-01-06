@@ -83,10 +83,11 @@ cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
 //@formatter:on
 
 
-
 /**global variable to check how long drives take to response to state change request */
 uint32_t ctrl_state_change_cycle_count = 1;
 uint32_t ctrl_state_change_timeout = CTRL_DRIVE_CHANGE_STATE_TIMEOUT;
+
+void copy_fsoe_data(void);
 
 /* functions to copy between EC and DPM */
 static void ctrl_copy_actpos(void);
@@ -151,233 +152,274 @@ static void sm_error_state_entry_action(void *stateData, struct event *event);
 static void cia_set_current_fault_causes_action(void *oldStateData, struct event *event, void *newStateData);
 
 /* Forward declaration of sm states so that they can be defined in a logical order: */
-static struct state cia_not_ready_to_switch_on_state, cia_switch_on_disabled_state, cia_ready_to_switch_on_state, cia_switched_on_state, cia_operation_enabled_state, cia_quick_stop_active_state,
+static struct state cia_not_ready_to_switch_on_state, cia_switch_on_disabled_state, cia_ready_to_switch_on_state,
+        cia_switched_on_state, cia_operation_enabled_state, cia_quick_stop_active_state,
         cia_fault_reaction_active_state, cia_fault_state, sm_error_state;
 
 static struct state cia_not_ready_to_switch_on_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_NOT_READY_TO_SWITCH_ON),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                NULL,
-                                NULL,
-                                &cia_switch_on_disabled_state},},
-        .numTransitions = 2,
-        .data = (void *) CIA_NOT_READY_TO_SWITCH_ON,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction =
-        NULL,};
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_NOT_READY_TO_SWITCH_ON),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            NULL,
+            NULL,
+            &cia_switch_on_disabled_state
+        },
+    },
+    .numTransitions = 2,
+    .data = (void *) CIA_NOT_READY_TO_SWITCH_ON,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction =
+    NULL,
+};
 
 static struct state cia_switch_on_disabled_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_SWITCH_ON_DISABLED),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn2_guard,
-                                NULL,
-                                &cia_ready_to_switch_on_state},},
-        .numTransitions = 2,
-        .data =  (void *) CIA_SWITCH_ON_DISABLED,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction = NULL,};
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_SWITCH_ON_DISABLED),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn2_guard,
+            NULL,
+            &cia_ready_to_switch_on_state
+        },
+    },
+    .numTransitions = 2,
+    .data = (void *) CIA_SWITCH_ON_DISABLED,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction = NULL,
+};
 
 static struct state cia_ready_to_switch_on_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_READY_TO_SWITCH_ON),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn3_guard,
-                                NULL,
-                                &cia_switched_on_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn7_guard,
-                                NULL,
-                                &cia_switch_on_disabled_state},},
-        .numTransitions = 3,
-        .data =  (void *) CIA_READY_TO_SWITCH_ON,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction = NULL,};
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_READY_TO_SWITCH_ON),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn3_guard,
+            NULL,
+            &cia_switched_on_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn7_guard,
+            NULL,
+            &cia_switch_on_disabled_state
+        },
+    },
+    .numTransitions = 3,
+    .data = (void *) CIA_READY_TO_SWITCH_ON,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction = NULL,
+};
 
 static struct state cia_switched_on_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_SWITCHED_ON),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn6_guard,
-                                NULL,
-                                &cia_ready_to_switch_on_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn4_guard,
-                                NULL,
-                                &cia_operation_enabled_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn10_guard,
-                                NULL,
-                                &cia_switch_on_disabled_state},},
-        .numTransitions = 4,
-        .data =  (void *) CIA_SWITCHED_ON,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction = NULL,};
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_SWITCHED_ON),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn6_guard,
+            NULL,
+            &cia_ready_to_switch_on_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn4_guard,
+            NULL,
+            &cia_operation_enabled_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn10_guard,
+            NULL,
+            &cia_switch_on_disabled_state
+        },
+    },
+    .numTransitions = 4,
+    .data = (void *) CIA_SWITCHED_ON,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction = NULL,
+};
 
 static struct state cia_operation_enabled_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_OPERATION_ENABLED),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn5_guard,
-                                NULL,
-                                &cia_switched_on_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn8_guard,
-                                NULL,
-                                &cia_ready_to_switch_on_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn9_guard,
-                                NULL,
-                                &cia_switch_on_disabled_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn11_guard,
-                                NULL,
-                                &cia_quick_stop_active_state},},
-        .numTransitions = 5,
-        .data =  (void *) CIA_OPERATION_ENABLED,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction = NULL,};
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_OPERATION_ENABLED),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn5_guard,
+            NULL,
+            &cia_switched_on_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn8_guard,
+            NULL,
+            &cia_ready_to_switch_on_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn9_guard,
+            NULL,
+            &cia_switch_on_disabled_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn11_guard,
+            NULL,
+            &cia_quick_stop_active_state
+        },
+    },
+    .numTransitions = 5,
+    .data = (void *) CIA_OPERATION_ENABLED,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction = NULL,
+};
 
 static struct state cia_quick_stop_active_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_QUICK_STOP_ACTIVE),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn16_guard,
-                                NULL,
-                                &cia_operation_enabled_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn12_guard,
-                                NULL,
-                                &cia_switch_on_disabled_state},},
-        .numTransitions = 3,
-        .data = (void *) CIA_QUICK_STOP_ACTIVE,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction = NULL,};
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_QUICK_STOP_ACTIVE),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn16_guard,
+            NULL,
+            &cia_operation_enabled_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn12_guard,
+            NULL,
+            &cia_switch_on_disabled_state
+        },
+    },
+    .numTransitions = 3,
+    .data = (void *) CIA_QUICK_STOP_ACTIVE,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction = NULL,
+};
 
 //this state has a unguarded transition to itself with a transition action to set the current fault cause bits
 //when a state transitions to itself, entry and exit actions are not called
 static struct state cia_fault_reaction_active_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn14_guard,
-                                NULL,
-                                &cia_fault_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                NULL,
-                                &cia_set_current_fault_causes_action,
-                                &cia_fault_reaction_active_state},},
-        .numTransitions = 2,
-        .data =  (void *) CIA_FAULT_REACTION_ACTIVE,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction = NULL,};
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn14_guard,
+            NULL,
+            &cia_fault_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            NULL,
+            &cia_set_current_fault_causes_action,
+            &cia_fault_reaction_active_state
+        },
+    },
+    .numTransitions = 2,
+    .data = (void *) CIA_FAULT_REACTION_ACTIVE,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction = NULL,
+};
 
 static struct state cia_fault_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_FAULT),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state},
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn15_guard,
-                                NULL,
-                                &cia_switch_on_disabled_state},},
-        .numTransitions = 2,
-        .data =  (void *) CIA_FAULT,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction =
-        NULL,};
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_FAULT),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn15_guard,
+            NULL,
+            &cia_switch_on_disabled_state
+        },
+    },
+    .numTransitions = 2,
+    .data = (void *) CIA_FAULT,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction =
+    NULL,
+};
 
 __attribute__((unused)) static struct state errorState = {
-        .entryAction = &sm_error_state_entry_action};
+    .entryAction = &sm_error_state_entry_action
+};
 
 
 // Function to check if the buffer is empty
@@ -396,7 +438,6 @@ int ec_is_full__circular_slave_error_message(ec_circular_slave_error_message_t *
  * @param slave_error_message (message to add to buffer)
  */
 void ec_push_circular_slave_error_message(ec_circular_slave_error_message_t *c, uint8_t *slave_error_message) {
-
     if (ec_is_full__circular_slave_error_message(c)) {
         // If the buffer is full, overwrite the oldest message
         c->head = (c->head + 1) % MAX_NUM_SLAVE_ERROR_MESSAGES;
@@ -409,7 +450,6 @@ void ec_push_circular_slave_error_message(ec_circular_slave_error_message_t *c, 
     if (!ec_is_full__circular_slave_error_message(c)) {
         c->num_slots_full++;
     }
-
 };
 
 /**
@@ -529,7 +569,8 @@ static bool cia_trn5_guard(void *condition, struct event *event) {
             ctrl_change_all_drives_states(CIA_DISABLE_OPERATION_CTRLWRD);
             ctrl_state_change_cycle_count++;
             LL_TRACE(GBEM_SM_LOG_EN,
-                     "sm: TRN5 Guard - changing drive states with a Disabled operation controlword (switch on controword is same)");
+                     "sm: TRN5 Guard - changing drive states with a Disabled operation controlword (switch on controword is same)")
+            ;
             return false;
         }
     }
@@ -739,14 +780,14 @@ static bool cia_trn12_guard(void *condition, struct event *event) {
         ctrl_state_change_cycle_count = 0;
         return true;
     } else {
-//			ctrl_change_all_drives_states(CIA_DISABLE_VOLTAGE_CTRLWRD);
+        //			ctrl_change_all_drives_states(CIA_DISABLE_VOLTAGE_CTRLWRD);
         ctrl_state_change_cycle_count++;
-//			LL_TRACE(SM_LOG_EN, ecm_status.cycle_count, "sm: TRN12 Guard - changing drive states with a Disable voltage controlword");
+        //			LL_TRACE(SM_LOG_EN, ecm_status.cycle_count, "sm: TRN12 Guard - changing drive states with a Disable voltage controlword");
         return false;
     }
-//	}
-//	LL_TRACE(SM_LOG_EN,  "sm: TRN12 Guard - Machine command is not Disable voltage");
-//	return false;
+    //	}
+    //	LL_TRACE(SM_LOG_EN,  "sm: TRN12 Guard - Machine command is not Disable voltage");
+    //	return false;
 }
 
 
@@ -818,7 +859,6 @@ static bool cia_trn16_guard(void *condition, struct event *event) {
  * @warning doesn't check for drive states being out of sync
  */
 bool cia_is_fault_condition(struct event *event) {
-
     static uint64_t wrong_moo_count[MAP_NUM_DRIVES] = {0};
 
     ((event_data_t *) event->data)->fault_cause = 0;
@@ -855,15 +895,15 @@ bool cia_is_fault_condition(struct event *event) {
         control_event[CONTROL_EVENT_GBC_FAULT_REQUEST].active = true;
         have_fault = true;
     }
-//    //CONTROL_WORD_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM
-//    if (((event_data_t *) event->data)->machine_move_not_op_enabled_fault_req == true) {
-//        LL_TRACE(GBEM_SM_LOG_EN,
-//                 "sm: Fault > machine word is requesting an error because a move has been attempted and we are not in operation enabled");
-//        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_MOVE_NOT_OP_EN_BIT_NUM);
-//        control_event[CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST].active = true;
-//        have_fault = true;
-//    }
-//    CONTROL_WORD_GBC_INTERNAL_FAULT_REQ_BIT_NUM
+    //    //CONTROL_WORD_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM
+    //    if (((event_data_t *) event->data)->machine_move_not_op_enabled_fault_req == true) {
+    //        LL_TRACE(GBEM_SM_LOG_EN,
+    //                 "sm: Fault > machine word is requesting an error because a move has been attempted and we are not in operation enabled");
+    //        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_MOVE_NOT_OP_EN_BIT_NUM);
+    //        control_event[CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST].active = true;
+    //        have_fault = true;
+    //    }
+    //    CONTROL_WORD_GBC_INTERNAL_FAULT_REQ_BIT_NUM
     if (((event_data_t *) event->data)->gbc_internal_fault == true) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > machine word is signalling GBC had an internal fault");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_GBC_INTERNAL_ERROR_BIT_NUM);
@@ -952,7 +992,7 @@ bool cia_is_fault_condition(struct event *event) {
 
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-//        printf("moodisp event data:%i\n", ((event_data_t *) event->data)->moo_disp[i]);
+        //        printf("moodisp event data:%i\n", ((event_data_t *) event->data)->moo_disp[i]);
         if ((((event_data_t *) event->data)->moo_disp[i]) != map_drive_moo[i]) {
             wrong_moo_count[i]++;
         } else {
@@ -964,10 +1004,7 @@ bool cia_is_fault_condition(struct event *event) {
             BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_MOOERROR_BIT_NUM);
             control_event[CONTROL_EVENT_DRIVE_MOOERROR].active = true;
             have_fault = true;
-
         }
-
-
     }
 
     dpm_in->active_fault_word = ((event_data_t *) event->data)->fault_cause;
@@ -982,7 +1019,6 @@ bool cia_is_fault_condition(struct event *event) {
  * @return true=transition allowed, false=transition not allowed
  */
 static bool cia_trn13_guard(void *condition, struct event *event) {
-
     if (cia_is_fault_condition(event)) {
         //a QUICK_STOP command should send all drives back to switch on disabled
         ctrl_change_all_drives_states(CIA_QUICK_STOP_CTRLWRD);
@@ -1007,10 +1043,9 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
     bool state_mismatch = false;
 
     switch (cia_ctrlwrd_to_command(dpm_out->machine_word)) {
-
         //    uint32_t x=(uint32_t) ((intptr_t) condition & 0xFFFFFFFF);
 
-// machine is commanding SHUTDOWN, our state = READY_TO_SWITCH_ON
+        // machine is commanding SHUTDOWN, our state = READY_TO_SWITCH_ON
         case CIA_SHUTDOWN:
             if (((cia_state_t) ((void *) condition) != CIA_READY_TO_SWITCH_ON) &&
                 (ctrl_state_change_cycle_count > ctrl_state_change_timeout)) {
@@ -1023,13 +1058,13 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
                 state_mismatch = true;
             }
             break;
-//        case CIA_SWITCH_ON_AND_ENABLE_OPERATION:
-//            if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
-//                 ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
-//                && ctrl_state_change_cycle_count > ctrl_state_change_timeout) {
-//                state_mismatch = true;
-//            }
-//            break;
+        //        case CIA_SWITCH_ON_AND_ENABLE_OPERATION:
+        //            if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
+        //                 ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
+        //                && ctrl_state_change_cycle_count > ctrl_state_change_timeout) {
+        //                state_mismatch = true;
+        //            }
+        //            break;
         case CIA_DISABLE_VOLTAGE:
             if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
                  ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
@@ -1061,13 +1096,15 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
     }
     if (state_mismatch) {
         LL_TRACE(GBEM_SM_LOG_EN,
-                 "sm: Mismatch between drive state and the controlword and the current state & no transitions occurring");
+                 "sm: Mismatch between drive state and the controlword and the current state & no transitions occurring")
+        ;
         ctrl_change_all_drives_states(CIA_QUICK_STOP_CTRLWRD);
         return false;
     }
     //	!! we transition to fault reaction active then loop in that state until drives have stopped
     return false;
 }
+
 //check that the drives are in sync with the statemachine state
 
 //we have the problem here that drives might be one step ahead of the state machine or one step behind
@@ -1101,11 +1138,11 @@ static bool cia_trn14_guard(void *condition, struct event *event) {
         if ((reset_in_progress % 5) == 0) {
             //ask all drives to fault reset which should send them to SWITCH ON DISABLED
             ctrl_change_all_drives_states(CIA_FAULT_RESET_CTRLWRD);
-//            printf("reset\n");
+            //            printf("reset\n");
         } else {
             //provides a bit transition for the drives with the fault reset
             ctrl_change_all_drives_states(0b00000000);
-//            printf("reset 0\n");
+            //            printf("reset 0\n");
         }
     }
     return false;
@@ -1117,6 +1154,7 @@ static void sm_error_state_entry_action(void *stateData, struct event *event) {
 
     LL_FATAL("GBEM: Reached error state of statemachine");
 }
+
 //GBEM sends the data from dpmIN over spi (this is the IN i.e. stuff read from fieldbus or created by state machine)
 //GBEM receives data into DPMout over spi (this is the OUT i.e. stuff to be written to the fieldbus or be processed by the state machine)
 
@@ -1127,7 +1165,6 @@ static void sm_error_state_entry_action(void *stateData, struct event *event) {
  * @return true=all drives are in the state, one or more drives are not in the state
  */
 bool ctrl_check_all_drives_state(cia_state_t state) {
-
     int j = 0;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
@@ -1195,7 +1232,6 @@ void ctrl_change_all_drives_states(uint16_t controlword) {
         }
 
         //dpm.out.joint_controlword gets overwritten by GBC whereas here we are using the statemachine to control teh drives - this is important
-
     }
 }
 
@@ -1211,10 +1247,10 @@ static void cia_set_current_fault_causes_action(void *oldStateData, struct event
     (void) oldStateData; //unused parameter
     (void) newStateData; //unused parameter
 
-/*this will record in the event struct the fault bits */
+    /*this will record in the event struct the fault bits */
     cia_is_fault_condition(event);
 
-//        dpm_in->active_fault_word = ((event_data_t *) event->data)->fault_cause;
+    //        dpm_in->active_fault_word = ((event_data_t *) event->data)->fault_cause;
 }
 
 /**
@@ -1223,7 +1259,7 @@ static void cia_set_current_fault_causes_action(void *oldStateData, struct event
  * @param event
  */
 static void cia_generic_entry_action(void *stateData, struct event *event) {
-//The drives have been commanded to change state and checked they have changed state in the transition
+    //The drives have been commanded to change state and checked they have changed state in the transition
     LL_TRACE(GBEM_SM_LOG_EN, "sm: Entry action: current state = %s", cia_state_names[(int) ((cia_state_t) stateData)]);
 
     /* We need to:
@@ -1258,7 +1294,7 @@ static void cia_generic_entry_action(void *stateData, struct event *event) {
             break;
         case CIA_FAULT_REACTION_ACTIVE:
             dpm_in->machine_word = dpm_in->machine_word | CIA_FAULT_REACTION_ACTIVE_STATWRD;
-            /* trn13 should have called cia_is_fault_condition to set current faults in event struct*/
+        /* trn13 should have called cia_is_fault_condition to set current faults in event struct*/
             dpm_in->fault_history_word = ((event_data_t *) event->data)->fault_cause;
             break;
         case CIA_FAULT:
@@ -1272,7 +1308,6 @@ static void cia_generic_entry_action(void *stateData, struct event *event) {
  * @return ptr to stateMachine struct
  */
 struct stateMachine *ctrl_statemachine_alloc(void) {
-
     struct stateMachine *smachine = malloc(sizeof(struct stateMachine));
 
     return smachine;
@@ -1284,7 +1319,6 @@ struct stateMachine *ctrl_statemachine_alloc(void) {
  */
 void ctrl_statemachinefree(struct stateMachine *smachine) {
     free(smachine);
-
 }
 
 
@@ -1307,9 +1341,9 @@ bool ctrl_check_heartbeat_ok(uint32_t gbem_heartbeat_to_check, uint32_t gbc_hear
         return false;
     }
 
-//    printf("check heartbeat (incremented by GBEM and echoed by GBC)\n");
-//    printf("gbem_heartbeat_to_check [%u]\n", gbem_heartbeat_to_check);
-//    printf("gbc_heartbeat_to_check [%u]\n", gbc_heartbeat_to_check);
+    //    printf("check heartbeat (incremented by GBEM and echoed by GBC)\n");
+    //    printf("gbem_heartbeat_to_check [%u]\n", gbem_heartbeat_to_check);
+    //    printf("gbc_heartbeat_to_check [%u]\n", gbc_heartbeat_to_check);
     /*
      * cycle 1 - gbem send out 0 to gbc - gbc echos 0 back
      * cycle 2 - gbem send out 1 to gbc - gbc echos 0 back
@@ -1330,7 +1364,7 @@ void ctrl_copy_slave_error_to_ecm_status(void) {
     while (EcatError) {
         EcatError_read_count++;
         char *slave_error_msg = ec_elist2string();
-//        printf("slave_error_msg: %s\n", slave_error_msg);
+        //        printf("slave_error_msg: %s\n", slave_error_msg);
         if (strlen(slave_error_msg) > 2) {
             ec_push_circular_slave_error_message(&ecm_status.slave_error_messages,
                                                  (uint8_t *) slave_error_msg);
@@ -1338,7 +1372,7 @@ void ctrl_copy_slave_error_to_ecm_status(void) {
         osal_usleep(1000);
         if (EcatError_read_count > 30) {
             //todo crit
-//if an EtherCAT slave is just stuck in error we will be back here spewing out the same error message
+            //if an EtherCAT slave is just stuck in error we will be back here spewing out the same error message
             UM_ERROR(GBEM_UM_EN, "GBEM: EcatError_read_count > 30. We have too many slave error messages to read");
             break;
         }
@@ -1352,7 +1386,6 @@ void ctrl_copy_slave_error_to_ecm_status(void) {
  * @param
  */
 void ctrl_main(struct stateMachine *m, bool first_run) {
-
     /* in terms of the semaphores, a 32 bit read can't result in a torn read and a 32bit write cant result in a torn write
      * from arm manual:
      * All byte accesses
@@ -1369,7 +1402,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
     if (first_run) {
         for (int slave = 1; slave < MAP_NUM_SLAVES + 1; slave++) {
-//            printf("In initial pdo set: slave %u\n", slave);
+            //            printf("In initial pdo set: slave %u\n", slave);
             if (*map_slave_initial_pdo_function_ptr[slave - 1] != NULL) {
                 if ((*map_slave_initial_pdo_function_ptr[slave - 1])(slave) == E_SUCCESS) {
                     UM_INFO(GBEM_UM_EN, "GBEM: Initial PDO sets succeeded for slave [%u]", slave);
@@ -1384,7 +1417,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
         for (int i = 0; i < MAP_NUM_DRIVES; i++) {
             if (*map_drive_get_moo_sdo_function_ptr[i] != NULL) {
                 moo_disp = (*map_drive_get_moo_sdo_function_ptr[i])(i);
-//                printf("moo_disp: %d", moo_disp);
+                //                printf("moo_disp: %d", moo_disp);
                 ecm_status.drives[i].act_moo = moo_disp;
 
                 event_data.moo_disp[i] = moo_disp;
@@ -1399,12 +1432,12 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     //copy actpos from EC_IN to DPM_IN (write) (do this every cycle irrespective of state)
     ctrl_copy_actpos();
 
-//#if CTRL_COPY_ACTVEL == 1
+    //#if CTRL_COPY_ACTVEL == 1
     ctrl_copy_actvel();
-//#endif
-//#if CTRL_COPY_ACTTORQ == 1
+    //#endif
+    //#if CTRL_COPY_ACTTORQ == 1
     ctrl_copy_acttorq();
-//#endif
+    //#endif
 
     //copy statuswords from EC_IN to DPM_IN (write)
     ctrl_copy_drive_statuswords();
@@ -1429,10 +1462,9 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
      */
 
 
-
 #if  DISABLE_ESTOP_CHECKING == 0
     //using estop din but no reset
-//Assumes 0 on din forces quickstop
+    //Assumes 0 on din forces quickstop
 
 
 #if MAP_NUMBER_ESTOP_DIN == 0
@@ -1507,8 +1539,8 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     if (grc != E_SUCCESS) {
         UM_ERROR(GBEM_UM_EN, "GBEM: error checking drive for internal limit [%s]", gb_strerror(grc));
     }
-//    event_data.machine_move_not_op_enabled_fault_req = BIT_CHECK(dpm_out->machine_word,
-//                                                                 CONTROL_WORD_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM);
+    //    event_data.machine_move_not_op_enabled_fault_req = BIT_CHECK(dpm_out->machine_word,
+    //                                                                 CONTROL_WORD_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM);
 
 
     event_data.machine_request_error = BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBC_REQUEST_FAULT_BIT_NUM);
@@ -1528,18 +1560,16 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     event_data.cst_csv_velocity_limit_error = cst_csv_velocity_limit_error;
 
 
-
     DPM_OUT_PROTECT_END
 
     volatile int8_t moo_disp;
     for (uint16_t i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_moo_pdo_function_ptr[i] != NULL) {
             moo_disp = (*map_drive_get_moo_pdo_function_ptr[i])(i);
-//            printf("moo disp pdo: %u (drive %u)\n", moo_disp, i);
+            //            printf("moo disp pdo: %u (drive %u)\n", moo_disp, i);
             ecm_status.drives[i].act_moo = moo_disp;
             event_data.moo_disp[i] = moo_disp;
         } else {
-
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                      "GBEM: Missing function pointer for map_drive_get_moo_pdo on drive [%u]. This may not be an error as they might be sdo set",
                      i);
@@ -1554,18 +1584,19 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
 
     /* This prints out the drive status and control words */
-//    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-//
-//        printf("drive:%u : status word:%u\n", i, dpm_in->joint_statusword[i]);
-//        printf("drive:%u : control word:%u\n", i, ecm_status.drives[i].command);
-//    }
+    //    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+    //
+    //        printf("drive:%u : status word:%u\n", i, dpm_in->joint_statusword[i]);
+    //        printf("drive:%u : control word:%u\n", i, ecm_status.drives[i].command);
+    //    }
 
     DPM_IN_PROTECT_START
     /*	 run the state machine */
     int ret = stateM_handleEvent(m, &(struct event)
-            {
-                    Event_cyclic,
-                    (void *) (intptr_t) &event_data});
+                                 {
+                                     Event_cyclic,
+                                     (void *) (intptr_t) &event_data
+                                 });
     DPM_IN_PROTECT_END
     if (ret == stateM_errArg) {
         LL_FATAL("GBEM: Erroneous arguments state machine");
@@ -1574,53 +1605,51 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
         LL_FATAL("GBEM: State machine reached error state");
     }
     if (ret == stateM_noStateChange) {
-
     }
     /* state returned to itself */
     if (ret == stateM_stateLoopSelf) {
-
     }
 
     if (ret == stateM_finalStateReached) {
         LL_FATAL(
-                "GBEM: State machine reached a final state - this should never happen unless something has gone inexplicably pear shaped");
+            "GBEM: State machine reached a final state - this should never happen unless something has gone inexplicably pear shaped")
+        ;
     }
 
-//read current state of state machine
+    //read current state of state machine
     current_state = (cia_state_t) (stateM_currentState(m)->data);
 
     ecm_status.machine_state = current_state;
     LL_TRACE(GBEM_SM_LOG_EN, "sm: Current state of state machine - %s", cia_state_names[current_state]);
 
-//    printf("fault word:%u\n", dpm_in->active_fault_word);
+    //    printf("fault word:%u\n", dpm_in->active_fault_word);
 
     /* this protects the copy of DPMout */
     DPM_OUT_PROTECT_START
 
     //if we are in FAULT or FAULT reaction active then read error message
     //these are SDO reads and will bugger up our real timeliness
-//    if (current_state == CIA_FAULT || current_state == CIA_FAULT_REACTION_ACTIVE) {
-//        ctrl_copy_slave_error_to_ecm_status();
-//        if ((gbem_heartbeat % 1000) == 0) {
-////            uint8_t *error_code_string;
-//            for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-//                read_drive_error_code_into_ecm_status(i);
-//            }
-//        }
-//
-//        print_slave_error_messages();
-//    }
+    //    if (current_state == CIA_FAULT || current_state == CIA_FAULT_REACTION_ACTIVE) {
+    //        ctrl_copy_slave_error_to_ecm_status();
+    //        if ((gbem_heartbeat % 1000) == 0) {
+    ////            uint8_t *error_code_string;
+    //            for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+    //                read_drive_error_code_into_ecm_status(i);
+    //            }
+    //        }
+    //
+    //        print_slave_error_messages();
+    //    }
 
-//    printf("in out 0 [%d]\n", dpm_out->unsigned32[0]);
+    //    printf("in out 0 [%d]\n", dpm_out->unsigned32[0]);
 
 
-
-//loops over all drives setting MOO
+    //loops over all drives setting MOO
     ctrl_set_moo_pdo();
 
 
-//copy setpos from DPM_OUT (read) to EC_OUT
-//    ctrl_copy_setpos();
+    //copy setpos from DPM_OUT (read) to EC_OUT
+    //    ctrl_copy_setpos();
     ctrl_copy_values_to_drives(ecm_status.cycle_count, current_state);
 
 #if CTRL_ENABLE_FORCING == 1
@@ -1630,14 +1659,13 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
     if (current_state == CIA_OPERATION_ENABLED) {
         ctrl_process_iomap_out(false);
-
     } else {
         //todo crit do we want to zero?
         ctrl_process_iomap_out(false);
     }
 
 
-
+    copy_fsoe_data();
 
 
     //RT-sensitive
@@ -1646,7 +1674,6 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     print_cyclic_user_message(NUM_CONTROL_EVENTS, control_event);
 #endif
     DPM_OUT_PROTECT_END
-
 }
 
 //copy joint actpos - from ec to dpm
@@ -1659,8 +1686,6 @@ static void ctrl_copy_actpos(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_actpos_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_actual_position[i] = map_drive_get_actpos_wrd_function_ptr[i](i);
-
-
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                      "GBEM: Missing function pointer for map_drive_get_actpos_wrd on drive [%u]", i);
@@ -1677,7 +1702,6 @@ static void ctrl_copy_actvel(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_actvel_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_actual_velocity[i] = map_drive_get_actvel_wrd_function_ptr[i](i);
-
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                      "GBEM: Missing function pointer for map_drive_get_actvel_wrd on drive [%u]", i);
@@ -1694,7 +1718,6 @@ static void ctrl_copy_acttorq(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_acttorq_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_actual_torque[i] = map_drive_get_acttorq_wrd_function_ptr[i](i);
-
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                      "GBEM: Missing function pointer for map_drive_get_acttorq_wrd on drive [%u]", i);
@@ -1716,7 +1739,6 @@ __attribute__((unused)) static void ctrl_check_for_big_pos_jump(uint16_t drive, 
 
 
 static bool ctrl_check_velocity_bounds_ok(uint16_t drive, int32_t act_velocity) {
-
     //todo crit remove
     return true;
 
@@ -1733,7 +1755,6 @@ static bool ctrl_check_velocity_bounds_ok(uint16_t drive, int32_t act_velocity) 
 }
 
 static bool ctrl_check_position_bounds_ok(uint16_t drive, int32_t act_position, int32_t current_velocity) {
-
     //todo crit remov
     return true;
 
@@ -1758,41 +1779,35 @@ static bool ctrl_check_position_bounds_ok(uint16_t drive, int32_t act_position, 
  * Copies correct set values to the drives based on the MOO for the drive
  */
 static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current_state) {
-
-//    static uint64_t ms_counter = 0;
-//    ms_counter ++;
+    //    static uint64_t ms_counter = 0;
+    //    ms_counter ++;
 
 
     gberror_t grc;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-
-//        bool pos_vel_control_active = false;
+        //        bool pos_vel_control_active = false;
 
 
         switch (map_drive_moo[i]) {
-
             case CIA_MOO_OP_DISABLED:
                 break;
 
             case CIA_MOO_CSP:
                 if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
-
                     grc = map_drive_set_setpos_wrd_function_ptr[i](i, dpm_out->joint_set_position[i]);
                     /* This function can be used to log nasty jumps in position*/
                     //            ctrl_check_for_big_pos_jump(i,dpm_out->joint_set_position[i] );
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setpos function error [%s]", gb_strerror(grc));
                     }
-
                 } else {
                     LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                              "GBEM: Missing function pointer for map_drive_set_setpos_wrd on drive [%u]", i);
                 }
 
                 if (*map_drive_set_setveloffset_wrd_function_ptr[i] != NULL) {
-
-//                    printf("setvel [%d]\n", dpm_out->joint_set_velocity[i]);
-//                    printf("actvel [%d]\n", dpm_in->joint_actual_velocity[i]);
+                    //                    printf("setvel [%d]\n", dpm_out->joint_set_velocity[i]);
+                    //                    printf("actvel [%d]\n", dpm_in->joint_actual_velocity[i]);
 
                     grc = map_drive_set_setveloffset_wrd_function_ptr[i](i, dpm_out->joint_set_velocity[i]);
                     if (grc != E_SUCCESS) {
@@ -1805,10 +1820,9 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                      */
                 }
                 if (*map_drive_set_settorqoffset_wrd_function_ptr[i] != NULL) {
-
                     grc = map_drive_set_settorqoffset_wrd_function_ptr[i](i, dpm_out->joint_set_torque_offset[i] +
                                                                              dpm_out->joint_set_torque[i]);
-//                    printf("torq offset [%d] on drive [%d]\n", dpm_out->joint_set_torque_offset[i], i);
+                    //                    printf("torq offset [%d] on drive [%d]\n", dpm_out->joint_set_torque_offset[i], i);
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive settorqoffset function error [%s]", gb_strerror(grc));
                     }
@@ -1824,10 +1838,10 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
 
             case CIA_MOO_CSV:
 
-//                if (current_state != CIA_OPERATION_ENABLED && current_state != CIA_SWITCHED_ON) {
-//                    reset_velocity_controller(i);
-//                    printf("reset vec controller\n");
-//                }
+                //                if (current_state != CIA_OPERATION_ENABLED && current_state != CIA_SWITCHED_ON) {
+                //                    reset_velocity_controller(i);
+                //                    printf("reset vec controller\n");
+                //                }
 
 
                 if (ctrl_check_position_bounds_ok(i, dpm_out->joint_set_position[i], dpm_out->joint_set_velocity[i]) ==
@@ -1848,11 +1862,11 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
 
                 if (*map_drive_set_setvel_wrd_function_ptr[i] != NULL) {
                     //run control loop
-//                    int32_t velocity = (int32_t) velocity_controller(cycle_count, i, dpm_out->joint_set_position[i],
-//                                                                     dpm_out->joint_set_velocity[i],
-//                                                                     dpm_in->joint_actual_position[i]);
-//
-//                    printf("velocity [%d]\n", velocity);
+                    //                    int32_t velocity = (int32_t) velocity_controller(cycle_count, i, dpm_out->joint_set_position[i],
+                    //                                                                     dpm_out->joint_set_velocity[i],
+                    //                                                                     dpm_in->joint_actual_position[i]);
+                    //
+                    //                    printf("velocity [%d]\n", velocity);
                     grc = map_drive_set_setvel_wrd_function_ptr[i](i,
                                                                    dpm_out->joint_set_velocity[i]);
                     if (grc != E_SUCCESS) {
@@ -1869,9 +1883,9 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
             case CIA_MOO_CST:
 
 
-//                if (current_state != CIA_OPERATION_ENABLED && current_state != CIA_SWITCHED_ON) {
-//                    reset_torque_controller(i);
-//                }
+                //                if (current_state != CIA_OPERATION_ENABLED && current_state != CIA_SWITCHED_ON) {
+                //                    reset_torque_controller(i);
+                //                }
 
                 if (ctrl_check_position_bounds_ok(i, dpm_out->joint_set_position[i], dpm_out->joint_set_velocity[i]) ==
                     false) {
@@ -1889,49 +1903,45 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
 
 
                 if (*map_drive_set_settorq_wrd_function_ptr[i] != NULL) {
+                    //                    if (BIT_CHECK(dpm_out->joint_controlword[i], JOINT_CONTROL_WORD_CST_POS_VEL_DISABLE_BIT)) {
+                    //                        pos_vel_control_active = false;
+                    //                    } else {
+                    //                        pos_vel_control_active = true;
+                    //                    }
 
-//                    if (BIT_CHECK(dpm_out->joint_controlword[i], JOINT_CONTROL_WORD_CST_POS_VEL_DISABLE_BIT)) {
-//                        pos_vel_control_active = false;
-//                    } else {
-//                        pos_vel_control_active = true;
-//                    }
-
-//                    pos_vel_control_active = false;
+                    //                    pos_vel_control_active = false;
 
 
-//                    int32_t torque = (int32_t) torque_controller(cycle_count, i, pos_vel_control_active,
-//                                                                 dpm_out->joint_set_position[i],
-//                                                                 dpm_out->joint_set_velocity[i],
-//                                                                 dpm_out->joint_set_torque[i],
-//                                                                 dpm_in->joint_actual_position[i],
-//                                                                 dpm_in->joint_actual_velocity[i]);
+                    //                    int32_t torque = (int32_t) torque_controller(cycle_count, i, pos_vel_control_active,
+                    //                                                                 dpm_out->joint_set_position[i],
+                    //                                                                 dpm_out->joint_set_velocity[i],
+                    //                                                                 dpm_out->joint_set_torque[i],
+                    //                                                                 dpm_in->joint_actual_position[i],
+                    //                                                                 dpm_in->joint_actual_velocity[i]);
 
 
                     grc = map_drive_set_settorq_wrd_function_ptr[i](i, dpm_out->joint_set_torque[i]);
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive settorque function error [%s]", gb_strerror(grc));
                     }
-
                 } else {
                     LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                              "GBEM: Missing function pointer for map_drive_set_settorque_wrd on drive [%u]", i);
                 }
 
                 if (*map_drive_set_settorqoffset_wrd_function_ptr[i] != NULL) {
-
                     grc = map_drive_set_settorqoffset_wrd_function_ptr[i](i, dpm_out->joint_set_torque_offset[i]);
                 } else {
                     LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                              "GBEM: Missing function pointer for map_drive_set_settorqoffset_wrd on drive [%u]", i);
                 }
 
-                /* also write position to drive for transition back to CSP*/
+            /* also write position to drive for transition back to CSP*/
                 if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
                     grc = map_drive_set_setpos_wrd_function_ptr[i](i, dpm_out->joint_set_position[i]);
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setpos function error [%s]", gb_strerror(grc));
                     }
-
                 } else {
                     LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                              "GBEM: Missing function pointer for map_drive_set_setpos_wrd on drive [%u]", i);
@@ -1955,7 +1965,7 @@ static void __attribute__((unused)) ctrl_copy_setpos(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
             grc = map_drive_set_setpos_wrd_function_ptr[i](i, dpm_out->joint_set_position[i]);
-/* This function can be used to log nasty jumps in position*/
+            /* This function can be used to log nasty jumps in position*/
             //            ctrl_check_for_big_pos_jump(i,dpm_out->joint_set_position[i] );
             if (grc != E_SUCCESS) {
                 LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setpos function error [%s]", gb_strerror(grc));
@@ -1981,7 +1991,7 @@ static void ctrl_copy_drive_statuswords(void) {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_get_stat_wrd on drive [%u]",
                      i);
         }
-//        printf("statusword:%d\n",dpm_in->joint_statusword[i]);
+        //        printf("statusword:%d\n",dpm_in->joint_statusword[i]);
     }
 }
 
@@ -2016,7 +2026,6 @@ void ctrl_copy_drive_controlwords(void) {
  * @warning this is used for sim/test
  */
 bool ctrl_check_all_drives_commands_sim(const cia_commands_t command) {
-
     int j = 0;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (cia_ctrlwrd_to_command(
@@ -2027,7 +2036,6 @@ bool ctrl_check_all_drives_commands_sim(const cia_commands_t command) {
     }
     if (j == MAP_NUM_DRIVES) {
         return true;
-
     } else {
         return false;
     }
@@ -2060,7 +2068,7 @@ void ctrl_process_iomap_in(void) {
              map_iomap[i].plc.inout == MAP_UNDEFINED)) {
             switch (map_iomap[i].gbc.datatype) {
                 case ECT_BOOLEAN:
-                    iomap_set_gbc_digital_in_from_pdo(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
+                    iomap_set_gbc_digital_in_from_pdo(map_iomap[i].pdo.byte_slave, map_iomap[i].pdo.slave_num,
                                                       map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
                                                       map_iomap[i].gbc.ionum);
                     break;
@@ -2081,7 +2089,7 @@ void ctrl_process_iomap_in(void) {
                     break;
                 default:
                     break;
-            }//switch on datatype
+            } //switch on datatype
         } //if
     } //for loop
 }
@@ -2118,7 +2126,6 @@ void ctrl_process_iomap_out(const bool zero) {
                         iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
                                                map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
                                                BIT_CHECK(dpm_out->digital, map_iomap[i].gbc.ionum));
-
                     } else {
                         iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
                                                map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
@@ -2145,8 +2152,7 @@ void ctrl_process_iomap_out(const bool zero) {
                     break;
                 default:
                     break;
-            }//switch on datatype
-
+            } //switch on datatype
         } // if
     } //for loop
 }
@@ -2156,24 +2162,292 @@ void ctrl_process_iomap_out(const bool zero) {
  * @attention some drives don't support setting moo with a PDO
  */
 void ctrl_set_moo_pdo(void) {
-
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-
         if (*map_drive_set_moo_pdo_function_ptr[i] != NULL) {
-
             int8_t moo = 0;
             moo = (dpm_out->joint_controlword[i]) & 0x0F;
             map_drive_moo[i] = moo;
 
 
-//todo crit - enable to set moo from gbc controlled joint control word
-//            (*map_drive_set_moo_pdo_function_ptr[i])(i, moo);
-//            ecm_status.drives[i].cmd_moo = moo;
-//
+            //todo crit - enable to set moo from gbc controlled joint control word
+            //            (*map_drive_set_moo_pdo_function_ptr[i])(i, moo);
+            //            ecm_status.drives[i].cmd_moo = moo;
+            //
 
             (*map_drive_set_moo_pdo_function_ptr[i])(i, map_drive_moo[i]);
             ecm_status.drives[i].cmd_moo = map_drive_moo[i];
         }
     }
-
 }
+
+/**
+ * @brief copy fsoe data from slaves to master
+ */
+void copy_fsoe_data_slaves_to_master(void) {
+    //copy from EL1904->EL2904
+    //    ec_copy_between_slave_pdos(MAP_EL1904_1, MAP_EL6900_1, 0, 0, 6);
+    //copy from EL2904->EL6900
+    //    ec_copy_between_slave_pdos(MAP_EL2904_1, MAP_EL6900_1, 0, 6, 6);
+
+    static uint16_t fsoe_master_no = 0;
+    static bool found_fsoe_master = false;
+    if (!found_fsoe_master) {
+        for (int i = 0; i < MAP_NUM_SLAVES; i++) {
+            if (map_slave_fsoe_master[i] == true) {
+                if (found_fsoe_master == true) {
+                    LL_FATAL(
+                        "GBEM: More than one FSOE master found - this is a fatal error (MAP_SLAVE_FSOE_MASTER contains mutiple true values)")
+                    ;
+                }
+                fsoe_master_no = i;
+                UM_INFO(GBEM_GEN_LOG_EN, "GBEM: FSOE master found on slave [%u]", fsoe_master_no+1);
+                found_fsoe_master = true;
+            }
+        }
+    }
+
+    uint32_t base_master_byte_offset = map_slave_fsoe_offset_in[fsoe_master_no];
+    uint32_t cumulative_master_byte_offset = 0;
+    uint32_t slave_byte_offset = 0;
+    bool found_at_least_one_fsoe_slave = false;
+
+    if (found_fsoe_master && map_slave_fsoe_in_bytes[fsoe_master_no] > 0) {
+        for (int i = 0; i < MAP_NUM_SLAVES; i++) {
+            if (map_slave_fsoe_out_bytes[i] > 0 && i != fsoe_master_no) {
+                found_at_least_one_fsoe_slave = true;
+
+                ec_copy_between_slave_pdos(i + 1, fsoe_master_no + 1, map_slave_fsoe_offset_out[i],
+                                           base_master_byte_offset + cumulative_master_byte_offset,
+                                           map_slave_fsoe_out_bytes[i]);
+
+                // UM_INFO(GBEM_GEN_LOG_EN,
+                //         "GBEM: FSOE master copying [%u] bytes at [%u] offset from slave (slave no [%u]) to master    (slave no [%u]) at [%u] offset",
+                //         map_slave_fsoe_out_bytes[i], map_slave_fsoe_offset_out[i], i + 1, fsoe_master_no + 1,
+                //         base_master_byte_offset + cumulative_master_byte_offset);
+
+                cumulative_master_byte_offset += map_slave_fsoe_out_bytes[i];
+            }
+        }
+        if (!found_at_least_one_fsoe_slave) {
+            LL_FATAL("GBEM: FSOE master found but no FSOE slaves found - this is a fatal error");
+        }
+    }
+}
+
+/**
+ * @brief copy fsoe data from master to slaves
+ */
+void copy_fsoe_data_master_to_slaves(void) {
+    //copy from EL6900->EL1904
+    //    ec_copy_between_slave_pdos(MAP_EL6900_1, MAP_EL1904_1, 0, 0, 6);
+    //copy from EL6900->EL2904
+    //    ec_copy_between_slave_pdos(MAP_EL6900_1, MAP_EL2904_1, 6, 0, 6);
+
+
+    static uint16_t fsoe_master_no = 0;
+    static bool found_fsoe_master = false;
+    if (!found_fsoe_master) {
+        for (int i = 0; i < MAP_NUM_SLAVES; i++) {
+            if (map_slave_fsoe_master[i] == true) {
+                if (found_fsoe_master == true) {
+                    LL_FATAL(
+                        "GBEM: More than one FSOE master found - this is a fatal error (MAP_SLAVE_FSOE_MASTER contains mutiple true values)")
+                    ;
+                }
+                fsoe_master_no = i;
+                UM_INFO(GBEM_GEN_LOG_EN, "GBEM: FSOE master found on slave [%u]", fsoe_master_no+1);
+                found_fsoe_master = true;
+            }
+        }
+    }
+
+    uint32_t base_master_byte_offset = map_slave_fsoe_offset_out[fsoe_master_no];
+    uint32_t cumulative_master_byte_offset = 0;
+    uint32_t slave_byte_offset = 0;
+    bool found_at_least_one_fsoe_slave = false;
+
+
+    if (found_fsoe_master && map_slave_fsoe_out_bytes[fsoe_master_no] > 0) {
+        for (int i = 0; i < MAP_NUM_SLAVES; i++) {
+            if (map_slave_fsoe_in_bytes[i] > 0 && i != fsoe_master_no) {
+                found_at_least_one_fsoe_slave = true;
+                slave_byte_offset = map_slave_fsoe_offset_in[i];
+                ec_copy_between_slave_pdos(fsoe_master_no + 1, i + 1,
+                                           base_master_byte_offset + cumulative_master_byte_offset,
+                                           slave_byte_offset,
+                                           map_slave_fsoe_out_bytes[fsoe_master_no]);
+
+
+                if (map_slave_fsoe_out_bytes[fsoe_master_no] != map_slave_fsoe_in_bytes[i]) {
+                    LL_FATAL(
+                        "GBEM: FSOE master and slave have different number of bytes (master out to slave in) - this is a fatal error")
+                    ;
+                }
+
+                // UM_INFO(GBEM_GEN_LOG_EN,
+                //         "GBEM: FSOE master copying [%u] bytes at [%u] offset from master (slave no [%u]) to slave (slave no [%u]) at [%u] offset",
+                //         map_slave_fsoe_out_bytes[fsoe_master_no],
+                //         base_master_byte_offset + cumulative_master_byte_offset,
+                //         fsoe_master_no + 1, i + 1, slave_byte_offset);
+
+                cumulative_master_byte_offset += map_slave_fsoe_in_bytes[i];
+            }
+        }
+        if (!found_at_least_one_fsoe_slave) {
+            UM_FATAL("GBEM: FSOE master found but no FSOE slaves found - this is a fatal error");
+        }
+    }
+}
+
+
+void fsoe_plc_program(void) {
+    //ESM_From_PLC : Output 1
+    //    FromPLC1 : BOOL;
+    //ESM_From_PLC : Output 2
+    //    ErrAck : BOOL;
+
+    //ESM_To_PLC : Input 1
+    //    ToPLC1 : BOOL;
+    //ESM_To_PLC : Input 2
+    //    FbErr : BOOL;
+    //ESM_To_PLC : Input 3
+    //    ComErr : BOOL;
+    //ESM_To_PLC : Input 4
+    //    OutErr : BOOL;
+
+
+    //    printf("in 0 %s\n", BIT_CHECK(dpm_in->digital, 0) ? "true" : "false");
+    //    printf("in 1 %s\n", BIT_CHECK(dpm_in->digital, 1) ? "true" : "false");
+    //    printf("in 2 %s\n", BIT_CHECK(dpm_in->digital, 2) ? "true" : "false");
+    //    printf("in 3 %s\n", BIT_CHECK(dpm_in->digital, 3) ? "true" : "false");
+    //    printf("in 4 %s\n", BIT_CHECK(dpm_in->digital, 4) ? "true" : "false");
+    //    printf("in 5 %s\n", BIT_CHECK(dpm_in->digital, 5) ? "true" : "false");
+    //    printf("in 6 %s\n", BIT_CHECK(dpm_in->digital, 6) ? "true" : "false");
+    //    printf("in 7 %s\n", BIT_CHECK(dpm_in->digital, 7) ? "true" : "false");
+    //
+    //    printf("out 0 %s\n", BIT_CHECK(dpm_out->digital, 0) ? "true" : "false");
+    //    printf("out 1 %s\n", BIT_CHECK(dpm_out->digital, 1) ? "true" : "false");
+    //    printf("out 2 %s\n", BIT_CHECK(dpm_out->digital, 2) ? "true" : "false");
+    //    printf("out 3 %s\n", BIT_CHECK(dpm_out->digital, 3) ? "true" : "false");
+    //
+    //    static bool ErrAckProxy = false;
+    //
+    //    bool temp = iomap_get_pdo_in_bool(true, MAP_EL6900_1, 12, 2);
+    //    bool temp2 = iomap_get_pdo_in_bool(true, MAP_EL6900_1, 12, 0);
+    //    if (temp2) {
+    //        printf("bit 0 in is true!\n");
+    //    }
+    //
+    //    if (temp) {
+    //        printf("bit 2 in is true\n");
+    //    }
+    //
+    //    if (ErrAckProxy) {
+    ////        BIT_CLEAR(dpm_out->digital, 1);
+    //        printf("clearing out\n");
+    //        ErrAckProxy = false;
+    //        iomap_set_pdo_out_bool(true, MAP_EL6900_1, 12, 1, false);
+    //        return;
+    //    }
+    //
+    ////    if (BIT_CHECK(dpm_in->digital, 2)) {
+    //    if (temp) {
+    //        printf("setting out\n");
+    ////        BIT_SET(dpm_out->digital, 1);
+    //        ErrAckProxy = true;
+    //        iomap_set_pdo_out_bool(true, MAP_EL6900_1, 12, 1, true);
+    //    }
+    //
+}
+
+typedef struct {
+    uint8_t command;
+    uint8_t data;
+    uint16_t crc;
+    uint16_t con_id;
+} fsoe_t;
+
+
+void print_fsoe_data(uint16_t slave_no, bool input, uint8_t byte_no, uint8_t num_bytes) {
+    uint8_t *data_ptr;
+
+    if (!input) {
+        data_ptr = ec_slave[slave_no].inputs;
+    } else {
+        data_ptr = ec_slave[slave_no].outputs;
+    }
+    /* Move pointer to correct byte index*/
+    data_ptr += byte_no;
+
+    if (input) {
+        printf("Input ");
+    } else {
+        printf("Output ");
+    }
+    printf("Slave %" PRIu16 " ", slave_no);
+    printf("Byte %" PRIu8 " ", byte_no);
+
+    for (int i = 0; i < num_bytes; i++) {
+        printf("[%" PRIu8 "] ", *data_ptr);
+        data_ptr++;
+    }
+    printf("\n");
+}
+
+
+void copy_fsoe_data(void) {
+    //    printf("EL6900\n");
+    //    print_fsoe_data(MAP_EL6900_1, true, 0, 6);
+    //    print_fsoe_data(MAP_EL6900_1, false, 0, 6);
+    //    print_fsoe_data(MAP_EL6900_1, true, 6, 6);
+    //    print_fsoe_data(MAP_EL6900_1, false, 6, 6);
+    //
+    //    printf("EL1904\n");
+    //    print_fsoe_data(MAP_EL1904_1, true, 0, 6);
+    //    print_fsoe_data(MAP_EL1904_1, false, 0, 6);
+    //    printf("EL2904\n");
+    //    print_fsoe_data(MAP_EL2904_1, true, 0, 6);
+    //    print_fsoe_data(MAP_EL2904_1, false, 0, 6);
+
+
+    // printf("BBH out offset 0 bytes 31\n");
+    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, false, 0, 11);
+    // printf("BBH in offset 0 bytes 31\n");
+    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, true, 0, 31);
+    //
+    // printf("J25 out offset 43 bytes 31\n");
+    // print_fsoe_data(MAP_AW_J25_FSOE_1, false, 43, 31);
+    // printf("J25 in offset 43 bytes 31\n");
+    // print_fsoe_data(MAP_AW_J25_FSOE_1, true, 35, 11);
+
+
+    // printf(">>>BBH out offset 0 bytes 82\n");
+    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, false, 22, 1); //debug0
+    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, false, 27, 1);
+    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, false, 28, 1);
+    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, false, 29, 1);
+
+    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, true, 22, 1);
+
+
+    copy_fsoe_data_master_to_slaves();
+    copy_fsoe_data_slaves_to_master();
+
+    //NO 31 32 33 39
+    //FAULT 34?
+
+    uint32_t test_byte_no = 64;
+    iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 1, true);
+    iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 2, true);
+
+
+    // for (int i = 0; i < 16; i++) {
+    //     printf("in %u [%s]\n", i, BIT_CHECK(dpm_in->digital, i) ? "true" : "false");
+    // }
+    // bool temp = iomap_get_pdo_in_bool(true, MAP_BBH_SCU_1_EC_1, 27, 3);
+
+    // printf("check 0 %u [%s]\n", 3, temp ? "true" : "false");
+
+    // fsoe_plc_program();
+}
+

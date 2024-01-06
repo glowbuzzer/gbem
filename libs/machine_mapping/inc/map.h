@@ -31,11 +31,17 @@ extern bool nolimits;
 #define MAP_SLAVE_NVRAM_SDO_FUNCTIONS(...) gberror_t (*map_slave_nvram_sdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) =  {__VA_ARGS__};
 #define MAP_SLAVE_STANDARD_SDO_FUNCTIONS(...) gberror_t (*map_slave_standard_sdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) =  {__VA_ARGS__};
 #define MAP_SLAVE_INITIAL_PDO_FUNCTIONS(...)  gberror_t (*map_slave_initial_pdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) =  {__VA_ARGS__};
+#define MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(...) gberror_t (*map_slave_custom_fmmu_sm_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) =  {__VA_ARGS__};
 #define MAP_SLAVE_DC_TYPE(...) const map_slave_dc_type_t map_dc_type[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_SLAVE_DC_CYCLE(...) const int8_t map_dc_cycle[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_SLAVE_EEP(...) const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {__VA_ARGS__};
 
-
+#define MAP_SLAVE_FSOE_MASTER(...) const bool map_slave_fsoe_master[MAP_NUM_SLAVES] = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_OUT_BYTES(...) const uint16_t map_slave_fsoe_out_bytes[MAP_NUM_SLAVES] = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_IN_BYTES(...) const uint16_t map_slave_fsoe_in_bytes[MAP_NUM_SLAVES] = {__VA_ARGS__};
+#define MAP_FSOE_MASTER_CONTROL_FUNCTION(...) gberror_t (*map_fsoe_master_control_function_ptr)(void) = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_OFFSET_IN(...) const uint16_t map_slave_fsoe_offset_in[MAP_NUM_SLAVES] = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_OFFSET_OUT(...) const uint16_t map_slave_fsoe_offset_out[MAP_NUM_SLAVES] = {__VA_ARGS__};
 
 /* DRIVES */
 #define MAP_DRIVE_TO_NAME(...) const char map_drive_to_name[MAP_NUM_DRIVES][MAX_DRIVE_NAME_LENGTH] = {__VA_ARGS__};
@@ -153,6 +159,7 @@ typedef struct {
     const uint32_t byte_num;
     const uint8_t bit_num;
     const ec_datatype datatype;
+    const bool byte_slave;
     const double max_val; //this is used for float to int conversions
 } map_pdo_object_t;
 
@@ -198,8 +205,21 @@ extern gberror_t (*map_slave_standard_sdo_function_ptr[MAP_NUM_SLAVES])(uint16_t
 
 extern gberror_t (*map_slave_initial_pdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave);
 
+extern gberror_t (*map_slave_custom_fmmu_sm_function_ptr[MAP_NUM_SLAVES])(uint16_t slave);
+
 extern const map_slave_dc_type_t map_dc_type[MAP_NUM_SLAVES];
 extern const int8_t map_dc_cycle[MAP_NUM_SLAVES];
+
+//FSOE
+
+extern const bool map_slave_fsoe_master[MAP_NUM_SLAVES];
+
+extern const uint16_t map_slave_fsoe_out_bytes[MAP_NUM_SLAVES];
+
+extern const uint16_t map_slave_fsoe_in_bytes[MAP_NUM_SLAVES];
+
+extern const uint16_t map_slave_fsoe_offset_in[MAP_NUM_SLAVES];
+extern const uint16_t map_slave_fsoe_offset_out[MAP_NUM_SLAVES];
 
 
 //DRIVES
