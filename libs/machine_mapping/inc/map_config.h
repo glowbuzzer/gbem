@@ -44,15 +44,18 @@
 #define MACHINE_AW_J17                      0
 #define MACHINE_AW_ROBOT_S                  0
 #define MACHINE_AW_ROBOT_L2                 0
-#define MACHINE_AW_ROBOT_L                  1
+#define MACHINE_AW_ROBOT_L                  0
 #define MACHINE_VIRTUAL                     0
 #define MACHINE_J17_PLUS_VIRTUAL            0
 #define MACHINE_AW_STEWART                  0
+#define MACHINE_EL6900_DEADMAN              0
+#define MACHINE_EL6900_J25                  0
+#define MACHINE_BBH_J25                     1
 
 
 /* NEW_MACHINE */
 //If you add a new machine you have to increment this count to match the number above
-#define MAP_NUM_MACHINES            30
+#define MAP_NUM_MACHINES            33
 
 extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
@@ -200,6 +203,23 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
 #endif
 
+#if MACHINE_EL6900_DEADMAN == 1
+
+#include "machine_el6900_deadman.h"
+
+#endif
+
+#if MACHINE_EL6900_J25 == 1
+
+#include "machine_el6900_j25.h"
+
+#endif
+
+#if MACHINE_BBH_J25 == 1
+
+#include "machine_bbh_j25.h"
+
+#endif
 
 /* NEW_MACHINE - add new MAP_ enum here */
 typedef enum {
@@ -232,7 +252,10 @@ typedef enum {
     MAP_MACHINE_VIRTUAL,
     MAP_MACHINE_J17_PLUS_VIRTUAL,
     MAP_MACHINE_AW_STEWART,
-    MAP_MACHINE_DRIVE_SPINNERS_VIRTUAL
+    MAP_MACHINE_DRIVE_SPINNERS_VIRTUAL,
+    MAP_MACHINE_EL6900_DEADMAN,
+    MAP_MACHINE_EL6900_J25,
+    MAP_MACHINE_BBH_J25
 } map_machine_type_t;
 
 #define MAX_DRIVE_NAME_LENGTH                   30
