@@ -387,7 +387,15 @@ int main(int argc, char *argv[]) {
 #if MACHINE_AW_STEWART == 1
     map_machine_type = MAP_MACHINE_AW_STEWART;
 #endif
-
+#if MACHINE_EL6900_DEADMAN == 1
+    map_machine_type = MAP_MACHINE_EL6900_DEADMAN;
+#endif
+#if MACHINE_EL6900_J25 == 1
+    map_machine_type = MAP_MACHINE_EL6900_J25;
+#endif
+#if MACHINE_EL6900_J25 == 1
+    map_machine_type = MAP_MACHINE_BBH_J25;
+#endif
 
 
     if (map_machine_type < MAP_NUM_MACHINES) {
