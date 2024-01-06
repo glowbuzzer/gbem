@@ -11,37 +11,89 @@
 #include "user_message.h"
 #include "ethercatsetget.h"
 #include "std_defs_and_macros.h"
+#include <inttypes.h>
 
 const char *ec_datatype_string[0x0037 + 2] = {
-        [0x0000] = "ECT_UNDEFINED",
-        [0x0001] = "ECT_BOOLEAN",
-        [0x0002] = "ECT_INTEGER8",
-        [0x0003]="ECT_INTEGER16",
-        [0x0004]="ECT_INTEGER32",
-        [0x0005]="ECT_UNSIGNED8",
-        [0x0006]="ECT_UNSIGNED16",
-        [0x0007]="ECT_UNSIGNED32",
-        [0x0008]="ECT_REAL32",
-        [0x0009]="ECT_VISIBLE_STRING",
-        [0x000A]="ECT_OCTET_STRING",
-        [0x000B]="ECT_UNICODE_STRING",
-        [0x000C]="ECT_TIME_OF_DAY",
-        [0x000D]="ECT_TIME_DIFFERENCE",
-        [0x000F]="ECT_DOMAIN",
-        [0x0010]="ECT_INTEGER24",
-        [0x0011]="ECT_REAL64",
-        [0x0015]="ECT_INTEGER64",
-        [0x0016]="ECT_UNSIGNED24",
-        [0x001B]="ECT_UNSIGNED64",
-        [0x0030]="ECT_BIT1",
-        [0x0031]="ECT_BIT2",
-        [0x0032]="ECT_BIT3",
-        [0x0033]="ECT_BIT4",
-        [0x0034]="ECT_BIT5",
-        [0x0035]="ECT_BIT6",
-        [0x0036]="ECT_BIT7",
-        [0x0037]="ECT_BIT8"
+    [0x0000] = "ECT_UNDEFINED",
+    [0x0001] = "ECT_BOOLEAN",
+    [0x0002] = "ECT_INTEGER8",
+    [0x0003] = "ECT_INTEGER16",
+    [0x0004] = "ECT_INTEGER32",
+    [0x0005] = "ECT_UNSIGNED8",
+    [0x0006] = "ECT_UNSIGNED16",
+    [0x0007] = "ECT_UNSIGNED32",
+    [0x0008] = "ECT_REAL32",
+    [0x0009] = "ECT_VISIBLE_STRING",
+    [0x000A] = "ECT_OCTET_STRING",
+    [0x000B] = "ECT_UNICODE_STRING",
+    [0x000C] = "ECT_TIME_OF_DAY",
+    [0x000D] = "ECT_TIME_DIFFERENCE",
+    [0x000F] = "ECT_DOMAIN",
+    [0x0010] = "ECT_INTEGER24",
+    [0x0011] = "ECT_REAL64",
+    [0x0015] = "ECT_INTEGER64",
+    [0x0016] = "ECT_UNSIGNED24",
+    [0x001B] = "ECT_UNSIGNED64",
+    [0x0030] = "ECT_BIT1",
+    [0x0031] = "ECT_BIT2",
+    [0x0032] = "ECT_BIT3",
+    [0x0033] = "ECT_BIT4",
+    [0x0034] = "ECT_BIT5",
+    [0x0035] = "ECT_BIT6",
+    [0x0036] = "ECT_BIT7",
+    [0x0037] = "ECT_BIT8"
 };
+
+
+void ec_copy_between_slave_pdos(uint16_t src_slave_no, uint16_t dst_slave_no, uint8_t src_byte_no, uint8_t dst_byte_no,
+                                uint8_t num_bytes) {
+    //    uint8_t *src_data_ptr;
+    //    uint8_t *dst_data_ptr;
+    //
+    //    src_data_ptr = ec_slave[src_slave_no].outputs;
+    //    /* Move pointer to correct byte index*/
+    //    src_data_ptr += src_byte_no;
+    //
+    //    dst_data_ptr = ec_slave[dst_slave_no].inputs;
+    //    printf("src_slave_no [%" PRIu16 "] ", src_slave_no);
+    //    printf("dst_slave_no [%" PRIu16 "] ", dst_slave_no);
+    //    printf("src_byte_no [%" PRIu16 "] ", src_byte_no);
+    //    printf("dst_byte_no [%" PRIu16 "] ", dst_byte_no);
+    //
+    //
+    //    /* Move pointer to correct byte index*/
+    //    dst_data_ptr += dst_byte_no;
+    //
+    //    for (int i = 0; i < num_bytes; i++) {
+    //        printf("src byte [%" PRIu8 "]", i);
+    //        printf("[%" PRIu8 "] ", *src_data_ptr);
+    //        *dst_data_ptr++ = *src_data_ptr++;
+    //    }
+    //    printf("\n");
+
+
+    //test reverse
+    uint8_t *src_data_ptr;
+    uint8_t *dst_data_ptr;
+
+    src_data_ptr = ec_slave[src_slave_no].inputs;
+    /* Move pointer to correct byte index*/
+    src_data_ptr += src_byte_no;
+
+    dst_data_ptr = ec_slave[dst_slave_no].outputs;
+    /* Move pointer to correct byte index*/
+    dst_data_ptr += dst_byte_no;
+    // printf("src_slave_no [%" PRIu16 "] ", src_slave_no);
+    // printf("dst_slave_no [%" PRIu16 "] ", dst_slave_no);
+
+    for (int i = 0; i < num_bytes; i++) {
+        // printf("byte [%" PRIu8 "]", i);
+        // printf("[%" PRIu8 "] ", *src_data_ptr);
+        *dst_data_ptr++ = *src_data_ptr++;
+    }
+
+    // printf("\n");
+}
 
 
 /**
@@ -62,8 +114,6 @@ void ec_pdo_set_output_uint8(uint16_t slave_no, uint8_t byte_no, uint8_t value) 
      */
     //warning
     *data_ptr = value;
-
-
 }
 
 /**
@@ -84,8 +134,6 @@ void ec_pdo_set_output_int8(uint16_t slave_no, uint8_t byte_no, int8_t value) {
      */
     //warning
     *data_ptr = (value >> 0) & 0xFF;
-
-
 }
 
 
@@ -205,7 +253,6 @@ void ec_pdo_set_output_float(uint16_t slave_no, uint8_t byte_no, float value) {
     *data_ptr++ = (cvt.bytes[1]);
     *data_ptr++ = (cvt.bytes[2]);
     *data_ptr = (cvt.bytes[3]);
-
 }
 
 /**
@@ -383,13 +430,11 @@ bool cs_pdo_get_output_bit_rev(uint16 slave_no, uint8_t bit_no) {
     /* Get the the startbit position in slaves IO byte */
     uint8_t startbit = ec_slave[slave_no].Ostartbit;
     /* Mask bit and return boolean 0 or 1 */
-    if (*ec_slave[slave_no].outputs & BIT (bit_no - 1 + startbit))
+    if (*ec_slave[slave_no].outputs & BIT(bit_no - 1 + startbit))
         return true;
     else
         return false;
 }
-
-
 
 
 /**
@@ -403,7 +448,7 @@ bool ec_pdo_get_input_bit(uint16 slave_no, uint8_t bit_no) {
     /* Get the the startbit position in slaves IO bit */
     uint8_t startbit = ec_slave[slave_no].Istartbit;
     /* Mask bit and return boolean 0 or 1 */
-    if (*ec_slave[slave_no].inputs & BIT (bit_no - 1 + startbit))
+    if (*ec_slave[slave_no].inputs & BIT(bit_no - 1 + startbit))
         return true;
     else
         return false;
@@ -445,7 +490,6 @@ void ec_pdo_set_input_uint16_rev(uint16_t slave_no, uint8_t byte_no, uint16_t va
      */
     *data_ptr++ = (value >> 0) & 0xFF;
     *data_ptr = (value >> 8) & 0xFF;
-
 }
 
 /**
@@ -465,7 +509,6 @@ void ec_pdo_set_input_int8_rev(uint16_t slave_no, uint8_t byte_no, int8_t value)
   addresses
      */
     *data_ptr = (value >> 0) & 0xFF;
-
 }
 
 
@@ -477,7 +520,6 @@ void ec_pdo_set_input_int8_rev(uint16_t slave_no, uint8_t byte_no, int8_t value)
  * @warning REVERSE FUNCTION ("WRONG" WAY ROUND
  */
 void ec_pdo_set_input_uint8(uint16_t slave_no, uint8_t byte_no, uint8_t value) {
-
     uint8_t *data_ptr;
 
     data_ptr = ec_slave[slave_no].inputs;
@@ -498,7 +540,6 @@ void ec_pdo_set_input_uint8(uint16_t slave_no, uint8_t byte_no, uint8_t value) {
  * @warning REVERSE FUNCTION ("WRONG" WAY ROUND
  */
 void ec_pdo_set_input_int16_rev(uint16_t slave_no, uint8_t byte_no, int16_t value) {
-
     uint8_t *data_ptr;
 
     data_ptr = ec_slave[slave_no].inputs;
@@ -520,7 +561,6 @@ void ec_pdo_set_input_int16_rev(uint16_t slave_no, uint8_t byte_no, int16_t valu
  * @warning REVERSE FUNCTION ("WRONG" WAY ROUND
  */
 void ec_pdo_set_input_uint32_rev(uint16_t slave_no, uint8_t byte_no, uint32_t value) {
-
     uint8_t *data_ptr;
 
     data_ptr = ec_slave[slave_no].inputs;
@@ -544,7 +584,6 @@ void ec_pdo_set_input_uint32_rev(uint16_t slave_no, uint8_t byte_no, uint32_t va
  * @warning REVERSE FUNCTION ("WRONG" WAY ROUND
  */
 void ec_pdo_set_input_float_rev(uint16_t slave_no, uint8_t byte_no, float value) {
-
     uint8_t *data_ptr;
 
     data_ptr = ec_slave[slave_no].inputs;
@@ -559,18 +598,16 @@ void ec_pdo_set_input_float_rev(uint16_t slave_no, uint8_t byte_no, float value)
 
     cvt.val = value;
 
-//    printf("%" PRIu8 "\n", cvt.bytes[0]);
-//    printf("%" PRIu8 "\n", cvt.bytes[1]);
-//    printf("%" PRIu8 "\n", cvt.bytes[2]);
-//    printf("%" PRIu8 "\n", cvt.bytes[3]);
+    //    printf("%" PRIu8 "\n", cvt.bytes[0]);
+    //    printf("%" PRIu8 "\n", cvt.bytes[1]);
+    //    printf("%" PRIu8 "\n", cvt.bytes[2]);
+    //    printf("%" PRIu8 "\n", cvt.bytes[3]);
 
 
     *data_ptr++ = (cvt.bytes[0]);
     *data_ptr++ = (cvt.bytes[1]);
     *data_ptr++ = (cvt.bytes[2]);
     *data_ptr = (cvt.bytes[3]);
-
-
 }
 
 
@@ -582,7 +619,6 @@ void ec_pdo_set_input_float_rev(uint16_t slave_no, uint8_t byte_no, float value)
  * @warning REVERSE FUNCTION ("WRONG" WAY ROUND
  */
 void ec_pdo_set_input_int32_rev(uint16_t slave_no, uint8_t byte_no, int32_t value) {
-
     uint8_t *data_ptr;
 
     data_ptr = ec_slave[slave_no].inputs;
@@ -599,7 +635,6 @@ void ec_pdo_set_input_int32_rev(uint16_t slave_no, uint8_t byte_no, int32_t valu
 
 
 float ec_pdo_get_output_float_rev(uint16_t slave_no, uint8_t byte_no) {
-
     uint8_t *data_ptr;
     data_ptr = ec_slave[slave_no].outputs;
     /* Move pointer to correct byte index*/
@@ -610,11 +645,11 @@ float ec_pdo_get_output_float_rev(uint16_t slave_no, uint8_t byte_no) {
         uint8_t bytes[4];
     } cvt;
 
-//original
-//    cvt.bytes[0] = *data_ptr++;
-//    cvt.bytes[1] += (*data_ptr++ << 8);
-//    cvt.bytes[2] += (*data_ptr++ << 16);
-//    cvt.bytes[3] += (*data_ptr++ << 24);
+    //original
+    //    cvt.bytes[0] = *data_ptr++;
+    //    cvt.bytes[1] += (*data_ptr++ << 8);
+    //    cvt.bytes[2] += (*data_ptr++ << 16);
+    //    cvt.bytes[3] += (*data_ptr++ << 24);
 
 
     cvt.bytes[0] = *data_ptr++;
@@ -624,9 +659,8 @@ float ec_pdo_get_output_float_rev(uint16_t slave_no, uint8_t byte_no) {
 
 
     return cvt.val;
-
-
 }
+
 /**
  * @brief reads a OUTPUT float from iomap
  * @param slave_no
@@ -634,9 +668,6 @@ float ec_pdo_get_output_float_rev(uint16_t slave_no, uint8_t byte_no) {
  * @return
  * @warning REVERSE FUNCTION ("WRONG" WAY ROUND
  */
-
-
-
 
 
 /**
@@ -675,12 +706,12 @@ uint32_t ec_pdo_get_output_uint32_rev(uint16_t slave_no, uint8_t byte_no) {
     uint32_t return_value;
     uint8_t *data_ptr;
     data_ptr = ec_slave[slave_no].outputs;
-/* Move pointer to correct byte index*/
+    /* Move pointer to correct byte index*/
     data_ptr += byte_no;
 
-/* Read value byte by byte since all targets can't handle misaligned
- * addresses
- */
+    /* Read value byte by byte since all targets can't handle misaligned
+     * addresses
+     */
     return_value = *data_ptr++;
     return_value += (*data_ptr++ << 8);
     return_value += (*data_ptr++ << 16);
@@ -728,12 +759,12 @@ uint8_t ec_pdo_get_output_uint8_rev(uint16_t slave_no, uint8_t byte_no) {
     uint8_t return_value;
     uint8_t *data_ptr;
     data_ptr = ec_slave[slave_no].outputs;
-/* Move pointer to correct byte index*/
+    /* Move pointer to correct byte index*/
     data_ptr += byte_no;
 
-/* Read value byte by byte since all targets can't handle misaligned
- * addresses
- */
+    /* Read value byte by byte since all targets can't handle misaligned
+     * addresses
+     */
     return_value = *data_ptr;
 
     return return_value;
@@ -751,12 +782,12 @@ int8_t ec_pdo_get_output_int8_rev(uint16_t slave_no, uint8_t byte_no) {
     int8_t return_value;
     uint8_t *data_ptr;
     data_ptr = ec_slave[slave_no].outputs;
-/* Move pointer to correct byte index*/
+    /* Move pointer to correct byte index*/
     data_ptr += byte_no;
 
-/* Read value byte by byte since all targets can't handle misaligned
- * addresses
- */
+    /* Read value byte by byte since all targets can't handle misaligned
+     * addresses
+     */
     return_value = (int8_t) *data_ptr;
 
     return return_value;
@@ -805,81 +836,107 @@ void ec_pdo_set_input_bit_rev(uint16_t slave_no, uint8_t bit_no, bool value) {
 }
 
 
-void ec_pdo_set_output_bit_from_byte_slave(uint16_t slave_no, ec_datatype datatype, uint8_t byte_no, uint8_t bit_no,
+void ec_pdo_set_output_bit_from_byte_slave(uint16_t slave_no, uint8_t byte_no, uint8_t bit_no,
                                            bool val) {
-    uint32_t temp;
-    switch (datatype) {
-        case ECT_UNSIGNED32:
-            //read
-            temp = ec_pdo_get_output_uint32_rev(slave_no, byte_no);
-            if (val) {
-                BIT_SET(temp, bit_no);
-            } else {
-                BIT_CLEAR(temp, bit_no);
-            }
-            ec_pdo_set_output_uint32(slave_no, byte_no, temp);
-            break;
-        case ECT_INTEGER32:
-
-        case ECT_UNSIGNED16:
-        case ECT_INTEGER16:
-
-        case ECT_UNSIGNED8:
-
-        case ECT_INTEGER8:
-
-        default:
-            break;
+    uint8_t temp;
+    temp = ec_pdo_get_output_uint8_rev(slave_no, byte_no);
+    if (val) {
+        BIT_SET(temp, bit_no);
+    } else {
+        BIT_CLEAR(temp, bit_no);
     }
+    ec_pdo_set_output_uint8(slave_no, byte_no, temp);
 
+    //    uint32_t temp;
+    //    switch (datatype) {
+    //        case ECT_UNSIGNED32:
+    //            //read
+    //            temp = ec_pdo_get_output_uint32_rev(slave_no, byte_no);
+    //            if (val) {
+    //                BIT_SET(temp, bit_no);
+    //            } else {
+    //                BIT_CLEAR(temp, bit_no);
+    //            }
+    //            ec_pdo_set_output_uint32(slave_no, byte_no, temp);
+    //            break;
+    //        case ECT_INTEGER32:
+    //break;
+    //        case ECT_UNSIGNED16:
+    //            break;
+    //        case ECT_INTEGER16:
+    //break;
+    //        case ECT_UNSIGNED8:
+    //break;
+    //        case ECT_INTEGER8:
+    //break;
+    //
+    //      case ECT_BOOLEAN:
+    //
+    //          temp = ec_pdo_get_output_uint8_rev(slave_no, byte_no);
+    //            if (val) {
+    //                BIT_SET(temp, bit_no);
+    //            } else {
+    //                BIT_CLEAR(temp, bit_no);
+    //            }
+    //            ec_pdo_set_output_uint8(slave_no, byte_no, temp);
+    //            break;
+    //        default:
+    //            break;
+    //    }
 }
 
 
-bool ec_pdo_get_input_bit_from_byte_slave(uint16_t slave_no, ec_datatype datatype, uint8_t byte_no, uint8_t bit_no) {
-    switch (datatype) {
-        case ECT_UNSIGNED32:
-            if (BIT_CHECK(ec_pdo_get_input_uint32(slave_no, byte_no), bit_no)) {
-                return true;
-            } else {
-                return false;
-            }
-        case ECT_INTEGER32:
-            if (BIT_CHECK(ec_pdo_get_input_int32(slave_no, byte_no), bit_no)) {
-                return true;
-            } else {
-                return false;
-            }
-
-        case ECT_UNSIGNED16:
-            if (BIT_CHECK(ec_pdo_get_input_uint16(slave_no, byte_no), bit_no)) {
-                return true;
-            } else {
-                return false;
-            }
-        case ECT_INTEGER16:
-            if (BIT_CHECK(ec_pdo_get_input_int16(slave_no, byte_no), bit_no)) {
-                return true;
-            } else {
-                return false;
-            }
-
-        case ECT_UNSIGNED8:
-            if (BIT_CHECK(ec_pdo_get_input_uint8(slave_no, byte_no), bit_no)) {
-                return true;
-            } else {
-                return false;
-            }
-
-        case ECT_INTEGER8:
-            if (BIT_CHECK(ec_pdo_get_input_int8(slave_no, byte_no), bit_no)) {
-                return true;
-            } else {
-                return false;
-            }
-        default:
-            break;
+bool ec_pdo_get_input_bit_from_byte_slave(uint16_t slave_no, uint8_t byte_no, uint8_t bit_no) {
+    if (BIT_CHECK(ec_pdo_get_input_uint8(slave_no, byte_no), bit_no)) {
+        return true;
+    } else {
+        return false;
     }
 
+
+    //    switch (datatype) {
+    //        case ECT_UNSIGNED32:
+    //            if (BIT_CHECK(ec_pdo_get_input_uint32(slave_no, byte_no), bit_no)) {
+    //                return true;
+    //            } else {
+    //                return false;
+    //            }
+    //        case ECT_INTEGER32:
+    //            if (BIT_CHECK(ec_pdo_get_input_int32(slave_no, byte_no), bit_no)) {
+    //                return true;
+    //            } else {
+    //                return false;
+    //            }
+    //
+    //        case ECT_UNSIGNED16:
+    //            if (BIT_CHECK(ec_pdo_get_input_uint16(slave_no, byte_no), bit_no)) {
+    //                return true;
+    //            } else {
+    //                return false;
+    //            }
+    //        case ECT_INTEGER16:
+    //            if (BIT_CHECK(ec_pdo_get_input_int16(slave_no, byte_no), bit_no)) {
+    //                return true;
+    //            } else {
+    //                return false;
+    //            }
+    //
+    //        case ECT_UNSIGNED8:
+    //            if (BIT_CHECK(ec_pdo_get_input_uint8(slave_no, byte_no), bit_no)) {
+    //                return true;
+    //            } else {
+    //                return false;
+    //            }
+    //
+    //        case ECT_INTEGER8:
+    //            if (BIT_CHECK(ec_pdo_get_input_int8(slave_no, byte_no), bit_no)) {
+    //                return true;
+    //            } else {
+    //                return false;
+    //            }
+    //        default:
+    //            break;
+    //    }
 }
 
 
@@ -906,7 +963,6 @@ bool ec_sdo_write_uint8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint8_
             }
             return false;
         }
-
     }
     return true;
 }
@@ -919,9 +975,7 @@ bool ec_sdo_write_int8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int8_t 
         printf("Index: %#08x, Sub-index: %#08x, ", Index, SubIndex);
         printf("Value: %#08x\n", Value);
         return true;
-
     } else {
-
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
@@ -936,7 +990,6 @@ bool ec_sdo_write_int8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int8_t 
                 }
             }
             return false;
-
         }
 
         return true;
@@ -949,9 +1002,7 @@ bool ec_sdo_write_uint16(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint1
         printf("\tSlave num: %u, ", Slave);
         printf("Index: %#08x, Sub-index: %#08x, ", Index, SubIndex);
         printf("Value: %#08x\n", Value);
-
     } else {
-
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
@@ -963,12 +1014,10 @@ bool ec_sdo_write_uint16(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint1
                              "GBEM: EtherCAT error detected after SDO write to index:0x%04x - sub-index:0x%04x - value:%d. EtherCAT error [%s]",
                              Index,
                              SubIndex, Value, ec_elist2string());
-
                 }
             }
             return false;
         }
-
     }
     return true;
 }
@@ -979,9 +1028,7 @@ bool ec_sdo_write_int16(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int16_
         printf("\tSlave num: %u, ", Slave);
         printf("Index: %#08x, Sub-index: %#08x, ", Index, SubIndex);
         printf("Value: %#08x\n", Value);
-
     } else {
-
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
@@ -1007,9 +1054,7 @@ bool ec_sdo_write_uint32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint3
         printf("\tSlave num: %u, ", Slave);
         printf("Index: %#08x, Sub-index: %#08x, ", Index, SubIndex);
         printf("Value: %#08x\n", Value);
-
     } else {
-
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
@@ -1025,7 +1070,6 @@ bool ec_sdo_write_uint32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint3
             }
             return false;
         }
-
     }
     return true;
 }
@@ -1036,9 +1080,7 @@ bool ec_sdo_write_int32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int32_
         printf("\tSlave num: %u, ", Slave);
         printf("Index: %#08x, Sub-index: %#08x, ", Index, SubIndex);
         printf("Value: %#08x\n", Value);
-
     } else {
-
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
@@ -1050,19 +1092,16 @@ bool ec_sdo_write_int32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int32_
                              "GBEM: EtherCAT error detected after SDO write to index:0x%08x - sub-index:0x%08x - value:%d. EtherCAT error [%s]",
                              Index,
                              SubIndex, Value, ec_elist2string());
-
                 }
             }
             return false;
         }
-
     }
     return true;
 }
 
 
 bool ec_sdo_read_int32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int32_t *return_val, bool umError) {
-
     int os = sizeof(int32_t);
     int rc = ec_SDOread(Slave, Index, SubIndex, false, &os, return_val, EC_TIMEOUTRXM);
 
@@ -1075,7 +1114,6 @@ bool ec_sdo_read_int32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int32_t
                          "GBEM: EtherCAT error detected after SDO read to index:0x%04x - sub-index:0x%04x. EtherCAT error [%s]",
                          Index,
                          SubIndex, ec_elist2string());
-
             }
         }
         return false;
@@ -1097,7 +1135,6 @@ ec_sdo_read_uint32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint32_t *r
                          "GBEM: EtherCAT error detected after SDO read to index:0x%04x - sub-index:0x%04x. EtherCAT error [%s]",
                          Index,
                          SubIndex, ec_elist2string());
-
             }
         }
         return false;
@@ -1119,13 +1156,11 @@ bool ec_sdo_read_int16(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int16_t
                          "GBEM: EtherCAT error detected after SDO read to index:0x%04x - sub-index:0x%04x. EtherCAT error [%s]",
                          Index,
                          SubIndex, ec_elist2string());
-
             }
         }
         return false;
     }
     return true;
-
 }
 
 bool ec_sdo_read_uint16(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint16_t *return_val, bool umError) {
@@ -1141,13 +1176,11 @@ bool ec_sdo_read_uint16(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint16
                          "GBEM: EtherCAT error detected after SDO read to index:0x%04x - sub-index:0x%04x. EtherCAT error [%s]",
                          Index,
                          SubIndex, ec_elist2string());
-
             }
         }
         return false;
     }
     return true;
-
 }
 
 bool ec_sdo_read_int8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int8_t *return_val, bool umError) {
@@ -1163,13 +1196,11 @@ bool ec_sdo_read_int8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int8_t *
                          "GBEM: EtherCAT error detected after SDO read to index:0x%04x - sub-index:0x%04x. EtherCAT error [%s]",
                          Index,
                          SubIndex, ec_elist2string());
-
             }
         }
         return false;
     }
     return true;
-
 }
 
 bool ec_sdo_read_uint8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint8_t *return_val, bool umError) {
@@ -1185,13 +1216,10 @@ bool ec_sdo_read_uint8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint8_t
                          "GBEM: EtherCAT error detected after SDO read to index:0x%04x - sub-index:0x%04x. EtherCAT error [%s]",
                          Index,
                          SubIndex, ec_elist2string());
-
             }
         }
         return false;
     }
     return true;
-
 }
-
 

@@ -10,7 +10,11 @@
 #include "ethercat.h"
 #include <stdbool.h>
 
+
 extern const char *ec_datatype_string[0x0037 + 2];
+
+void ec_copy_between_slave_pdos(uint16_t src_slave_no, uint16_t dst_slave_no, uint8_t src_byte_no, uint8_t dst_byte_no,
+                                uint8_t num_bytes);
 
 void ec_pdo_set_output_int8(uint16_t slave_no, uint8_t byte_no, int8_t value);
 
@@ -44,9 +48,9 @@ float ec_pdo_get_input_float(uint16_t slave_no, uint8_t byte_no);
 
 void ec_pdo_set_output_float(uint16_t slave_no, uint8_t byte_no, float value);
 
-bool ec_pdo_get_input_bit_from_byte_slave(uint16_t slave_no, ec_datatype datatype, uint8_t byte_no, uint8_t bit_no);
+bool ec_pdo_get_input_bit_from_byte_slave(uint16_t slave_no, uint8_t byte_no, uint8_t bit_no);
 
-void ec_pdo_set_output_bit_from_byte_slave(uint16_t slave_no, ec_datatype datatype, uint8_t byte_no, uint8_t bit_no,
+void ec_pdo_set_output_bit_from_byte_slave(uint16_t slave_no, uint8_t byte_no, uint8_t bit_no,
                                            bool val);
 
 
