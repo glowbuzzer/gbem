@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.0](https://github.com/glowbuzzer/gbem/compare/v1.3.0...v1.4.0) (2023-12-16)
+
+
+### Features
+
+* **#60:** Add support for 2 estop (quickstop DINs) ([098d18d](https://github.com/glowbuzzer/gbem/commit/098d18d33bc4ee1b71ffa42d6c4510cfbfe891bd))
+* **#63:** Make joint limits in config degrees not encoder ticks ([299fe8a](https://github.com/glowbuzzer/gbem/commit/299fe8a98d8c74e4774bd4efa55ca84af3942cbc))
+* **#64:** Move standard SDOs for AW drives into common code ([7b36b2f](https://github.com/glowbuzzer/gbem/commit/7b36b2f64bfa93a8adab4889e3b53144f3b85c7e))
+* **#65:** Add torque and velocity controllers ([c5c3414](https://github.com/glowbuzzer/gbem/commit/c5c3414003ed881c25998f5f64b3e9b8869ade50))
+* **#66:** If incorrect slaves found, restart not exit ([5373178](https://github.com/glowbuzzer/gbem/commit/5373178287cd44984f8301562849584b07a7ce18))
+* **#67:** Add torque_offset handling ([19ba334](https://github.com/glowbuzzer/gbem/commit/19ba33479906819db6d331e9cb00d2daef8e76ec))
+* **#67:** Add torque_offset handling ([6d00fee](https://github.com/glowbuzzer/gbem/commit/6d00fee9695644c0ab58ecb12fa4b0a0d925fb99))
+* **#68:** Add support for velocity offset ([2a41746](https://github.com/glowbuzzer/gbem/commit/2a417460bb8d7ac794e5a70028d02dd830d9c863))
+* **#68:** Add support for velocity offset ([993e36b](https://github.com/glowbuzzer/gbem/commit/993e36be4a2162568f4b02d8258ebe7871d8ead6))
+* **#69:** Add support for CST/CSV position monitoring ([904b586](https://github.com/glowbuzzer/gbem/commit/904b586b4e08ae648e930c47fa77cdf300870835))
+* **#70:** Add AW L robot machine map ([a128962](https://github.com/glowbuzzer/gbem/commit/a12896203cbc69565fd68807510d5c4b0a9b1ca0))
+
 ## [1.3.0](https://github.com/glowbuzzer/gbem/compare/v1.2.0...v1.3.0) (2023-10-02)
 
 
