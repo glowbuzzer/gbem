@@ -85,7 +85,7 @@ cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
 
 /**global variable to check how long drives take to response to state change request */
 uint32_t ctrl_state_change_cycle_count = 1;
-uint32_t ctrl_state_change_timeout = CTRL_DRIVE_CHANGE_STATE_TIMEOUT;
+uint32_t ctrl_state_change_timeout = (CTRL_DRIVE_CHANGE_STATE_TIMEOUT * MAP_CYCLE_TIME);
 
 void copy_fsoe_data(void);
 
@@ -923,7 +923,7 @@ bool cia_is_fault_condition(struct event *event) {
         control_event[CONTROL_EVENT_DRIVE_FAULT].active = true;
         have_fault = true;
     }
-    if (ctrl_state_change_cycle_count > ctrl_state_change_timeout) {
+    if ((ctrl_state_change_cycle_count * MAP_CYCLE_TIME) > ctrl_state_change_timeout) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > one or more drives took too long responding to a state change request");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_STATE_CHANGE_TIMEOUT_BIT_NUM);
         control_event[CONTROL_EVENT_DRIVE_STATE_CHANGE_TIMEOUT].active = true;
@@ -1048,46 +1048,46 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
         // machine is commanding SHUTDOWN, our state = READY_TO_SWITCH_ON
         case CIA_SHUTDOWN:
             if (((cia_state_t) ((void *) condition) != CIA_READY_TO_SWITCH_ON) &&
-                (ctrl_state_change_cycle_count > ctrl_state_change_timeout)) {
+                (ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout)) {
                 state_mismatch = true;
             }
             break;
         case CIA_SWITCH_ON:
             if (((cia_state_t) ((uintptr_t *) condition) != CIA_SWITCHED_ON) &&
-                (ctrl_state_change_cycle_count > ctrl_state_change_timeout)) {
+                (ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout)) {
                 state_mismatch = true;
             }
             break;
         //        case CIA_SWITCH_ON_AND_ENABLE_OPERATION:
         //            if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
         //                 ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
-        //                && ctrl_state_change_cycle_count > ctrl_state_change_timeout) {
+        //                && ctrl_state_change_cycle_count*MAP_CYCLE_TIME > ctrl_state_change_timeout) {
         //                state_mismatch = true;
         //            }
         //            break;
         case CIA_DISABLE_VOLTAGE:
             if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
                  ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
-                && ctrl_state_change_cycle_count > ctrl_state_change_timeout) {
+                && ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout) {
                 state_mismatch = true;
             }
             break;
         case CIA_QUICK_STOP:
             if ((((cia_state_t) ((intptr_t *) condition) != CIA_QUICK_STOP_ACTIVE) ||
                  ((cia_state_t) ((intptr_t *) condition) != CIA_SWITCH_ON_DISABLED)) &&
-                ctrl_state_change_cycle_count > ctrl_state_change_timeout) {
+                ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout) {
                 state_mismatch = true;
             }
             break;
         case CIA_DISABLE_OPERATION:
             if (((cia_state_t) ((intptr_t *) condition)) != CIA_SWITCHED_ON &&
-                (ctrl_state_change_cycle_count > ctrl_state_change_timeout)) {
+                (ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout)) {
                 state_mismatch = true;
             }
             break;
         case CIA_ENABLE_OPERATION:
             if (((cia_state_t) ((intptr_t *) condition) == CIA_OPERATION_ENABLED) &&
-                (ctrl_state_change_cycle_count > ctrl_state_change_timeout)) {
+                (ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout)) {
                 state_mismatch = true;
             }
             break;
