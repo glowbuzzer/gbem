@@ -449,6 +449,7 @@ void ec_rxtx(void *argument) {
             }
 #endif
 
+
             //ec_rxtx_mode == EC_RXTX_MODE_OP is set after "GBEM: Boot step 9 >success< (transition all slaves to OP state"
             if (ec_rxtx_mode == EC_RXTX_MODE_OP) {
                 ec_rxtx_event[CYCLIC_EVENT_NOT_OPMODE].active = false;
@@ -530,8 +531,8 @@ void ec_rxtx(void *argument) {
 
                         if (current_state == CIA_OPERATION_ENABLED) {
                             uint64_t exec_time_usec =
-                                    (uint64_t)(((t_exec_end.tv_sec * NSEC_PER_SEC) + t_exec_end.tv_nsec) -
-                                               ((t_exec_start.tv_sec * NSEC_PER_SEC) + t_exec_start.tv_nsec)) / 1000;
+                                    (uint64_t) (((t_exec_end.tv_sec * NSEC_PER_SEC) + t_exec_end.tv_nsec) -
+                                                ((t_exec_start.tv_sec * NSEC_PER_SEC) + t_exec_start.tv_nsec)) / 1000;
 
 
 //                            if (exec_time_usec > 1000) {
@@ -542,13 +543,13 @@ void ec_rxtx(void *argument) {
 /** Here we warn if the exec time (state machine gubbins plus plc jiggerypokery) is more than ur cycle time */
 
                             if ((uint32_t) exec_time_usec >
-                                (uint32_t)(MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_ERROR_PERCENTAGE / 100)) {
+                                (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_ERROR_PERCENTAGE / 100)) {
                                 ec_rxtx_event[CYCLIC_EVENT_OVERRUN].active = true;
                                 UM_ERROR(GBEM_UM_EN, "GBEM: Execution time [%u] [%llu] (error)",
                                          (uint32_t) exec_time_usec, bus_cycle_tick);
 
                             } else if ((uint32_t) exec_time_usec >
-                                       (uint32_t)(MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_WARNING_PERCENTAGE / 100)) {
+                                       (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_WARNING_PERCENTAGE / 100)) {
                                 ec_rxtx_event[CYCLIC_EVENT_TIMEWARN].active = true;
                                 UM_WARN(GBEM_UM_EN, "GBEM: Execution time [%u] [%llu] (warning)",
                                         (uint32_t) exec_time_usec, bus_cycle_tick);

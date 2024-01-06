@@ -38,11 +38,11 @@ MAP_SLAVE_DC_CYCLE(                       0,                  0,              0,
 //set moo is in either initial PDO or custom sdos
 
 /* DRIVES */
-MAP_DRIVE_TO_NAME(                          "AW_J17"                            );
-MAP_DRIVE_TO_SLAVE(                         MAP_AW_J17_CTRL,                    );
-MAP_DRIVE_TO_SUBDRIVE(                      1,                                  );
-MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_aw_j_series,         );
-MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                               );
+MAP_DRIVE_TO_NAME(                          "AW_J17"                                );
+MAP_DRIVE_TO_SLAVE(                         MAP_AW_J17_CTRL,                        );
+MAP_DRIVE_TO_SUBDRIVE(                      1,                                      );
+MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_aw_j_series,             );
+MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                                   );
 MAP_DRIVE_GET_REMOTE_FUNCTIONS(             ec_get_remote_aw_j_series,              );
 MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_aw_j_series,        );
 MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   NULL,                                   );
