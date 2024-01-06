@@ -20,88 +20,299 @@
 #include "cia402.h"
 #include <math.h>
 
-map_custom_pdo_t aw_j_series_custom_pdo_map = {
-        .sm2_assignment_object = 0x1C12,
-        .num_sm2_assignments = 3,
-        .rxpdo = {
-                {
-                        .pdo_assignment_object = 0x1600,
-                        .num_assignments = 7,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED16, .index = 0x6040}, //Controlword
-                                {.datatype = ECT_INTEGER8, .index = 0x6060}, //Modes of operation
-                                {.datatype = ECT_INTEGER16, .index = 0x6071}, //Target Torque
-                                {.datatype = ECT_INTEGER32, .index = 0x607A}, //Target position
-                                {.datatype = ECT_INTEGER32, .index = 0x60FF}, //Target velocity
-                                {.datatype = ECT_INTEGER16, .index = 0x60B2}, //Torque offset
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2701}, //Tuning command
-                        }
-                },
-                {.pdo_assignment_object=0x1601,
-                        .num_assignments=2,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset=0x1}, //Physical outputs
-                                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset=0x2}, //Bit mask
-                        }},
-                {.pdo_assignment_object=0x1602,
-                        .num_assignments=3,
-                        .assignments= {
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2703}, //User MOSI
-                                {.datatype = ECT_INTEGER32, .index = 0x60B1}, //Velocity offset
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2215, .offset=0x1}, //LED colour
-                        }
-                }
-        },
-        .sm3_assignment_object = 0x1C13,
-        .num_sm3_assignments = 4,
-        .txpdo = {{
-                          .pdo_assignment_object = 0x1A00,
-                          .num_assignments = 5,
-                          .assignments ={
-                                  {.datatype=ECT_UNSIGNED16, .index=0x6041}, //Statusword
-                                  {.datatype=ECT_INTEGER8, .index=0x6061}, //Modes of operation display
-                                  {.datatype=ECT_INTEGER32, .index=0x6064}, //Position actual value
-                                  {.datatype=ECT_INTEGER32, .index=0x606C}, //Velocity actual value
-                                  {.datatype=ECT_INTEGER16, .index=0x6077}, //Torque actual value
-                          }
-                  },
-                  {.pdo_assignment_object=0x1A01,
-                          .num_assignments=5,
-                          .assignments={
-                                  {.datatype=ECT_UNSIGNED16, .index=0x2401}, //Analog input 1
-                                  {.datatype=ECT_UNSIGNED16, .index=0x2402}, // Analog input 2
-                                  {.datatype=ECT_UNSIGNED16, .index=0x2403}, //Analog input 3
-                                  {.datatype=ECT_UNSIGNED16, .index=0x2404}, //Analog input 4
-                                  {.datatype=ECT_UNSIGNED32, .index=0x2702}, //Tuning status
-                          }
-                  },
-                  {.pdo_assignment_object=0x1A02,
-                          .num_assignments=1,
-                          .assignments={
-                                  {.datatype=ECT_UNSIGNED32, .index=0x60FD}, //Digital inputs
-                          }
-                  },
-                  {.pdo_assignment_object=0x1A03,
-                          .num_assignments=5,
-                          .assignments={
-                                  {.datatype=ECT_UNSIGNED32, .index=0x2704}, //User MISO
-                                  {.datatype=ECT_UNSIGNED32, .index=0x20F0}, //Timestamp
-                                  {.datatype=ECT_INTEGER32, .index=0x60FC}, //Position demand internal value
-                                  {.datatype=ECT_INTEGER32, .index=0x606B}, //Velocity demand value
-                                  {.datatype=ECT_INTEGER16, .index=0x6074} //Torque demand
-                          }
-                  }
-        }
+/* This is used for the fixed POO remapping */
+map_SM_assignment_object_t map_SM2_aw_series_fsoe = {
+    .number_of_entries = 4,
+    .SM_assignment_index = 0x1c12
+};
+
+/* This is used for the fixed PDO remapping */
+map_SM_assignment_object_t map_SM3_aw_series_fsoe = {
+    .number_of_entries = 4,
+    .SM_assignment_index = 0x1c13
+};
+
+/* This is used for the fixed PDO remapping */
+uint16_t map_SM2_index_of_assigned_PDO_aw_series_fsoe[ECM_MAX_PDO_MAPPING_ENTRIES] = {
+    0x1600,
+    0x1601,
+    0x1602,
+    0x1700,
+    //        0x1701
+};
+
+/* This is used for the fixed PDO remapping */
+uint16_t map_SM3_index_of_assigned_PDO_aw_series_fsoe[ECM_MAX_PDO_MAPPING_ENTRIES] = {
+    0x1a00,
+    0x1a01,
+    0x1a03,
+    0x1b00,
+    //        0x1b01
 };
 
 
+map_custom_pdo_t aw_j_series_custom_pdo_map = {
+    .sm2_assignment_object = 0x1C12,
+    .num_sm2_assignments = 3,
+    .rxpdo = {
+        {
+            .pdo_assignment_object = 0x1600,
+            .num_assignments = 7,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED16, .index = 0x6040}, //Controlword
+                {.datatype = ECT_INTEGER8, .index = 0x6060}, //Modes of operation
+                {.datatype = ECT_INTEGER16, .index = 0x6071}, //Target Torque
+                {.datatype = ECT_INTEGER32, .index = 0x607A}, //Target position
+                {.datatype = ECT_INTEGER32, .index = 0x60FF}, //Target velocity
+                {.datatype = ECT_INTEGER16, .index = 0x60B2}, //Torque offset
+                {.datatype = ECT_UNSIGNED32, .index = 0x2701}, //Tuning command
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1601,
+            .num_assignments = 2,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x1}, //Physical outputs
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x2}, //Bit mask
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1602,
+            .num_assignments = 3,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x2703}, //User MOSI
+                {.datatype = ECT_INTEGER32, .index = 0x60B1}, //Velocity offset
+                {.datatype = ECT_UNSIGNED32, .index = 0x2215, .offset = 0x1}, //LED colour
+            }
+        }
+    },
+    .sm3_assignment_object = 0x1C13,
+    .num_sm3_assignments = 4,
+    .txpdo = {
+        {
+            .pdo_assignment_object = 0x1A00,
+            .num_assignments = 5,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED16, .index = 0x6041}, //Statusword
+                {.datatype = ECT_INTEGER8, .index = 0x6061}, //Modes of operation display
+                {.datatype = ECT_INTEGER32, .index = 0x6064}, //Position actual value
+                {.datatype = ECT_INTEGER32, .index = 0x606C}, //Velocity actual value
+                {.datatype = ECT_INTEGER16, .index = 0x6077}, //Torque actual value
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1A01,
+            .num_assignments = 5,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED16, .index = 0x2401}, //Analog input 1
+                {.datatype = ECT_UNSIGNED16, .index = 0x2402}, // Analog input 2
+                {.datatype = ECT_UNSIGNED16, .index = 0x2403}, //Analog input 3
+                {.datatype = ECT_UNSIGNED16, .index = 0x2404}, //Analog input 4
+                {.datatype = ECT_UNSIGNED32, .index = 0x2702}, //Tuning status
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1A02,
+            .num_assignments = 1,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FD}, //Digital inputs
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1A03,
+            .num_assignments = 5,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x2704}, //User MISO
+                {.datatype = ECT_UNSIGNED32, .index = 0x20F0}, //Timestamp
+                {.datatype = ECT_INTEGER32, .index = 0x60FC}, //Position demand internal value
+                {.datatype = ECT_INTEGER32, .index = 0x606B}, //Velocity demand value
+                {.datatype = ECT_INTEGER16, .index = 0x6074} //Torque demand
+            }
+        }
+    }
+};
+
+
+map_custom_pdo_t aw_j_series_fsoe_custom_pdo_map = {
+    .sm2_assignment_object = 0x1C12,
+    .num_sm2_assignments = 3,
+    .rxpdo = {
+        {
+            .pdo_assignment_object = 0x1600,
+            .num_assignments = 7,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED16, .index = 0x6040}, //Controlword
+                {.datatype = ECT_INTEGER8, .index = 0x6060}, //Modes of operation
+                {.datatype = ECT_INTEGER16, .index = 0x6071}, //Target Torque
+                {.datatype = ECT_INTEGER32, .index = 0x607A}, //Target position
+                {.datatype = ECT_INTEGER32, .index = 0x60FF}, //Target velocity
+                {.datatype = ECT_INTEGER16, .index = 0x60B2}, //Torque offset
+                {.datatype = ECT_UNSIGNED32, .index = 0x2701}, //Tuning command
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1601,
+            .num_assignments = 2,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x1}, //Physical outputs
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x2}, //Bit mask
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1602,
+            .num_assignments = 3,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x2703}, //User MOSI
+                {.datatype = ECT_INTEGER32, .index = 0x60B1}, //Velocity offset
+                {.datatype = ECT_UNSIGNED32, .index = 0x2215, .offset = 0x1}, //LED colour
+            }
+        },
+        //                {.pdo_assignment_object=0x1700,
+        //                        .num_assignments=1,
+        //                        .assignments= {
+        //                                {.datatype = ECT_UNSIGNED8, .index = 0x6770, .offset=0x1}, //FSoE Command
+        //                                {.datatype = ECT_BOOLEAN, .index = 0x6640, .offset=0x0} // STO
+        //
+        //                        }
+        //                }
+    },
+    .sm3_assignment_object = 0x1C13,
+    .num_sm3_assignments = 4,
+    .txpdo = {
+        {
+            .pdo_assignment_object = 0x1A00,
+            .num_assignments = 5,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED16, .index = 0x6041}, //Statusword
+                {.datatype = ECT_INTEGER8, .index = 0x6061}, //Modes of operation display
+                {.datatype = ECT_INTEGER32, .index = 0x6064}, //Position actual value
+                {.datatype = ECT_INTEGER32, .index = 0x606C}, //Velocity actual value
+                {.datatype = ECT_INTEGER16, .index = 0x6077}, //Torque actual value
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1A01,
+            .num_assignments = 5,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED16, .index = 0x2401}, //Analog input 1
+                {.datatype = ECT_UNSIGNED16, .index = 0x2402}, // Analog input 2
+                {.datatype = ECT_UNSIGNED16, .index = 0x2403}, //Analog input 3
+                {.datatype = ECT_UNSIGNED16, .index = 0x2404}, //Analog input 4
+                {.datatype = ECT_UNSIGNED32, .index = 0x2702}, //Tuning status
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1A02,
+            .num_assignments = 1,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FD}, //Digital inputs
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1A03,
+            .num_assignments = 5,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x2704}, //User MISO
+                {.datatype = ECT_UNSIGNED32, .index = 0x20F0}, //Timestamp
+                {.datatype = ECT_INTEGER32, .index = 0x60FC}, //Position demand internal value
+                {.datatype = ECT_INTEGER32, .index = 0x606B}, //Velocity demand value
+                {.datatype = ECT_INTEGER16, .index = 0x6074} //Torque demand
+            }
+        }
+    }
+};
+
+gberror_t ec_print_pdo_config_aw_series(const uint16_t slave) {
+    uint8_t sm2_pdo_no = 0;
+    uint8_t sm3_pdo_no = 0;
+
+    UM_INFO(GBEM_UM_EN, "GBEM: PDO configuration for AW-J-Series drive slave [%u]", slave);
+
+
+    if (!ec_sdo_read_uint8(slave, 0x1c12, 0, &sm2_pdo_no, false)) {
+        return E_SDO_READ_FAILURE;
+    }
+    if (!ec_sdo_read_uint8(slave, 0x1c13, 0, &sm3_pdo_no, false)) {
+        return E_SDO_READ_FAILURE;
+    }
+
+    UM_INFO(GBEM_UM_EN, "GBEM: SM2 PDOs [%u] SM3 PDOs [%u]", sm2_pdo_no, sm3_pdo_no);
+
+    for (uint8_t i = 1; i <= sm2_pdo_no; i++) {
+        uint32_t pdo_index = 0;
+        if (!ec_sdo_read_uint32(slave, 0x1c12, i, &pdo_index, false)) {
+            return E_SDO_READ_FAILURE;
+        }
+        UM_INFO(GBEM_UM_EN, "GBEM: SM2 PDO [%u] Index [0x%x]", i, pdo_index);
+    }
+
+    for (uint8_t i = 1; i <= sm3_pdo_no; i++) {
+        uint32_t pdo_index = 0;
+        if (!ec_sdo_read_uint32(slave, 0x1c13, i, &pdo_index, false)) {
+            return E_SDO_READ_FAILURE;
+        }
+        UM_INFO(GBEM_UM_EN, "GBEM: SM3 PDO [%u] Index [0x%x]", i, pdo_index);
+    }
+
+
+    return E_SUCCESS;
+}
+
+
 gberror_t ec_pdo_map_aw_j_series(const uint16_t slave) {
-    return map_apply_custom_pdo_mapping(slave, aw_j_series_custom_pdo_map);
+    ec_print_pdo_config_aw_series(slave);
+
+
+    if (AW_FSOE == 1) {
+        if (!ec_sdo_write_uint16(slave, map_SM2_aw_series_fsoe.SM_assignment_index, 0, 0, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+
+        if (!ec_sdo_write_uint16(slave, map_SM3_aw_series_fsoe.SM_assignment_index, 0, 0, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+
+        for (int i = 0; i < map_SM2_aw_series_fsoe.number_of_entries; i++) {
+            if (!ec_sdo_write_uint16(slave, map_SM2_aw_series_fsoe.SM_assignment_index, i + 1,
+                                     map_SM2_index_of_assigned_PDO_aw_series_fsoe[i], true)) {
+                return E_SDO_WRITE_FAILURE;
+            }
+        }
+
+        for (int i = 0; i < map_SM3_aw_series_fsoe.number_of_entries; i++) {
+            if (!ec_sdo_write_uint16(slave, map_SM3_aw_series_fsoe.SM_assignment_index, i + 1,
+                                     map_SM3_index_of_assigned_PDO_aw_series_fsoe[i], true)) {
+                return E_SDO_WRITE_FAILURE;
+            }
+        }
+
+        /*
+         * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
+         */
+        if (!ec_sdo_write_uint16(slave, map_SM2_aw_series_fsoe.SM_assignment_index, 0,
+                                 map_SM2_aw_series_fsoe.number_of_entries, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+
+        if (!ec_sdo_write_uint16(slave, map_SM3_aw_series_fsoe.SM_assignment_index, 0,
+                                 map_SM3_aw_series_fsoe.number_of_entries, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+    } else {
+        return map_apply_custom_pdo_mapping(slave, aw_j_series_custom_pdo_map);
+    }
+
+
+    //    return map_apply_custom_pdo_mapping(slave, aw_j_series_custom_pdo_map);
 }
 
 
 gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
+#if AW_FSOE == 1
+    ec_set_slots_aw_j_series_fsoe(slave);
+#endif
 
+#if AW_FSOE == 0
     //set bus cycle time
     //Communication cycle period	0x1006:0	DINT	32			100		readwrite
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_INDEX,
@@ -131,6 +342,7 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
         default:
             break;
     }
+#endif
 
     //nolimits is a global variable set by running gbem with a command line option - x and is used when the drive is beyond the normal limits
 
@@ -265,7 +477,6 @@ bool ec_get_follow_error_aw_j_series(const uint16_t drive) {
  */
 
 gberror_t ec_set_moo_pdo_aw_j_series(const uint16_t drive, int8_t moo) {
-
     ec_pdo_set_output_int8(map_drive_to_slave[drive], AW_J_SERIES_MOOSET_PDO_INDEX, moo);
 
     return E_SUCCESS;
@@ -278,13 +489,12 @@ gberror_t ec_set_moo_pdo_aw_j_series(const uint16_t drive, int8_t moo) {
  * @attention
  */
 gberror_t ec_initial_pdo_aw_j_series(const uint16_t slave) {
-
-//    ec_pdo_set_output_int8(slave, AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
-//
-//    UM_INFO(GBEM_UM_EN,
-//            "GBEM: Setting MOO with PDO write for AW-J-Series drive slave [%u], drive, [%u], offset [%u], value [%u]",
-//            slave, map_slave_to_drive(slave),
-//            AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
+    //    ec_pdo_set_output_int8(slave, AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
+    //
+    //    UM_INFO(GBEM_UM_EN,
+    //            "GBEM: Setting MOO with PDO write for AW-J-Series drive slave [%u], drive, [%u], offset [%u], value [%u]",
+    //            slave, map_slave_to_drive(slave),
+    //            AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
 
     return E_SUCCESS;
 }
@@ -296,9 +506,7 @@ gberror_t ec_initial_pdo_aw_j_series(const uint16_t slave) {
  * @return int32 position
  */
 int32_t ec_get_actpos_wrd_aw_j_series(const uint16_t drive) {
-
     return ec_pdo_get_input_int32(map_drive_to_slave[drive], AW_J_SERIES_ACTPOS_PDO_INDEX);
-
 }
 
 /**
@@ -307,9 +515,7 @@ int32_t ec_get_actpos_wrd_aw_j_series(const uint16_t drive) {
  * @return int32 position
  */
 int32_t ec_get_actvel_wrd_aw_j_series(const uint16_t drive) {
-
     return ec_pdo_get_input_int32(map_drive_to_slave[drive], AW_J_SERIES_ACTVEL_PDO_INDEX);
-
 }
 
 /**
@@ -318,16 +524,14 @@ int32_t ec_get_actvel_wrd_aw_j_series(const uint16_t drive) {
  * @return int32 position
  */
 int32_t ec_get_acttorq_wrd_aw_j_series(const uint16_t drive) {
-
     int16_t acttorq = ec_pdo_get_input_int16(map_drive_to_slave[drive], AW_J_SERIES_ACTTORQ_PDO_INDEX);
-//    int32_t acttorq = ec_pdo_get_input_int16(map_drive_to_slave[drive], AW_J_SERIES_TORQ_DEMAND_PDO_INDEX);
+    //    int32_t acttorq = ec_pdo_get_input_int16(map_drive_to_slave[drive], AW_J_SERIES_TORQ_DEMAND_PDO_INDEX);
 
 
     //    if (drive == 1) {
-//        printf("acttorq: %d\n", acttorq);
-//    }
+    //        printf("acttorq: %d\n", acttorq);
+    //    }
     return acttorq;
-
 }
 
 
@@ -349,7 +553,6 @@ uint16_t ec_get_ctrl_wrd_rev_aw_j_series(const uint16_t drive) {
  * @return gberror
  */
 gberror_t ec_set_ctrl_wrd_aw_j_series(const uint16_t drive, const uint16_t ctrlwrd) {
-
     ec_pdo_set_output_uint16(map_drive_to_slave[drive], AW_J_SERIES_CONTROLWORD_PDO_INDEX, ctrlwrd);
 
     return E_SUCCESS;
@@ -363,7 +566,6 @@ gberror_t ec_set_ctrl_wrd_aw_j_series(const uint16_t drive, const uint16_t ctrlw
  */
 uint16_t ec_get_stat_wrd_aw_j_series(const uint16_t drive) {
     return ec_pdo_get_input_uint16(map_drive_to_slave[drive], AW_J_SERIES_STATUSWORD_PDO_INDEX);
-
 }
 
 /**
@@ -373,7 +575,6 @@ uint16_t ec_get_stat_wrd_aw_j_series(const uint16_t drive) {
  * @return gberror
  */
 gberror_t ec_set_setpos_wrd_aw_j_series(const uint16_t drive, const int32_t setpos) {
-
     ec_pdo_set_output_int32(map_drive_to_slave[drive], AW_J_SERIES_SETPOS_PDO_INDEX, setpos);
     return E_SUCCESS;
 }
@@ -385,7 +586,6 @@ gberror_t ec_set_setpos_wrd_aw_j_series(const uint16_t drive, const int32_t setp
  * @return gberror
  */
 gberror_t ec_set_setvel_wrd_aw_j_series(const uint16_t drive, const int32_t setvel) {
-
     ec_pdo_set_output_int32(map_drive_to_slave[drive], AW_J_SERIES_SETVEL_PDO_INDEX, setvel);
     return E_SUCCESS;
 }
@@ -397,10 +597,8 @@ gberror_t ec_set_setvel_wrd_aw_j_series(const uint16_t drive, const int32_t setv
  * @return gberror
  */
 gberror_t ec_set_setveloffset_wrd_aw_j_series(const uint16_t drive, const int32_t setveloffset) {
-
     ec_pdo_set_output_int32(map_drive_to_slave[drive], AW_J_SERIES_SETVEL_OFFSET_PDO_INDEX, setveloffset);
     return E_SUCCESS;
-
 }
 
 /**
@@ -410,10 +608,9 @@ gberror_t ec_set_setveloffset_wrd_aw_j_series(const uint16_t drive, const int32_
  * @return gberror
  */
 gberror_t ec_set_settorq_wrd_aw_j_series(const uint16_t drive, const int32_t settorq) {
-
     ec_pdo_set_output_int16(map_drive_to_slave[drive], AW_J_SERIES_SETTORQ_PDO_INDEX, (int16_t) settorq);
 
-//    printf("settorq [%d]\n", settorq);
+    //    printf("settorq [%d]\n", settorq);
 
     return E_SUCCESS;
 }
@@ -426,7 +623,6 @@ gberror_t ec_set_settorq_wrd_aw_j_series(const uint16_t drive, const int32_t set
  */
 
 gberror_t ec_set_settorqoffset_wrd_aw_j_series(const uint16_t drive, const int32_t settorqoffset) {
-
     ec_pdo_set_output_int16(map_drive_to_slave[drive], AW_J_SERIES_SETORQ_OFFSET_PDO_INDEX, settorqoffset);
     return E_SUCCESS;
 }
@@ -442,9 +638,7 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
     if (ec_sdo_read_uint16(map_drive_to_slave[drive], AW_J_SERIES_ERROR_CODE_SDO_INDEX,
                            AW_J_SERIES_ERROR_CODE_SDO_SUB_INDEX,
                            &drive_error_code, false)) {
-
         if (drive_error_code == 0) {
-
             snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
                      "%s [%s]", no_error_prefix,
                      ec_get_detailled_error_report_sdo_aw_j_series(drive));
@@ -456,7 +650,6 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
 
         for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_STRINGS; i++) {
             if (aw_j_series_error[i].error_id == drive_error_code) {
-
                 snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
                          "%s [%s] %s [%s]", error_code_first, aw_j_series_error[i].text_string, error_code_second,
                          ec_get_detailled_error_report_sdo_aw_j_series(drive));
@@ -489,7 +682,6 @@ uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(const uint16_t drive_numb
                         &octet_string, EC_TIMEOUTRXM);
     if (rc <= 0) {
         return failed_error_code_read;
-
     }
 
     for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS; i++) {
@@ -499,7 +691,6 @@ uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(const uint16_t drive_numb
     }
 
     return failed_error_code_lookup;
-
 }
 
 /**
@@ -535,7 +726,6 @@ gberror_t ec_set_actpos_wrd_rev_aw_j_series(const uint16_t drive, const int32_t 
  */
 int32_t ec_get_setpos_word_rev_aw_j_series(const uint16_t drive) {
     return ec_pdo_get_output_int32_rev(map_drive_to_slave[drive], AW_J_SERIES_SETPOS_PDO_INDEX);
-
 }
 
 
@@ -551,133 +741,192 @@ gberror_t ec_set_moo_pdo_rev_aw_j_series(const uint16_t drive) {
 }
 
 
+gberror_t ec_print_slots_aw_j_series_fsoe(const uint16_t slave) {
+    uint8_t no_slots = 0;
+
+    if (!ec_sdo_read_uint8(slave, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX,
+                           0,
+                           &no_slots, true)) {
+        return E_SDO_READ_FAILURE;
+    }
+
+    UM_INFO(GBEM_UM_EN, "GBEM: AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX [0x%02x] [%u]",
+            AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX, no_slots);
+
+    //print slot entries
+    for (uint8_t i = 1; i <= no_slots; i++) {
+        uint32_t module_id = 0;
+        if (!ec_sdo_read_uint32(slave, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX,
+                                i,
+                                &module_id, true)) {
+            return E_SDO_READ_FAILURE;
+        }
+        UM_INFO(GBEM_UM_EN, "GBEM: AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX [0x%02x] [%u] = 0x%08x",
+                AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX, i, module_id);
+    }
+
+
+    return E_SUCCESS;
+}
+
+gberror_t ec_set_slots_aw_j_series_fsoe(const uint16_t slave) {
+    UM_INFO(GBEM_UM_EN, "GBEM: Setting slots for AW-J-Series FSoE - slave [%u]", slave);
+
+    ec_print_slots_aw_j_series_fsoe(slave);
+
+    //clear slot entries
+    if (!ec_sdo_write_int8(slave, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX,
+                           0,
+                           0, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    //    bool ec_sdo_write_uint32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint32_t Value, bool umError) {
+
+    if (!ec_sdo_write_uint32(slave, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX,
+                             1, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_MODULE_1_ID, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_uint32(slave, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX,
+                             2, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_MODULE_2_ID, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+    if (!ec_sdo_write_int8(slave, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX,
+                           0,
+                           2, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+
+    return E_SUCCESS;
+}
+
 const aw_j_series_error_report_string_t aw_j_series_error_report[NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS] = {
-        {"NoFault",  "No fault"},
-        {"PuOcA",    "Protection User-defined Over-current Phase A"},
-        {"PuOcB",    "Protection User-defined Over-current Phase B"},
-        {"PuOcC",    "Protection User-defined Over-current Phase C"},
-        {"PuUv",     "Protection User-defined Under-voltage"},
-        {"PuOv",     "Protection User-defined Over-voltage"},
-        {"PhUdef",   "Protection Hardware Undefined"},
-        {"PhFault",  "Protection Hardware Fault"},
-        {"PhWtdg",   "Protection Hardware Watchdog"},
-        {"PhDeadTA", "Protection Hardware Deadtime Phase A"},
-        {"PhDeadTB", "Protection Hardware Deadtime Phase B"},
-        {"PhDeadTC", "Protection Hardware Deadtime Phase C"},
-        {"PhDeadTD", "Protection Hardware Deadtime Phase D"},
-        {"PhOvUvOt", "Protection Hardware Over-voltage / Under-voltage / Over-temperature"},
-        {"PhOc",     "Protection Hardware Overcurrent"},
-        {"SfeDiIvd", "Safety Digital Input Invalid"},
-        {"SfeFault", "Safety Fault"},
-        {"BisErBit", "BiSS Error Bit active"},
-        {"BisWnBit", "BiSS Warning Bit active"},
-        {"BisAcBit", "BiSS Acknowledge Bit not received"},
-        {"BisSrtBt", "BiSS Start Bit not received"},
-        {"BisSloLo", "BiSS data (SLO) is permanently Low"},
-        {"BisFrame", "BiSS Frame configuration error"},
-        {"BisCrc",   "BiSS CRC error"},
-        {"BisRegEr", "BiSS register communication error"},
-        {"SsiFrame", "SSI Frame configuration error"},
-        {"SsiDtaLo", "SSI Data is permanently Low"},
-        {"SsiChksm", "SSI Checksum error"},
-        {"R16WkMgF", "REM16 Weak Magnetic Field"},
-        {"R16Cont",  "REM16 multiturn Counter error"},
-        {"R16CorDc", "REM16 singleturn CORDIC error"},
-        {"R16SpdOv", "REM16 multiturn Speed Overflow"},
-        {"R16FtCfg", "REM16 Filter Configuration error"},
-        {"R16FtSOF", "REM16 Filter Speed Overflow error"},
-        {"R16UnCmd", "REM16 Unknown Command"},
-        {"R16Chksm", "REM16 Checksum error"},
-        {"R14Chksm", "REM14 Checksum error"},
-        {"QeiLsTck", "QEI Lost Ticks"},
-        {"QeiNoIdx", "QEI No Index"},
-        {"QeiOpnWr", "QEI Open Wire"},
-        {"HallSeq",  "Hall Sequence error"},
-        {"AftFrame", "A-Format Frame error"},
-        {"AftTmout", "A-Format Timeout"},
-        {"AftCrc",   "A-Format CRC error"},
-        {"AftBatt",  "A-Format BATT status"},
-        {"AftMTErr", "A-Format MTERR status"},
-        {"AftOvFlw", "A-Format OvFlow status"},
-        {"AftOvSpd", "A-Format OVSPD status"},
-        {"AftMemEr", "A-Format MEMERR status"},
-        {"AftSTErr", "A-Format STERR status"},
-        {"AftPSErr", "A-Format PSERR status"},
-        {"AftBusyF", "A-Format BUSY status"},
-        {"AftMemBs", "A-Format MemBusy status"},
-        {"AftOvTmp", "A-Format OvTemp status"},
-        {"AftIncEr", "A-Format IncErr status"},
-        {"SnsrAngl", "Sensor Angle error"},
-        {"SnsrCfg",  "Sensor Configuration error"},
-        {"HwRsrcEr", "Hardware Resource Error"},
-        {"IvldGpio", "Invalid Gpio configuration"},
-        {"SnsrBatt", "Sensor battery error"},
-        {"SkpCycls", "Serial encoder service is skipping cycles"},
-        {"SwLimOut", "Software Limit Out"},
-        {"BrkNtRls", "Brake release failed"},
-        {"BkHiPull", "Pull brake voltage too high"},
-        {"BkHiHold", "Hold brake voltage too high"},
-        {"OpnTermA", "Open Terminal A"},
-        {"OpnTermB", "Open Terminal B"},
-        {"OpnTermC", "Open Terminal C"},
-        {"OpnFetAH", "Open high FET at phase A"},
-        {"OpnFetBH", "Open high FET at phase B"},
-        {"OpnFetCH", "Open high FET at phase C"},
-        {"OpnFetAL", "Open low FET at phase A"},
-        {"OpnFetBL", "Open low FET at phase B"},
-        {"OpnFetCL", "Open low FET at phase C"},
-        {"IvldOfst", "Invalid offset"},
-        {"IvldOpmd", "Invalid operational mode"},
-        {"ZeroMxI",  "Max. current is zero or negative"},
-        {"ZeroMxT",  "Max. torque is zero or negative"},
-        {"ZeroMxMS", "Max. motor speed is zero or negative"},
-        {"IvldPara", "Invalid Parameter"},
-        {"SiVelPfx", "Invalid velocity scaling factor"},
-        {"MxPwrLmt", "Maximum mechanical output power of the motor is reached"},
-        {"CyclicHb", "Cyclic heartbeat"},
-        {"OsCmdCol", "OS command collision"},
-        {"I2tActv",  "I2t protection is active"},
-        {"HmInvMth", "Unsupported or invalid homing method"},
-        {"Intern01", "Internal fault 1"},
-        {"Intern02", "Internal fault 2"},
-        {"Intern03", "Internal fault 3"},
-        {"VeFiFcLo", "Velocity filter cut-off frequency too low"},
-        {"VeFiFcHi", "Velocity filter cut-off frequency too high"},
-        {"PoFiFcLo", "Position filter cut-off frequency too low"},
-        {"PoFiFcHi", "Position filter cut-off frequency too high"},
-        {"VffFcLo",  "Velocity feed forward filter cut-off frequency too low"},
-        {"VffFcHi",  "Velocity feed forward filter cut-off frequency too high"},
-        {"NhFiFcHi", "Notch filter center frequency too high"},
-        {"NhFiPara", "Invalid Notch filter parameters"},
-        {"SynDifHi", "Sync difference too high"},
+    {"NoFault", "No fault"},
+    {"PuOcA", "Protection User-defined Over-current Phase A"},
+    {"PuOcB", "Protection User-defined Over-current Phase B"},
+    {"PuOcC", "Protection User-defined Over-current Phase C"},
+    {"PuUv", "Protection User-defined Under-voltage"},
+    {"PuOv", "Protection User-defined Over-voltage"},
+    {"PhUdef", "Protection Hardware Undefined"},
+    {"PhFault", "Protection Hardware Fault"},
+    {"PhWtdg", "Protection Hardware Watchdog"},
+    {"PhDeadTA", "Protection Hardware Deadtime Phase A"},
+    {"PhDeadTB", "Protection Hardware Deadtime Phase B"},
+    {"PhDeadTC", "Protection Hardware Deadtime Phase C"},
+    {"PhDeadTD", "Protection Hardware Deadtime Phase D"},
+    {"PhOvUvOt", "Protection Hardware Over-voltage / Under-voltage / Over-temperature"},
+    {"PhOc", "Protection Hardware Overcurrent"},
+    {"SfeDiIvd", "Safety Digital Input Invalid"},
+    {"SfeFault", "Safety Fault"},
+    {"BisErBit", "BiSS Error Bit active"},
+    {"BisWnBit", "BiSS Warning Bit active"},
+    {"BisAcBit", "BiSS Acknowledge Bit not received"},
+    {"BisSrtBt", "BiSS Start Bit not received"},
+    {"BisSloLo", "BiSS data (SLO) is permanently Low"},
+    {"BisFrame", "BiSS Frame configuration error"},
+    {"BisCrc", "BiSS CRC error"},
+    {"BisRegEr", "BiSS register communication error"},
+    {"SsiFrame", "SSI Frame configuration error"},
+    {"SsiDtaLo", "SSI Data is permanently Low"},
+    {"SsiChksm", "SSI Checksum error"},
+    {"R16WkMgF", "REM16 Weak Magnetic Field"},
+    {"R16Cont", "REM16 multiturn Counter error"},
+    {"R16CorDc", "REM16 singleturn CORDIC error"},
+    {"R16SpdOv", "REM16 multiturn Speed Overflow"},
+    {"R16FtCfg", "REM16 Filter Configuration error"},
+    {"R16FtSOF", "REM16 Filter Speed Overflow error"},
+    {"R16UnCmd", "REM16 Unknown Command"},
+    {"R16Chksm", "REM16 Checksum error"},
+    {"R14Chksm", "REM14 Checksum error"},
+    {"QeiLsTck", "QEI Lost Ticks"},
+    {"QeiNoIdx", "QEI No Index"},
+    {"QeiOpnWr", "QEI Open Wire"},
+    {"HallSeq", "Hall Sequence error"},
+    {"AftFrame", "A-Format Frame error"},
+    {"AftTmout", "A-Format Timeout"},
+    {"AftCrc", "A-Format CRC error"},
+    {"AftBatt", "A-Format BATT status"},
+    {"AftMTErr", "A-Format MTERR status"},
+    {"AftOvFlw", "A-Format OvFlow status"},
+    {"AftOvSpd", "A-Format OVSPD status"},
+    {"AftMemEr", "A-Format MEMERR status"},
+    {"AftSTErr", "A-Format STERR status"},
+    {"AftPSErr", "A-Format PSERR status"},
+    {"AftBusyF", "A-Format BUSY status"},
+    {"AftMemBs", "A-Format MemBusy status"},
+    {"AftOvTmp", "A-Format OvTemp status"},
+    {"AftIncEr", "A-Format IncErr status"},
+    {"SnsrAngl", "Sensor Angle error"},
+    {"SnsrCfg", "Sensor Configuration error"},
+    {"HwRsrcEr", "Hardware Resource Error"},
+    {"IvldGpio", "Invalid Gpio configuration"},
+    {"SnsrBatt", "Sensor battery error"},
+    {"SkpCycls", "Serial encoder service is skipping cycles"},
+    {"SwLimOut", "Software Limit Out"},
+    {"BrkNtRls", "Brake release failed"},
+    {"BkHiPull", "Pull brake voltage too high"},
+    {"BkHiHold", "Hold brake voltage too high"},
+    {"OpnTermA", "Open Terminal A"},
+    {"OpnTermB", "Open Terminal B"},
+    {"OpnTermC", "Open Terminal C"},
+    {"OpnFetAH", "Open high FET at phase A"},
+    {"OpnFetBH", "Open high FET at phase B"},
+    {"OpnFetCH", "Open high FET at phase C"},
+    {"OpnFetAL", "Open low FET at phase A"},
+    {"OpnFetBL", "Open low FET at phase B"},
+    {"OpnFetCL", "Open low FET at phase C"},
+    {"IvldOfst", "Invalid offset"},
+    {"IvldOpmd", "Invalid operational mode"},
+    {"ZeroMxI", "Max. current is zero or negative"},
+    {"ZeroMxT", "Max. torque is zero or negative"},
+    {"ZeroMxMS", "Max. motor speed is zero or negative"},
+    {"IvldPara", "Invalid Parameter"},
+    {"SiVelPfx", "Invalid velocity scaling factor"},
+    {"MxPwrLmt", "Maximum mechanical output power of the motor is reached"},
+    {"CyclicHb", "Cyclic heartbeat"},
+    {"OsCmdCol", "OS command collision"},
+    {"I2tActv", "I2t protection is active"},
+    {"HmInvMth", "Unsupported or invalid homing method"},
+    {"Intern01", "Internal fault 1"},
+    {"Intern02", "Internal fault 2"},
+    {"Intern03", "Internal fault 3"},
+    {"VeFiFcLo", "Velocity filter cut-off frequency too low"},
+    {"VeFiFcHi", "Velocity filter cut-off frequency too high"},
+    {"PoFiFcLo", "Position filter cut-off frequency too low"},
+    {"PoFiFcHi", "Position filter cut-off frequency too high"},
+    {"VffFcLo", "Velocity feed forward filter cut-off frequency too low"},
+    {"VffFcHi", "Velocity feed forward filter cut-off frequency too high"},
+    {"NhFiFcHi", "Notch filter center frequency too high"},
+    {"NhFiPara", "Invalid Notch filter parameters"},
+    {"SynDifHi", "Sync difference too high"},
 };
 
 /*array mapping an AW-J-Series drive detailed error reports to a text string */
 const aw_j_series_error_string_t aw_j_series_error[NUM_OF_AW_J_SERIES_ERROR_STRINGS] = {
-        {0x2220, "Continuous over current (device internal)"},
-        {0x2250, "Short circuit (device internal)"},
-        {0x2350, "Load level fault (I2t, thermal state)"},
-        {0x2351, "Load level warning (I2t, thermal state)"},
-        {0x3130, "Phase failure"},
-        {0x3131, "Phase failure L1"},
-        {0x3132, "Phase failure L2"},
-        {0x3133, "Phase failure L3"},
-        {0x3210, "DC link over-voltage"},
-        {0x3220, "DC link under-voltage"},
-        {0x3331, "Field circuit interrupted"},
-        {0x4210, "Excess temperature device"},
-        {0x4310, "Excess temperature drive"},
-        {0x5200, "Control"},
-        {0x5300, "Operating unit"},
-        {0x6010, "Software reset (watchdog)"},
-        {0x6320, "Parameter error"},
-        {0x7121, "Motor blocked"},
-        {0x7300, "Sensor"},
-        {0x7303, "Resolver 1 fault"},
-        {0x7304, "Resolver 2 fault"},
-        {0x7500, "Communication"},
-        {0x8611, "Positioning controller (following error)"},
-        {0x8612, "Positioning controller (reference limit)"},
-        {0xF002, "Sub-synchronous run"},
-        {0xFF00, "Manufacturer-specific"}
+    {0x2220, "Continuous over current (device internal)"},
+    {0x2250, "Short circuit (device internal)"},
+    {0x2350, "Load level fault (I2t, thermal state)"},
+    {0x2351, "Load level warning (I2t, thermal state)"},
+    {0x3130, "Phase failure"},
+    {0x3131, "Phase failure L1"},
+    {0x3132, "Phase failure L2"},
+    {0x3133, "Phase failure L3"},
+    {0x3210, "DC link over-voltage"},
+    {0x3220, "DC link under-voltage"},
+    {0x3331, "Field circuit interrupted"},
+    {0x4210, "Excess temperature device"},
+    {0x4310, "Excess temperature drive"},
+    {0x5200, "Control"},
+    {0x5300, "Operating unit"},
+    {0x6010, "Software reset (watchdog)"},
+    {0x6320, "Parameter error"},
+    {0x7121, "Motor blocked"},
+    {0x7300, "Sensor"},
+    {0x7303, "Resolver 1 fault"},
+    {0x7304, "Resolver 2 fault"},
+    {0x7500, "Communication"},
+    {0x8611, "Positioning controller (following error)"},
+    {0x8612, "Positioning controller (reference limit)"},
+    {0xF002, "Sub-synchronous run"},
+    {0xFF00, "Manufacturer-specific"}
 };

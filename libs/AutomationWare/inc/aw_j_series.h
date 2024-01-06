@@ -71,6 +71,8 @@ gberror_t ec_apply_standard_sdos_aw_j_series(uint16_t slave);
 
 gberror_t ec_pdo_map_aw_j_series(uint16_t slave);
 
+gberror_t ec_set_slots_aw_j_series_fsoe(const uint16_t slave);
+
 //Number of error strings and error report strings for the AW J series drives
 #define NUM_OF_AW_J_SERIES_ERROR_STRINGS 26
 #define NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS 98
@@ -134,6 +136,13 @@ SM3 inputs
 #define AW_J_SERIES_SETORQ_OFFSET_PDO_INDEX 13
 #define AW_J_SERIES_TORQ_DEMAND_PDO_INDEX   45
 #define AW_J_SERIES_ACTTORQ_PDO_INDEX       11
+
+
+//FSoE
+
+#define AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX 0xf030
+#define AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_MODULE_1_ID 67239937
+#define AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_MODULE_2_ID 584187905
 
 
 //SDO indexes for the AW J series drives
