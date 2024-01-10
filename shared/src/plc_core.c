@@ -90,7 +90,7 @@ void plc_process_iomap_out(const uint8_t task_index) {
                 // pdo(out)=plc(out)
                 switch (map_iomap[i].plc.datatype) {
                     case ECT_BOOLEAN:
-                        iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype,
+                        iomap_set_pdo_out_bool(map_iomap[i].pdo.byte_slave,
                                                map_iomap[i].pdo.slave_num,
                                                map_iomap[i].pdo.byte_num,
                                                map_iomap[i].pdo.bit_num,
@@ -138,7 +138,7 @@ void plc_process_iomap_in(const uint8_t task_index) {
                 //plc(in) = pdo(in)
                 switch (map_iomap[i].plc.datatype) {
                     case ECT_BOOLEAN:
-                        *((bool *) map_iomap[i].plc.io) = iomap_get_pdo_in_bool(map_iomap[i].pdo.datatype,
+                        *((bool *) map_iomap[i].plc.io) = iomap_get_pdo_in_bool(map_iomap[i].pdo.byte_slave,
                                                                                 map_iomap[i].pdo.slave_num,
                                                                                 map_iomap[i].pdo.byte_num,
                                                                                 map_iomap[i].pdo.bit_num);
