@@ -73,6 +73,9 @@ gberror_t ec_pdo_map_aw_j_series(uint16_t slave);
 
 gberror_t ec_set_slots_aw_j_series_fsoe(const uint16_t slave);
 
+gberror_t ec_custom_fmmu_sm_aw_j_series(const uint16_t slave);
+
+
 //Number of error strings and error report strings for the AW J series drives
 #define NUM_OF_AW_J_SERIES_ERROR_STRINGS 26
 #define NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS 98
@@ -210,6 +213,9 @@ SM3 inputs
 #define AW_J_SERIES_RESOLUTION_ENC2_SDO_INDEX      0x2112
 #define AW_J_SERIES_RESOLUTION_ENC2_SDO_SUB_INDEX  0x3
 
+//Assigned name 0x20F2:0	STRING(50)	400
+#define AW_J_SERIES_ASSIGNED_NAME_SDO_INDEX      0x20F2
+#define AW_J_SERIES_ASSIGNED_NAME_SDO_SUB_INDEX  0x0
 
 //torque constant	0x2003:2	DINT	32			1	μNm/A	readwrite
 #define AW_J_SERIES_TORQUE_CONSTANT_SDO_INDEX      0x2003
@@ -228,8 +234,6 @@ SM3 inputs
 #define AW_J_SERIES_LED_OP_PIN_VOLTAGE_SDO_INDEX      0x2214
 #define AW_J_SERIES_LED_OP_PIN_VOLTAGE_SDO_SUB_INDEX  0x1
 #define AW_J_SERIES_LED_OP_PIN_VOLTAGE_SDO_VALUE      2
-
-
 
 
 /** Max torques and speeds */
