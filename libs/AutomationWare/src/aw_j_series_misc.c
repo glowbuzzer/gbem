@@ -21,10 +21,26 @@
  */
 
 
-
 gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
+    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Printing Key Parameter SDOs for drive [%d]", drive);
 
-    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Printing SDOs for drive [%d]", drive);
+    int rc = 0;
+
+    int assigned_name_os = 50;
+    uint8_t assigned_name[50];
+
+    rc = ec_SDOread(map_drive_to_slave[drive], AW_J_SERIES_ASSIGNED_NAME_SDO_INDEX,
+                    AW_J_SERIES_ASSIGNED_NAME_SDO_SUB_INDEX, false, &assigned_name_os,
+                    &assigned_name, EC_TIMEOUTRXM);
+    if (rc <= 0) {
+        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Could not read SDO index:0x%04x - sub-index:0x%04x (on slave:%u)",
+                 AW_J_SERIES_ASSIGNED_NAME_SDO_INDEX,
+                 AW_J_SERIES_ASSIGNED_NAME_SDO_SUB_INDEX,
+                 map_drive_to_slave[drive]);
+        return E_SDO_READ_FAILURE;
+    }
+    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Assigned name [%s] on drive [%d]", assigned_name, drive);
+
 
     uint32_t enc1_res = 0;
     ec_sdo_read_uint32(map_drive_to_slave[drive], AW_J_SERIES_RESOLUTION_ENC1_SDO_INDEX,
@@ -39,8 +55,6 @@ gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
                        AW_J_SERIES_RESOLUTION_ENC2_SDO_SUB_INDEX,
                        &enc2_res, true);
     UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Encoder 2 resolution [%d] on drive [%d]", enc2_res, drive);
-
-
 
 
     //SI unit velocity	0x60A9:0	UDINT	32
@@ -80,12 +94,12 @@ gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
 
 
     //not sure why this does not exist in the object dictionary
-//    uint32_t feed_constant = 0;
-//    ec_sdo_read_uint32(map_drive_to_slave[drive], AW_J_SERIES_FEED_CONSTANT_SDO_INDEX,
-//                       AW_J_SERIES_FEED_CONSTANT_SDO_SUB_INDEX,
-//                       &feed_constant, true);
-//
-//    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Feed constant [%d] on drive [%d]", feed_constant, drive);
+    //    uint32_t feed_constant = 0;
+    //    ec_sdo_read_uint32(map_drive_to_slave[drive], AW_J_SERIES_FEED_CONSTANT_SDO_INDEX,
+    //                       AW_J_SERIES_FEED_CONSTANT_SDO_SUB_INDEX,
+    //                       &feed_constant, true);
+    //
+    //    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Feed constant [%d] on drive [%d]", feed_constant, drive);
 
 
     int32_t max_pos = 0;
@@ -127,9 +141,9 @@ gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
     int os = 50;
     uint8_t octet_string[50];
 
-    int rc = ec_SDOread(map_drive_to_slave[drive], AW_J_SERIES_MANUFACTURER_SOFTWARE_VERSION_SDO_INDEX,
-                        AW_J_SERIES_MANUFACTURER_SOFTWARE_VERSION_SDO_SUB_INDEX, false, &os,
-                        &octet_string, EC_TIMEOUTRXM);
+    rc = ec_SDOread(map_drive_to_slave[drive], AW_J_SERIES_MANUFACTURER_SOFTWARE_VERSION_SDO_INDEX,
+                    AW_J_SERIES_MANUFACTURER_SOFTWARE_VERSION_SDO_SUB_INDEX, false, &os,
+                    &octet_string, EC_TIMEOUTRXM);
     if (rc <= 0) {
         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Could not read SDO index:0x%04x - sub-index:0x%04x (on slave:%u)",
                  AW_J_SERIES_MANUFACTURER_SOFTWARE_VERSION_SDO_INDEX,
@@ -156,27 +170,27 @@ gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
     UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Torque constant [%d] on drive [%d]", torque_constant, drive);
 
 
-//default max pos: 2147483647
-//    default min pos: -2147483648
-//    default max torque: 4016
-//    default motor rated torque: 620
-//    default motor revolutions: 51
-//    default shaft revolutions: 1
+    //default max pos: 2147483647
+    //    default min pos: -2147483648
+    //    default max torque: 4016
+    //    default motor rated torque: 620
+    //    default motor revolutions: 51
+    //    default shaft revolutions: 1
 
-// 20 bit encoder =
-//    DEG_TO_INC: DINT := 2912
+    // 20 bit encoder =
+    //    DEG_TO_INC: DINT := 2912
 
 
-//aw-j17
-//    [INFO     ] GBEM: AW-J-Series - SI unit velocity [0.001 * RPM] on drive [0]
-//    [INFO     ] GBEM: AW-J-Series - Max motor speed [3000000] on drive [0]
-//    [INFO     ] GBEM: AW-J-Series - Max. pos [99999999] on drive [0]
-//    [INFO     ] GBEM: AW-J-Series - Min. pos  [-99999999] on drive [0]
-//    [INFO     ] GBEM: AW-J-Series - Max torque [240] on drive [0]
-//    [INFO     ] GBEM: AW-J-Series - Motor rated torque  [620] on drive [0]
-//    [INFO     ] GBEM: AW-J-Series - Motor revolutions [51] on drive [0]
-//    [INFO     ] GBEM: AW-J-Series - Shaft revolutions [1] on drive [0]
-//    [INFO     ] GBEM: AW-J-Series - Manufacturer software version [v5.0.9] on drive [0]
+    //aw-j17
+    //    [INFO     ] GBEM: AW-J-Series - SI unit velocity [0.001 * RPM] on drive [0]
+    //    [INFO     ] GBEM: AW-J-Series - Max motor speed [3000000] on drive [0]
+    //    [INFO     ] GBEM: AW-J-Series - Max. pos [99999999] on drive [0]
+    //    [INFO     ] GBEM: AW-J-Series - Min. pos  [-99999999] on drive [0]
+    //    [INFO     ] GBEM: AW-J-Series - Max torque [240] on drive [0]
+    //    [INFO     ] GBEM: AW-J-Series - Motor rated torque  [620] on drive [0]
+    //    [INFO     ] GBEM: AW-J-Series - Motor revolutions [51] on drive [0]
+    //    [INFO     ] GBEM: AW-J-Series - Shaft revolutions [1] on drive [0]
+    //    [INFO     ] GBEM: AW-J-Series - Manufacturer software version [v5.0.9] on drive [0]
 
 
     return E_SUCCESS;
