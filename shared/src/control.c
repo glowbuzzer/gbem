@@ -157,268 +157,268 @@ static struct state cia_not_ready_to_switch_on_state, cia_switch_on_disabled_sta
         cia_fault_reaction_active_state, cia_fault_state, sm_error_state;
 
 static struct state cia_not_ready_to_switch_on_state = {
-    .parentState = NULL,
-    .entryState = NULL,
-    .transitions = (struct transition[])
-    {
-        {
-            Event_cyclic,
-            (void *) ((intptr_t) CIA_NOT_READY_TO_SWITCH_ON),
-            &cia_trn13_guard,
-            NULL,
-            &cia_fault_reaction_active_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            NULL,
-            NULL,
-            &cia_switch_on_disabled_state
-        },
-    },
-    .numTransitions = 2,
-    .data = (void *) CIA_NOT_READY_TO_SWITCH_ON,
-    .entryAction = &cia_generic_entry_action,
-    .exitAction =
-    NULL,
+        .parentState = NULL,
+        .entryState = NULL,
+        .transitions = (struct transition[])
+                {
+                        {
+                                Event_cyclic,
+                                (void *) ((intptr_t) CIA_NOT_READY_TO_SWITCH_ON),
+                                &cia_trn13_guard,
+                                NULL,
+                                &cia_fault_reaction_active_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                NULL,
+                                NULL,
+                                &cia_switch_on_disabled_state
+                        },
+                },
+        .numTransitions = 2,
+        .data = (void *) CIA_NOT_READY_TO_SWITCH_ON,
+        .entryAction = &cia_generic_entry_action,
+        .exitAction =
+        NULL,
 };
 
 static struct state cia_switch_on_disabled_state = {
-    .parentState = NULL,
-    .entryState = NULL,
-    .transitions = (struct transition[])
-    {
-        {
-            Event_cyclic,
-            (void *) ((intptr_t) CIA_SWITCH_ON_DISABLED),
-            &cia_trn13_guard,
-            NULL,
-            &cia_fault_reaction_active_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn2_guard,
-            NULL,
-            &cia_ready_to_switch_on_state
-        },
-    },
-    .numTransitions = 2,
-    .data = (void *) CIA_SWITCH_ON_DISABLED,
-    .entryAction = &cia_generic_entry_action,
-    .exitAction = NULL,
+        .parentState = NULL,
+        .entryState = NULL,
+        .transitions = (struct transition[])
+                {
+                        {
+                                Event_cyclic,
+                                (void *) ((intptr_t) CIA_SWITCH_ON_DISABLED),
+                                &cia_trn13_guard,
+                                NULL,
+                                &cia_fault_reaction_active_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn2_guard,
+                                NULL,
+                                &cia_ready_to_switch_on_state
+                        },
+                },
+        .numTransitions = 2,
+        .data = (void *) CIA_SWITCH_ON_DISABLED,
+        .entryAction = &cia_generic_entry_action,
+        .exitAction = NULL,
 };
 
 static struct state cia_ready_to_switch_on_state = {
-    .parentState = NULL,
-    .entryState = NULL,
-    .transitions = (struct transition[])
-    {
-        {
-            Event_cyclic,
-            (void *) ((intptr_t) CIA_READY_TO_SWITCH_ON),
-            &cia_trn13_guard,
-            NULL,
-            &cia_fault_reaction_active_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn3_guard,
-            NULL,
-            &cia_switched_on_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn7_guard,
-            NULL,
-            &cia_switch_on_disabled_state
-        },
-    },
-    .numTransitions = 3,
-    .data = (void *) CIA_READY_TO_SWITCH_ON,
-    .entryAction = &cia_generic_entry_action,
-    .exitAction = NULL,
+        .parentState = NULL,
+        .entryState = NULL,
+        .transitions = (struct transition[])
+                {
+                        {
+                                Event_cyclic,
+                                (void *) ((intptr_t) CIA_READY_TO_SWITCH_ON),
+                                &cia_trn13_guard,
+                                NULL,
+                                &cia_fault_reaction_active_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn3_guard,
+                                NULL,
+                                &cia_switched_on_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn7_guard,
+                                NULL,
+                                &cia_switch_on_disabled_state
+                        },
+                },
+        .numTransitions = 3,
+        .data = (void *) CIA_READY_TO_SWITCH_ON,
+        .entryAction = &cia_generic_entry_action,
+        .exitAction = NULL,
 };
 
 static struct state cia_switched_on_state = {
-    .parentState = NULL,
-    .entryState = NULL,
-    .transitions = (struct transition[])
-    {
-        {
-            Event_cyclic,
-            (void *) ((intptr_t) CIA_SWITCHED_ON),
-            &cia_trn13_guard,
-            NULL,
-            &cia_fault_reaction_active_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn6_guard,
-            NULL,
-            &cia_ready_to_switch_on_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn4_guard,
-            NULL,
-            &cia_operation_enabled_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn10_guard,
-            NULL,
-            &cia_switch_on_disabled_state
-        },
-    },
-    .numTransitions = 4,
-    .data = (void *) CIA_SWITCHED_ON,
-    .entryAction = &cia_generic_entry_action,
-    .exitAction = NULL,
+        .parentState = NULL,
+        .entryState = NULL,
+        .transitions = (struct transition[])
+                {
+                        {
+                                Event_cyclic,
+                                (void *) ((intptr_t) CIA_SWITCHED_ON),
+                                &cia_trn13_guard,
+                                NULL,
+                                &cia_fault_reaction_active_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn6_guard,
+                                NULL,
+                                &cia_ready_to_switch_on_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn4_guard,
+                                NULL,
+                                &cia_operation_enabled_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn10_guard,
+                                NULL,
+                                &cia_switch_on_disabled_state
+                        },
+                },
+        .numTransitions = 4,
+        .data = (void *) CIA_SWITCHED_ON,
+        .entryAction = &cia_generic_entry_action,
+        .exitAction = NULL,
 };
 
 static struct state cia_operation_enabled_state = {
-    .parentState = NULL,
-    .entryState = NULL,
-    .transitions = (struct transition[])
-    {
-        {
-            Event_cyclic,
-            (void *) ((intptr_t) CIA_OPERATION_ENABLED),
-            &cia_trn13_guard,
-            NULL,
-            &cia_fault_reaction_active_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn5_guard,
-            NULL,
-            &cia_switched_on_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn8_guard,
-            NULL,
-            &cia_ready_to_switch_on_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn9_guard,
-            NULL,
-            &cia_switch_on_disabled_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn11_guard,
-            NULL,
-            &cia_quick_stop_active_state
-        },
-    },
-    .numTransitions = 5,
-    .data = (void *) CIA_OPERATION_ENABLED,
-    .entryAction = &cia_generic_entry_action,
-    .exitAction = NULL,
+        .parentState = NULL,
+        .entryState = NULL,
+        .transitions = (struct transition[])
+                {
+                        {
+                                Event_cyclic,
+                                (void *) ((intptr_t) CIA_OPERATION_ENABLED),
+                                &cia_trn13_guard,
+                                NULL,
+                                &cia_fault_reaction_active_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn5_guard,
+                                NULL,
+                                &cia_switched_on_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn8_guard,
+                                NULL,
+                                &cia_ready_to_switch_on_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn9_guard,
+                                NULL,
+                                &cia_switch_on_disabled_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn11_guard,
+                                NULL,
+                                &cia_quick_stop_active_state
+                        },
+                },
+        .numTransitions = 5,
+        .data = (void *) CIA_OPERATION_ENABLED,
+        .entryAction = &cia_generic_entry_action,
+        .exitAction = NULL,
 };
 
 static struct state cia_quick_stop_active_state = {
-    .parentState = NULL,
-    .entryState = NULL,
-    .transitions = (struct transition[])
-    {
-        {
-            Event_cyclic,
-            (void *) ((intptr_t) CIA_QUICK_STOP_ACTIVE),
-            &cia_trn13_guard,
-            NULL,
-            &cia_fault_reaction_active_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn16_guard,
-            NULL,
-            &cia_operation_enabled_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn12_guard,
-            NULL,
-            &cia_switch_on_disabled_state
-        },
-    },
-    .numTransitions = 3,
-    .data = (void *) CIA_QUICK_STOP_ACTIVE,
-    .entryAction = &cia_generic_entry_action,
-    .exitAction = NULL,
+        .parentState = NULL,
+        .entryState = NULL,
+        .transitions = (struct transition[])
+                {
+                        {
+                                Event_cyclic,
+                                (void *) ((intptr_t) CIA_QUICK_STOP_ACTIVE),
+                                &cia_trn13_guard,
+                                NULL,
+                                &cia_fault_reaction_active_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn16_guard,
+                                NULL,
+                                &cia_operation_enabled_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn12_guard,
+                                NULL,
+                                &cia_switch_on_disabled_state
+                        },
+                },
+        .numTransitions = 3,
+        .data = (void *) CIA_QUICK_STOP_ACTIVE,
+        .entryAction = &cia_generic_entry_action,
+        .exitAction = NULL,
 };
 
 //this state has a unguarded transition to itself with a transition action to set the current fault cause bits
 //when a state transitions to itself, entry and exit actions are not called
 static struct state cia_fault_reaction_active_state = {
-    .parentState = NULL,
-    .entryState = NULL,
-    .transitions = (struct transition[])
-    {
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn14_guard,
-            NULL,
-            &cia_fault_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            NULL,
-            &cia_set_current_fault_causes_action,
-            &cia_fault_reaction_active_state
-        },
-    },
-    .numTransitions = 2,
-    .data = (void *) CIA_FAULT_REACTION_ACTIVE,
-    .entryAction = &cia_generic_entry_action,
-    .exitAction = NULL,
+        .parentState = NULL,
+        .entryState = NULL,
+        .transitions = (struct transition[])
+                {
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn14_guard,
+                                NULL,
+                                &cia_fault_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                NULL,
+                                &cia_set_current_fault_causes_action,
+                                &cia_fault_reaction_active_state
+                        },
+                },
+        .numTransitions = 2,
+        .data = (void *) CIA_FAULT_REACTION_ACTIVE,
+        .entryAction = &cia_generic_entry_action,
+        .exitAction = NULL,
 };
 
 static struct state cia_fault_state = {
-    .parentState = NULL,
-    .entryState = NULL,
-    .transitions = (struct transition[])
-    {
-        {
-            Event_cyclic,
-            (void *) ((intptr_t) CIA_FAULT),
-            &cia_trn13_guard,
-            NULL,
-            &cia_fault_reaction_active_state
-        },
-        {
-            Event_cyclic,
-            NULL,
-            &cia_trn15_guard,
-            NULL,
-            &cia_switch_on_disabled_state
-        },
-    },
-    .numTransitions = 2,
-    .data = (void *) CIA_FAULT,
-    .entryAction = &cia_generic_entry_action,
-    .exitAction =
-    NULL,
+        .parentState = NULL,
+        .entryState = NULL,
+        .transitions = (struct transition[])
+                {
+                        {
+                                Event_cyclic,
+                                (void *) ((intptr_t) CIA_FAULT),
+                                &cia_trn13_guard,
+                                NULL,
+                                &cia_fault_reaction_active_state
+                        },
+                        {
+                                Event_cyclic,
+                                NULL,
+                                &cia_trn15_guard,
+                                NULL,
+                                &cia_switch_on_disabled_state
+                        },
+                },
+        .numTransitions = 2,
+        .data = (void *) CIA_FAULT,
+        .entryAction = &cia_generic_entry_action,
+        .exitAction =
+        NULL,
 };
 
 __attribute__((unused)) static struct state errorState = {
-    .entryAction = &sm_error_state_entry_action
+        .entryAction = &sm_error_state_entry_action
 };
 
 
@@ -569,8 +569,7 @@ static bool cia_trn5_guard(void *condition, struct event *event) {
             ctrl_change_all_drives_states(CIA_DISABLE_OPERATION_CTRLWRD);
             ctrl_state_change_cycle_count++;
             LL_TRACE(GBEM_SM_LOG_EN,
-                     "sm: TRN5 Guard - changing drive states with a Disabled operation controlword (switch on controword is same)")
-            ;
+                     "sm: TRN5 Guard - changing drive states with a Disabled operation controlword (switch on controword is same)");
             return false;
         }
     }
@@ -1058,13 +1057,13 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
                 state_mismatch = true;
             }
             break;
-        //        case CIA_SWITCH_ON_AND_ENABLE_OPERATION:
-        //            if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
-        //                 ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
-        //                && ctrl_state_change_cycle_count*MAP_CYCLE_TIME > ctrl_state_change_timeout) {
-        //                state_mismatch = true;
-        //            }
-        //            break;
+            //        case CIA_SWITCH_ON_AND_ENABLE_OPERATION:
+            //            if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
+            //                 ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
+            //                && ctrl_state_change_cycle_count*MAP_CYCLE_TIME > ctrl_state_change_timeout) {
+            //                state_mismatch = true;
+            //            }
+            //            break;
         case CIA_DISABLE_VOLTAGE:
             if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
                  ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
@@ -1096,8 +1095,7 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
     }
     if (state_mismatch) {
         LL_TRACE(GBEM_SM_LOG_EN,
-                 "sm: Mismatch between drive state and the controlword and the current state & no transitions occurring")
-        ;
+                 "sm: Mismatch between drive state and the controlword and the current state & no transitions occurring");
         ctrl_change_all_drives_states(CIA_QUICK_STOP_CTRLWRD);
         return false;
     }
@@ -1294,7 +1292,7 @@ static void cia_generic_entry_action(void *stateData, struct event *event) {
             break;
         case CIA_FAULT_REACTION_ACTIVE:
             dpm_in->machine_word = dpm_in->machine_word | CIA_FAULT_REACTION_ACTIVE_STATWRD;
-        /* trn13 should have called cia_is_fault_condition to set current faults in event struct*/
+            /* trn13 should have called cia_is_fault_condition to set current faults in event struct*/
             dpm_in->fault_history_word = ((event_data_t *) event->data)->fault_cause;
             break;
         case CIA_FAULT:
@@ -1593,10 +1591,10 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     DPM_IN_PROTECT_START
     /*	 run the state machine */
     int ret = stateM_handleEvent(m, &(struct event)
-                                 {
-                                     Event_cyclic,
-                                     (void *) (intptr_t) &event_data
-                                 });
+            {
+                    Event_cyclic,
+                    (void *) (intptr_t) &event_data
+            });
     DPM_IN_PROTECT_END
     if (ret == stateM_errArg) {
         LL_FATAL("GBEM: Erroneous arguments state machine");
@@ -1612,8 +1610,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
     if (ret == stateM_finalStateReached) {
         LL_FATAL(
-            "GBEM: State machine reached a final state - this should never happen unless something has gone inexplicably pear shaped")
-        ;
+                "GBEM: State machine reached a final state - this should never happen unless something has gone inexplicably pear shaped");
     }
 
     //read current state of state machine
@@ -1936,7 +1933,7 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                              "GBEM: Missing function pointer for map_drive_set_settorqoffset_wrd on drive [%u]", i);
                 }
 
-            /* also write position to drive for transition back to CSP*/
+                /* also write position to drive for transition back to CSP*/
                 if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
                     grc = map_drive_set_setpos_wrd_function_ptr[i](i, dpm_out->joint_set_position[i]);
                     if (grc != E_SUCCESS) {
@@ -2195,12 +2192,12 @@ void copy_fsoe_data_slaves_to_master(void) {
         for (int i = 0; i < MAP_NUM_SLAVES; i++) {
             if (map_slave_fsoe_master[i] == true) {
                 if (found_fsoe_master == true) {
-                    LL_FATAL(
-                        "GBEM: More than one FSOE master found - this is a fatal error (MAP_SLAVE_FSOE_MASTER contains mutiple true values)")
-                    ;
+                    UM_FATAL(
+                            "GBEM: More than one FSOE master found - this is a fatal error (MAP_SLAVE_FSOE_MASTER contains mutiple true values)");
                 }
                 fsoe_master_no = i;
-                UM_INFO(GBEM_GEN_LOG_EN, "GBEM: FSOE master found on slave [%u]", fsoe_master_no+1);
+                UM_INFO(GBEM_GEN_LOG_EN, "GBEM: FSOE master found on slave [%u]", fsoe_master_no + 1);
+                ecm_status.fsoe.master_slave_no = fsoe_master_no + 1;
                 found_fsoe_master = true;
             }
         }
@@ -2250,12 +2247,12 @@ void copy_fsoe_data_master_to_slaves(void) {
         for (int i = 0; i < MAP_NUM_SLAVES; i++) {
             if (map_slave_fsoe_master[i] == true) {
                 if (found_fsoe_master == true) {
-                    LL_FATAL(
-                        "GBEM: More than one FSOE master found - this is a fatal error (MAP_SLAVE_FSOE_MASTER contains mutiple true values)")
-                    ;
+                    UM_FATAL(
+                            "GBEM: More than one FSOE master found - this is a fatal error (MAP_SLAVE_FSOE_MASTER contains mutiple true values)");
                 }
                 fsoe_master_no = i;
-                UM_INFO(GBEM_GEN_LOG_EN, "GBEM: FSOE master found on slave [%u]", fsoe_master_no+1);
+                UM_INFO(GBEM_GEN_LOG_EN, "GBEM: FSOE master found on slave [%u]", fsoe_master_no + 1);
+                ecm_status.fsoe.master_slave_no = fsoe_master_no + 1;
                 found_fsoe_master = true;
             }
         }
@@ -2280,8 +2277,7 @@ void copy_fsoe_data_master_to_slaves(void) {
 
                 if (map_slave_fsoe_out_bytes[fsoe_master_no] != map_slave_fsoe_in_bytes[i]) {
                     LL_FATAL(
-                        "GBEM: FSOE master and slave have different number of bytes (master out to slave in) - this is a fatal error")
-                    ;
+                            "GBEM: FSOE master and slave have different number of bytes (master out to slave in) - this is a fatal error");
                 }
 
                 // UM_INFO(GBEM_GEN_LOG_EN,
@@ -2449,5 +2445,12 @@ void copy_fsoe_data(void) {
     // printf("check 0 %u [%s]\n", 3, temp ? "true" : "false");
 
     // fsoe_plc_program();
+}
+
+void update_fsoe_ecm_status(uint16_t slave) {
+
+    //read data from fsoe master or from slaves?
+
+
 }
 
