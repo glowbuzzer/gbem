@@ -42,6 +42,11 @@ extern bool nolimits;
 #define MAP_FSOE_MASTER_CONTROL_FUNCTION(...) gberror_t (*map_fsoe_master_control_function_ptr)(void) = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_OFFSET_IN(...) const uint16_t map_slave_fsoe_offset_in[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_OFFSET_OUT(...) const uint16_t map_slave_fsoe_offset_out[MAP_NUM_SLAVES] = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_GET_SLAVE_STATE(...) const uint32_t map_slave_fsoe_get_slave_state[MAP_NUM_SLAVES] = {__VA_ARGS__};
+#define MAP_SLAVE FSOE_GET_MASTER_STATE(...) const uint32_t map_slave_fsoe_get_master_state[MAP_NUM_SLAVES] = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_GET_MASTER_CON_ID(...) const uint16_t map_slave_fsoe_get_master_con_id[MAP_NUM_SLAVES] = {__VA_ARGS__};
+
+
 
 /* DRIVES */
 #define MAP_DRIVE_TO_NAME(...) const char map_drive_to_name[MAP_NUM_DRIVES][MAX_DRIVE_NAME_LENGTH] = {__VA_ARGS__};
@@ -220,6 +225,10 @@ extern const uint16_t map_slave_fsoe_in_bytes[MAP_NUM_SLAVES];
 
 extern const uint16_t map_slave_fsoe_offset_in[MAP_NUM_SLAVES];
 extern const uint16_t map_slave_fsoe_offset_out[MAP_NUM_SLAVES];
+
+extern const uint32_t map_slave_fsoe_get_slave_state[MAP_NUM_SLAVES];
+extern const uint32_t map_slave_fsoe_get_master_state[MAP_NUM_SLAVES];
+extern const uint16_t map_slave_fsoe_get_master_con_id[MAP_NUM_SLAVES];
 
 
 //DRIVES
