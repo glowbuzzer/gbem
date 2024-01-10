@@ -29,19 +29,21 @@ MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            NULL,                               
 MAP_SLAVE_NVRAM_SDO_FUNCTIONS(              NULL,                                   NULL);
 MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           ec_apply_standard_sdos_bbh_scu_1_ec,    ec_apply_standard_sdos_aw_j25 );
 MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            NULL,                                   ec_initial_pdo_aw_j_series);
-MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(         ec_custom_fmmu_sm_bbh_scu_1_ec,         NULL);
+MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(         ec_custom_fmmu_sm_bbh_scu_1_ec,         ec_custom_fmmu_sm_aw_j_series);
 MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,                             EC_DC_0);
-MAP_SLAVE_DC_CYCLE(                         0,                                      4) ;
+MAP_SLAVE_DC_CYCLE(                         0,                                      1) ;
 
 MAP_SLAVE_FSOE_MASTER(                      true,                                   false);
 MAP_SLAVE_FSOE_OFFSET_IN(                   0,                                      35);
 MAP_SLAVE_FSOE_OFFSET_OUT(                  0,                                      43);
 MAP_SLAVE_FSOE_OUT_BYTES(                   11,                                     31);
 MAP_SLAVE_FSOE_IN_BYTES(                    31,                                     11);
-
-
+//MAP_SLAVE_FSOE_GET_SLAVE_STATE(             NULL,                                   NULL);
+//MAP_SLAVE FSOE_GET_MASTER_STATE(            NULL,                                   NULL);
+//MAP_SLAVE_FSOE_GET_MASTER_CON_ID(           NULL,                                   NULL);
 
 MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
+//MAP_GET_ESTOP_STATE(NULL);
 
 /*This is a zero indexed array even though the slaves are 1 indexed */
 /* This must be laid out in the order they appear in netscan */
@@ -80,8 +82,8 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series         
 
 /* DRIVE PARAMETERS */
 //FOR AW DRIVES THESE ARE IN DEGREES
-MAP_DRIVE_POS_LIMIT(                        9999,                                  );
-MAP_DRIVE_NEG_LIMIT(                        -9999,                                 );
+MAP_DRIVE_POS_LIMIT(                        9999999,                                  );
+MAP_DRIVE_NEG_LIMIT(                        -9999999,                                 );
 MAP_DRIVE_DIRECTION(                        1,                                  );
 //percentage of max torque
 MAP_DRIVE_TORQ_LIMIT(                       30,                                  );
