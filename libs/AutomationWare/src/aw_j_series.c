@@ -22,204 +22,204 @@
 
 /* This is used for the fixed POO remapping */
 map_SM_assignment_object_t map_SM2_aw_series_fsoe = {
-        .number_of_entries = 4,
-        .SM_assignment_index = 0x1c12
+    .number_of_entries = 4,
+    .SM_assignment_index = 0x1c12
 };
 
 /* This is used for the fixed PDO remapping */
 map_SM_assignment_object_t map_SM3_aw_series_fsoe = {
-        .number_of_entries = 4,
-        .SM_assignment_index = 0x1c13
+    .number_of_entries = 4,
+    .SM_assignment_index = 0x1c13
 };
 
 /* This is used for the fixed PDO remapping */
 uint16_t map_SM2_index_of_assigned_PDO_aw_series_fsoe[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-        0x1600,
-        0x1601,
-        0x1602,
-        0x1700,
-        //        0x1701
+    0x1600,
+    0x1601,
+    0x1602,
+    0x1700,
+    //        0x1701
 };
 
 /* This is used for the fixed PDO remapping */
 uint16_t map_SM3_index_of_assigned_PDO_aw_series_fsoe[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-        0x1a00,
-        0x1a01,
-        0x1a03,
-        0x1b00,
-        //        0x1b01
+    0x1a00,
+    0x1a01,
+    0x1a03,
+    0x1b00,
+    //        0x1b01
 };
 
 
 map_custom_pdo_t aw_j_series_custom_pdo_map = {
-        .sm2_assignment_object = 0x1C12,
-        .num_sm2_assignments = 3,
-        .rxpdo = {
-                {
-                        .pdo_assignment_object = 0x1600,
-                        .num_assignments = 7,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED16, .index = 0x6040}, //Controlword
-                                {.datatype = ECT_INTEGER8, .index = 0x6060}, //Modes of operation
-                                {.datatype = ECT_INTEGER16, .index = 0x6071}, //Target Torque
-                                {.datatype = ECT_INTEGER32, .index = 0x607A}, //Target position
-                                {.datatype = ECT_INTEGER32, .index = 0x60FF}, //Target velocity
-                                {.datatype = ECT_INTEGER16, .index = 0x60B2}, //Torque offset
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2701}, //Tuning command
-                        }
-                },
-                {
-                        .pdo_assignment_object = 0x1601,
-                        .num_assignments = 2,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x1}, //Physical outputs
-                                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x2}, //Bit mask
-                        }
-                },
-                {
-                        .pdo_assignment_object = 0x1602,
-                        .num_assignments = 3,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2703}, //User MOSI
-                                {.datatype = ECT_INTEGER32, .index = 0x60B1}, //Velocity offset
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2215, .offset = 0x1}, //LED colour
-                        }
-                }
+    .sm2_assignment_object = 0x1C12,
+    .num_sm2_assignments = 3,
+    .rxpdo = {
+        {
+            .pdo_assignment_object = 0x1600,
+            .num_assignments = 7,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED16, .index = 0x6040}, //Controlword
+                {.datatype = ECT_INTEGER8, .index = 0x6060}, //Modes of operation
+                {.datatype = ECT_INTEGER16, .index = 0x6071}, //Target Torque
+                {.datatype = ECT_INTEGER32, .index = 0x607A}, //Target position
+                {.datatype = ECT_INTEGER32, .index = 0x60FF}, //Target velocity
+                {.datatype = ECT_INTEGER16, .index = 0x60B2}, //Torque offset
+                {.datatype = ECT_UNSIGNED32, .index = 0x2701}, //Tuning command
+            }
         },
-        .sm3_assignment_object = 0x1C13,
-        .num_sm3_assignments = 4,
-        .txpdo = {
-                {
-                        .pdo_assignment_object = 0x1A00,
-                        .num_assignments = 5,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED16, .index = 0x6041}, //Statusword
-                                {.datatype = ECT_INTEGER8, .index = 0x6061}, //Modes of operation display
-                                {.datatype = ECT_INTEGER32, .index = 0x6064}, //Position actual value
-                                {.datatype = ECT_INTEGER32, .index = 0x606C}, //Velocity actual value
-                                {.datatype = ECT_INTEGER16, .index = 0x6077}, //Torque actual value
-                        }
-                },
-                {
-                        .pdo_assignment_object = 0x1A01,
-                        .num_assignments = 5,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED16, .index = 0x2401}, //Analog input 1
-                                {.datatype = ECT_UNSIGNED16, .index = 0x2402}, // Analog input 2
-                                {.datatype = ECT_UNSIGNED16, .index = 0x2403}, //Analog input 3
-                                {.datatype = ECT_UNSIGNED16, .index = 0x2404}, //Analog input 4
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2702}, //Tuning status
-                        }
-                },
-                {
-                        .pdo_assignment_object = 0x1A02,
-                        .num_assignments = 1,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED32, .index = 0x60FD}, //Digital inputs
-                        }
-                },
-                {
-                        .pdo_assignment_object = 0x1A03,
-                        .num_assignments = 5,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2704}, //User MISO
-                                {.datatype = ECT_UNSIGNED32, .index = 0x20F0}, //Timestamp
-                                {.datatype = ECT_INTEGER32, .index = 0x60FC}, //Position demand internal value
-                                {.datatype = ECT_INTEGER32, .index = 0x606B}, //Velocity demand value
-                                {.datatype = ECT_INTEGER16, .index = 0x6074} //Torque demand
-                        }
-                }
+        {
+            .pdo_assignment_object = 0x1601,
+            .num_assignments = 2,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x1}, //Physical outputs
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x2}, //Bit mask
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1602,
+            .num_assignments = 3,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x2703}, //User MOSI
+                {.datatype = ECT_INTEGER32, .index = 0x60B1}, //Velocity offset
+                {.datatype = ECT_UNSIGNED32, .index = 0x2215, .offset = 0x1}, //LED colour
+            }
         }
+    },
+    .sm3_assignment_object = 0x1C13,
+    .num_sm3_assignments = 4,
+    .txpdo = {
+        {
+            .pdo_assignment_object = 0x1A00,
+            .num_assignments = 5,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED16, .index = 0x6041}, //Statusword
+                {.datatype = ECT_INTEGER8, .index = 0x6061}, //Modes of operation display
+                {.datatype = ECT_INTEGER32, .index = 0x6064}, //Position actual value
+                {.datatype = ECT_INTEGER32, .index = 0x606C}, //Velocity actual value
+                {.datatype = ECT_INTEGER16, .index = 0x6077}, //Torque actual value
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1A01,
+            .num_assignments = 5,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED16, .index = 0x2401}, //Analog input 1
+                {.datatype = ECT_UNSIGNED16, .index = 0x2402}, // Analog input 2
+                {.datatype = ECT_UNSIGNED16, .index = 0x2403}, //Analog input 3
+                {.datatype = ECT_UNSIGNED16, .index = 0x2404}, //Analog input 4
+                {.datatype = ECT_UNSIGNED32, .index = 0x2702}, //Tuning status
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1A02,
+            .num_assignments = 1,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FD}, //Digital inputs
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1A03,
+            .num_assignments = 5,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x2704}, //User MISO
+                {.datatype = ECT_UNSIGNED32, .index = 0x20F0}, //Timestamp
+                {.datatype = ECT_INTEGER32, .index = 0x60FC}, //Position demand internal value
+                {.datatype = ECT_INTEGER32, .index = 0x606B}, //Velocity demand value
+                {.datatype = ECT_INTEGER16, .index = 0x6074} //Torque demand
+            }
+        }
+    }
 };
 
 
 map_custom_pdo_t aw_j_series_fsoe_custom_pdo_map = {
-        .sm2_assignment_object = 0x1C12,
-        .num_sm2_assignments = 3,
-        .rxpdo = {
-                {
-                        .pdo_assignment_object = 0x1600,
-                        .num_assignments = 7,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED16, .index = 0x6040}, //Controlword
-                                {.datatype = ECT_INTEGER8, .index = 0x6060}, //Modes of operation
-                                {.datatype = ECT_INTEGER16, .index = 0x6071}, //Target Torque
-                                {.datatype = ECT_INTEGER32, .index = 0x607A}, //Target position
-                                {.datatype = ECT_INTEGER32, .index = 0x60FF}, //Target velocity
-                                {.datatype = ECT_INTEGER16, .index = 0x60B2}, //Torque offset
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2701}, //Tuning command
-                        }
-                },
-                {
-                        .pdo_assignment_object = 0x1601,
-                        .num_assignments = 2,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x1}, //Physical outputs
-                                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x2}, //Bit mask
-                        }
-                },
-                {
-                        .pdo_assignment_object = 0x1602,
-                        .num_assignments = 3,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2703}, //User MOSI
-                                {.datatype = ECT_INTEGER32, .index = 0x60B1}, //Velocity offset
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2215, .offset = 0x1}, //LED colour
-                        }
-                },
-                //                {.pdo_assignment_object=0x1700,
-                //                        .num_assignments=1,
-                //                        .assignments= {
-                //                                {.datatype = ECT_UNSIGNED8, .index = 0x6770, .offset=0x1}, //FSoE Command
-                //                                {.datatype = ECT_BOOLEAN, .index = 0x6640, .offset=0x0} // STO
-                //
-                //                        }
-                //                }
+    .sm2_assignment_object = 0x1C12,
+    .num_sm2_assignments = 3,
+    .rxpdo = {
+        {
+            .pdo_assignment_object = 0x1600,
+            .num_assignments = 7,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED16, .index = 0x6040}, //Controlword
+                {.datatype = ECT_INTEGER8, .index = 0x6060}, //Modes of operation
+                {.datatype = ECT_INTEGER16, .index = 0x6071}, //Target Torque
+                {.datatype = ECT_INTEGER32, .index = 0x607A}, //Target position
+                {.datatype = ECT_INTEGER32, .index = 0x60FF}, //Target velocity
+                {.datatype = ECT_INTEGER16, .index = 0x60B2}, //Torque offset
+                {.datatype = ECT_UNSIGNED32, .index = 0x2701}, //Tuning command
+            }
         },
-        .sm3_assignment_object = 0x1C13,
-        .num_sm3_assignments = 4,
-        .txpdo = {
-                {
-                        .pdo_assignment_object = 0x1A00,
-                        .num_assignments = 5,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED16, .index = 0x6041}, //Statusword
-                                {.datatype = ECT_INTEGER8, .index = 0x6061}, //Modes of operation display
-                                {.datatype = ECT_INTEGER32, .index = 0x6064}, //Position actual value
-                                {.datatype = ECT_INTEGER32, .index = 0x606C}, //Velocity actual value
-                                {.datatype = ECT_INTEGER16, .index = 0x6077}, //Torque actual value
-                        }
-                },
-                {
-                        .pdo_assignment_object = 0x1A01,
-                        .num_assignments = 5,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED16, .index = 0x2401}, //Analog input 1
-                                {.datatype = ECT_UNSIGNED16, .index = 0x2402}, // Analog input 2
-                                {.datatype = ECT_UNSIGNED16, .index = 0x2403}, //Analog input 3
-                                {.datatype = ECT_UNSIGNED16, .index = 0x2404}, //Analog input 4
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2702}, //Tuning status
-                        }
-                },
-                {
-                        .pdo_assignment_object = 0x1A02,
-                        .num_assignments = 1,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED32, .index = 0x60FD}, //Digital inputs
-                        }
-                },
-                {
-                        .pdo_assignment_object = 0x1A03,
-                        .num_assignments = 5,
-                        .assignments = {
-                                {.datatype = ECT_UNSIGNED32, .index = 0x2704}, //User MISO
-                                {.datatype = ECT_UNSIGNED32, .index = 0x20F0}, //Timestamp
-                                {.datatype = ECT_INTEGER32, .index = 0x60FC}, //Position demand internal value
-                                {.datatype = ECT_INTEGER32, .index = 0x606B}, //Velocity demand value
-                                {.datatype = ECT_INTEGER16, .index = 0x6074} //Torque demand
-                        }
-                }
+        {
+            .pdo_assignment_object = 0x1601,
+            .num_assignments = 2,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x1}, //Physical outputs
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x2}, //Bit mask
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1602,
+            .num_assignments = 3,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x2703}, //User MOSI
+                {.datatype = ECT_INTEGER32, .index = 0x60B1}, //Velocity offset
+                {.datatype = ECT_UNSIGNED32, .index = 0x2215, .offset = 0x1}, //LED colour
+            }
+        },
+        //                {.pdo_assignment_object=0x1700,
+        //                        .num_assignments=1,
+        //                        .assignments= {
+        //                                {.datatype = ECT_UNSIGNED8, .index = 0x6770, .offset=0x1}, //FSoE Command
+        //                                {.datatype = ECT_BOOLEAN, .index = 0x6640, .offset=0x0} // STO
+        //
+        //                        }
+        //                }
+    },
+    .sm3_assignment_object = 0x1C13,
+    .num_sm3_assignments = 4,
+    .txpdo = {
+        {
+            .pdo_assignment_object = 0x1A00,
+            .num_assignments = 5,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED16, .index = 0x6041}, //Statusword
+                {.datatype = ECT_INTEGER8, .index = 0x6061}, //Modes of operation display
+                {.datatype = ECT_INTEGER32, .index = 0x6064}, //Position actual value
+                {.datatype = ECT_INTEGER32, .index = 0x606C}, //Velocity actual value
+                {.datatype = ECT_INTEGER16, .index = 0x6077}, //Torque actual value
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1A01,
+            .num_assignments = 5,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED16, .index = 0x2401}, //Analog input 1
+                {.datatype = ECT_UNSIGNED16, .index = 0x2402}, // Analog input 2
+                {.datatype = ECT_UNSIGNED16, .index = 0x2403}, //Analog input 3
+                {.datatype = ECT_UNSIGNED16, .index = 0x2404}, //Analog input 4
+                {.datatype = ECT_UNSIGNED32, .index = 0x2702}, //Tuning status
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1A02,
+            .num_assignments = 1,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FD}, //Digital inputs
+            }
+        },
+        {
+            .pdo_assignment_object = 0x1A03,
+            .num_assignments = 5,
+            .assignments = {
+                {.datatype = ECT_UNSIGNED32, .index = 0x2704}, //User MISO
+                {.datatype = ECT_UNSIGNED32, .index = 0x20F0}, //Timestamp
+                {.datatype = ECT_INTEGER32, .index = 0x60FC}, //Position demand internal value
+                {.datatype = ECT_INTEGER32, .index = 0x606B}, //Velocity demand value
+                {.datatype = ECT_INTEGER16, .index = 0x6074} //Torque demand
+            }
         }
+    }
 };
 
 gberror_t ec_print_pdo_config_aw_series(const uint16_t slave) {
@@ -819,173 +819,197 @@ gberror_t ec_set_slots_aw_j_series_fsoe(const uint16_t slave) {
 }
 
 const aw_j_series_error_report_string_t aw_j_series_error_report[NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS] = {
-        {"NoFault",  "No fault"},
-        {"PuOcA",    "Protection User-defined Over-current Phase A"},
-        {"PuOcB",    "Protection User-defined Over-current Phase B"},
-        {"PuOcC",    "Protection User-defined Over-current Phase C"},
-        {"PuUv",     "Protection User-defined Under-voltage"},
-        {"PuOv",     "Protection User-defined Over-voltage"},
-        {"PhUdef",   "Protection Hardware Undefined"},
-        {"PhFault",  "Protection Hardware Fault"},
-        {"PhWtdg",   "Protection Hardware Watchdog"},
-        {"PhDeadTA", "Protection Hardware Deadtime Phase A"},
-        {"PhDeadTB", "Protection Hardware Deadtime Phase B"},
-        {"PhDeadTC", "Protection Hardware Deadtime Phase C"},
-        {"PhDeadTD", "Protection Hardware Deadtime Phase D"},
-        {"PhOvUvOt", "Protection Hardware Over-voltage / Under-voltage / Over-temperature"},
-        {"PhOc",     "Protection Hardware Overcurrent"},
-        {"SfeDiIvd", "Safety Digital Input Invalid"},
-        {"SfeFault", "Safety Fault"},
-        {"BisErBit", "BiSS Error Bit active"},
-        {"BisWnBit", "BiSS Warning Bit active"},
-        {"BisAcBit", "BiSS Acknowledge Bit not received"},
-        {"BisSrtBt", "BiSS Start Bit not received"},
-        {"BisSloLo", "BiSS data (SLO) is permanently Low"},
-        {"BisFrame", "BiSS Frame configuration error"},
-        {"BisCrc",   "BiSS CRC error"},
-        {"BisRegEr", "BiSS register communication error"},
-        {"SsiFrame", "SSI Frame configuration error"},
-        {"SsiDtaLo", "SSI Data is permanently Low"},
-        {"SsiChksm", "SSI Checksum error"},
-        {"R16WkMgF", "REM16 Weak Magnetic Field"},
-        {"R16Cont",  "REM16 multiturn Counter error"},
-        {"R16CorDc", "REM16 singleturn CORDIC error"},
-        {"R16SpdOv", "REM16 multiturn Speed Overflow"},
-        {"R16FtCfg", "REM16 Filter Configuration error"},
-        {"R16FtSOF", "REM16 Filter Speed Overflow error"},
-        {"R16UnCmd", "REM16 Unknown Command"},
-        {"R16Chksm", "REM16 Checksum error"},
-        {"R14Chksm", "REM14 Checksum error"},
-        {"QeiLsTck", "QEI Lost Ticks"},
-        {"QeiNoIdx", "QEI No Index"},
-        {"QeiOpnWr", "QEI Open Wire"},
-        {"HallSeq",  "Hall Sequence error"},
-        {"AftFrame", "A-Format Frame error"},
-        {"AftTmout", "A-Format Timeout"},
-        {"AftCrc",   "A-Format CRC error"},
-        {"AftBatt",  "A-Format BATT status"},
-        {"AftMTErr", "A-Format MTERR status"},
-        {"AftOvFlw", "A-Format OvFlow status"},
-        {"AftOvSpd", "A-Format OVSPD status"},
-        {"AftMemEr", "A-Format MEMERR status"},
-        {"AftSTErr", "A-Format STERR status"},
-        {"AftPSErr", "A-Format PSERR status"},
-        {"AftBusyF", "A-Format BUSY status"},
-        {"AftMemBs", "A-Format MemBusy status"},
-        {"AftOvTmp", "A-Format OvTemp status"},
-        {"AftIncEr", "A-Format IncErr status"},
-        {"SnsrAngl", "Sensor Angle error"},
-        {"SnsrCfg",  "Sensor Configuration error"},
-        {"HwRsrcEr", "Hardware Resource Error"},
-        {"IvldGpio", "Invalid Gpio configuration"},
-        {"SnsrBatt", "Sensor battery error"},
-        {"SkpCycls", "Serial encoder service is skipping cycles"},
-        {"SwLimOut", "Software Limit Out"},
-        {"BrkNtRls", "Brake release failed"},
-        {"BkHiPull", "Pull brake voltage too high"},
-        {"BkHiHold", "Hold brake voltage too high"},
-        {"OpnTermA", "Open Terminal A"},
-        {"OpnTermB", "Open Terminal B"},
-        {"OpnTermC", "Open Terminal C"},
-        {"OpnFetAH", "Open high FET at phase A"},
-        {"OpnFetBH", "Open high FET at phase B"},
-        {"OpnFetCH", "Open high FET at phase C"},
-        {"OpnFetAL", "Open low FET at phase A"},
-        {"OpnFetBL", "Open low FET at phase B"},
-        {"OpnFetCL", "Open low FET at phase C"},
-        {"IvldOfst", "Invalid offset"},
-        {"IvldOpmd", "Invalid operational mode"},
-        {"ZeroMxI",  "Max. current is zero or negative"},
-        {"ZeroMxT",  "Max. torque is zero or negative"},
-        {"ZeroMxMS", "Max. motor speed is zero or negative"},
-        {"IvldPara", "Invalid Parameter"},
-        {"SiVelPfx", "Invalid velocity scaling factor"},
-        {"MxPwrLmt", "Maximum mechanical output power of the motor is reached"},
-        {"CyclicHb", "Cyclic heartbeat"},
-        {"OsCmdCol", "OS command collision"},
-        {"I2tActv",  "I2t protection is active"},
-        {"HmInvMth", "Unsupported or invalid homing method"},
-        {"Intern01", "Internal fault 1"},
-        {"Intern02", "Internal fault 2"},
-        {"Intern03", "Internal fault 3"},
-        {"VeFiFcLo", "Velocity filter cut-off frequency too low"},
-        {"VeFiFcHi", "Velocity filter cut-off frequency too high"},
-        {"PoFiFcLo", "Position filter cut-off frequency too low"},
-        {"PoFiFcHi", "Position filter cut-off frequency too high"},
-        {"VffFcLo",  "Velocity feed forward filter cut-off frequency too low"},
-        {"VffFcHi",  "Velocity feed forward filter cut-off frequency too high"},
-        {"NhFiFcHi", "Notch filter center frequency too high"},
-        {"NhFiPara", "Invalid Notch filter parameters"},
-        {"SynDifHi", "Sync difference too high"},
-        {"SmmNoCfg", "SMM not configured"},
-        {"SmmFatal", "SMM internal fatal error"},
-        {"SmmDead",  "SMM is missing or is broken"},
-        {"SmmOtw",   "SMM temperature warning"},
-        {"SmmFIO01", "Input 1 discrepancy"},
-        {"SmmFIO02	Input 2 discrepancy"},
-        {"SmmFIO03", "Input 3 discrepancy"},
-        {"SmmFIO04", "Input 4 discrepancy"},
-        {"SmmFIO05", "Input 1 pulses missing"},
-        {"SmmFIO06", "Input 2 pulses missing"},
-        {"SmmFIO07", "Input 3 pulses missing"},
-        {"SmmFIO08", "Input 4 pulses missing"},
-        {"SmmFIn09", "Output 1 discrepancy"},
-        {"SmmFIn10", "Output 2 discrepancy"},
-        {"SmmFIn11", "Output 1 stuck at"},
-        {"SmmFIn12", "Output 2 stuck at"},
-        {"SmmFIn13", "STO output discrepancy"},
-        {"SmmFIn14", "STO output fault"},
-        {"SmmFIn15", "Brake output discrepancy"},
-        {"SmmFIO16", "Brake output fault"},
-        {"SmmFIn17", "Safety function discrepancy"},
-        {"SmmFIn19", "Power supply external 5V analog fault"},
-        {"SmmFIO20", "Analog input stuck at fault"},
-        {"SmmFIO21", "Analog input sampler fault"},
-        {"SmmFIn22", "Power supply external 5V encoder fault"},
-        {"SmmFIO23", "Encoder fault"},
-        {"SmmFIn24", "Power supply fault"},
-        {"SmmFIn25", "Black-channel config fault"},
-        {"SmmFIO26", "Black-channel fault"},
-        {"SmmFIn27", "Core fault"},
-        {"SmmFIO28", "Verification encoder direction error"},
-        {"SmmFIO29", "24V Power Supply fault"},
-        {"SmmFIO31", "Safety parameters invalid"},
-        {"SmmFIn34", "Manufacturing parameters invalid"},
-        {"SmmFIn35", "Temperature fault"},
-        {"SmmFIn36", "Timing fault"},
-        {"SmmFIn37", "Internal discrepancy"},
-        {"SmmFIn38", "Internal fault"},
-        {"SmmFIO39", "Internal Communication Fault"},
-
+    {"NoFault", "No fault"},
+    {"PuOcA", "Protection User-defined Over-current Phase A"},
+    {"PuOcB", "Protection User-defined Over-current Phase B"},
+    {"PuOcC", "Protection User-defined Over-current Phase C"},
+    {"PuUv", "Protection User-defined Under-voltage"},
+    {"PuOv", "Protection User-defined Over-voltage"},
+    {"PhUdef", "Protection Hardware Undefined"},
+    {"PhFault", "Protection Hardware Fault"},
+    {"PhWtdg", "Protection Hardware Watchdog"},
+    {"PhDeadTA", "Protection Hardware Deadtime Phase A"},
+    {"PhDeadTB", "Protection Hardware Deadtime Phase B"},
+    {"PhDeadTC", "Protection Hardware Deadtime Phase C"},
+    {"PhDeadTD", "Protection Hardware Deadtime Phase D"},
+    {"PhOvUvOt", "Protection Hardware Over-voltage / Under-voltage / Over-temperature"},
+    {"PhOc", "Protection Hardware Overcurrent"},
+    {"SfeDiIvd", "Safety Digital Input Invalid"},
+    {"SfeFault", "Safety Fault"},
+    {"BisErBit", "BiSS Error Bit active"},
+    {"BisWnBit", "BiSS Warning Bit active"},
+    {"BisAcBit", "BiSS Acknowledge Bit not received"},
+    {"BisSrtBt", "BiSS Start Bit not received"},
+    {"BisSloLo", "BiSS data (SLO) is permanently Low"},
+    {"BisFrame", "BiSS Frame configuration error"},
+    {"BisCrc", "BiSS CRC error"},
+    {"BisRegEr", "BiSS register communication error"},
+    {"SsiFrame", "SSI Frame configuration error"},
+    {"SsiDtaLo", "SSI Data is permanently Low"},
+    {"SsiChksm", "SSI Checksum error"},
+    {"R16WkMgF", "REM16 Weak Magnetic Field"},
+    {"R16Cont", "REM16 multiturn Counter error"},
+    {"R16CorDc", "REM16 singleturn CORDIC error"},
+    {"R16SpdOv", "REM16 multiturn Speed Overflow"},
+    {"R16FtCfg", "REM16 Filter Configuration error"},
+    {"R16FtSOF", "REM16 Filter Speed Overflow error"},
+    {"R16UnCmd", "REM16 Unknown Command"},
+    {"R16Chksm", "REM16 Checksum error"},
+    {"R14Chksm", "REM14 Checksum error"},
+    {"QeiLsTck", "QEI Lost Ticks"},
+    {"QeiNoIdx", "QEI No Index"},
+    {"QeiOpnWr", "QEI Open Wire"},
+    {"HallSeq", "Hall Sequence error"},
+    {"AftFrame", "A-Format Frame error"},
+    {"AftTmout", "A-Format Timeout"},
+    {"AftCrc", "A-Format CRC error"},
+    {"AftBatt", "A-Format BATT status"},
+    {"AftMTErr", "A-Format MTERR status"},
+    {"AftOvFlw", "A-Format OvFlow status"},
+    {"AftOvSpd", "A-Format OVSPD status"},
+    {"AftMemEr", "A-Format MEMERR status"},
+    {"AftSTErr", "A-Format STERR status"},
+    {"AftPSErr", "A-Format PSERR status"},
+    {"AftBusyF", "A-Format BUSY status"},
+    {"AftMemBs", "A-Format MemBusy status"},
+    {"AftOvTmp", "A-Format OvTemp status"},
+    {"AftIncEr", "A-Format IncErr status"},
+    {"SnsrAngl", "Sensor Angle error"},
+    {"SnsrCfg", "Sensor Configuration error"},
+    {"HwRsrcEr", "Hardware Resource Error"},
+    {"IvldGpio", "Invalid Gpio configuration"},
+    {"SnsrBatt", "Sensor battery error"},
+    {"SkpCycls", "Serial encoder service is skipping cycles"},
+    {"SwLimOut", "Software Limit Out"},
+    {"BrkNtRls", "Brake release failed"},
+    {"BkHiPull", "Pull brake voltage too high"},
+    {"BkHiHold", "Hold brake voltage too high"},
+    {"OpnTermA", "Open Terminal A"},
+    {"OpnTermB", "Open Terminal B"},
+    {"OpnTermC", "Open Terminal C"},
+    {"OpnFetAH", "Open high FET at phase A"},
+    {"OpnFetBH", "Open high FET at phase B"},
+    {"OpnFetCH", "Open high FET at phase C"},
+    {"OpnFetAL", "Open low FET at phase A"},
+    {"OpnFetBL", "Open low FET at phase B"},
+    {"OpnFetCL", "Open low FET at phase C"},
+    {"IvldOfst", "Invalid offset"},
+    {"IvldOpmd", "Invalid operational mode"},
+    {"ZeroMxI", "Max. current is zero or negative"},
+    {"ZeroMxT", "Max. torque is zero or negative"},
+    {"ZeroMxMS", "Max. motor speed is zero or negative"},
+    {"IvldPara", "Invalid Parameter"},
+    {"SwLimOut", "Software Limit Out"},
+    {"SiVelPfx", "Invalid velocity scaling factor"},
+    {"SiVelTim", "Invalid SI velocity time factor"},
+    {"IvldFeed", "Invalid Feed constant"},
+    {"MxPwrLmt", "Maximum mechanical output power of the motor is reached"},
+    {"FollwErr", "Following error"},
+    {"MxTorLmt", "Maximum torque limit"},
+    {"MxMSLmt", "Maximum motor speed limit"},
+    {"SwPosLmt", "Software position limit"},
+    {"PosRgLmt", "Encoder range limit"},
+    {"IntgrLmt", "IntLmAct"},
+    {"PosLmAct", "Positive Limit Switch Active"},
+    {"NegLmAct", "Negative Limit"},
+    {"CyclicHb", "Cyclic heartbeat"},
+    {"OsCmdCol", "OS command collision"},
+    {"I2tActv", "I2t protection is active"},
+    {"HmInvMth", "Unsupported or invalid homing method"},
+    {"Intern01", "Internal fault 1"},
+    {"Intern02", "Internal fault 2"},
+    {"Intern03", "Internal fault 3"},
+    {"Intern04", "Internal fault 4"},
+    {"Intern05", "Internal fault 5"},
+    {"VeFiFcLo", "Velocity filter cut-off frequency too low"},
+    {"VeFiFcHi", "Velocity filter cut-off frequency too high"},
+    {"PoFiFcLo", "Position filter cut-off frequency too low"},
+    {"PoFiFcHi", "Position filter cut-off frequency too high"},
+    {"VffFcLo", "Velocity feed forward filter cut-off frequency too low"},
+    {"VffFcHi", "Velocity feed forward filter cut-off frequency too high"},
+    {"NhFiFcHi", "Notch filter center frequency too high"},
+    {"NhFiPara", "Invalid Notch filter parameters"},
+    {"SynDifHi", "Sync difference too high"},
+    {"SmmNoCfg", "SMM not configured"},
+    {"SmmFatal", "SMM internal fatal error"},
+    {"SmmDead", "SMM is missing or is broken"},
+    {"SmmOtw", "SMM temperature warning"},
+    {"SmmFIO01", "Input 1 discrepancy"},
+    {"SmmFIO02", "Input 2 discrepancy"},
+    {"SmmFIO03", "Input 3 discrepancy"},
+    {"SmmFIO04", "Input 4 discrepancy"},
+    {"SmmFIO05", "Input 1 pulses missing"},
+    {"SmmFIO06", "Input 2 pulses missing"},
+    {"SmmFIO07", "Input 3 pulses missing"},
+    {"SmmFIO08", "Input 4 pulses missing"},
+    {"SmmFIn09", "Output 1 discrepancy"},
+    {"SmmFIn10", "Output 2 discrepancy"},
+    {"SmmFIn11", "Output 1 stuck at"},
+    {"SmmFIn12", "Output 2 stuck at"},
+    {"SmmFIn13", "STO output discrepancy"},
+    {"SmmFIn14", "STO output fault"},
+    {"SmmFIn15", "Brake output discrepancy"},
+    {"SmmFIO16", "Brake output fault"},
+    {"SmmFIn17", "Safety function discrepancy"},
+    {"SmmFIn19", "Power supply external 5V analog fault"},
+    {"SmmFIO20", "Analog input stuck at fault"},
+    {"SmmFIO21", "Analog input sampler fault"},
+    {"SmmFIn22", "Power supply external 5V encoder fault"},
+    {"SmmFIO23", "Encoder fault"},
+    {"SmmFIn24", "Power supply fault"},
+    {"SmmFIn25", "Black-channel config fault"},
+    {"SmmFIO26", "Black-channel fault"},
+    {"SmmFIn27", "Core fault"},
+    {"SmmFIO28", "Verification encoder direction error"},
+    {"SmmFIO29", "24V Power Supply fault"},
+    {"SmmFIO31", "Safety parameters invalid"},
+    {"SmmFIn34", "Manufacturing parameters invalid"},
+    {"SmmFIn35", "Temperature fault"},
+    {"SmmFIn36", "Timing fault"},
+    {"SmmFIn37", "Internal discrepancy"},
+    {"SmmFIn38", "Internal fault"},
+    {"SmmFIO39", "Internal Communication Fault"},
+    {"QeiLsTck", "QEI Lost Ticks"},
+    {"QeiNoIdx", "QEI No Index"},
+    {"QeiOpnW", "QEI Open Wire"},
+    {"InvConf", "Invalid Configuration"},
+    {"InterLck", "DI for Interlock (Fault Reaction) is low"},
+    {"CtrlCyEx", "Control cycle time is exceeded"},
+    {"TmpCore", "Temperature of the core too high"},
+    {"PhOtCore", "Temperature of the core too high"},
+    {"TmpDrive", "Temperature of drive too high"},
+    {"PhOtDriv", "Temperature of drive too high"},
+    {"ExAnSnsr", "External Scaled Analog Sensor Output exceeded one of the threshold values"},
+    {"DiagErr", "Diagnostic Error"}
 };
 
 
 /*array mapping an AW-J-Series drive detailed error reports to a text string */
 const aw_j_series_error_string_t aw_j_series_error[NUM_OF_AW_J_SERIES_ERROR_STRINGS] = {
-        {0x2220, "Continuous over current (device internal)"},
-        {0x2250, "Short circuit (device internal)"},
-        {0x2350, "Load level fault (I2t, thermal state)"},
-        {0x2351, "Load level warning (I2t, thermal state)"},
-        {0x3130, "Phase failure"},
-        {0x3131, "Phase failure L1"},
-        {0x3132, "Phase failure L2"},
-        {0x3133, "Phase failure L3"},
-        {0x3210, "DC link over-voltage"},
-        {0x3220, "DC link under-voltage"},
-        {0x3331, "Field circuit interrupted"},
-        {0x4210, "Excess temperature device"},
-        {0x4310, "Excess temperature drive"},
-        {0x5200, "Control"},
-        {0x5300, "Operating unit"},
-        {0x6010, "Software reset (watchdog)"},
-        {0x6320, "Parameter error"},
-        {0x7121, "Motor blocked"},
-        {0x7300, "Sensor"},
-        {0x7303, "Resolver 1 fault"},
-        {0x7304, "Resolver 2 fault"},
-        {0x7500, "Communication"},
-        {0x8611, "Positioning controller (following error)"},
-        {0x8612, "Positioning controller (reference limit)"},
-        {0xF002, "Sub-synchronous run"},
-        {0xFF00, "Manufacturer-specific"}
+    {0x2220, "Continuous over current (device internal)"},
+    {0x2250, "Short circuit (device internal)"},
+    {0x2350, "Load level fault (I2t, thermal state)"},
+    {0x2351, "Load level warning (I2t, thermal state)"},
+    {0x3130, "Phase failure"},
+    {0x3131, "Phase failure L1"},
+    {0x3132, "Phase failure L2"},
+    {0x3133, "Phase failure L3"},
+    {0x3210, "DC link over-voltage"},
+    {0x3220, "DC link under-voltage"},
+    {0x3331, "Field circuit interrupted"},
+    {0x4210, "Excess temperature device"},
+    {0x4310, "Excess temperature drive"},
+    {0x5200, "Control"},
+    {0x5300, "Operating unit"},
+    {0x6010, "Software reset (watchdog)"},
+    {0x6320, "Parameter error"},
+    {0x7121, "Motor blocked"},
+    {0x7300, "Sensor"},
+    {0x7303, "Resolver 1 fault"},
+    {0x7304, "Resolver 2 fault"},
+    {0x7500, "Communication"},
+    {0x8611, "Positioning controller (following error)"},
+    {0x8612, "Positioning controller (reference limit)"},
+    {0xF002, "Sub-synchronous run"},
+    {0xFF00, "Manufacturer-specific"}
 };
