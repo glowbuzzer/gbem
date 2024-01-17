@@ -69,7 +69,6 @@ static bool __attribute__((unused)) check_slave_dc_sysdiff_less_than_threshold(c
  * @param apply_pdo_mapping_before_netscan
  */
 void ECNetscan(const bool apply_pdo_mapping_before_netscan) {
-
     ecm_netscan(eth_interface1, apply_pdo_mapping_before_netscan);
 
 
@@ -84,16 +83,14 @@ void ECNetscan(const bool apply_pdo_mapping_before_netscan) {
 
 
 gberror_t ec_ack_errors(void) {
-
     ec_group[currentgroup].docheckstate = FALSE;
     ec_readstate();
 
     bool ec_state_error = false;
 
     for (int i = 1; i <= ec_slavecount; i++) {
-
         ec_group[currentgroup].docheckstate = TRUE;
-//        printf("%d - %u\n", i, ec_slave[i].state);
+        //        printf("%d - %u\n", i, ec_slave[i].state);
 
         if (ec_slave[i].state == (EC_STATE_SAFE_OP + EC_STATE_ERROR)) {
             UM_WARN(GBEM_UM_EN, "GBEM: Slave [%d] is in SAFE_OP + ERROR, attempting error ack", i);
@@ -113,12 +110,10 @@ gberror_t ec_ack_errors(void) {
             UM_WARN(GBEM_UM_EN, "GBEM: Slave [%d] is in STATE NONE", i);
             ec_state_error = true;
         }
-
     }
 
 
     return ec_state_error;
-
 }
 
 /**
@@ -129,14 +124,14 @@ gberror_t ec_ack_errors(void) {
 _Noreturn void ec_check(void *argument) {
     (void) argument;
     int slave;
-//    int test_count=0;
+    //    int test_count=0;
     while (1) {
-//        test_count++;
+        //        test_count++;
 
-//        if (test_count==200){
-//            printf("SETTING WKC TO ZERO!\n");
-//            wkc =0;
-//        }
+        //        if (test_count==200){
+        //            printf("SETTING WKC TO ZERO!\n");
+        //            wkc =0;
+        //        }
 
 
         if (ec_rxtx_mode == EC_RXTX_MODE_OP || ec_rxtx_mode == EC_RXTX_MODE_HOME) {
@@ -184,7 +179,6 @@ _Noreturn void ec_check(void *argument) {
                                 ec_slave[slave].islost = TRUE;
 
                                 UM_ERROR(GBEM_UM_EN, "GBEM: Slave [%d] lost", slave);
-
                             }
                         }
                     }
@@ -219,7 +213,6 @@ _Noreturn void ec_check(void *argument) {
 
         //500ms
         usleep(500000);
-
     }
 }
 
@@ -259,12 +252,11 @@ static int custom_slave_config(uint16 slave) {
             UM_INFO(GBEM_UM_EN, "GBEM: Custom FMMU/SM mapping by netscan succeeded for slave [%u]", slave);
         } else {
             UM_ERROR(GBEM_UM_EN, "GBEM: Custom FMMU/SM mapping by netscan  failed for slave [%u]", slave);
-       
         }
     }
 
     //if the function pointer for the current slave is not null call it
-//    printf("slave for fp %u", slave);
+    //    printf("slave for fp %u", slave);
     if (*map_slave_pdo_map_function_ptr[slave - 1] != NULL) {
         if ((*map_slave_pdo_map_function_ptr[slave - 1])(slave) == E_SUCCESS) {
             UM_INFO(GBEM_UM_EN, "GBEM: PDO mapping succeeded for slave [%u]", slave);
@@ -306,7 +298,7 @@ static int custom_slave_config(uint16 slave) {
     /* apply DC config */
 
     if (map_dc_type[slave - 1] == EC_DC_0) {
-//        ec_dcsync0(slave, TRUE, (uint32_t)map_dc_cycle[slave -1] * 1000000, ECM_CYCLE_SHIFT);
+        //        ec_dcsync0(slave, TRUE, (uint32_t)map_dc_cycle[slave -1] * 1000000, ECM_CYCLE_SHIFT);
         ec_dcsync0(slave, TRUE, ECM_CYCLE_TIME, ECM_CYCLE_SHIFT);
         UM_INFO(GBEM_UM_EN, "GBEM: Applying DC 0 in PO->SO hook for slave [%d]", slave);
         applied_dc = true;
@@ -314,7 +306,7 @@ static int custom_slave_config(uint16 slave) {
     if (map_dc_type[slave - 1] == EC_DC_01) {
         ec_dcsync01(slave, TRUE, ECM_CYCLE_TIME, ECM_CYCLE_TIME, ECM_CYCLE_SHIFT);
 
-//        ec_dcsync01(slave, TRUE, (uint32_t)map_dc_cycle[slave -1] * 1000000,(uint32_t)map_dc_cycle[slave -1] * 1000000, ECM_CYCLE_SHIFT);
+        //        ec_dcsync01(slave, TRUE, (uint32_t)map_dc_cycle[slave -1] * 1000000,(uint32_t)map_dc_cycle[slave -1] * 1000000, ECM_CYCLE_SHIFT);
         UM_INFO(GBEM_UM_EN, "GBEM: Applying DC 01 in PO->SO hook for slave [%d]", slave);
         applied_dc = true;
     }
@@ -341,7 +333,6 @@ static gberror_t print_slave_dc_local_config(const uint16_t slave) {
 }
 
 dc_clock_type_t check_dc_clock_type(const uint16_t slave) {
-
     int local_wc;
 
     uint16_t reg_0910, reg_0912, reg_0914, reg_0916;
@@ -356,7 +347,7 @@ dc_clock_type_t check_dc_clock_type(const uint16_t slave) {
         if (reg_0910 != 0) {
             dc_word_present[0] = true;
         }
-//        printf("0x910 [%u]\n", reg_0910);
+        //        printf("0x910 [%u]\n", reg_0910);
     }
 
     local_wc = ec_FPRD(ec_slave[slave].configadr, 0x0912, sizeof(reg_0912), &reg_0912, EC_TIMEOUTRET);
@@ -367,7 +358,7 @@ dc_clock_type_t check_dc_clock_type(const uint16_t slave) {
         if (reg_0912 != 0) {
             dc_word_present[1] = true;
         }
-//        printf("0x912 [%u]\n", reg_0912);
+        //        printf("0x912 [%u]\n", reg_0912);
     }
 
     local_wc = ec_FPRD(ec_slave[slave].configadr, 0x0914, sizeof(reg_0914), &reg_0914, EC_TIMEOUTRET);
@@ -378,7 +369,7 @@ dc_clock_type_t check_dc_clock_type(const uint16_t slave) {
         if (reg_0914 != 0) {
             dc_word_present[2] = true;
         }
-//        printf("0x914 [%u]\n", reg_0914);
+        //        printf("0x914 [%u]\n", reg_0914);
     }
 
     local_wc = ec_FPRD(ec_slave[slave].configadr, 0x0916, sizeof(reg_0916), &reg_0916, EC_TIMEOUTRET);
@@ -389,25 +380,21 @@ dc_clock_type_t check_dc_clock_type(const uint16_t slave) {
         if (reg_0916 != 0) {
             dc_word_present[3] = true;
         }
-//        printf("0x916 [%u]\n", reg_0916);
+        //        printf("0x916 [%u]\n", reg_0916);
     }
 
 
     if ((dc_word_present[0] || dc_word_present[1]) && (dc_word_present[2] || dc_word_present[3])) {
-//        printf("DC clock 64\n");
+        //        printf("DC clock 64\n");
         return DC_CLOCK_64;
-
     }
 
     if ((dc_word_present[0] || dc_word_present[1]) && (!dc_word_present[2] && !dc_word_present[3])) {
-//        printf("DC clock 32\n");
+        //        printf("DC clock 32\n");
         return DC_CLOCK_32;
-
     }
-//    printf("DC clock none\n");
+    //    printf("DC clock none\n");
     return DC_CLOCK_NONE;
-
-
 }
 
 /**
@@ -430,20 +417,22 @@ gberror_t print_1c32(const uint16_t slave) {
     bool read_error = false;
     uint16_t uib16;
     uint32_t uib32;
-    static const char *const ec_sync_mode_strings[] = {"Free Run", "Synchron with SM 2 Event",
-                                                       "DC-Mode - Synchron with SYNC0 Event",
-                                                       "DC-Mode - Synchron with SYNC1 Event"};
-// Sync mode
-// 0 Free Run
-//1 Synchron with SM 2 Event
-//2 DC-Mode - Synchron with SYNC0 Event
-//3 DC-Mode - Synchron with SYNC1 Even
+    static const char *const ec_sync_mode_strings[] = {
+        "Free Run", "Synchron with SM 2 Event",
+        "DC-Mode - Synchron with SYNC0 Event",
+        "DC-Mode - Synchron with SYNC1 Event"
+    };
+    // Sync mode
+    // 0 Free Run
+    //1 Synchron with SM 2 Event
+    //2 DC-Mode - Synchron with SYNC0 Event
+    //3 DC-Mode - Synchron with SYNC1 Even
 
-//0x1c32 = SM2
-//0x1c33 - SM3
+    //0x1c32 = SM2
+    //0x1c33 - SM3
 
 
-// read 1C32:01 unit16 for sync mode
+    // read 1C32:01 unit16 for sync mode
     if (ec_sdo_read_uint16(slave, 0x1c32, 0x1, &uib16, true)) {
         if (uib16 <= 2) {
             UM_INFO(GBEM_GEN_LOG_EN, "GBEM: Sync mode read from slave [%d] (0x1c32:1) is [%s]", slave,
@@ -454,7 +443,7 @@ gberror_t print_1c32(const uint16_t slave) {
     }
 
 
-//    read 0x1c32:02 uint32 for cycle time
+    //    read 0x1c32:02 uint32 for cycle time
 
     if (ec_sdo_read_uint32(slave, 0x1c32, 0x2, &uib32, true)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Cycle time read from slave(%d) (0x1c32:2) is: [%d]", slave, uib32);
@@ -463,8 +452,7 @@ gberror_t print_1c32(const uint16_t slave) {
     }
 
 
-
-// read 1C32:03 unit32 for shift time
+    // read 1C32:03 unit32 for shift time
     if (ec_sdo_read_uint32(slave, 0x1c32, 0x3, &uib32, true)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Shift time read from slave [%d] (0x1c32:3) is [%d]", slave, uib32);
     } else {
@@ -499,7 +487,6 @@ gberror_t print_1c32(const uint16_t slave) {
  * @return
  */
 bool ec_step_1_init(void) {
-
     //set  the status word STATUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM
     BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM);
 
@@ -528,9 +515,8 @@ bool ec_step_2_config(void) {
     ec_writestate(0);
     usleep(1000000);
 
-    RESTART_SCAN:
+RESTART_SCAN:
     if (ec_config_init(FALSE)) {
-
         if (ec_slavecount == 0) {
             UM_ERROR(GBEM_UM_EN, "GBEM: We failed to find any slaves on the EtherCAT network");
             return false;
@@ -551,21 +537,19 @@ bool ec_step_2_config(void) {
 
         /* Here we loop over all slaves in the map and assign a function (custom_slave_config) to their transition from PreOp to SafeOp */
 
-/* The PreOP to SafeOP configuration hook must be done per slave and should be set before calling
- * the configuration and mapping of process data, e.g. the call to ec_config_map. Setting the configuration
- * hook ensure that the custom configuration will be applied when calling recover and re-configuration
- * of a slave.
- */
+        /* The PreOP to SafeOP configuration hook must be done per slave and should be set before calling
+         * the configuration and mapping of process data, e.g. the call to ec_config_map. Setting the configuration
+         * hook ensure that the custom configuration will be applied when calling recover and re-configuration
+         * of a slave.
+         */
         for (int i = 1; i <= MAP_NUM_SLAVES; i++) {
             ec_slave[i].PO2SOconfig = custom_slave_config;
-
         }
-/*copy the contents of the ec_slave struct to shared mem (the ecm_status struct is used by the UI and needs basic info e.g. slave names */
+        /*copy the contents of the ec_slave struct to shared mem (the ecm_status struct is used by the UI and needs basic info e.g. slave names */
         copy_ec_slave_to_ecm_status();
 
         UM_INFO(GBEM_UM_EN, "GBEM: Boot step 2 >success< (search for and initialise EtherCAT slaves)");
         return true;
-
     } else {
         UM_ERROR(GBEM_UM_EN, "GBEM: Boot step 2 >failure< (search for an init slaves)");
         UM_ERROR(GBEM_UM_EN, "GBEM: No slaves were found on the EtherCAT network");
@@ -595,7 +579,7 @@ bool ec_step_3_preop(void) {
         }
 
         /* Next we will create an IOmap and configure the SyncManager's and FMMU's to link the EtherCAT master and the slaves. */
-//        int usedmem = ec_config_map(&IOmap);
+        //        int usedmem = ec_config_map(&IOmap);
 
         int usedmem = ec_config_overlap_map(&IOmap);
 
@@ -605,10 +589,8 @@ bool ec_step_3_preop(void) {
             UM_FATAL("GBEM: The size of slave io map is greater than the maximum we allow (increase ECM_IO_MAP_SIZE)");
         }
         return true;
-//            usleep(500000);
+        //            usleep(500000);
         sleep(3);
-
-
     } else {
         UM_ERROR(GBEM_UM_EN, "GBEM: Boot step 3 >failure< (transition all slaves to PRE OP state)");
 
@@ -621,7 +603,6 @@ bool ec_step_3_preop(void) {
  * @return
  */
 bool ec_step_5_error_check(void) {
-
     int ec_boot_ecaterror_count = 0;
     while (EcatError) {
         ec_boot_ecaterror_count++;
@@ -636,8 +617,8 @@ bool ec_step_5_error_check(void) {
     }
     if ((ec_boot_ecaterror_count > 20)) {
         UM_FATAL(
-                "GBEM: Excessive number of EtherCAT slave error messages (>%d) detected during boot (so not all have been outputted)",
-                20);
+            "GBEM: Excessive number of EtherCAT slave error messages (>%d) detected during boot (so not all have been outputted)",
+            20);
     }
     if (ec_boot_ecaterror_count > 0) {
         UM_ERROR(GBEM_UM_EN, "GBEM: Boot step 5 >failure< (Check for any slaves reporting errors)");
@@ -653,7 +634,6 @@ bool ec_step_5_error_check(void) {
  * @return
  */
 bool ec_step_6_safeop(void) {
-
     ec_slave[0].state = EC_STATE_SAFE_OP;
     ec_writestate(0);
 
@@ -709,7 +689,6 @@ bool ec_step_7_wkc_check(void) {
 }
 
 
-
 /**
  * @brief Runs slave EEP check
  * @return
@@ -726,7 +705,8 @@ bool ec_step_8_slaves_match(void) {
     } else {
         UM_ERROR(GBEM_UM_EN, "GBEM: Boot step 8 >failure< (check all slaves match the configuration)");
         UM_ERROR(GBEM_UM_EN,
-                 "GBEM: Not all slaves match the configuration (this is the array of slave names manufacturer ids etc. in the machine config");
+                 "GBEM: Not all slaves match the configuration (this is the array of slave names manufacturer ids etc. in the machine config")
+        ;
         UM_ERROR(GBEM_UM_EN,
                  "GBEM: Error from slave match [%s]", gb_strerror(grc));
 
@@ -761,10 +741,29 @@ bool ec_step_9_op(void) {
         BIT_CLEAR(dpm_in->machine_word, STATUS_WORD_GBEM_BOOT_IN_PROGRESS_BIT_NUM);
 
 
-        /** read the drive error code into the ecm_status struct */
+        /** read the drive error code into the ecm_status struct - any initial errors */
         for (int i = 0; i < MAP_NUM_DRIVES; i++) {
             read_drive_error_code_into_ecm_status(i);
         }
+
+
+        //copy fixed fsoe information into ecm_status
+        ecm_status.fsoe.master_type = map_machine_fsoe_master_type;
+        uint8_t num_fsoe_slaves = 0;
+        for (int i = 0; i < MAP_NUM_SLAVES; i++) {
+            ecm_status.fsoe.slave_type[i] = map_slave_fsoe_slave_type[i + 1];
+            if (ecm_status.fsoe.slave_type[i] != FSOE_SLAVE_TYPE_NONE) {
+                num_fsoe_slaves++;
+            }
+        }
+
+        if (num_fsoe_slaves > 0) {
+            if (map_machine_fsoe_master_type == FSOE_MASTER_TYPE_NONE) {
+                UM_FATAL("GBEM: The machine map has [%d] FSoE slaves but the master type is set to NONE",
+                         num_fsoe_slaves);
+            }
+        }
+
 
         sleep(2);
 
@@ -786,8 +785,7 @@ void ECBoot(void *argument) {
     bool ec_boot_proceed = false;
 
 
-
-//placeholder in case we want to run different modes in ECM_CYCLIC_PROG
+    //placeholder in case we want to run different modes in ECM_CYCLIC_PROG
     if (*((int *) argument) == 0) {
         ecm_status.active_program = ECM_CYCLIC_PROG;
     } else if (*((int *) argument) == 1) {
@@ -811,12 +809,9 @@ void ECBoot(void *argument) {
     ecm_status.cycle_count = 0;
 
 
-
-
-
     /******************** this is the start of the boot phase ********************/
     /* this is a goto label that we return to if boot fails */
-    boot_start_goto_label:
+boot_start_goto_label:
     UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***                    Start of cyclic boot process                    ***");
     UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
@@ -838,7 +833,7 @@ void ECBoot(void *argument) {
 
     /* now we ask the slaves to reach PRE_OP state and wait while they do this*/
     if (ec_boot_proceed) {
-        retry_step3:
+    retry_step3:
         ecm_status.boot_state.all_slaves_pre_op = ec_step_3_preop();
         ec_boot_proceed = ecm_status.boot_state.all_slaves_pre_op;
     }
@@ -856,7 +851,8 @@ void ECBoot(void *argument) {
             error_ack_count++;
             if (error_ack_count > 5) {
                 UM_ERROR(GBEM_UM_EN,
-                         "GBEM: Slaves were in a error state and we tried acknowledging the errors but the remained in the error state");
+                         "GBEM: Slaves were in a error state and we tried acknowledging the errors but the remained in the error state")
+                ;
                 break;
             }
         }
@@ -867,9 +863,8 @@ void ECBoot(void *argument) {
     }
 
 
-
     //here the hooks kick in
-//    ecm_status.boot_state.pdo_remap_done  && ecm_status.boot_state.apply_standard_sdos_done are set in the state change hook
+    //    ecm_status.boot_state.pdo_remap_done  && ecm_status.boot_state.apply_standard_sdos_done are set in the state change hook
     ec_boot_proceed =
             ec_boot_proceed && ecm_status.boot_state.pdo_remap_done &&
             ecm_status.boot_state.apply_standard_sdos_done;
@@ -889,8 +884,6 @@ void ECBoot(void *argument) {
 
     sleep(5);
     if (ec_boot_proceed) {
-
-
     }
     if (ec_boot_proceed) {
         ecm_status.boot_state.wkc_check_ok = ec_step_7_wkc_check();
@@ -906,29 +899,27 @@ void ECBoot(void *argument) {
     }
 
 
-//    bool have_sync = false;
-//
-//    for (int i = 1; i <= MAP_NUM_SLAVES; i++) {
-//
-//        check_slave_dc_sysdiff_less_than_threshold(i);
+    //    bool have_sync = false;
     //
-//        if (map_dc_type[i-1]!=EC_DC_NONE){
-//            while (!check_slave_dc_sysdiff_less_than_threshold(i)){
-//                printf("getting sync for slave [%u]\n", i);
-//                sleep(1);
-//            }
-//
-//        }
-//    }
+    //    for (int i = 1; i <= MAP_NUM_SLAVES; i++) {
+    //
+    //        check_slave_dc_sysdiff_less_than_threshold(i);
+    //
+    //        if (map_dc_type[i-1]!=EC_DC_NONE){
+    //            while (!check_slave_dc_sysdiff_less_than_threshold(i)){
+    //                printf("getting sync for slave [%u]\n", i);
+    //                sleep(1);
+    //            }
+    //
+    //        }
+    //    }
 
     sleep(10);
 
     if (ec_boot_proceed) {
-
         dc_clock_type_t dc_clock_type;
         /* think we can now print the slave's dc * 1c32 config and check DC clock support */
         for (int i = 1; i <= MAP_NUM_SLAVES; i++) {
-
             dc_clock_type = check_dc_clock_type(i);
             switch (dc_clock_type) {
                 case DC_CLOCK_ERROR:
@@ -965,14 +956,12 @@ void ECBoot(void *argument) {
 
     /******************** this is the end of the boot phase ********************/
 
-//let's take stock of what happened in the boot process
+    //let's take stock of what happened in the boot process
     if (ec_boot_proceed) {
         UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
         UM_INFO(GBEM_UM_EN, "GBEM: ***                  The boot process was successful                   ***");
         UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
         ecm_status.boot_state.boot_sucessful = true;
-
-
 
 
         //This calls a function that can be defined for each drive to print out useful config information
@@ -994,7 +983,6 @@ void ECBoot(void *argument) {
         }
 
         if (any_drive_needs_homing) {
-
             //homing
             BIT_SET(dpm_in->machine_word, STATUS_WORD_GBEM_WAITING_FOR_START_HOMING_BIT_NUM);
 
@@ -1008,12 +996,11 @@ void ECBoot(void *argument) {
 
             ec_rxtx_mode = EC_RXTX_MODE_HOME;
         } else {
-
             ec_rxtx_mode = EC_RXTX_MODE_OP;
         }
         ecm_status.cyclic_state = ECM_BOOT_FINISHED;
     } else {
-//We have had an issue during the boot phase
+        //We have had an issue during the boot phase
         sleep(5);
 
 
@@ -1029,23 +1016,23 @@ void ECBoot(void *argument) {
     //fills out ecm_status with things like MAP_NUM_DRIVES
     init_ecm_status();
 
-//RT-sensitive
+    //RT-sensitive
 #if ENABLE_ALL_NON_CORE_FUNCTIONS == 1
     rc = osal_thread_create(&thread_ec_check, STACK64K * 2, &ec_check, NULL);
     if (rc != 1) {
         UM_FATAL(
-                "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
+            "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down")
+        ;
     }
 
     rc = osal_thread_create(&thread_ec_error_message, STACK64K * 2, &ec_read_error_messages, NULL);
     if (rc != 1) {
         UM_FATAL(
-                "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
+            "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down")
+        ;
     }
 
 #endif
-
-
 }
 
 
@@ -1054,9 +1041,7 @@ void ECBoot(void *argument) {
  * @return true: slaves on network matches the map (good), false slaves don't map the network (bad)
  */
 gberror_t ec_slaves_match(void) {
-
     if (ec_slavecount < MAP_NUM_SLAVES) {
-
         return E_NOT_ENOUGH_SLAVES;
     }
     /* Verify slave by slave that it is correct*/
@@ -1070,7 +1055,6 @@ gberror_t ec_slaves_match(void) {
      * */
 
     for (int i = 0; i < MAP_NUM_SLAVES; i++) {
-
         if (strcmp(ec_slave[i + 1].name, ecm_slave_map[i].name) != 0) {
             return E_SLAVE_NAME_MATCH_FAILURE;
         }
@@ -1141,8 +1125,6 @@ gberror_t ec_slaves_match(void) {
 //} ec_state;
 
 
-
-
 /**
  * @brief initialise some elements in the ecm_status struct to the hash defined values
  */
@@ -1161,8 +1143,8 @@ void init_ecm_status(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (map_drive_to_name[i] == NULL) {
             UM_FATAL(
-                    "GBEM: map_drive_names [%u] char* array is empty - initialise the array in the machine configuration",
-                    i);
+                "GBEM: map_drive_names [%u] char* array is empty - initialise the array in the machine configuration",
+                i);
         } else {
             strcpy(ecm_status.drives[i].name, map_drive_to_name[i]);
         }
