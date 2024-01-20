@@ -16,6 +16,7 @@
 #define AW_MOTOR_MAN 0x00022d2
 
 #include "aw_j_series.h"
+#include "aw_j_series_fsoe.h"
 #include "aw_j17.h"
 #include "aw_j20.h"
 #include "aw_j25.h"
