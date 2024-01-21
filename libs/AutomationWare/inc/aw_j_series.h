@@ -18,6 +18,9 @@
 #include "automationware.h"
 
 
+/** Machine functions */
+bool ec_get_estop_state_aw_j_series(void);
+
 /** Slave functions */
 
 gberror_t ec_initial_pdo_aw_j_series(uint16_t slave);

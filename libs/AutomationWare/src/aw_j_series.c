@@ -259,6 +259,51 @@ gberror_t ec_print_pdo_config_aw_series(const uint16_t slave) {
 }
 
 
+bool ec_get_estop_state_aw_j_series(void) {
+
+    bool estop = true;
+
+    #if MAP_NUMBER_ESTOP_DIN == 0
+    UM_FATAL("GBEM: MAP_NUMBER_ESTOP_DIN not defined");
+#endif
+#if MAP_NUMBER_ESTOP_DIN > 2
+    UM_FATAL("GBEM: too many MAP_NUMBER_ESTOP_DIN are defined!");
+#endif
+
+#if MAP_NUMBER_ESTOP_DIN == 1
+
+    if (ctrl_estop_din_1.slave_num < 1) {
+        UM_FATAL("GBEM: no ctrl_estop_din is defined! (slave number less thhan 1)");
+    }
+
+    if (!ec_pdo_get_input_bit(ctrl_estop_din_1.slave_num, ctrl_estop_din_1.bit_num)) {
+        estop = true;
+    } else {
+        estop = false;
+    }
+#endif
+
+#if MAP_NUMBER_ESTOP_DIN == 2
+
+    if (ctrl_estop_din_1.slave_num < 1) {
+        UM_FATAL("GBEM: no ctrl_estop_din_1 is defined! (slave number less thhan 1)");
+    }
+    if (ctrl_estop_din_2.slave_num < 1) {
+        UM_FATAL("GBEM: no ctrl_estop_din_2 is defined! (slave number less thhan 1)");
+    }
+
+    if (!ec_pdo_get_input_bit(ctrl_estop_din_1.slave_num, ctrl_estop_din_1.bit_num) ||
+        !ec_pdo_get_input_bit(ctrl_estop_din_2.slave_num, ctrl_estop_din_2.bit_num)) {
+        estop = true;
+        } else {
+            estop = false;
+        }
+#endif
+
+    return estop;
+
+}
+
 gberror_t ec_custom_fmmu_sm_aw_j_series(const uint16_t slave) {
     ec_slave[slave].configindex = 998;
 
