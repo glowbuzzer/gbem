@@ -20,12 +20,19 @@
 #include "ethercatsetget.h"
 #include "cia402.h"
 #include "bbh.h"
+#include "ecm_status.h"
 
 gberror_t ec_apply_standard_sdos_bbh_scu_1_ec(const uint16_t slave);
 
 gberror_t ec_custom_fmmu_sm_bbh_scu_1_ec(const uint16_t slave);
 
 gberror_t ec_pdo_map_bbh_scu_1_ec(const uint16_t slave);
+
+gberror_t ec_fsoe_get_master_state_bbh_scu_1_ec(uint16_t slave, uint32_t *state,
+                                                fsoe_slave_high_level_state_t *high_level_state, uint32_t *error_code);
+
+gberror_t ec_fsoe_get_master_con_id_bbh_scu_1_ec(uint16_t slave, uint16_t *con_id);
+
 
 #define BBH_SCU_1_EC_EEP_NAME "SCU-1-EC"
 #define BBH_SCU_1_EC_EEP_ID 0x00000006
@@ -40,5 +47,6 @@ gberror_t ec_pdo_map_bbh_scu_1_ec(const uint16_t slave);
 #define BBH_SCU_1_EC_SLOT_33_SCU_AS_FSOE_SLAVE_CONNECTION           0x6220
 #define BBH_SCU_1_EC_SLOT_34_MASTER_TO_MASTER                       0x6194
 #define BBH_SCU_1_EC_SLOT_35_FUNCTIONAL_IN_OUT                      0x6195
+
 
 #endif //GBEM_BBH_SCU_1_EC_H
