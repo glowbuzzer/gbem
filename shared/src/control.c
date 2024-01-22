@@ -30,11 +30,9 @@
 #include "print_slave_error_messages.h"
 #include "status_control_word_bit_definitions.h"
 #include "ec_functions.h"
-#include "pos_vel_acc.h"
-#include "p.h"
 #include "user_message.h"
-#include "controller.h"
 #include "shared_mem_types.h"
+#include "print_status.h"
 
 //todo review need for semaphores in control.c and ec_rxtx.c
 #define DPM_IN_PROTECT_START
@@ -53,8 +51,6 @@ uint32_t gbem_heartbeat = 0;
 bool estop = true;
 cia_state_t current_state = CIA_NOT_READY_TO_SWITCH_ON;
 
-static bool cst_csv_position_limit_error = false;
-static bool cst_csv_velocity_limit_error = false;
 
 //@formatter:off
 cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
@@ -76,8 +72,6 @@ cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
         [CONTROL_EVENT_ECAT_SLAVE_ERROR] = {.message="An error has been detected [EtherCAT slave]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_PLC_SIGNALLED_ERROR] = {.message="An error has been detected [PLC signalled an error]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_HOMING_ERROR] = {.message="\"An error has been detected [Homing error]", .type=CYCLIC_MSG_ERROR},
-        [CONTROL_EVENT_CST_CSV_POSITION_LIMIT_ERROR] = {.message="An error has been detected [CST CSV position limit error]", .type=CYCLIC_MSG_ERROR},
-        [CONTROL_EVENT_CST_CSV_VELOCITY_LIMIT_ERROR] = {.message="An error has been detected [CST CSV velocity limit error]", .type=CYCLIC_MSG_ERROR},
 };
 
 //@formatter:on
@@ -87,7 +81,12 @@ cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
 uint32_t ctrl_state_change_cycle_count = 1;
 uint32_t ctrl_state_change_timeout = (CTRL_DRIVE_CHANGE_STATE_TIMEOUT * MAP_CYCLE_TIME);
 
+
+/** FSoE functions */
 void copy_fsoe_data(void);
+
+gberror_t update_fsoe_ecm_status(void);
+
 
 /* functions to copy between EC and DPM */
 static void ctrl_copy_actpos(void);
@@ -975,20 +974,6 @@ bool cia_is_fault_condition(struct event *event) {
         have_fault = true;
     }
 
-    if (((event_data_t *) event->data)->cst_csv_position_limit_error == true) {
-        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > the position error triggered in CST/CSV mode");
-        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_CST_CSV_POSITION_LIMIT_ERROR_BIT_NUM);
-        control_event[CONTROL_EVENT_CST_CSV_POSITION_LIMIT_ERROR].active = true;
-        have_fault = true;
-    }
-
-    if (((event_data_t *) event->data)->cst_csv_velocity_limit_error == true) {
-        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > the velocity error triggered in CST/CSV mode");
-        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_CST_CSV_VELOCITY_LIMIT_ERROR_BIT_NUM);
-        control_event[CONTROL_EVENT_CST_CSV_VELOCITY_LIMIT_ERROR].active = true;
-        have_fault = true;
-    }
-
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         //        printf("moodisp event data:%i\n", ((event_data_t *) event->data)->moo_disp[i]);
@@ -1554,8 +1539,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
     event_data.homing_failed = homing_failed;
 
-    event_data.cst_csv_position_limit_error = cst_csv_position_limit_error;
-    event_data.cst_csv_velocity_limit_error = cst_csv_velocity_limit_error;
+
 
 
     DPM_OUT_PROTECT_END
@@ -1663,6 +1647,8 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
 
     copy_fsoe_data();
+    update_fsoe_ecm_status();
+    // print_status(&ecm_status);
 
 
     //RT-sensitive
@@ -1735,39 +1721,6 @@ __attribute__((unused)) static void ctrl_check_for_big_pos_jump(uint16_t drive, 
 }
 
 
-static bool ctrl_check_velocity_bounds_ok(uint16_t drive, int32_t act_velocity) {
-    //todo crit remove
-    return true;
-
-    if (act_velocity > map_drive_scales[drive].velocity_scale * map_drive_vel_limit[drive]) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: Velocity above upper limit for drive [%u] velocity [%d]", drive, act_velocity);
-        return false;
-    }
-    if (act_velocity < map_drive_scales[drive].velocity_scale * -map_drive_vel_limit[drive]) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: Velocity below lower limit for drive [%u] velocity [%d]", drive, act_velocity);
-        return false;
-    }
-
-    return true;
-}
-
-static bool ctrl_check_position_bounds_ok(uint16_t drive, int32_t act_position, int32_t current_velocity) {
-    //todo crit remov
-    return true;
-
-    if (act_position > map_drive_scales[drive].position_scale * map_drive_pos_limit[drive]) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: Position too big for drive [%u] position [%d]", drive,
-                 act_position * map_drive_scales[drive].position_scale);
-        return false;
-    }
-    if (act_position < map_drive_scales[drive].position_scale * map_drive_neg_limit[drive]) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: Position too small for drive [%u] position [%d]", drive,
-                 act_position * map_drive_scales[drive].position_scale);
-        return false;
-    }
-
-    return true;
-}
 
 
 //mode = (control_word >> 1) & 0x0F;
@@ -1835,35 +1788,8 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
 
             case CIA_MOO_CSV:
 
-                //                if (current_state != CIA_OPERATION_ENABLED && current_state != CIA_SWITCHED_ON) {
-                //                    reset_velocity_controller(i);
-                //                    printf("reset vec controller\n");
-                //                }
-
-
-                if (ctrl_check_position_bounds_ok(i, dpm_out->joint_set_position[i], dpm_out->joint_set_velocity[i]) ==
-                    false) {
-                    //we have exceeded bounds error drives
-                    cst_csv_position_limit_error = true;
-                } else {
-                    cst_csv_position_limit_error = false;
-                }
-
-                if (ctrl_check_velocity_bounds_ok(i, dpm_out->joint_set_velocity[i]) == false) {
-                    //we have exceeded bounds error drives
-                    cst_csv_velocity_limit_error = true;
-                } else {
-                    cst_csv_velocity_limit_error = false;
-                }
-
 
                 if (*map_drive_set_setvel_wrd_function_ptr[i] != NULL) {
-                    //run control loop
-                    //                    int32_t velocity = (int32_t) velocity_controller(cycle_count, i, dpm_out->joint_set_position[i],
-                    //                                                                     dpm_out->joint_set_velocity[i],
-                    //                                                                     dpm_in->joint_actual_position[i]);
-                    //
-                    //                    printf("velocity [%d]\n", velocity);
                     grc = map_drive_set_setvel_wrd_function_ptr[i](i,
                                                                    dpm_out->joint_set_velocity[i]);
                     if (grc != E_SUCCESS) {
@@ -1880,41 +1806,7 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
             case CIA_MOO_CST:
 
 
-                //                if (current_state != CIA_OPERATION_ENABLED && current_state != CIA_SWITCHED_ON) {
-                //                    reset_torque_controller(i);
-                //                }
-
-                if (ctrl_check_position_bounds_ok(i, dpm_out->joint_set_position[i], dpm_out->joint_set_velocity[i]) ==
-                    false) {
-                    //we have exceeded bounds error drives
-                    cst_csv_position_limit_error = true;
-                } else {
-                    cst_csv_position_limit_error = false;
-                }
-                if (ctrl_check_velocity_bounds_ok(i, dpm_out->joint_set_velocity[i]) == false) {
-                    //we have exceeded bounds error drives
-                    cst_csv_velocity_limit_error = true;
-                } else {
-                    cst_csv_velocity_limit_error = false;
-                }
-
-
                 if (*map_drive_set_settorq_wrd_function_ptr[i] != NULL) {
-                    //                    if (BIT_CHECK(dpm_out->joint_controlword[i], JOINT_CONTROL_WORD_CST_POS_VEL_DISABLE_BIT)) {
-                    //                        pos_vel_control_active = false;
-                    //                    } else {
-                    //                        pos_vel_control_active = true;
-                    //                    }
-
-                    //                    pos_vel_control_active = false;
-
-
-                    //                    int32_t torque = (int32_t) torque_controller(cycle_count, i, pos_vel_control_active,
-                    //                                                                 dpm_out->joint_set_position[i],
-                    //                                                                 dpm_out->joint_set_velocity[i],
-                    //                                                                 dpm_out->joint_set_torque[i],
-                    //                                                                 dpm_in->joint_actual_position[i],
-                    //                                                                 dpm_in->joint_actual_velocity[i]);
 
 
                     grc = map_drive_set_settorq_wrd_function_ptr[i](i, dpm_out->joint_set_torque[i]);
@@ -2176,6 +2068,7 @@ void ctrl_set_moo_pdo(void) {
         }
     }
 }
+
 
 /**
  * @brief copy fsoe data from slaves to master
@@ -2447,10 +2340,98 @@ void copy_fsoe_data(void) {
     // fsoe_plc_program();
 }
 
-void update_fsoe_ecm_status(uint16_t slave) {
 
-    //read data from fsoe master or from slaves?
+gberror_t update_fsoe_ecm_status_slaves(void) {
+    gberror_t grc = E_SUCCESS;
 
 
+    for (int slave = 1; slave < MAP_NUM_SLAVES + 1; slave++) {
+        if (*map_slave_fsoe_get_slave_state_function_ptr[slave - 1] != NULL) {
+            if (map_slave_fsoe_master[slave - 1] == true) {
+                UM_FATAL(
+                        "GBEM: FSoE master mapped on slave [%u] and we are trying to read slave slate - the mapping functions for reading FSoE slave state are incorrectly configured",
+                        slave);
+            }
+
+            //todo crit is (slave - >>1<<) correct?
+            uint32_t slave_state = 0;
+            fsoe_slave_high_level_state_t high_level_state = 0;
+
+            grc = map_slave_fsoe_get_slave_state_function_ptr[slave - 1](slave, &slave_state, &high_level_state);
+
+            // printf("fsoe slave state [%u]\n", fsoe_slave_state);
+
+            ecm_status.fsoe.slave_state[slave] = slave_state;
+            ecm_status.fsoe.slave_high_level_state[slave] = high_level_state;
+        } else {
+            //some slaves that are not FSoE will not have this function
+            // LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_slave_fsoe_get_slave_state on slave [%u]",
+            //          slave);
+        }
+
+
+        if (*map_slave_fsoe_get_slave_con_id_function_ptr[slave - 1] != NULL) {
+            uint16_t connection_id = 0;
+
+            grc = map_slave_fsoe_get_slave_con_id_function_ptr[slave - 1](slave, &connection_id);
+
+            ecm_status.fsoe.slave_connection_id[slave] = connection_id;
+        }
+    }
+
+    return grc;
+}
+
+gberror_t update_fsoe_ecm_status_master(void) {
+    gberror_t grc = E_SUCCESS;
+
+    for (int slave = 1; slave < MAP_NUM_SLAVES + 1; slave++) {
+        if (*map_slave_fsoe_get_master_state_function_ptr[slave - 1] != NULL) {
+            if (map_slave_fsoe_master[slave - 1] != true) {
+                UM_FATAL(
+                        "GBEM: FSoE master read state function mapped on slave [%u] but the slave is not tagged as the master - the mapping functions for reading FSoE master state are incorrectly configured",
+                        slave);
+            }
+            uint32_t master_state = 0;
+
+            uint32_t master_error_code = 0;
+
+
+            fsoe_master_high_level_state_t high_level_state = 0;
+
+            grc = map_slave_fsoe_get_master_state_function_ptr[slave - 1](
+                    slave, &master_state, &high_level_state, &master_error_code);
+
+            // printf("fsoe slave state [%u]\n", fsoe_slave_state);
+
+            ecm_status.fsoe.master_state = master_state;
+            ecm_status.fsoe.master_high_level_state = high_level_state;
+            ecm_status.fsoe.master_error_code = master_error_code;
+        }
+
+        if (grc != E_SUCCESS) {
+            UM_ERROR(GBEM_UM_EN, "GBEM: update_fsoe_ecm_status_master error [%s]", gb_strerror(grc));
+        }
+    }
+
+    return grc;
+}
+
+gberror_t update_fsoe_ecm_status(void) {
+    gberror_t grc = E_SUCCESS;
+
+    grc = update_fsoe_ecm_status_slaves();
+
+    if (grc != E_SUCCESS) {
+        UM_ERROR(GBEM_UM_EN, "GBEM: update_fsoe_ecm_status_slaves error [%s]", gb_strerror(grc));
+    }
+
+    grc = update_fsoe_ecm_status_master();
+
+    if (grc != E_SUCCESS) {
+        UM_ERROR(GBEM_UM_EN, "GBEM: update_fsoe_ecm_status_master error [%s]", gb_strerror(grc));
+    }
+
+    return grc;
 }
 

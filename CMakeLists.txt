@@ -14,7 +14,7 @@ project(GBEM DESCRIPTION "Glowbuzzer EtherCAT Master" VERSION "0.0.1" LANGUAGES 
 message(STATUS "GB: We are building [${PROJECT_NAME}]")
 set(OS_LIBS pthread rt)
 
-file(GLOB SOURCES "src/*.c" "shared/src/*.c" "shared/src/controllers/*.c" "plc_user_code/*.c")
+file(GLOB SOURCES "src/*.c" "shared/src/*.c" "plc_user_code/*.c")
 
 
 message(STATUS "GB: Using cmake version [${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}]")
@@ -95,7 +95,7 @@ MESSAGE(STATUS "ETHTOOL_CMD_OUTPUT: " ${ETHTOOL_CMD_OUTPUT})
 add_executable(GBEM ${SOURCES})
 #NEW_DRIVE
 target_link_libraries(GBEM EtherCAT Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen automationware virtual_drive RTA trio delta JVL omron oriental_motor bbh unity gberror gbem_config etg m rt)
-target_include_directories(GBEM PUBLIC "inc" "shared/inc/controllers" "shared/inc" "plc_user_code" ${PROJECT_BINARY_DIR}/version ${gbem_config_BINARY_DIR})
+target_include_directories(GBEM PUBLIC "inc" "shared/inc" "plc_user_code" ${PROJECT_BINARY_DIR}/version ${gbem_config_BINARY_DIR})
 
 #add_executable(GBEM_testStateMachine shared/src/control.c shared/src/ec_functions.c src/ecrxtx.c src/ethercatnetscan.c src/status.c shared/src/json-maker.c shared/src/float_int_conv.c test/src/test.c test/src/testStateMachine.c shared/src/plc_core.c plc_user_code/plc_init.c src/cyclic_message.c plc_user_code/plc_task_1.c shared/src/iomap_processing.c)
 #target_link_libraries(GBEM_testStateMachine mjson EtherCAT gbem_config machine_mapping Logging common-misc cia state_machine dpm minini linux-shm pid sleep beckhoff delta kollmorgen oriental_motor unity gberror m)
