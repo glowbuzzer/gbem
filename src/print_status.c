@@ -49,8 +49,6 @@ void printBinaryUint32(uint64_t n) {
  * @return
  */
 void print_status(ecm_status_t *data) {
-
-
     printf("Number of slaves: %d\n", data->slavecount);
     printf("Number of drives: %d\n", data->drive_count);
 
@@ -108,7 +106,6 @@ void print_status(ecm_status_t *data) {
 
     if (ecm_status.cyclic_state == ECM_ERROR) {
         printf("EtherCAT error detected\n");
-
     } else {
         printf("EtherCAT error not detected\n");
     }
@@ -137,7 +134,6 @@ void print_status(ecm_status_t *data) {
 
     printf("Slaves:\n");
     for (int i = 1; i < data->slavecount + 1; i++) {
-
         printf("Slave %d:\n", i);
         printf("Name: %s\n", data->map[i].name);
         printf("Obits: %d\n", data->map[i].Obits);
@@ -155,7 +151,6 @@ void print_status(ecm_status_t *data) {
 
     printf("Drives:\n");
     for (int i = 0; i < data->drive_count; i++) {
-
         cia_commands_t command = cia_ctrlwrd_to_command(data->drives[i].command);
         cia_state_t state = cia_statwrd_to_state(dpm_in->joint_statusword[i]);
 
@@ -182,10 +177,71 @@ void print_status(ecm_status_t *data) {
         printf("settorq: %d\n", dpm_out->joint_set_torque[i]);
 
         printf("error_message: %s\n", data->drives[i].error_message);
-
-
     }
 
 
+    // typedef struct {
+    //     uint8_t master_slave_no; //set in control.c
+    //     uint8_t slave_count; // set in ec_functions.c
+    //     ecm_fsoe_slave_type_t slave_type[EC_MAXSLAVE]; // set in ec_functions.c
+    //     uint32_t master_state;
+    //     uint32_t master_error_code;
+    //     uint32_t slave_state[EC_MAXSLAVE];
+    //     uint16_t slave_connection_id[EC_MAXSLAVE];
+    //     fsoe_slave_high_level_state_t slave_high_level_state[EC_MAXSLAVE];
+    //     fsoe_master_high_level_state_t master_high_level_state;
+    // } ecm_status_fsoe_t;
+
+
+    printf("FSOE:\n");
+    printf("master_slave_no: %d\n", ecm_status.fsoe.master_slave_no);
+    printf("slave_count: %d\n", ecm_status.fsoe.slave_count);
+    printf("master_state: %d\n", ecm_status.fsoe.master_state);
+    printf("master_error_code: %d\n", ecm_status.fsoe.master_error_code);
+    printf("master_high_level_state: %d\n", ecm_status.fsoe.master_high_level_state);
+
+    for (int i = 0; i < EC_MAXSLAVE; i++) {
+        if (ecm_status.fsoe.slave_type[i] == FSOE_SLAVE_TYPE_NONE) {
+            continue;
+        }
+
+        printf("Slave [%d] is an FSoE slave\n", i);
+
+
+        // FSOE_SLAVE_TYPE_NONE,
+        // FSOE_SLAVE_TYPE_SYNAPTICON,
+        // FSOE_SLAVE_TYPE_EL1904,
+        // FSOE_SLAVE_TYPE_EL2904,
+        // FSOE_SLAVE_TYPE_SCU_1_EC,
+        // FSOE_SLAVE_TYPE_EL6900,
+        // FSOE_SLAVE_TYPE_EL6910
+
+        switch (ecm_status.fsoe.slave_type[i]) {
+            case FSOE_SLAVE_TYPE_SYNAPTICON:
+                printf("slave_type: FSOE_SLAVE_TYPE_SYNAPTICON\n");
+                break;
+            case FSOE_SLAVE_TYPE_EL1904:
+                printf("slave_type: FSOE_SLAVE_TYPE_EL1904\n");
+                break;
+            case FSOE_SLAVE_TYPE_EL2904:
+
+                printf("slave_type: FSOE_SLAVE_TYPE_EL2904\n");
+                break;
+            case FSOE_SLAVE_TYPE_SCU_1_EC:
+                printf("slave_type: FSOE_SLAVE_TYPE_SCU_1_EC\n");
+                break;
+            case FSOE_SLAVE_TYPE_EL6900:
+                printf("slave_type: FSOE_SLAVE_TYPE_EL6900\n");
+                break;
+            case FSOE_SLAVE_TYPE_EL6910:
+                printf("slave_type: FSOE_SLAVE_TYPE_EL6910\n");
+                break;
+            default:
+                printf("slave_type: unknown\n");
+        }
+        printf("slave_state: %d\n", ecm_status.fsoe.slave_state[i]);
+        printf("slave_connection_id: %d\n", ecm_status.fsoe.slave_connection_id[i]);
+        printf("slave_high_level_state: %d\n", ecm_status.fsoe.slave_high_level_state[i]);
+    }
 }
 
