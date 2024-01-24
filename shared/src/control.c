@@ -156,268 +156,268 @@ static struct state cia_not_ready_to_switch_on_state, cia_switch_on_disabled_sta
         cia_fault_reaction_active_state, cia_fault_state, sm_error_state;
 
 static struct state cia_not_ready_to_switch_on_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_NOT_READY_TO_SWITCH_ON),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                NULL,
-                                NULL,
-                                &cia_switch_on_disabled_state
-                        },
-                },
-        .numTransitions = 2,
-        .data = (void *) CIA_NOT_READY_TO_SWITCH_ON,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction =
-        NULL,
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_NOT_READY_TO_SWITCH_ON),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            NULL,
+            NULL,
+            &cia_switch_on_disabled_state
+        },
+    },
+    .numTransitions = 2,
+    .data = (void *) CIA_NOT_READY_TO_SWITCH_ON,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction =
+    NULL,
 };
 
 static struct state cia_switch_on_disabled_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_SWITCH_ON_DISABLED),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn2_guard,
-                                NULL,
-                                &cia_ready_to_switch_on_state
-                        },
-                },
-        .numTransitions = 2,
-        .data = (void *) CIA_SWITCH_ON_DISABLED,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction = NULL,
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_SWITCH_ON_DISABLED),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn2_guard,
+            NULL,
+            &cia_ready_to_switch_on_state
+        },
+    },
+    .numTransitions = 2,
+    .data = (void *) CIA_SWITCH_ON_DISABLED,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction = NULL,
 };
 
 static struct state cia_ready_to_switch_on_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_READY_TO_SWITCH_ON),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn3_guard,
-                                NULL,
-                                &cia_switched_on_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn7_guard,
-                                NULL,
-                                &cia_switch_on_disabled_state
-                        },
-                },
-        .numTransitions = 3,
-        .data = (void *) CIA_READY_TO_SWITCH_ON,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction = NULL,
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_READY_TO_SWITCH_ON),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn3_guard,
+            NULL,
+            &cia_switched_on_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn7_guard,
+            NULL,
+            &cia_switch_on_disabled_state
+        },
+    },
+    .numTransitions = 3,
+    .data = (void *) CIA_READY_TO_SWITCH_ON,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction = NULL,
 };
 
 static struct state cia_switched_on_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_SWITCHED_ON),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn6_guard,
-                                NULL,
-                                &cia_ready_to_switch_on_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn4_guard,
-                                NULL,
-                                &cia_operation_enabled_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn10_guard,
-                                NULL,
-                                &cia_switch_on_disabled_state
-                        },
-                },
-        .numTransitions = 4,
-        .data = (void *) CIA_SWITCHED_ON,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction = NULL,
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_SWITCHED_ON),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn6_guard,
+            NULL,
+            &cia_ready_to_switch_on_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn4_guard,
+            NULL,
+            &cia_operation_enabled_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn10_guard,
+            NULL,
+            &cia_switch_on_disabled_state
+        },
+    },
+    .numTransitions = 4,
+    .data = (void *) CIA_SWITCHED_ON,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction = NULL,
 };
 
 static struct state cia_operation_enabled_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_OPERATION_ENABLED),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn5_guard,
-                                NULL,
-                                &cia_switched_on_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn8_guard,
-                                NULL,
-                                &cia_ready_to_switch_on_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn9_guard,
-                                NULL,
-                                &cia_switch_on_disabled_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn11_guard,
-                                NULL,
-                                &cia_quick_stop_active_state
-                        },
-                },
-        .numTransitions = 5,
-        .data = (void *) CIA_OPERATION_ENABLED,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction = NULL,
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_OPERATION_ENABLED),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn5_guard,
+            NULL,
+            &cia_switched_on_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn8_guard,
+            NULL,
+            &cia_ready_to_switch_on_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn9_guard,
+            NULL,
+            &cia_switch_on_disabled_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn11_guard,
+            NULL,
+            &cia_quick_stop_active_state
+        },
+    },
+    .numTransitions = 5,
+    .data = (void *) CIA_OPERATION_ENABLED,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction = NULL,
 };
 
 static struct state cia_quick_stop_active_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_QUICK_STOP_ACTIVE),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn16_guard,
-                                NULL,
-                                &cia_operation_enabled_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn12_guard,
-                                NULL,
-                                &cia_switch_on_disabled_state
-                        },
-                },
-        .numTransitions = 3,
-        .data = (void *) CIA_QUICK_STOP_ACTIVE,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction = NULL,
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_QUICK_STOP_ACTIVE),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn16_guard,
+            NULL,
+            &cia_operation_enabled_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn12_guard,
+            NULL,
+            &cia_switch_on_disabled_state
+        },
+    },
+    .numTransitions = 3,
+    .data = (void *) CIA_QUICK_STOP_ACTIVE,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction = NULL,
 };
 
 //this state has a unguarded transition to itself with a transition action to set the current fault cause bits
 //when a state transitions to itself, entry and exit actions are not called
 static struct state cia_fault_reaction_active_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn14_guard,
-                                NULL,
-                                &cia_fault_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                NULL,
-                                &cia_set_current_fault_causes_action,
-                                &cia_fault_reaction_active_state
-                        },
-                },
-        .numTransitions = 2,
-        .data = (void *) CIA_FAULT_REACTION_ACTIVE,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction = NULL,
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn14_guard,
+            NULL,
+            &cia_fault_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            NULL,
+            &cia_set_current_fault_causes_action,
+            &cia_fault_reaction_active_state
+        },
+    },
+    .numTransitions = 2,
+    .data = (void *) CIA_FAULT_REACTION_ACTIVE,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction = NULL,
 };
 
 static struct state cia_fault_state = {
-        .parentState = NULL,
-        .entryState = NULL,
-        .transitions = (struct transition[])
-                {
-                        {
-                                Event_cyclic,
-                                (void *) ((intptr_t) CIA_FAULT),
-                                &cia_trn13_guard,
-                                NULL,
-                                &cia_fault_reaction_active_state
-                        },
-                        {
-                                Event_cyclic,
-                                NULL,
-                                &cia_trn15_guard,
-                                NULL,
-                                &cia_switch_on_disabled_state
-                        },
-                },
-        .numTransitions = 2,
-        .data = (void *) CIA_FAULT,
-        .entryAction = &cia_generic_entry_action,
-        .exitAction =
-        NULL,
+    .parentState = NULL,
+    .entryState = NULL,
+    .transitions = (struct transition[])
+    {
+        {
+            Event_cyclic,
+            (void *) ((intptr_t) CIA_FAULT),
+            &cia_trn13_guard,
+            NULL,
+            &cia_fault_reaction_active_state
+        },
+        {
+            Event_cyclic,
+            NULL,
+            &cia_trn15_guard,
+            NULL,
+            &cia_switch_on_disabled_state
+        },
+    },
+    .numTransitions = 2,
+    .data = (void *) CIA_FAULT,
+    .entryAction = &cia_generic_entry_action,
+    .exitAction =
+    NULL,
 };
 
 __attribute__((unused)) static struct state errorState = {
-        .entryAction = &sm_error_state_entry_action
+    .entryAction = &sm_error_state_entry_action
 };
 
 
@@ -568,7 +568,8 @@ static bool cia_trn5_guard(void *condition, struct event *event) {
             ctrl_change_all_drives_states(CIA_DISABLE_OPERATION_CTRLWRD);
             ctrl_state_change_cycle_count++;
             LL_TRACE(GBEM_SM_LOG_EN,
-                     "sm: TRN5 Guard - changing drive states with a Disabled operation controlword (switch on controword is same)");
+                     "sm: TRN5 Guard - changing drive states with a Disabled operation controlword (switch on controword is same)")
+            ;
             return false;
         }
     }
@@ -1042,13 +1043,13 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
                 state_mismatch = true;
             }
             break;
-            //        case CIA_SWITCH_ON_AND_ENABLE_OPERATION:
-            //            if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
-            //                 ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
-            //                && ctrl_state_change_cycle_count*MAP_CYCLE_TIME > ctrl_state_change_timeout) {
-            //                state_mismatch = true;
-            //            }
-            //            break;
+        //        case CIA_SWITCH_ON_AND_ENABLE_OPERATION:
+        //            if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
+        //                 ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
+        //                && ctrl_state_change_cycle_count*MAP_CYCLE_TIME > ctrl_state_change_timeout) {
+        //                state_mismatch = true;
+        //            }
+        //            break;
         case CIA_DISABLE_VOLTAGE:
             if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
                  ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
@@ -1080,7 +1081,8 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
     }
     if (state_mismatch) {
         LL_TRACE(GBEM_SM_LOG_EN,
-                 "sm: Mismatch between drive state and the controlword and the current state & no transitions occurring");
+                 "sm: Mismatch between drive state and the controlword and the current state & no transitions occurring")
+        ;
         ctrl_change_all_drives_states(CIA_QUICK_STOP_CTRLWRD);
         return false;
     }
@@ -1277,7 +1279,7 @@ static void cia_generic_entry_action(void *stateData, struct event *event) {
             break;
         case CIA_FAULT_REACTION_ACTIVE:
             dpm_in->machine_word = dpm_in->machine_word | CIA_FAULT_REACTION_ACTIVE_STATWRD;
-            /* trn13 should have called cia_is_fault_condition to set current faults in event struct*/
+        /* trn13 should have called cia_is_fault_condition to set current faults in event struct*/
             dpm_in->fault_history_word = ((event_data_t *) event->data)->fault_cause;
             break;
         case CIA_FAULT:
@@ -1540,8 +1542,6 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     event_data.homing_failed = homing_failed;
 
 
-
-
     DPM_OUT_PROTECT_END
 
     volatile int8_t moo_disp;
@@ -1575,10 +1575,10 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     DPM_IN_PROTECT_START
     /*	 run the state machine */
     int ret = stateM_handleEvent(m, &(struct event)
-            {
-                    Event_cyclic,
-                    (void *) (intptr_t) &event_data
-            });
+                                 {
+                                     Event_cyclic,
+                                     (void *) (intptr_t) &event_data
+                                 });
     DPM_IN_PROTECT_END
     if (ret == stateM_errArg) {
         LL_FATAL("GBEM: Erroneous arguments state machine");
@@ -1594,7 +1594,8 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
     if (ret == stateM_finalStateReached) {
         LL_FATAL(
-                "GBEM: State machine reached a final state - this should never happen unless something has gone inexplicably pear shaped");
+            "GBEM: State machine reached a final state - this should never happen unless something has gone inexplicably pear shaped")
+        ;
     }
 
     //read current state of state machine
@@ -1721,8 +1722,6 @@ __attribute__((unused)) static void ctrl_check_for_big_pos_jump(uint16_t drive, 
 }
 
 
-
-
 //mode = (control_word >> 1) & 0x0F;
 
 /**
@@ -1807,8 +1806,6 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
 
 
                 if (*map_drive_set_settorq_wrd_function_ptr[i] != NULL) {
-
-
                     grc = map_drive_set_settorq_wrd_function_ptr[i](i, dpm_out->joint_set_torque[i]);
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive settorque function error [%s]", gb_strerror(grc));
@@ -1825,7 +1822,7 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                              "GBEM: Missing function pointer for map_drive_set_settorqoffset_wrd on drive [%u]", i);
                 }
 
-                /* also write position to drive for transition back to CSP*/
+            /* also write position to drive for transition back to CSP*/
                 if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
                     grc = map_drive_set_setpos_wrd_function_ptr[i](i, dpm_out->joint_set_position[i]);
                     if (grc != E_SUCCESS) {
@@ -2071,121 +2068,175 @@ void ctrl_set_moo_pdo(void) {
 
 
 /**
+ * @brief get number of out bytes from slot
+ *
+ * @warning slave is zero indexed
+ */
+// uint32_t fsoe_get_num_bytes_out(uint16_t slave) {
+//     switch (map_slave_mdp_slot_type[slave]) {
+//         case MDP_SLOT_TYPE_NONE:
+//             return 0;
+//             break;
+//         case MDP_SLOT_TYPE_MASTER_AGGREGATE:
+//             return 0;
+//         case MDP_SLOT_TYPE_BBH_32_12:
+//             return 31;
+//             break;
+//         default:
+//             LL_FATAL("GBEM: Invalid MDP_SLOT_TYPE [%u] on slave [%u]", map_slave_mdp_slot_type[slave], slave+1);
+//             return 0;
+//     }
+// }
+
+
+/**
+ * @brief get number of out bytes from slot
+ *
+ * @warning slave is zero indexed
+ */
+// uint32_t fsoe_get_num_bytes_in(uint16_t slot) {
+//     switch (map_slave_mdp_slot_type[slot]) {
+//         case MDP_SLOT_TYPE_NONE:
+//             return 0;
+//             break;
+//         case MDP_SLOT_TYPE_MASTER_AGGREGATE:
+//             return 0;
+//         case MDP_SLOT_TYPE_BBH_32_12:
+//             return 11;
+//             break;
+//         default:
+//             LL_FATAL("GBEM: Invalid MDP_SLOT_TYPE [%u] on slave [%u]", map_slave_mdp_slot_type[slot], slot);
+//             return 0;
+//     }
+// }
+
+
+/**
  * @brief copy fsoe data from slaves to master
  */
-void copy_fsoe_data_slaves_to_master(void) {
+void copy_fsoe_data_slaves_to_master(uint16_t fsoe_master_no) {
     //copy from EL1904->EL2904
     //    ec_copy_between_slave_pdos(MAP_EL1904_1, MAP_EL6900_1, 0, 0, 6);
     //copy from EL2904->EL6900
     //    ec_copy_between_slave_pdos(MAP_EL2904_1, MAP_EL6900_1, 0, 6, 6);
 
-    static uint16_t fsoe_master_no = 0;
-    static bool found_fsoe_master = false;
-    if (!found_fsoe_master) {
-        for (int i = 0; i < MAP_NUM_SLAVES; i++) {
-            if (map_slave_fsoe_master[i] == true) {
-                if (found_fsoe_master == true) {
-                    UM_FATAL(
-                            "GBEM: More than one FSOE master found - this is a fatal error (MAP_SLAVE_FSOE_MASTER contains mutiple true values)");
-                }
-                fsoe_master_no = i;
-                UM_INFO(GBEM_GEN_LOG_EN, "GBEM: FSOE master found on slave [%u]", fsoe_master_no + 1);
-                ecm_status.fsoe.master_slave_no = fsoe_master_no + 1;
-                found_fsoe_master = true;
-            }
-        }
-    }
 
     uint32_t base_master_byte_offset = map_slave_fsoe_offset_in[fsoe_master_no];
     uint32_t cumulative_master_byte_offset = 0;
     uint32_t slave_byte_offset = 0;
-    bool found_at_least_one_fsoe_slave = false;
+    // bool found_at_least_one_fsoe_slave = false;
 
-    if (found_fsoe_master && map_slave_fsoe_in_bytes[fsoe_master_no] > 0) {
-        for (int i = 0; i < MAP_NUM_SLAVES; i++) {
-            if (map_slave_fsoe_out_bytes[i] > 0 && i != fsoe_master_no) {
-                found_at_least_one_fsoe_slave = true;
+    //todo maybe -1 for bytes here?
+    for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {
+        uint32_t slave_fsoe_out_bytes = map_fsoe_get_slot_size_out(slot);
 
-                ec_copy_between_slave_pdos(i + 1, fsoe_master_no + 1, map_slave_fsoe_offset_out[i],
-                                           base_master_byte_offset + cumulative_master_byte_offset,
-                                           map_slave_fsoe_out_bytes[i]);
+        uint16_t slave = map_fsoe_master_slot_to_slave[slot];
 
-                // UM_INFO(GBEM_GEN_LOG_EN,
-                //         "GBEM: FSOE master copying [%u] bytes at [%u] offset from slave (slave no [%u]) to master    (slave no [%u]) at [%u] offset",
-                //         map_slave_fsoe_out_bytes[i], map_slave_fsoe_offset_out[i], i + 1, fsoe_master_no + 1,
-                //         base_master_byte_offset + cumulative_master_byte_offset);
+        ec_copy_between_slave_pdos(slave, fsoe_master_no + 1, map_slave_fsoe_offset_out[slave - 1],
+                                   base_master_byte_offset + cumulative_master_byte_offset,
+                                   slave_fsoe_out_bytes);
 
-                cumulative_master_byte_offset += map_slave_fsoe_out_bytes[i];
-            }
-        }
-        if (!found_at_least_one_fsoe_slave) {
-            LL_FATAL("GBEM: FSOE master found but no FSOE slaves found - this is a fatal error");
-        }
+        cumulative_master_byte_offset += slave_fsoe_out_bytes;
     }
+
+
+    // if (found_fsoe_master) {
+    //     for (int i = 0; i < MAP_NUM_SLAVES; i++) {
+    //         if (map_slave_fsoe_function[i] == FSOE_SLAVE_FUNCTION_SLAVE) {
+    //             //we have an FSoE slave
+    //             found_at_least_one_fsoe_slave = true;
+    //
+    //             uint32_t slave_fsoe_out_bytes = map_fsoe_get_slot_size_slave_out(i + 1);
+    //             // printf("slave fsoe out bytes [%u]\n", slave_fsoe_out_bytes);
+    //
+    //             if (slave_fsoe_out_bytes == 0) {
+    //                 LL_FATAL("GBEM: Slave [%u] has no FSoE out bytes - check MDP slot config - this is a fatal error",
+    //                          i + 1);
+    //             }
+    //
+    //             if ( i != fsoe_master_no) {
+    //                 ec_copy_between_slave_pdos(i + 1, fsoe_master_no + 1, map_slave_fsoe_offset_out[i],
+    //                                            base_master_byte_offset + cumulative_master_byte_offset,
+    //                                            slave_fsoe_out_bytes);
+    //
+    //                 // UM_INFO(GBEM_GEN_LOG_EN,
+    //                 //         "GBEM: FSOE master copying [%u] bytes at [%u] offset from slave (slave no [%u]) to master    (slave no [%u]) at [%u] offset",
+    //                 //         map_slave_fsoe_out_bytes[i], map_slave_fsoe_offset_out[i], i + 1, fsoe_master_no + 1,
+    //                 //         base_master_byte_offset + cumulative_master_byte_offset);
+    //
+    //                 cumulative_master_byte_offset += slave_fsoe_out_bytes;
+    //             }
+    //         }
+    //     }
+    //     if (!found_at_least_one_fsoe_slave) {
+    //         LL_FATAL("GBEM: FSOE master found but no FSOE slaves found - this is a fatal error");
+    //     }
+    // }
 }
 
 /**
  * @brief copy fsoe data from master to slaves
  */
-void copy_fsoe_data_master_to_slaves(void) {
+void copy_fsoe_data_master_to_slaves(uint16_t fsoe_master_no) {
     //copy from EL6900->EL1904
     //    ec_copy_between_slave_pdos(MAP_EL6900_1, MAP_EL1904_1, 0, 0, 6);
     //copy from EL6900->EL2904
     //    ec_copy_between_slave_pdos(MAP_EL6900_1, MAP_EL2904_1, 6, 0, 6);
 
 
-    static uint16_t fsoe_master_no = 0;
-    static bool found_fsoe_master = false;
-    if (!found_fsoe_master) {
-        for (int i = 0; i < MAP_NUM_SLAVES; i++) {
-            if (map_slave_fsoe_master[i] == true) {
-                if (found_fsoe_master == true) {
-                    UM_FATAL(
-                            "GBEM: More than one FSOE master found - this is a fatal error (MAP_SLAVE_FSOE_MASTER contains mutiple true values)");
-                }
-                fsoe_master_no = i;
-                UM_INFO(GBEM_GEN_LOG_EN, "GBEM: FSOE master found on slave [%u]", fsoe_master_no + 1);
-                ecm_status.fsoe.master_slave_no = fsoe_master_no + 1;
-                found_fsoe_master = true;
-            }
-        }
-    }
-
     uint32_t base_master_byte_offset = map_slave_fsoe_offset_out[fsoe_master_no];
     uint32_t cumulative_master_byte_offset = 0;
     uint32_t slave_byte_offset = 0;
     bool found_at_least_one_fsoe_slave = false;
 
+    //todo maybe -1 for bytes here?
+    for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {
+        // uint32_t slave_fsoe_in_bytes = map_fsoe_get_slot_size_in(slot);
+        uint32_t slave_fsoe_in_bytes = 11;
 
-    if (found_fsoe_master && map_slave_fsoe_out_bytes[fsoe_master_no] > 0) {
-        for (int i = 0; i < MAP_NUM_SLAVES; i++) {
-            if (map_slave_fsoe_in_bytes[i] > 0 && i != fsoe_master_no) {
-                found_at_least_one_fsoe_slave = true;
-                slave_byte_offset = map_slave_fsoe_offset_in[i];
-                ec_copy_between_slave_pdos(fsoe_master_no + 1, i + 1,
-                                           base_master_byte_offset + cumulative_master_byte_offset,
-                                           slave_byte_offset,
-                                           map_slave_fsoe_out_bytes[fsoe_master_no]);
+        uint16_t slave = map_fsoe_master_slot_to_slave[slot];
+        slave_byte_offset = map_slave_fsoe_offset_in[slave - 1];
+
+        ec_copy_between_slave_pdos(fsoe_master_no + 1, slave,
+                                   base_master_byte_offset + cumulative_master_byte_offset,
+                                   slave_byte_offset,
+                                   slave_fsoe_in_bytes);
 
 
-                if (map_slave_fsoe_out_bytes[fsoe_master_no] != map_slave_fsoe_in_bytes[i]) {
-                    LL_FATAL(
-                            "GBEM: FSOE master and slave have different number of bytes (master out to slave in) - this is a fatal error");
-                }
-
-                // UM_INFO(GBEM_GEN_LOG_EN,
-                //         "GBEM: FSOE master copying [%u] bytes at [%u] offset from master (slave no [%u]) to slave (slave no [%u]) at [%u] offset",
-                //         map_slave_fsoe_out_bytes[fsoe_master_no],
-                //         base_master_byte_offset + cumulative_master_byte_offset,
-                //         fsoe_master_no + 1, i + 1, slave_byte_offset);
-
-                cumulative_master_byte_offset += map_slave_fsoe_in_bytes[i];
-            }
-        }
-        if (!found_at_least_one_fsoe_slave) {
-            UM_FATAL("GBEM: FSOE master found but no FSOE slaves found - this is a fatal error");
-        }
+        cumulative_master_byte_offset += slave_fsoe_in_bytes;
     }
+
+
+    // if (map_slave_fsoe_out_bytes[fsoe_master_no] > 0) {
+    //     for (int i = 0; i < MAP_NUM_SLAVES; i++) {
+    //         if (map_slave_fsoe_in_bytes[i] > 0 && i != fsoe_master_no) {
+    //             found_at_least_one_fsoe_slave = true;
+    //             slave_byte_offset = map_slave_fsoe_offset_in[i];
+    //             ec_copy_between_slave_pdos(fsoe_master_no + 1, i + 1,
+    //                                        base_master_byte_offset + cumulative_master_byte_offset,
+    //                                        slave_byte_offset,
+    //                                        map_slave_fsoe_out_bytes[fsoe_master_no]);
+    //
+    //
+    //             if (map_slave_fsoe_out_bytes[fsoe_master_no] != map_slave_fsoe_in_bytes[i]) {
+    //                 LL_FATAL(
+    //                     "GBEM: FSOE master and slave have different number of bytes (master out to slave in) - this is a fatal error")
+    //                 ;
+    //             }
+    //
+    //             // UM_INFO(GBEM_GEN_LOG_EN,
+    //             //         "GBEM: FSOE master copying [%u] bytes at [%u] offset from master (slave no [%u]) to slave (slave no [%u]) at [%u] offset",
+    //             //         map_slave_fsoe_out_bytes[fsoe_master_no],
+    //             //         base_master_byte_offset + cumulative_master_byte_offset,
+    //             //         fsoe_master_no + 1, i + 1, slave_byte_offset);
+    //
+    //             cumulative_master_byte_offset += map_slave_fsoe_in_bytes[i];
+    //         }
+    //     }
+    //     if (!found_at_least_one_fsoe_slave) {
+    //         UM_FATAL("GBEM: FSOE master found but no FSOE slaves found - this is a fatal error");
+    //     }
+    // }
 }
 
 
@@ -2319,15 +2370,35 @@ void copy_fsoe_data(void) {
     // print_fsoe_data(MAP_BBH_SCU_1_EC_1, true, 22, 1);
 
 
-    copy_fsoe_data_master_to_slaves();
-    copy_fsoe_data_slaves_to_master();
+    static uint16_t fsoe_master_no = 0;
+    static bool found_fsoe_master = false;
+    if (!found_fsoe_master) {
+        for (int i = 0; i < MAP_NUM_SLAVES; i++) {
+            if (map_slave_fsoe_function[i] == FSOE_SLAVE_FUNCTION_MASTER) {
+                if (found_fsoe_master == true) {
+                    UM_FATAL(
+                        "GBEM: More than one FSOE master found - this is a fatal error (MAP_SLAVE_FSOE_MASTER contains mutiple true values)")
+                    ;
+                }
+                fsoe_master_no = i;
+                UM_INFO(GBEM_GEN_LOG_EN, "GBEM: FSOE master found on slave [%u]", fsoe_master_no + 1);
+                ecm_status.fsoe.master_slave_no = fsoe_master_no + 1;
+                found_fsoe_master = true;
+            }
+        }
+    }
 
+    //only copy fsoe data if a master is found
+    if (found_fsoe_master) {
+        copy_fsoe_data_master_to_slaves(fsoe_master_no);
+        copy_fsoe_data_slaves_to_master(fsoe_master_no);
+    }
     //NO 31 32 33 39
     //FAULT 34?
 
-    uint32_t test_byte_no = 64;
-    iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 1, true);
-    iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 2, true);
+    // uint32_t test_byte_no = 64;
+    // iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 1, true);
+    // iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 2, true);
 
 
     // for (int i = 0; i < 16; i++) {
@@ -2344,13 +2415,12 @@ void copy_fsoe_data(void) {
 gberror_t update_fsoe_ecm_status_slaves(void) {
     gberror_t grc = E_SUCCESS;
 
-
     for (int slave = 1; slave < MAP_NUM_SLAVES + 1; slave++) {
         if (*map_slave_fsoe_get_slave_state_function_ptr[slave - 1] != NULL) {
-            if (map_slave_fsoe_master[slave - 1] == true) {
+            if (map_slave_fsoe_function[slave - 1] == FSOE_SLAVE_FUNCTION_MASTER) {
                 UM_FATAL(
-                        "GBEM: FSoE master mapped on slave [%u] and we are trying to read slave slate - the mapping functions for reading FSoE slave state are incorrectly configured",
-                        slave);
+                    "GBEM: FSoE master mapped on slave [%u] and we are trying to read slave slate - the mapping functions for reading FSoE slave state are incorrectly configured",
+                    slave);
             }
 
             //todo crit is (slave - >>1<<) correct?
@@ -2387,10 +2457,10 @@ gberror_t update_fsoe_ecm_status_master(void) {
 
     for (int slave = 1; slave < MAP_NUM_SLAVES + 1; slave++) {
         if (*map_slave_fsoe_get_master_state_function_ptr[slave - 1] != NULL) {
-            if (map_slave_fsoe_master[slave - 1] != true) {
+            if (map_slave_fsoe_function[slave - 1] != FSOE_SLAVE_FUNCTION_MASTER) {
                 UM_FATAL(
-                        "GBEM: FSoE master read state function mapped on slave [%u] but the slave is not tagged as the master - the mapping functions for reading FSoE master state are incorrectly configured",
-                        slave);
+                    "GBEM: FSoE master read state function mapped on slave [%u] but the slave is not tagged as the master - the mapping functions for reading FSoE master state are incorrectly configured",
+                    slave);
             }
             uint32_t master_state = 0;
 
@@ -2400,7 +2470,7 @@ gberror_t update_fsoe_ecm_status_master(void) {
             fsoe_master_high_level_state_t high_level_state = 0;
 
             grc = map_slave_fsoe_get_master_state_function_ptr[slave - 1](
-                    slave, &master_state, &high_level_state, &master_error_code);
+                slave, &master_state, &high_level_state, &master_error_code);
 
             // printf("fsoe slave state [%u]\n", fsoe_slave_state);
 
