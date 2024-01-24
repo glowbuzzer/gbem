@@ -15,6 +15,35 @@
 #include "ethercatsetget.h"
 #include "aw_j_series.h"
 
+gberror_t ec_get_secondary_name_aw_j_series(const uint16_t drive, char *secondary_name) {
+
+    int rc = 0;
+
+    int assigned_name_os = 50;
+    uint8_t assigned_name[50];
+
+
+    rc = ec_SDOread(map_drive_to_slave[drive], AW_J_SERIES_ASSIGNED_NAME_SDO_INDEX,
+                    AW_J_SERIES_ASSIGNED_NAME_SDO_SUB_INDEX, false, &assigned_name_os,
+                    &assigned_name, EC_TIMEOUTRXM);
+    if (rc <= 0) {
+        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Could not read SDO index:0x%04x - sub-index:0x%04x (on slave:%u)",
+                 AW_J_SERIES_ASSIGNED_NAME_SDO_INDEX,
+                 AW_J_SERIES_ASSIGNED_NAME_SDO_SUB_INDEX,
+                 map_drive_to_slave[drive]);
+        return E_SDO_READ_FAILURE;
+    }
+    strncpy(secondary_name, (const char *) assigned_name,
+            29);  // Using 29 to leave space for the null terminator
+    secondary_name[29] = '\0';  // Ensure null-termination of the destination string}
+
+
+    return E_SUCCESS;
+
+
+}
+
+
 /**
  * @brief print key default SDOs for AW-J-Series drive
  * @param slave

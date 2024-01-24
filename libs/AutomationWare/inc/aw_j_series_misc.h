@@ -20,4 +20,7 @@
 
 gberror_t ec_print_params_aw_j_series(uint16_t drive);
 
+gberror_t ec_get_secondary_name_aw_j_series(uint16_t slave, char *secondary_name);
+
+
 #endif //GBEM_AW_J_SERIES_MISC_H

@@ -20,36 +20,6 @@
 #include "cia402.h"
 #include <math.h>
 
-/* This is used for the fixed POO remapping */
-map_SM_assignment_object_t map_SM2_aw_series_fsoe = {
-    .number_of_entries = 4,
-    .SM_assignment_index = 0x1c12
-};
-
-/* This is used for the fixed PDO remapping */
-map_SM_assignment_object_t map_SM3_aw_series_fsoe = {
-    .number_of_entries = 4,
-    .SM_assignment_index = 0x1c13
-};
-
-/* This is used for the fixed PDO remapping */
-uint16_t map_SM2_index_of_assigned_PDO_aw_series_fsoe[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1600,
-    0x1601,
-    0x1602,
-    0x1700,
-    //        0x1701
-};
-
-/* This is used for the fixed PDO remapping */
-uint16_t map_SM3_index_of_assigned_PDO_aw_series_fsoe[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1a00,
-    0x1a01,
-    0x1a03,
-    0x1b00,
-    //        0x1b01
-};
-
 
 map_custom_pdo_t aw_j_series_custom_pdo_map = {
     .sm2_assignment_object = 0x1C12,
@@ -260,10 +230,9 @@ gberror_t ec_print_pdo_config_aw_series(const uint16_t slave) {
 
 
 bool ec_get_estop_state_aw_j_series(void) {
-
     bool estop = true;
 
-    #if MAP_NUMBER_ESTOP_DIN == 0
+#if MAP_NUMBER_ESTOP_DIN == 0
     UM_FATAL("GBEM: MAP_NUMBER_ESTOP_DIN not defined");
 #endif
 #if MAP_NUMBER_ESTOP_DIN > 2
@@ -301,7 +270,6 @@ bool ec_get_estop_state_aw_j_series(void) {
 #endif
 
     return estop;
-
 }
 
 gberror_t ec_custom_fmmu_sm_aw_j_series(const uint16_t slave) {
@@ -326,56 +294,11 @@ gberror_t ec_pdo_map_aw_j_series(const uint16_t slave) {
     ec_print_pdo_config_aw_series(slave);
 
 
-    if (AW_FSOE == 1) {
-        if (!ec_sdo_write_uint16(slave, map_SM2_aw_series_fsoe.SM_assignment_index, 0, 0, true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-
-        if (!ec_sdo_write_uint16(slave, map_SM3_aw_series_fsoe.SM_assignment_index, 0, 0, true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-
-        for (int i = 0; i < map_SM2_aw_series_fsoe.number_of_entries; i++) {
-            if (!ec_sdo_write_uint16(slave, map_SM2_aw_series_fsoe.SM_assignment_index, i + 1,
-                                     map_SM2_index_of_assigned_PDO_aw_series_fsoe[i], true)) {
-                return E_SDO_WRITE_FAILURE;
-            }
-        }
-
-        for (int i = 0; i < map_SM3_aw_series_fsoe.number_of_entries; i++) {
-            if (!ec_sdo_write_uint16(slave, map_SM3_aw_series_fsoe.SM_assignment_index, i + 1,
-                                     map_SM3_index_of_assigned_PDO_aw_series_fsoe[i], true)) {
-                return E_SDO_WRITE_FAILURE;
-            }
-        }
-
-        /*
-         * set the SM2 & SM3 assignment object number of entries to actual number (sub-index 0)
-         */
-        if (!ec_sdo_write_uint16(slave, map_SM2_aw_series_fsoe.SM_assignment_index, 0,
-                                 map_SM2_aw_series_fsoe.number_of_entries, true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-
-        if (!ec_sdo_write_uint16(slave, map_SM3_aw_series_fsoe.SM_assignment_index, 0,
-                                 map_SM3_aw_series_fsoe.number_of_entries, true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-    } else {
-        return map_apply_custom_pdo_mapping(slave, aw_j_series_custom_pdo_map);
-    }
-
-
-    //    return map_apply_custom_pdo_mapping(slave, aw_j_series_custom_pdo_map);
+    return map_apply_custom_pdo_mapping(slave, aw_j_series_custom_pdo_map);
 }
 
 
 gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
-#if AW_FSOE == 1
-    ec_set_slots_aw_j_series_fsoe(slave);
-#endif
-
-#if AW_FSOE == 0
     //set bus cycle time
     //Communication cycle period	0x1006:0	DINT	32			100		readwrite
     if (!ec_sdo_write_int32(slave, AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_INDEX,
@@ -405,7 +328,6 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
         default:
             break;
     }
-#endif
 
     //nolimits is a global variable set by running gbem with a command line option - x and is used when the drive is beyond the normal limits
 
@@ -803,65 +725,6 @@ gberror_t ec_set_moo_pdo_rev_aw_j_series(const uint16_t drive) {
     return E_SUCCESS;
 }
 
-
-gberror_t ec_print_slots_aw_j_series_fsoe(const uint16_t slave) {
-    uint8_t no_slots = 0;
-
-    if (!ec_sdo_read_uint8(slave, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX,
-                           0,
-                           &no_slots, true)) {
-        return E_SDO_READ_FAILURE;
-    }
-
-    UM_INFO(GBEM_UM_EN, "GBEM: AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX [0x%02x] [%u]",
-            AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX, no_slots);
-
-    //print slot entries
-    for (uint8_t i = 1; i <= no_slots; i++) {
-        uint32_t module_id = 0;
-        if (!ec_sdo_read_uint32(slave, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX,
-                                i,
-                                &module_id, true)) {
-            return E_SDO_READ_FAILURE;
-        }
-        UM_INFO(GBEM_UM_EN, "GBEM: AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX [0x%02x] [%u] = 0x%08x",
-                AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX, i, module_id);
-    }
-
-
-    return E_SUCCESS;
-}
-
-gberror_t ec_set_slots_aw_j_series_fsoe(const uint16_t slave) {
-    UM_INFO(GBEM_UM_EN, "GBEM: Setting slots for AW-J-Series FSoE - slave [%u]", slave);
-
-    ec_print_slots_aw_j_series_fsoe(slave);
-
-    //clear slot entries
-    if (!ec_sdo_write_int8(slave, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX,
-                           0,
-                           0, true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    //    bool ec_sdo_write_uint32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint32_t Value, bool umError) {
-
-    if (!ec_sdo_write_uint32(slave, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX,
-                             1, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_MODULE_1_ID, true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    if (!ec_sdo_write_uint32(slave, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX,
-                             2, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_MODULE_2_ID, true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    if (!ec_sdo_write_int8(slave, AW_J_SERIES_FSOE_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX,
-                           0,
-                           2, true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-
-    return E_SUCCESS;
-}
 
 const aw_j_series_error_report_string_t aw_j_series_error_report[NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS] = {
     {"NoFault", "No fault"},
