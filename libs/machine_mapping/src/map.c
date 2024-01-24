@@ -20,6 +20,7 @@
 #include "log.h"
 #include <string.h>
 #include "std_defs_and_macros.h"
+#include "user_message.h"
 
 
 //global var holding machine type (set in main.c)
@@ -27,6 +28,178 @@ map_machine_type_t map_machine_type = MAP_MACHINE_UNKNOWN;
 
 
 int8_t map_drive_moo[MAP_NUM_DRIVES];
+
+
+uint32_t map_fsoe_master_get_overall_slot_size_out(void) {
+    uint32_t size = 0;
+    for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {
+        switch (map_slave_fsoe_master_slot_config[slot]) {
+            case MDP_SLOT_TYPE_NONE:
+                UM_FATAL(
+                    "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                    slot);
+                break;
+            case MDP_SLOT_TYPE_BBH_32_12:
+                size += 12;
+                break;
+            default:
+                UM_FATAL("GBEM: Unknown slot type set for slot [%u]", slot);
+        }
+    }
+    return size;
+}
+
+uint32_t map_fsoe_master_get_overall_slot_size_in(void) {
+    uint32_t size = 0;
+    for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {
+        switch (map_slave_fsoe_master_slot_config[slot]) {
+            case MDP_SLOT_TYPE_NONE:
+                UM_FATAL(
+                    "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                    slot);
+                break;
+            case MDP_SLOT_TYPE_BBH_32_12:
+                size += 32;
+                break;
+            default:
+                UM_FATAL("GBEM: Unknown slot type set for slot [%u]", slot);
+        }
+    }
+    return size;
+}
+
+
+uint32_t map_fsoe_get_slot_size_master_out(uint16_t slave) {
+    uint32_t size = 0;
+
+    for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {
+        if (map_fsoe_master_slot_to_slave[slot] == slave) {
+            switch (map_slave_fsoe_master_slot_config[slot]) {
+                case MDP_SLOT_TYPE_NONE:
+                    UM_FATAL(
+                        "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                        slot);
+                    break;
+                case MDP_SLOT_TYPE_BBH_32_12:
+                    size = 12;
+                    break;
+                default:
+                    UM_FATAL("GBEM: Unknown slot type set for slot [%u]", slot);
+            }
+        }
+    }
+
+    return size;
+}
+
+uint32_t map_fsoe_get_slot_size_master_in(uint16_t slave) {
+    uint32_t size = 0;
+
+    for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {
+        if (map_fsoe_master_slot_to_slave[slot] == slave) {
+            switch (map_slave_fsoe_master_slot_config[slot]) {
+                case MDP_SLOT_TYPE_NONE:
+                    UM_FATAL(
+                        "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                        slot);
+                    break;
+                case MDP_SLOT_TYPE_BBH_32_12:
+                    size = 32;
+                    break;
+                default:
+                    UM_FATAL("GBEM: Unknown slot type set for slot [%u]", slot);
+            }
+        }
+    }
+
+    return size;
+}
+
+
+uint32_t map_fsoe_get_slot_size_slave_out(uint16_t slave) {
+    uint32_t size = 0;
+
+    for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {
+        if (map_fsoe_master_slot_to_slave[slot] == slave) {
+            switch (map_slave_fsoe_master_slot_config[slot]) {
+                case MDP_SLOT_TYPE_NONE:
+                    UM_FATAL(
+                        "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                        slot);
+                    break;
+                case MDP_SLOT_TYPE_BBH_32_12:
+                    size = 32;
+                    break;
+                default:
+                    UM_FATAL("GBEM: Unknown slot type set for slot [%u]", slot);
+            }
+        }
+    }
+
+    return size;
+}
+
+uint32_t map_fsoe_get_slot_size_slave_in(uint16_t slave) {
+    uint32_t size = 0;
+
+    for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {
+        if (map_fsoe_master_slot_to_slave[slot] == slave) {
+            switch (map_slave_fsoe_master_slot_config[slot]) {
+                case MDP_SLOT_TYPE_NONE:
+                    UM_FATAL("GBEM: No slot type set for slot [%u]", slot);
+                    break;
+                case MDP_SLOT_TYPE_BBH_32_12:
+                    size = 12;
+                    break;
+                default:
+                    UM_FATAL("GBEM: Unknown slot type set for slot [%u]", slot);
+            }
+        }
+    }
+
+    return size;
+}
+
+
+
+uint32_t map_fsoe_get_slot_size_out(uint16_t slot) {
+    uint32_t size = 0;
+
+            switch (map_slave_fsoe_master_slot_config[slot]) {
+                case MDP_SLOT_TYPE_NONE:
+                    UM_FATAL(
+                        "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                        slot);
+                break;
+                case MDP_SLOT_TYPE_BBH_32_12:
+                    size = 32;
+                break;
+                default:
+                    UM_FATAL("GBEM: Unknown slot type set for slot [%u]", slot);
+            }
+
+
+    return size;
+}
+
+uint32_t map_fsoe_get_slot_size_in(uint16_t slot) {
+    uint32_t size = 0;
+    switch (map_slave_fsoe_master_slot_config[slot]) {
+        case MDP_SLOT_TYPE_NONE:
+            UM_FATAL("GBEM: No slot type set for slot [%u]", slot);
+        break;
+        case MDP_SLOT_TYPE_BBH_32_12:
+            size = 12;
+        break;
+        default:
+            UM_FATAL("GBEM: Unknown slot type set for slot [%u]", slot);
+    }
+
+
+    return size;
+}
+
+
 
 
 /**
@@ -70,7 +243,6 @@ bool ec_check_for_follow_error(gberror_t *grc) {
                 return true;
             }
         } else {
-
             //we can't check all drives for a follow error so return true that there is one - safest behaviour
             *grc = E_NO_FUNCTION_FOUND;
             return true;
@@ -90,8 +262,6 @@ bool ec_check_for_follow_error(gberror_t *grc) {
  *
  */
 bool ec_check_for_internal_limit(gberror_t *gbc) {
-
-
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
         if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
@@ -120,14 +290,11 @@ bool ec_check_for_internal_limit(gberror_t *gbc) {
  *
  */
 bool ec_check_remote(void) {
-
     int j = 0;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-
         bool remote_ok = false;
         if (*map_drive_get_remote_function_ptr[i] != NULL) {
             remote_ok = map_drive_get_remote_function_ptr[i](i);
-
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "Missing function pointer for map_drive_get_remote on drive [%u]", i);
             return false;
@@ -232,7 +399,6 @@ uint8_t map_get_gbc_iomap_bit_num(const map_inout_t inout, const uint16_t ionum,
  * @return
  */
 bool map_is_valid_gbc_datatype(const ec_datatype type) {
-
     switch (type) {
         case ECT_BOOLEAN:
             return true;
@@ -253,7 +419,6 @@ bool map_is_valid_gbc_datatype(const ec_datatype type) {
  * @return
  */
 bool map_is_valid_pdo_datatype(const ec_datatype type) {
-
     switch (type) {
         case ECT_BOOLEAN:
             return true;
