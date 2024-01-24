@@ -29,6 +29,7 @@
 
 #define MAP_NUM_DRIVES              1
 #define MAP_NUM_SLAVES              2
+#define MAP_NUM_FSOE_MASTER_SLOTS   1
 
 #define AW_FSOE                     1
 

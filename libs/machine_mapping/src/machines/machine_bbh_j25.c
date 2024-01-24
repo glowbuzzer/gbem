@@ -20,12 +20,18 @@
 
 //@formatter:off
 
+/* MACHINE INFO */
+MAP_MACHINE_GET_ESTOP_STATE_FUNCTION(       NULL);
+
+MAP_FSOE_MASTER_SLOT_CONFIG(                MDP_SLOT_TYPE_BBH_32_12);
+MAP_FSOE_MASTER_SLOT_TO_SLAVE(              MAP_AW_J25_FSOE_1);
+
 /* SLAVES */
 //                                          Slave 1                                 Slave 2
 //                                          MAP_BBH_SCU_1_EC_                       MAP_AW_J25_FSOE_1
 //                                          Safety PLC                              AW J25 joint FSoE
 MAP_NUM_DRIVES_ATTACHED(                    0,                                      1);
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            NULL,                                   ec_pdo_map_aw_j_series);
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            NULL,                                   ec_pdo_map_aw_j_series_fsoe);
 MAP_SLAVE_NVRAM_SDO_FUNCTIONS(              NULL,                                   NULL);
 MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           ec_apply_standard_sdos_bbh_scu_1_ec,    ec_apply_standard_sdos_aw_j25 );
 MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            NULL,                                   ec_initial_pdo_aw_j_series);
@@ -33,17 +39,26 @@ MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(         ec_custom_fmmu_sm_bbh_scu_1_ec,     
 MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,                             EC_DC_0);
 MAP_SLAVE_DC_CYCLE(                         0,                                      1) ;
 
-MAP_SLAVE_FSOE_MASTER(                      true,                                   false);
+#define BBH_SCU_1_EC_FSOE_IN_OFFSET     0
+#define BBH_SCU_1_EC_FSOE_OUT_OFFSET    0
+
+#define AW_J_SERIES_EC_FSOE_IN_OFFSET   35
+#define AW_J_SERIES_EC_FSOE_OUT_OFFSET  43
+
+//could have end of non FSoE PDO map #def
+
+
+// So with multiple slaves we will add the number of bytes to the offset on the master to get the
+/* FSoE */
+MAP_SLAVE_FSOE_SLAVE_TYPE(                  FSOE_SLAVE_TYPE_SCU_1_EC,               FSOE_SLAVE_TYPE_SYNAPTICON);
+MAP_SLAVE_FSOE_SLAVE_FUNCTION(              FSOE_SLAVE_FUNCTION_MASTER,             FSOE_SLAVE_FUNCTION_SLAVE);
 MAP_SLAVE_FSOE_OFFSET_IN(                   0,                                      35);
 MAP_SLAVE_FSOE_OFFSET_OUT(                  0,                                      43);
-MAP_SLAVE_FSOE_OUT_BYTES(                   11,                                     31);
-MAP_SLAVE_FSOE_IN_BYTES(                    31,                                     11);
-//MAP_SLAVE_FSOE_GET_SLAVE_STATE(             NULL,                                   NULL);
-//MAP_SLAVE FSOE_GET_MASTER_STATE(            NULL,                                   NULL);
-//MAP_SLAVE_FSOE_GET_MASTER_CON_ID(           NULL,                                   NULL);
+MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(   NULL,                                   ec_fsoe_get_slave_state_aw_j_series);
+MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS(  NULL,                                   ec_fsoe_get_slave_con_id_aw_j_series);
+MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(  ec_fsoe_get_master_state_bbh_scu_1_ec,  NULL);
 
 MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
-//MAP_GET_ESTOP_STATE(NULL);
 
 /*This is a zero indexed array even though the slaves are 1 indexed */
 /* This must be laid out in the order they appear in netscan */
@@ -77,6 +92,7 @@ MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(   ec_set_setveloffset_wrd_aw_j_series 
 MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(            ec_set_moo_pdo_aw_j_series,             );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                                   );
 MAP_DRIVE_RUN_HOMING(                       0,                                      );
+MAP_DRIVE_GET_SECONDARY_NAME_FUNCTION(      ec_get_secondary_name_aw_j_series       );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series             );
 
 
@@ -92,6 +108,11 @@ MAP_DRIVE_SCALES(                           {166886,9549,32.67});
 
 
 /* PLC IO CONFIG */
+
+
+//there is trouble here becuase 27 depends on the number of slots
+
+// #define BBH_OFFSET (8+ (12*>>value in number of slots<< this is known at compile time
 
 /*IO MAP*/
 mapping_t map_iomap[32] = {
