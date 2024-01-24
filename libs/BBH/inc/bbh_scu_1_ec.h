@@ -22,14 +22,14 @@
 #include "bbh.h"
 #include "ecm_status.h"
 
-gberror_t ec_apply_standard_sdos_bbh_scu_1_ec(const uint16_t slave);
+gberror_t ec_apply_standard_sdos_bbh_scu_1_ec(uint16_t slave);
 
-gberror_t ec_custom_fmmu_sm_bbh_scu_1_ec(const uint16_t slave);
+gberror_t ec_custom_fmmu_sm_bbh_scu_1_ec(uint16_t slave);
 
-gberror_t ec_pdo_map_bbh_scu_1_ec(const uint16_t slave);
+gberror_t ec_pdo_map_bbh_scu_1_ec(uint16_t slave);
 
 gberror_t ec_fsoe_get_master_state_bbh_scu_1_ec(uint16_t slave, uint32_t *state,
-                                                fsoe_slave_high_level_state_t *high_level_state, uint32_t *error_code);
+                                                fsoe_master_high_level_state_t *high_level_state, uint32_t *error_code);
 
 gberror_t ec_fsoe_get_master_con_id_bbh_scu_1_ec(uint16_t slave, uint16_t *con_id);
 
@@ -50,3 +50,4 @@ gberror_t ec_fsoe_get_master_con_id_bbh_scu_1_ec(uint16_t slave, uint16_t *con_i
 
 
 #endif //GBEM_BBH_SCU_1_EC_H
+

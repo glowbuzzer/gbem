@@ -50,26 +50,35 @@ so for one slave they start at 32+32 = 64
 #define BBH_SCU_1_EC_FUNCTIONAL_INPUTS_BASE_OFFSET      32
 
 
+//todo crit slave not needed as param
 uint32_t get_functional_outputs_offset_bbh_scu_1_ec(uint16_t slave) {
-    uint32_t offset = 0;
+    uint32_t offset = BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_BASE_OFFSET;
 
-    switch (map_slave_slot_type[slave - 1]) {
-        case SLOT_TYPE_NONE:
-            UM_FATAL("GBEM: No slot type set for slave %u", slave);
-            break;
-        case SLOT_TYPE_32_12:
-            offset = BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_BASE_OFFSET + (12 * (map_slave_number_of_slots[slave - 1]));
-            break;
-        default:
-            UM_FATAL("GBEM: Unknown slot type set for slave %u", slave);
-    }
+    offset = offset + map_fsoe_master_get_overall_slot_size_out();
+
+
+    // switch (map_slave_mdp_slot_type[slave - 1]) {
+    //     case MDP_SLOT_TYPE_NONE:
+    //         UM_FATAL("GBEM: No slot type set for slave %u", slave);
+    //         break;
+    //     case MDP_SLOT_TYPE_MASTER_AGGREGATE:
+    //         break;
+    //     case MDP_SLOT_TYPE_32_12:
+    //         //todo crit TODAY
+    //         // offset = BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_BASE_OFFSET + (12 * (map_slave_number_of_slots[slave - 1]));
+    //         // printf("offset get op offset = %u\n", offset);
+    //         break;
+    //     default:
+    //         UM_FATAL("GBEM: Unknown slot type set for slave %u", slave);
+    // }
 
     return offset;
 }
 
 
 gberror_t ec_fsoe_get_master_state_bbh_scu_1_ec(uint16_t slave, uint32_t *state,
-                                                fsoe_slave_high_level_state_t *high_level_state, uint32_t *error_code) {
+                                                fsoe_master_high_level_state_t *high_level_state,
+                                                uint32_t *error_code) {
     static bool first_run = true;
     static uint32_t offset = 0;
 
@@ -88,6 +97,7 @@ gberror_t ec_fsoe_get_master_state_bbh_scu_1_ec(uint16_t slave, uint32_t *state,
     //mask the upper 4 bits to get the SCU state
     uint8_t bbh_state = debug_0 & 0x0F;
 
+    // printf("BBH_SCU_1_EC: SCU state = %u\n", bbh_state);
 
     switch (bbh_state) {
         case BBH_SCU_MODE_NONE:
@@ -319,3 +329,42 @@ gberror_t ec_custom_fmmu_sm_bbh_scu_1_ec(const uint16_t slave) {
 //     return (ec_pdo_get_input_uint16(slave, BBH_SCU_1_EC_FSOE_STATUS_WORD_BYTE_OFFSET));
 // }
 //
+
+typedef struct {
+    uint32_t address;
+    char *description;
+} bbh_scu_1_slot_addresses_t;
+
+bbh_scu_1_slot_addresses_t bbh_scu_1_slot_addresses[50] = {
+    {0x6220, "FSoE Slave Conn 12In/12Out (Bytes)"},
+    {0x6192, "FSoE Conn 58In/16Out (Bytes)"},
+    {0x6193, "FSoE Conn 12In/12Out (Bytes)"},
+    {0x6200, "FSoE Conn 01In/01Out (Bytes)"},
+    {0x6201, "FSoE Conn 01In/01Out (Bytes)"},
+    {0x6202, "FSoE Conn 02In/02Out (Bytes)"},
+    {0x6203, "FSoE Conn 08In/04Out (Bytes)"},
+    {0x6204, "FSoE Conn 22In/08Out (Bytes)"},
+    {0x6205, "FSoE Conn 10In/10Out (Bytes)"},
+    {0x6206, "FSoE Conn 12In/08Out (Bytes)"},
+    {0x6207, "FSoE Conn 01In/01Out (Bytes)"},
+    {0x6208, "FSoE Conn 01In/01Out (Bytes)"},
+    {0x6209, "FSoE Conn 01In/01Out (Bytes)"},
+    {0x620A, "FSoE Conn 01In/01Out (Bytes)"},
+    {0x620B, "FSoE Conn 12In/12Out (Bytes)"},
+    {0x620C, "FSoE Conn 08In/08Out (Bytes)"},
+    {0x620D, "FSoE Conn 04In/04Out (Bytes)"},
+    {0x620E, "FSoE Conn 06In/06Out (Bytes)"},
+    {0x620F, "FSoE Conn 08In/08Out (Bytes)"},
+    {0x6210, "FSoE Conn 01In/01Out (Bytes)"},
+    {0x6211, "FSoE Conn 12In/04Out (Bytes)"},
+    {0x6212, "FSoE Conn 14In/04Out (Bytes)"},
+    {0x6213, "FSoE Conn 12In/02Out (Bytes)"},
+    {0x6215, "FSoE Conn 01In/01Out (Bytes)"},
+    {0x6216, "FSoE Conn 01In/01Out (Bytes)"},
+    {0x6217, "FSoE Conn 66In/66Out (Bytes)"},
+    {0x6218, "FSoE Conn 08In/06Out (Bytes)"},
+    {0x6219, "FSoE Conn 08In/02Out (Bytes)"},
+    {0x621B, "FSoE Conn 16In/16Out (Bytes)"},
+    {0x621C, "FSoE Conn 6In/4Out (Bytes)"},
+};
+
