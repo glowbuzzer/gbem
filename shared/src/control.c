@@ -2011,7 +2011,7 @@ void ctrl_process_iomap_out(const bool zero) {
                     if (!zero) {
                         iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
                                                map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
-                                               BIT_CHECK(dpm_out->digital, map_iomap[i].gbc.ionum));
+                                               BIT_CHECK(dpm_out->digital[0], map_iomap[i].gbc.ionum));
                     } else {
                         iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
                                                map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
@@ -2396,9 +2396,10 @@ void copy_fsoe_data(void) {
     //NO 31 32 33 39
     //FAULT 34?
 
-    // uint32_t test_byte_no = 64;
-    // iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 1, true);
-    // iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 2, true);
+    //todo crit this is quite key!
+    uint32_t test_byte_no = 64;
+    iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 1, true);
+    iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 2, true);
 
 
     // for (int i = 0; i < 16; i++) {
