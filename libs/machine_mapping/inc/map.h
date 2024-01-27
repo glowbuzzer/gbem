@@ -21,12 +21,23 @@
 #include "cia402.h"
 #include "ecm_status.h"
 
-extern bool nolimits;
+
+
+
+typedef enum {
+    DRIVE_TYPE_UNDEFINED,
+    DRIVE_TYPE_AW_J17,
+    DRIVE_TYPE_AW_J20,
+    DRIVE_TYPE_AW_J25,
+    DRIVE_TYPE_AW_J32,
+    DRIVE_TYPE_AW_J_40_LP,
+    DRIVE_TYPE_AW_J_40_HP,
+} map_drive_type_t;
 
 /** These macros build the function pointers for slave and drive startup and operational functions */
 
 /* MACHINE */
-#define MAP_MACHINE_GET_ESTOP_STATE_FUNCTION(...) bool (*map_machine_estop_function_ptr)(void) = {__VA_ARGS__};
+#define MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(...) bool (*map_machine_get_safety_state_function_ptr)(void) = {__VA_ARGS__};
 
 /* SLAVES */
 #define MAP_NUM_DRIVES_ATTACHED(...) const uint8_t map_num_drives_attached[MAP_NUM_SLAVES] = {__VA_ARGS__};
@@ -81,16 +92,18 @@ extern bool nolimits;
 
 #define MAP_DRIVE_HOMING_EXEC_FUNCTIONS(...) gberror_t (*map_drive_homing_exec_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 
-#define MAP_DRIVE_POS_LIMIT(...) const int32_t map_drive_pos_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
-#define MAP_DRIVE_NEG_LIMIT(...) const int32_t map_drive_neg_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
+// #define MAP_DRIVE_POS_LIMIT(...) const int32_t map_drive_pos_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
+// #define MAP_DRIVE_NEG_LIMIT(...) const int32_t map_drive_neg_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
 #define MAP_DRIVE_DIRECTION(...) const uint8_t map_drive_direction[MAP_NUM_DRIVES] = {__VA_ARGS__};
 #define MAP_DRIVE_RUN_HOMING(...) const bool map_drive_run_homing[MAP_NUM_DRIVES] = {__VA_ARGS__};
 #define MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(...) gberror_t (*map_drive_print_params_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 #define MAP_DRIVE_GET_SECONDARY_NAME_FUNCTION(...) gberror_t (*map_drive_get_secondary_name_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, char *secondary_name) = {__VA_ARGS__};
 
-#define MAP_DRIVE_VEL_LIMIT(...) const int32_t map_drive_vel_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
+#define MAP_DRIVE_TYPE(...) const map_drive_type_t map_drive_type[MAP_NUM_DRIVES] = {__VA_ARGS__};
 
-#define MAP_DRIVE_TORQ_LIMIT(...) const int32_t map_drive_torque_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
+// #define MAP_DRIVE_VEL_LIMIT(...) const int32_t map_drive_vel_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
+//
+// #define MAP_DRIVE_TORQ_LIMIT(...) const int32_t map_drive_torque_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
 //#define MAP_DRIVE_MOO(...) int8_t map_drive_moo[MAP_NUM_DRIVES] = {__VA_ARGS__};
 #define MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(...) gberror_t (*map_drive_set_moo_pdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int8_t moo) = {__VA_ARGS__};
 
@@ -115,6 +128,18 @@ typedef struct {
     /** revision from EEprom */
     uint32_t eep_rev;
 } map_slave_map_t;
+
+
+typedef struct {
+    uint32_t position_limit_max;
+    uint32_t position_limit_min;
+    uint32_t velocity_limit;
+    uint32_t torque_limit;
+    uint32_t max_motor_speed;
+    uint32_t max_motor_torque;
+} map_machine_limits_t;
+
+extern map_machine_limits_t map_machine_limits[MAP_NUM_DRIVES];
 
 
 typedef struct {
@@ -220,7 +245,7 @@ extern map_machine_type_t map_machine_type;
 
 
 //MACHINE
-extern bool (*map_machine_estop_function_ptr)(void);
+extern bool (*map_machine_get_safety_state_function_ptr)(void);
 
 //SLAVES
 extern const uint8_t map_num_drives_attached[MAP_NUM_SLAVES];
@@ -307,14 +332,15 @@ extern const bool map_drive_run_homing[MAP_NUM_DRIVES];
 
 extern gberror_t (*map_drive_homing_exec_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
 
-extern const int32_t map_drive_pos_limit[MAP_NUM_DRIVES];
-extern const int32_t map_drive_neg_limit[MAP_NUM_DRIVES];
+// extern const int32_t map_drive_pos_limit[MAP_NUM_DRIVES];
+// extern const int32_t map_drive_neg_limit[MAP_NUM_DRIVES];
 extern const uint8_t map_drive_direction[MAP_NUM_DRIVES];
 
-extern const int32_t map_drive_torque_limit[MAP_NUM_DRIVES];
-extern const int32_t map_drive_vel_limit[MAP_NUM_DRIVES];
+// extern const int32_t map_drive_torque_limit[MAP_NUM_DRIVES];
+// extern const int32_t map_drive_vel_limit[MAP_NUM_DRIVES];
 extern int8_t map_drive_moo[MAP_NUM_DRIVES];
 
+extern const map_drive_type_t map_drive_type[MAP_NUM_DRIVES];
 
 //REVERSE FUNCTIONS
 extern uint16_t (*map_drive_get_ctrl_wrd_rev_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
