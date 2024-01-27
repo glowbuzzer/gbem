@@ -13,13 +13,17 @@
 #ifndef GBEM_AW_J_SERIES_H
 #define GBEM_AW_J_SERIES_H
 
+
+#include <map_config_custom_pdo.h>
+
 #include "map.h"
 #include "gberror.h"
 #include "automationware.h"
 
+extern map_custom_pdo_t aw_j_series_custom_pdo_map;
 
 /** Machine functions */
-bool ec_get_estop_state_aw_j_series(void);
+bool ec_get_safety_state_aw_j_series(void);
 
 /** Slave functions */
 
@@ -76,13 +80,58 @@ gberror_t ec_pdo_map_aw_j_series(uint16_t slave);
 
 gberror_t ec_print_pdo_config_aw_series(const uint16_t slave);
 
-gberror_t ec_custom_fmmu_sm_aw_j_series(const uint16_t slave);
-
 
 //Number of error strings and error report strings for the AW J series drives
 #define NUM_OF_AW_J_SERIES_ERROR_STRINGS 26
 #define NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS 162
 
+
+//PDO addresses
+#define AW_J_SERIES_CONTROLWORD_ADDRESS                     0x6040
+#define AW_J_SERIES_MODES_OF_OPERATION_ADDRESS              0x6060
+#define AW_J_SERIES_TARGET_TORQUE_ADDRESS                   0x6071
+#define AW_J_SERIES_TARGET_POSITION_ADDRESS                 0x607A
+#define AW_J_SERIES_TARGET_VELOCITY_ADDRESS                 0x60FF
+#define AW_J_SERIES_TORQUE_OFFSET_ADDRESS                   0x60B2
+#define AW_J_SERIES_TUNING_COMMAND_ADDRESS                  0x2701
+
+
+#define AW_J_SERIES_PHYSICAL_OUTPUTS_ADDRESS                0x60FE
+#define AW_J_SERIES_BIT_MASK_ADDRESS                        0x60FE
+
+#define AW_J_SERIES_USER_MOSI_ADDRESS                       0x2703
+#define AW_J_SERIES_VELOCITY_OFFSET_ADDRESS                 0x60B1
+#define AW_J_SERIES_LED_COLOUR_ADDRESS                      0x2215
+
+#define AW_J_SERIES_STATUSWORD_ADDRESS                      0x6041
+#define AW_J_SERIES_MODES_OF_OPERATION_DISPLAY_ADDRESS      0x6061
+#define AW_J_SERIES_POSITION_ACTUAL_VALUE_ADDRESS           0x6064
+// 0x60FC Position demand internal value
+#define AW_J_SERIES_POSITION_DEMAND_INTERNAL_VALUE_ADDRESS  0x60FC
+#define AW_J_SERIES_CONTROL_EFFORT_ADDRESS                  0x60FA
+
+
+#define AW_J_SERIES_VELOCITY_DEMAND_VALUE_ADDRESS           0x606B
+#define AW_J_SERIES_VELOCITY_ACTUAL_VALUE_ADDRESS           0x606C
+#define AW_J_SERIES_TORQUE_ACTUAL_VALUE_ADDRESS             0x6077
+#define AW_J_SERIES_TORQUE_OFFSET_ADDRESS                   0x60B2
+#define AW_J_SERIES_DIGITAL_INPUTS_ADDRESS                  0x60FD
+#define AW_J_SERIES_TORQUE_DEMAND_ADDRESS                   0x6074
+
+#define AW_J_SERIES_TORQUE_OFFSET_ADDRESS                   0x60B2
+
+#define AW_J_SERIES_TIMESTAMP_ADDDRESS                      0x20F0
+
+#define AW_J_SERIES_USER_MISO_ADDRESS                       0x2704
+
+#define AW_J_SERIES_DIGITAL_INPUTS_ADDRESS                  0x60FD
+
+#define AW_J_SERIES_ANALOG_INPUT_1_ADDRESS                  0x2401
+#define AW_J_SERIES_ANALOG_INPUT_2_ADDRESS                  0x2402
+#define AW_J_SERIES_ANALOG_INPUT_3_ADDRESS                  0x2403
+#define AW_J_SERIES_ANALOG_INPUT_4_ADDRESS                  0x2404
+
+#define AW_J_SERIES_TUNING_STATUS_ADDDRESS                  0x2702
 
 //PDO indexes for the AW J series drives - these are most easily found from a netscan of the drive
 

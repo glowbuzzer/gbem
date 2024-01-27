@@ -103,95 +103,6 @@ map_custom_pdo_t aw_j_series_custom_pdo_map = {
 };
 
 
-map_custom_pdo_t aw_j_series_fsoe_custom_pdo_map = {
-    .sm2_assignment_object = 0x1C12,
-    .num_sm2_assignments = 3,
-    .rxpdo = {
-        {
-            .pdo_assignment_object = 0x1600,
-            .num_assignments = 7,
-            .assignments = {
-                {.datatype = ECT_UNSIGNED16, .index = 0x6040}, //Controlword
-                {.datatype = ECT_INTEGER8, .index = 0x6060}, //Modes of operation
-                {.datatype = ECT_INTEGER16, .index = 0x6071}, //Target Torque
-                {.datatype = ECT_INTEGER32, .index = 0x607A}, //Target position
-                {.datatype = ECT_INTEGER32, .index = 0x60FF}, //Target velocity
-                {.datatype = ECT_INTEGER16, .index = 0x60B2}, //Torque offset
-                {.datatype = ECT_UNSIGNED32, .index = 0x2701}, //Tuning command
-            }
-        },
-        {
-            .pdo_assignment_object = 0x1601,
-            .num_assignments = 2,
-            .assignments = {
-                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x1}, //Physical outputs
-                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x2}, //Bit mask
-            }
-        },
-        {
-            .pdo_assignment_object = 0x1602,
-            .num_assignments = 3,
-            .assignments = {
-                {.datatype = ECT_UNSIGNED32, .index = 0x2703}, //User MOSI
-                {.datatype = ECT_INTEGER32, .index = 0x60B1}, //Velocity offset
-                {.datatype = ECT_UNSIGNED32, .index = 0x2215, .offset = 0x1}, //LED colour
-            }
-        },
-        //                {.pdo_assignment_object=0x1700,
-        //                        .num_assignments=1,
-        //                        .assignments= {
-        //                                {.datatype = ECT_UNSIGNED8, .index = 0x6770, .offset=0x1}, //FSoE Command
-        //                                {.datatype = ECT_BOOLEAN, .index = 0x6640, .offset=0x0} // STO
-        //
-        //                        }
-        //                }
-    },
-    .sm3_assignment_object = 0x1C13,
-    .num_sm3_assignments = 4,
-    .txpdo = {
-        {
-            .pdo_assignment_object = 0x1A00,
-            .num_assignments = 5,
-            .assignments = {
-                {.datatype = ECT_UNSIGNED16, .index = 0x6041}, //Statusword
-                {.datatype = ECT_INTEGER8, .index = 0x6061}, //Modes of operation display
-                {.datatype = ECT_INTEGER32, .index = 0x6064}, //Position actual value
-                {.datatype = ECT_INTEGER32, .index = 0x606C}, //Velocity actual value
-                {.datatype = ECT_INTEGER16, .index = 0x6077}, //Torque actual value
-            }
-        },
-        {
-            .pdo_assignment_object = 0x1A01,
-            .num_assignments = 5,
-            .assignments = {
-                {.datatype = ECT_UNSIGNED16, .index = 0x2401}, //Analog input 1
-                {.datatype = ECT_UNSIGNED16, .index = 0x2402}, // Analog input 2
-                {.datatype = ECT_UNSIGNED16, .index = 0x2403}, //Analog input 3
-                {.datatype = ECT_UNSIGNED16, .index = 0x2404}, //Analog input 4
-                {.datatype = ECT_UNSIGNED32, .index = 0x2702}, //Tuning status
-            }
-        },
-        {
-            .pdo_assignment_object = 0x1A02,
-            .num_assignments = 1,
-            .assignments = {
-                {.datatype = ECT_UNSIGNED32, .index = 0x60FD}, //Digital inputs
-            }
-        },
-        {
-            .pdo_assignment_object = 0x1A03,
-            .num_assignments = 5,
-            .assignments = {
-                {.datatype = ECT_UNSIGNED32, .index = 0x2704}, //User MISO
-                {.datatype = ECT_UNSIGNED32, .index = 0x20F0}, //Timestamp
-                {.datatype = ECT_INTEGER32, .index = 0x60FC}, //Position demand internal value
-                {.datatype = ECT_INTEGER32, .index = 0x606B}, //Velocity demand value
-                {.datatype = ECT_INTEGER16, .index = 0x6074} //Torque demand
-            }
-        }
-    }
-};
-
 gberror_t ec_print_pdo_config_aw_series(const uint16_t slave) {
     uint8_t sm2_pdo_no = 0;
     uint8_t sm3_pdo_no = 0;
@@ -228,8 +139,80 @@ gberror_t ec_print_pdo_config_aw_series(const uint16_t slave) {
     return E_SUCCESS;
 }
 
+gberror_t ec_apply_limits_aw_j_series(uint16_t slave) {
+    uint16_t drive = map_slave_to_drive(slave);
 
-bool ec_get_estop_state_aw_j_series(void) {
+    if (map_machine_limits[drive].torque_limit != 0 && map_machine_limits[drive].max_motor_torque) {
+        uint16_t torque_limit = (uint16_t) ((((double) map_machine_limits[drive].max_motor_torque * (double)
+                                              map_machine_limits[drive].torque_limit) / (double) 100));
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max torque limit [%d] on drive [%d]",
+                torque_limit,
+                map_drive_to_slave[drive]);
+        if (!ec_sdo_write_uint16(map_drive_to_slave[drive], AW_J_SERIES_MAX_TORQUE_SDO_INDEX,
+                                 AW_J_SERIES_MAX_TORQUE_SDO_SUB_INDEX,
+                                 torque_limit, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+    }
+
+    if (map_machine_limits[drive].max_motor_speed != 0 && map_machine_limits[drive].max_motor_speed) {
+        uint32_t max_motor_speed = (uint32_t) ((((double) map_machine_limits[drive].max_motor_speed * (double)
+                                                 map_machine_limits[drive].max_motor_speed) / (double) 100));
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max motor speed [%d] on drive [%d]",
+                max_motor_speed,
+                map_drive_to_slave[drive]);
+        if (!ec_sdo_write_uint32(map_drive_to_slave[drive], AW_J_SERIES_MAX_MOTOR_SPEED_SDO_INDEX,
+                                 AW_J_SERIES_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
+                                 max_motor_speed, true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+    }
+
+
+    if (map_machine_limits[drive].position_limit_max != 0 && map_machine_limits[drive].position_limit_max != 0 &&
+        map_drive_scales[drive].position_scale != 0) {
+        if (!ec_sdo_write_int32(map_drive_to_slave[drive], AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
+                                AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
+                                (int32_t) (
+                                    ((double) map_drive_scales[drive].position_scale)
+                                    *
+                                    ((double) map_machine_limits[drive].position_limit_max * (M_PI /
+                                         180.0))),
+                                true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max position limit [%d] on drive [%d]",
+                (int32_t) (((double) map_drive_scales[drive].position_scale)
+                    *
+                    ((double) map_machine_limits[drive].position_limit_min * (M_PI /
+                        180.0))),
+                drive);
+
+        if (!ec_sdo_write_int32(map_drive_to_slave[drive], AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
+                                AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
+                                (int32_t) (
+                                    ((double) map_drive_scales[drive].position_scale)
+                                    *
+                                    ((double) map_machine_limits[drive].position_limit_min * (M_PI /
+                                         180.0))),
+                                true)) {
+            return E_SDO_WRITE_FAILURE;
+        }
+        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Min position limit [%d] on drive [%d]",
+                (int32_t) (((double) map_drive_scales[drive].position_scale)
+                    *
+                    ((double) map_machine_limits[drive].position_limit_min * (M_PI /
+                        180.0))),
+                drive);
+    }
+
+
+    return E_SUCCESS;
+}
+
+
+bool ec_get_safety_state_aw_j_series(void) {
     bool estop = true;
 
 #if MAP_NUMBER_ESTOP_DIN == 0
@@ -272,23 +255,6 @@ bool ec_get_estop_state_aw_j_series(void) {
     return estop;
 }
 
-gberror_t ec_custom_fmmu_sm_aw_j_series(const uint16_t slave) {
-    ec_slave[slave].configindex = 998;
-
-    ec_slave[slave].Ibits = 600;
-    ec_slave[slave].Obits = 376;
-
-    //todo crit
-    // ec_slave[slave].FMMU[0].LogLength = 82;
-    // ec_slave[slave].FMMU[1].LogLength = 54;
-
-
-    ec_slave[slave].SM[2].SMlength = 47;
-    ec_slave[slave].SM[3].SMlength = 75;
-
-    return E_SUCCESS;
-}
-
 
 gberror_t ec_pdo_map_aw_j_series(const uint16_t slave) {
     ec_print_pdo_config_aw_series(slave);
@@ -329,63 +295,8 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
             break;
     }
 
-    //nolimits is a global variable set by running gbem with a command line option - x and is used when the drive is beyond the normal limits
 
-    //Min position limit	0x607D:1	DINT	32			2147483648	Inc	readwrite	Receive PDO (Outputs)
-    //Max position limit	0x607D:2	DINT	32			2147483647	Inc	readwrite	Receive PDO (Outputs)
-
-    //encoder is 2^20  1048576 counts per rev
-
-#if MACHINE_AW_ROBOT_L2 == 1
-    if (nolimits) {
-        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                2147483647, true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-
-        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                -2147483647, true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-    } else {
-
-        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                (int32_t) (
-                                        ((double) map_drive_scales[map_slave_to_drive(slave)].position_scale)
-                                        *
-                                        ((double) map_drive_pos_limit[map_slave_to_drive(slave)] * (M_PI /
-                                                                                                    180.0))),
-                                true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max position limit [%d] on drive [%d]",
-                (int32_t) (((double) map_drive_scales[map_slave_to_drive(slave)].position_scale)
-                           *
-                           ((double) map_drive_pos_limit[map_slave_to_drive(slave)] * (M_PI /
-                                                                                       180.0))),
-                map_slave_to_drive(slave));
-
-        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                (int32_t) (
-                                        ((double) map_drive_scales[map_slave_to_drive(slave)].position_scale)
-                                        *
-                                        ((double) map_drive_neg_limit[map_slave_to_drive(slave)] * (M_PI /
-                                                                                                    180.0))),
-                                true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Min position limit [%d] on drive [%d]",
-                (int32_t) (((double) map_drive_scales[map_slave_to_drive(slave)].position_scale)
-                           *
-                           ((double) map_drive_neg_limit[map_slave_to_drive(slave)] * (M_PI /
-                                                                                       180.0))),
-                map_slave_to_drive(slave));
-    }
-
+    ec_apply_limits_aw_j_series(slave);
 
     //Polarity	0x607E:0	USINT	8
 
@@ -400,7 +311,6 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
         return E_SDO_WRITE_FAILURE;
     }
 
-#endif
 
     //Configure LED gpio output pin
     if (!ec_sdo_write_uint8(slave, AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_INDEX, AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_SUB_INDEX,
