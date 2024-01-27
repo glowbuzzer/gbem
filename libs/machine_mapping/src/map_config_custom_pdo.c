@@ -16,7 +16,6 @@
 
 
 uint32_t map_calc_index_length(ec_datatype datatype, uint16_t index, uint8_t offset) {
-
     uint16_t length = 0;
     switch (datatype) {
         case ECT_INTEGER8:
@@ -49,6 +48,9 @@ uint32_t map_calc_index_length(ec_datatype datatype, uint16_t index, uint8_t off
         case ECT_REAL64:
             length = 0x40;
             break;
+        // case ECT_STRING8:
+        //     length = 0x80;
+        // break;
         default:
             UM_FATAL("GBEM: Invalid custom pdo map datatype");
     }
@@ -61,8 +63,7 @@ uint32_t map_calc_index_length(ec_datatype datatype, uint16_t index, uint8_t off
 
 
 gberror_t map_apply_custom_pdo_mapping(const uint16_t slave, map_custom_pdo_t map) {
-
-//    printf("map_apply_custom_pdo_mapping for slave [%d]\n", slave);
+    //    printf("map_apply_custom_pdo_mapping for slave [%d]\n", slave);
 
 
     /* clear SM assignment objects */
@@ -88,7 +89,6 @@ gberror_t map_apply_custom_pdo_mapping(const uint16_t slave, map_custom_pdo_t ma
 
     uint8_t rxpdo_count = map.num_sm2_assignments;
     uint8_t txpdo_count = map.num_sm3_assignments;
-
 
 
     /* set SM assignment objects contents*/
@@ -119,11 +119,15 @@ gberror_t map_apply_custom_pdo_mapping(const uint16_t slave, map_custom_pdo_t ma
     }
 
 
-
-/* clear PDO assignment objects */
+    /* clear PDO assignment objects */
 
     for (int i = 0; i < rxpdo_count; i++) {
         int number_of_entries = sizeof(map.rxpdo[i].assignments) / sizeof(map.rxpdo[i].assignments[0]);
+
+        if (map.rxpdo[i].num_assignments == 0) {
+            printf("zero in rxpdo map don't clear\n");
+            continue;
+        }
 
         if (!ec_sdo_write_uint8(slave, map.rxpdo[i].pdo_assignment_object, 0, 0, true)) {
             return E_SDO_WRITE_FAILURE;
@@ -131,6 +135,11 @@ gberror_t map_apply_custom_pdo_mapping(const uint16_t slave, map_custom_pdo_t ma
     }
     for (int i = 0; i < txpdo_count; i++) {
         int number_of_entries = sizeof(map.txpdo[i].assignments) / sizeof(map.txpdo[i].assignments[0]);
+
+        if (map.txpdo[i].num_assignments == 0) {
+            printf("zero in txpdo map don't clear\n");
+            continue;
+        }
 
         if (!ec_sdo_write_uint8(slave, map.txpdo[i].pdo_assignment_object, 0, 0, true)) {
             return E_SDO_WRITE_FAILURE;
@@ -141,7 +150,7 @@ gberror_t map_apply_custom_pdo_mapping(const uint16_t slave, map_custom_pdo_t ma
 
     for (int i = 0; i < rxpdo_count; i++) {
         if (map.rxpdo[i].num_assignments == 0) {
-            LL_FATAL("GBEM: map.rxpdo[%d].num_assignments == 0", i);
+            continue;
         }
 
         uint8_t number_of_entries = map.rxpdo[i].num_assignments;
@@ -153,13 +162,12 @@ gberror_t map_apply_custom_pdo_mapping(const uint16_t slave, map_custom_pdo_t ma
                                                            map.rxpdo[i].assignments[j].offset), true)) {
                 return E_SDO_WRITE_FAILURE;
             }
-
         }
     }
 
     for (int i = 0; i < txpdo_count; i++) {
         if (map.txpdo[i].num_assignments == 0) {
-            LL_FATAL("GBEM: map.txpdo[%d].num_assignments == 0", i);
+            continue;
         }
 
         int number_of_entries = map.txpdo[i].num_assignments;
@@ -171,16 +179,14 @@ gberror_t map_apply_custom_pdo_mapping(const uint16_t slave, map_custom_pdo_t ma
                                                            map.txpdo[i].assignments[j].offset), true)) {
                 return E_SDO_WRITE_FAILURE;
             }
-
         }
     }
 
     /** set the PDO assignment object number of entries to actual number (sub-index 0} */
 
     for (int i = 0; i < rxpdo_count; i++) {
-
         if (map.rxpdo[i].num_assignments == 0) {
-            LL_FATAL("GBEM: map.rxpdo[%d].num_assignments == 0", i);
+            continue;
         }
         int number_of_entries = map.rxpdo[i].num_assignments;
 
@@ -191,9 +197,8 @@ gberror_t map_apply_custom_pdo_mapping(const uint16_t slave, map_custom_pdo_t ma
     }
 
     for (int i = 0; i < txpdo_count; i++) {
-
         if (map.txpdo[i].num_assignments == 0) {
-            LL_FATAL("GBEM: map.txpdo[%d].num_assignments == 0", i);
+            continue;
         }
 
         int number_of_entries = map.txpdo[i].num_assignments;
@@ -205,12 +210,7 @@ gberror_t map_apply_custom_pdo_mapping(const uint16_t slave, map_custom_pdo_t ma
     }
 
     return E_SUCCESS;
-
-
 }
-
-
-
 
 
 //PDO mapping
