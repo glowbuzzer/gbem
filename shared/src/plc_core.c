@@ -65,9 +65,9 @@ void plc_process_iomap_out(const uint8_t task_index) {
                 switch (map_iomap[i].gbc.datatype) {
                     case ECT_BOOLEAN:
                         if (*((bool *) map_iomap[i].plc.io)) {
-                            BIT_SET(dpm_in->digital, map_iomap[i].gbc.ionum);
+                            BIT_SET(dpm_in->digital[0], map_iomap[i].gbc.ionum);
                         } else {
-                            BIT_CLEAR(dpm_in->digital, map_iomap[i].gbc.ionum);
+                            BIT_CLEAR(dpm_in->digital[0], map_iomap[i].gbc.ionum);
                         }
                         break;
                     case ECT_INTEGER32:
@@ -115,7 +115,7 @@ void plc_process_iomap_out(const uint8_t task_index) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Invalid iomap datatype in row [%u]", i);
                         break;
                 } //switch
-            }//ifs
+            } //ifs
         } //for loop
     }
 }
@@ -130,7 +130,6 @@ void plc_process_iomap_in(const uint8_t task_index) {
           */
         //test if we are processing the task this cycle
         if (map_iomap[i].plc.private_linked_task_index == task_index) {
-
             if ((map_iomap[i].pdo.inout == MAP_IN && map_iomap[i].gbc.inout == MAP_UNDEFINED &&
                  map_iomap[i].plc.inout == MAP_IN) ||
                 (map_iomap[i].pdo.inout == MAP_IN && map_iomap[i].gbc.inout == MAP_IN &&
@@ -139,26 +138,26 @@ void plc_process_iomap_in(const uint8_t task_index) {
                 switch (map_iomap[i].plc.datatype) {
                     case ECT_BOOLEAN:
                         *((bool *) map_iomap[i].plc.io) = iomap_get_pdo_in_bool(map_iomap[i].pdo.byte_slave,
-                                                                                map_iomap[i].pdo.slave_num,
-                                                                                map_iomap[i].pdo.byte_num,
-                                                                                map_iomap[i].pdo.bit_num);
+                            map_iomap[i].pdo.slave_num,
+                            map_iomap[i].pdo.byte_num,
+                            map_iomap[i].pdo.bit_num);
                         break;
                     case ECT_INTEGER32:
                         *((int32_t *) map_iomap[i].plc.io) = iomap_get_pdo_in_int32(map_iomap[i].pdo.datatype,
-                                                                                    map_iomap[i].pdo.slave_num,
-                                                                                    map_iomap[i].pdo.byte_num);
+                            map_iomap[i].pdo.slave_num,
+                            map_iomap[i].pdo.byte_num);
                         break;
 
                     case ECT_UNSIGNED32:
                         *((uint32_t *) map_iomap[i].plc.io) = iomap_get_pdo_in_uint32(map_iomap[i].pdo.datatype,
-                                                                                      map_iomap[i].pdo.slave_num,
-                                                                                      map_iomap[i].pdo.byte_num);
+                            map_iomap[i].pdo.slave_num,
+                            map_iomap[i].pdo.byte_num);
                         break;
                     case ECT_REAL32:
                         *((float *) map_iomap[i].plc.io) = iomap_get_pdo_in_float(map_iomap[i].pdo.datatype,
-                                                                                  map_iomap[i].pdo.slave_num,
-                                                                                  map_iomap[i].pdo.byte_num,
-                                                                                  (float) map_iomap[i].pdo.max_val);
+                            map_iomap[i].pdo.slave_num,
+                            map_iomap[i].pdo.byte_num,
+                            (float) map_iomap[i].pdo.max_val);
                         break;
                     default:
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Invalid iomap datatype in row [%u]", i);
@@ -171,7 +170,7 @@ void plc_process_iomap_in(const uint8_t task_index) {
 
                 switch (map_iomap[i].plc.datatype) {
                     case ECT_BOOLEAN:
-                        if (BIT_CHECK(dpm_out->digital, map_iomap[i].gbc.ionum)) {
+                        if (BIT_CHECK(dpm_out->digital[0], map_iomap[i].gbc.ionum)) {
                             *((bool *) map_iomap[i].plc.io) = true;
                         } else {
                             *((bool *) map_iomap[i].plc.io) = false;
@@ -189,11 +188,8 @@ void plc_process_iomap_in(const uint8_t task_index) {
                     default:
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Invalid iomap datatype in row [%u]", i);
                         break;
-
-                }//if var is linked to this task
+                } //if var is linked to this task
             }
-
-
         } //if task index matches
     } //for loop
 }
@@ -207,7 +203,6 @@ void plc_process_iomap_in(const uint8_t task_index) {
  * @return E_SUCCESS or other gb error code
  */
 gberror_t plc_register_tasks(void *function, const uint32_t cycle_time, const uint8_t priority, const char *name) {
-
     if (plc_task_set.num_tasks_defined >= PLC_MAX_NUM_TASKS) {
         return E_ARRAY_OVERFLOW;
     }
@@ -225,7 +220,6 @@ gberror_t plc_register_tasks(void *function, const uint32_t cycle_time, const ui
 
 
 void plc_task_prefix(const int task_index, struct timespec *start_time) {
-
     pthread_mutex_lock(&plc_task_lock);
     pthread_cond_wait(&plc_task_set.tasks[task_index].cond, &plc_task_lock);
     plc_task_set.tasks[task_index].exec.completed = false;
@@ -258,7 +252,6 @@ void plc_task_suffix(const int task_index, struct timespec *start_time) {
  * @brief executes (released semaphore) all plc tasks based on their registered interval and priority
  */
 void plc_task_exec(void) {
-
     plc_bus_cycle_counter = plc_bus_cycle_counter + MAP_CYCLE_TIME;
     static uint64_t ms_counter = 0;
 
@@ -275,7 +268,7 @@ void plc_task_exec(void) {
             }
         }
     }
-//    printf("Bus cycle count [%llu]\n", plc_bus_cycle_counter);
+    //    printf("Bus cycle count [%llu]\n", plc_bus_cycle_counter);
 
     for (int i = 0; i < plc_task_set.num_tasks_defined; i++) {
         if (trigger_task[i]) {
@@ -287,8 +280,6 @@ void plc_task_exec(void) {
             pthread_cond_signal(&plc_task_set.tasks[i].cond);
         }
     }
-
-
 }
 
 /**
@@ -335,25 +326,23 @@ int plc_task_set_comparator(const void *v1, const void *v2) {
 
 
 void plc_saved_retained_vars(void) {
-//must be saved one per task
-//    FILE * filew= fopen("output", "wb");
-//    if (filew != NULL) {
-//        fwrite(&object, sizeof(struct date), 1, filew);
-//        fclose(filew);
-//    }
-//mmap ??
-
+    //must be saved one per task
+    //    FILE * filew= fopen("output", "wb");
+    //    if (filew != NULL) {
+    //        fwrite(&object, sizeof(struct date), 1, filew);
+    //        fclose(filew);
+    //    }
+    //mmap ??
 }
 
 void plc_load_retained_vars(void) {
-
-//    struct date object2 = {0};
-//    FILE * filer= fopen("output", "rb");
-//    if (filer != NULL) {
-//        fread(&object2, sizeof(struct date), 1, filer);
-//        fclose(filer);
-//    }
-//)
+    //    struct date object2 = {0};
+    //    FILE * filer= fopen("output", "rb");
+    //    if (filer != NULL) {
+    //        fread(&object2, sizeof(struct date), 1, filer);
+    //        fclose(filer);
+    //    }
+    //)
 }
 
 uint8_t plc_task_name_to_task_index(const char *name) {
@@ -369,7 +358,6 @@ uint8_t plc_task_name_to_task_index(const char *name) {
  * @brief initialise the PLC, must be called before cyclic task is executed
  */
 gberror_t plc_init(void) {
-
     //call user code function that actually contains the task definitions
     plc_register_tasks_user();
 
@@ -377,14 +365,12 @@ gberror_t plc_init(void) {
     qsort(plc_task_set.tasks, plc_task_set.num_tasks_defined, sizeof(plc_task_def_t), plc_task_set_comparator);
 
     for (int i = 0; i < map_num_rows_in_iomap; i++) {
-
         if (map_iomap[i].plc.linked_task_name[0] != '\0') {
             map_iomap[i].plc.private_linked_task_index = plc_task_name_to_task_index(map_iomap[i].plc.linked_task_name);
         }
     }
     //make sure the threads themselves know their position in the array by passing in the void * argument to the task
     for (int i = 0; i < plc_task_set.num_tasks_defined; i++) {
-
         int error = pthread_create(&plc_task_set.tasks[i].id, NULL, plc_task_set.tasks[i].task_fun,
                                    (void *) i);
         if (error != 0) {
