@@ -23,18 +23,21 @@
 
 /* This is used for the fixed POO remapping */
 map_SM_assignment_object_t map_SM2_akd = {
-        .number_of_entries = 1,
-        .SM_assignment_index = 0x1c12};
+    .number_of_entries = 1,
+    .SM_assignment_index = 0x1c12
+};
 
 /* This is used for the fixed POO remapping */
 map_SM_assignment_object_t map_SM3_akd = {
-        .number_of_entries = 1,
-        .SM_assignment_index = 0x1c13};
+    .number_of_entries = 1,
+    .SM_assignment_index = 0x1c13
+};
 
 /* This is used for the fixed POO remapping */
 /*0x1724 Target position for cyclic synchronous position mode (4 bytes - DINT), Control word (2byte), Torque feed forward (2 bytes) */
 uint16_t map_SM2_index_of_assigned_PDO_akd[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-        0x1724};
+    0x1724
+};
 
 /* This is used for the fixed POO remapping */
 /*
@@ -54,7 +57,8 @@ uint16_t map_SM2_index_of_assigned_PDO_akd[ECM_MAX_PDO_MAPPING_ENTRIES] = {
  *
 */
 uint16_t map_SM3_index_of_assigned_PDO_akd[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-        0x1b26};
+    0x1b26
+};
 
 /**
  * @brief applies the standard SDOs needed by AKD drive
@@ -62,7 +66,6 @@ uint16_t map_SM3_index_of_assigned_PDO_akd[ECM_MAX_PDO_MAPPING_ENTRIES] = {
  * @return
  */
 gberror_t ec_standard_sdos_akd(const uint16_t slave) {
-
     if (ec_printSDO) {
         UM_INFO(GBEM_UM_EN, "GBEM: Standard SDOs configured for AKD slave [%u] are:", slave);
     } else {
@@ -73,99 +76,99 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
      * this is some magic version number and maybe twincat specific?
     */
 
-//if(!ec_sdo_write_uint32(slave, 0xF081,0x1,0x001B2336 )){
-//    return E_SDO_WRITE_FAILURE;
-//}
+    //if(!ec_sdo_write_uint32(slave, 0xF081,0x1,0x001B2336 )){
+    //    return E_SDO_WRITE_FAILURE;
+    //}
 
-//interpolation time index
-//0x60C:0x2
-//int8
+    //interpolation time index
+    //0x60C:0x2
+    //int8
     if (!ec_sdo_write_int8(slave, 0x60C2, 0x2, -3, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//interpolation time period
-//0x60C2:0x1
-//uint8
+    //interpolation time period
+    //0x60C2:0x1
+    //uint8
     if (!ec_sdo_write_int8(slave, 0x60C2, 0x1, MAP_CYCLE_TIME, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//FBUS.PARAM02:
-//This parameter activates the synchronization feature of the AKD.
+    //FBUS.PARAM02:
+    //This parameter activates the synchronization feature of the AKD.
     if (!ec_sdo_write_uint32(slave, 0x36E6, 0x0, 1, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//param04 - This parameter enables (1) or disables (0) the synchronization supervision of the CANOpen or EtherCAT fieldbus
-//0x36E8:0x0
-//uint32
+    //param04 - This parameter enables (1) or disables (0) the synchronization supervision of the CANOpen or EtherCAT fieldbus
+    //0x36E8:0x0
+    //uint32
     if (!ec_sdo_write_uint32(slave, 0x36E8, 0x0, 1, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//param05
+    //param05
     uint32_t uob32 = 0x0;
     // BIT 11 = No emergency messages over CANopen are triggered when a drive warning occurs.
-//    BIT_SET(uob32, 11);
+    //    BIT_SET(uob32, 11);
     // BIT 4 = Scaling is done using special DS402 - objects (independent on units)
     BIT_SET(uob32, 4);
     if (!ec_sdo_write_uint32(slave, 0x36E9, 0x0, uob32, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//drv.opmode
-//0x35B4:0x0
-//int32
+    //drv.opmode
+    //0x35B4:0x0
+    //int32
     if (!ec_sdo_write_int32(slave, 0x35B4, 0x0, 2, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//motor revolutions
-//0x6091:0x1
-//uint32
-//0x1
+    //motor revolutions
+    //0x6091:0x1
+    //uint32
+    //0x1
     if (!ec_sdo_write_uint32(slave, 0x6091, 0x1, 0x1, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//shaft revolutions
-//0x6091:0x2
-//uint32
-//0x1
+    //shaft revolutions
+    //0x6091:0x2
+    //uint32
+    //0x1
     if (!ec_sdo_write_uint32(slave, 0x6091, 0x2, 0x1, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//feed
-//0x6092:0x1
-//unit32
-//655,360
+    //feed
+    //0x6092:0x1
+    //unit32
+    //655,360
 
-//    if (!ec_sdo_write_uint32(slave, 0x6092, 0x1, 0x00100000)) {
+    //    if (!ec_sdo_write_uint32(slave, 0x6092, 0x1, 0x00100000)) {
     if (!ec_sdo_write_uint32(slave, 0x6092, 0x1, 0x2710, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//shaft revolutions
-//0x6092:0x2
-//uint32
-//0x1
+    //shaft revolutions
+    //0x6092:0x2
+    //uint32
+    //0x1
     if (!ec_sdo_write_uint32(slave, 0x6092, 0x2, 0x1, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-/* Subindex 2, known as the interpolation time index, defines the power of ten of the time value
-(e.g. -3 means 10-3 or milliseconds) while subindex 1, known as interpolation time units,
-gives the number of units (e.g. 4 means 4 units).
-You can run a 2 ms cycle using various combinations. For example,
-Index = -3, Units = 2 or
-Index = -4, Units = 20 etc.
-The FBUS.SAMPLEPERIOD parameter is counted in multiples of 62.5us microseconds
-within the device. This means, for example that 2 ms equates to FBUS.SAMPLEPERIOD
-value of 32.
+    /* Subindex 2, known as the interpolation time index, defines the power of ten of the time value
+    (e.g. -3 means 10-3 or milliseconds) while subindex 1, known as interpolation time units,
+    gives the number of units (e.g. 4 means 4 units).
+    You can run a 2 ms cycle using various combinations. For example,
+    Index = -3, Units = 2 or
+    Index = -4, Units = 20 etc.
+    The FBUS.SAMPLEPERIOD parameter is counted in multiples of 62.5us microseconds
+    within the device. This means, for example that 2 ms equates to FBUS.SAMPLEPERIOD
+    value of 32.
 
- */
+     */
 
     if (!ec_sdo_write_int8(slave, AKD_MOO_SET_SDO_INDEX, AKD_MOO_SET_SDO_SUB_INDEX, CIA_MOO_CSP, true)) {
         return E_SDO_WRITE_FAILURE;
@@ -191,7 +194,7 @@ gberror_t ec_pdo_map_akd(const uint16_t slave) {
 
     osal_usleep(200000);
 
-// map_SM2.SM_assignment_index
+    // map_SM2.SM_assignment_index
 
     if (!ec_sdo_write_uint8(slave, map_SM2_akd.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
@@ -230,7 +233,7 @@ gberror_t ec_pdo_map_akd(const uint16_t slave) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//all applied correctly
+    //all applied correctly
     return E_SUCCESS;
 }
 
@@ -256,16 +259,16 @@ gberror_t ec_pdo_map_alt_akd(const uint16_t slave) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//    ec_SDOwrite(map_controllers[controller_number], 0x1C12, 0, false, os, &ob8, EC_TIMEOUTRXM);
-//    ec_SDOwrite(map_controllers[controller_number], 0x1600, 0, false, os, &ob8, EC_TIMEOUTRXM);
-//    ec_SDOwrite(map_controllers[controller_number], 0x1601, 0, false, os, &ob8, EC_TIMEOUTRXM);
-//    ec_SDOwrite(map_controllers[controller_number], 0x1602, 0, false, os, &ob8, EC_TIMEOUTRXM);
-//    ec_SDOwrite(map_controllers[controller_number], 0x1602, 0, false, os, &ob8, EC_TIMEOUTRXM);
+    //    ec_SDOwrite(map_controllers[controller_number], 0x1C12, 0, false, os, &ob8, EC_TIMEOUTRXM);
+    //    ec_SDOwrite(map_controllers[controller_number], 0x1600, 0, false, os, &ob8, EC_TIMEOUTRXM);
+    //    ec_SDOwrite(map_controllers[controller_number], 0x1601, 0, false, os, &ob8, EC_TIMEOUTRXM);
+    //    ec_SDOwrite(map_controllers[controller_number], 0x1602, 0, false, os, &ob8, EC_TIMEOUTRXM);
+    //    ec_SDOwrite(map_controllers[controller_number], 0x1602, 0, false, os, &ob8, EC_TIMEOUTRXM);
 
 
     /* Define RxPdo */
 
-//    ob32 = 0x60400010;
+    //    ob32 = 0x60400010;
     /* 0x6040:0/16bits, control word */
     if (!ec_sdo_write_uint32(slave, 0x1600, 1, 0x60400010, true)) {
         return E_SDO_WRITE_FAILURE;
@@ -291,9 +294,9 @@ gberror_t ec_pdo_map_alt_akd(const uint16_t slave) {
         return E_SDO_WRITE_FAILURE;
     }
 
-/* Clear TxPdo */
-//    os = sizeof(ob8);
-//    ob8 = 0;
+    /* Clear TxPdo */
+    //    os = sizeof(ob8);
+    //    ob8 = 0;
 
     if (!ec_sdo_write_uint8(slave, 0x1C13, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
@@ -310,11 +313,11 @@ gberror_t ec_pdo_map_alt_akd(const uint16_t slave) {
     if (!ec_sdo_write_uint8(slave, 0x1A03, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-//    ec_SDOwrite(slave, 0x1C13, 0, false, os, &ob8, EC_TIMEOUTRXM);
-//    ec_SDOwrite(slave, 0x1A00, 0, false, os, &ob8, EC_TIMEOUTRXM);
-//    ec_SDOwrite(slave, 0x1A01, 0, false, os, &ob8, EC_TIMEOUTRXM);
-//    ec_SDOwrite(slave, 0x1A02, 0, false, os, &ob8, EC_TIMEOUTRXM);
-//    ec_SDOwrite(slave, 0x1A03, 0, false, os, &ob8, EC_TIMEOUTRXM);
+    //    ec_SDOwrite(slave, 0x1C13, 0, false, os, &ob8, EC_TIMEOUTRXM);
+    //    ec_SDOwrite(slave, 0x1A00, 0, false, os, &ob8, EC_TIMEOUTRXM);
+    //    ec_SDOwrite(slave, 0x1A01, 0, false, os, &ob8, EC_TIMEOUTRXM);
+    //    ec_SDOwrite(slave, 0x1A02, 0, false, os, &ob8, EC_TIMEOUTRXM);
+    //    ec_SDOwrite(slave, 0x1A03, 0, false, os, &ob8, EC_TIMEOUTRXM);
 
     /* Define TxPdo */
     /* 0x6041:0/16bits, status word */
@@ -326,7 +329,7 @@ gberror_t ec_pdo_map_alt_akd(const uint16_t slave) {
     if (!ec_sdo_write_uint32(slave, 0x1A00, 2, 0x34700410, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-//    /* 0x60FD:0/32bits, digital inputs */
+    //    /* 0x60FD:0/32bits, digital inputs */
     if (!ec_sdo_write_uint32(slave, 0x1A00, 3, 0x60FD0020, true)) {
         return E_SDO_WRITE_FAILURE;
     }
@@ -336,7 +339,7 @@ gberror_t ec_pdo_map_alt_akd(const uint16_t slave) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//    /* 0x606c:0/32bits, act velocity */
+    //    /* 0x606c:0/32bits, act velocity */
     if (!ec_sdo_write_uint32(slave, 0x1A01, 1, 0x606C0020, true)) {
         return E_SDO_WRITE_FAILURE;
     }
@@ -346,22 +349,22 @@ gberror_t ec_pdo_map_alt_akd(const uint16_t slave) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//    /* set number of PDO entries for 0x1A01  */
+    //    /* set number of PDO entries for 0x1A01  */
     if (!ec_sdo_write_uint8(slave, 0x1600, 0, 3, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//    /* list all RxPdo in 0x1C12:1-4 */
+    //    /* list all RxPdo in 0x1C12:1-4 */
     if (!ec_sdo_write_uint16(slave, 0x1C13, 1, 0x1A00, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//    /* list all RxPdo in 0x1C12:1-4 */
+    //    /* list all RxPdo in 0x1C12:1-4 */
     if (!ec_sdo_write_uint16(slave, 0x1C13, 2, 0x1A01, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-//    /* set number of TxPDO */
+    //    /* set number of TxPDO */
 
     if (!ec_sdo_write_uint8(slave, 0x1C13, 0, 2, true)) {
         return E_SDO_WRITE_FAILURE;
@@ -376,7 +379,6 @@ gberror_t ec_pdo_map_alt_akd(const uint16_t slave) {
  * @return false no follow error, true a follow error
  */
 bool ec_get_follow_error_akd(const uint16_t drive) {
-
     return false;
     //read follow error bytes and threshold
     if (ec_pdo_get_input_uint32(map_drive_to_slave[drive], AKD_FOLLOWERROR_ACTVAL_PDO_INDEX) >
@@ -398,7 +400,6 @@ bool ec_get_follow_error_akd(const uint16_t drive) {
  *
  */
 __attribute__(( weak ))int8_t ec_get_moo_sdo_akd(const uint16_t drive) {
-
     int8_t ib8;
 
     if (!ec_sdo_read_int8(map_drive_to_slave[drive], AKD_MOO_GET_SDO_INDEX, AKD_MOO_GET_SDO_SUB_INDEX, &ib8, true)) {
@@ -452,23 +453,22 @@ const uint8_t *ec_get_error_string_sdo_akd(const uint16_t drive) {
     return error_code_not_found;
 
     //This checks the warning code index - it is always 3
-//    uint8_t uib8;
-//    os= sizeof(uib8);
-//    rc = ec_SDOread(map_drives[drive_number], AKD_WARNING_CODE_INDEX, 0, false, &os,
-//                    &uib8, EC_TIMEOUTRXM);
-//    if (rc <= 0) {
-//        LL_ERROR(GBEM_GEN_LOG_EN, "Could not read SDO index:0x%04x - sub-index:0x%04x (on slave:%u)",
-//                 AKD_WARNING_CODE_INDEX, 0, map_drives[drive_number]);
-//    }
-//    printf("warning code index:%u\n",uib8);
-//
-//
+    //    uint8_t uib8;
+    //    os= sizeof(uib8);
+    //    rc = ec_SDOread(map_drives[drive_number], AKD_WARNING_CODE_INDEX, 0, false, &os,
+    //                    &uib8, EC_TIMEOUTRXM);
+    //    if (rc <= 0) {
+    //        LL_ERROR(GBEM_GEN_LOG_EN, "Could not read SDO index:0x%04x - sub-index:0x%04x (on slave:%u)",
+    //                 AKD_WARNING_CODE_INDEX, 0, map_drives[drive_number]);
+    //    }
+    //    printf("warning code index:%u\n",uib8);
+    //
+    //
 
     if (!ec_sdo_read_uint32(map_drive_to_slave[drive], AKD_WARNING_CODE_SDO_INDEX, 1, &ib32, false)) {
         return error_reading_drive_error;
     }
     //todo doesn't do anything with warning codes at the moment
-
 
 
     //0 in 0x2000.1 = no warning
@@ -506,7 +506,6 @@ gberror_t ec_write_nvram_akd(const uint16_t slave) {
 }
 
 
-
 /**
  * @brief get the value of the remote bit from an AKD drive
  * @param drive
@@ -531,21 +530,20 @@ bool ec_get_remote_akd(const uint16_t drive) {
  *
  */
 gberror_t ec_nvram_sdos_akd(const uint16_t slave) {
-
     if (ec_printSDO) {
         UM_INFO(GBEM_UM_EN, "GBEM: NVRAM SDOs configured for AKD slave [%u] are:", slave);
     } else {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying NVRAM SDOs to AKD slave [%u]", slave);
     }
-
-    if (!ec_sdo_write_int32(slave, AKD_MIN_LIMIT_SDO_INDEX,
-                            AKD_MIN_LIMIT_SDO_SUB_INDEX, map_drive_neg_limit[slave], true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    if (!ec_sdo_write_int32(slave, AKD_MAX_LIMIT_SDO_INDEX,
-                            AKD_MAX_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[slave], true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
+    //todo
+    // if (!ec_sdo_write_int32(slave, AKD_MIN_LIMIT_SDO_INDEX,
+    //                         AKD_MIN_LIMIT_SDO_SUB_INDEX, map_drive_neg_limit[slave], true)) {
+    //     return E_SDO_WRITE_FAILURE;
+    // }
+    // if (!ec_sdo_write_int32(slave, AKD_MAX_LIMIT_SDO_INDEX,
+    //                         AKD_MAX_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[slave], true)) {
+    //     return E_SDO_WRITE_FAILURE;
+    // }
     if (!ec_sdo_write_int32(slave, AKD_DIRECTION_SDO_INDEX,
                             AKD_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave], true)) {
         return E_SDO_WRITE_FAILURE;
