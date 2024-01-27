@@ -48,11 +48,10 @@
 #define NO_COMMAND_LINE_OPTIONS                         0
 
 
+#define LIMITS_INI_FILENAME "./limits.ini"
+#define NUM_PARAMS_IN_LIMITS_INI 6
+
 /*** GBC CONFIGURATION ***/
-
-
-/** defines the size of the PDO buffers IN/OUT (overlaid with the dpm structs) */
-#define SIZE_OF_GBC_PDO                                 240
 
 
 /*** *** CTRL CONFIGURATION *** ***/
