@@ -1008,8 +1008,7 @@ gberror_t config_process_drives(void) {
             UM_INFO(GBEM_UM_EN, "GBEM: \tDrive is on slave [%u] (%s)", map_drive_to_slave[i],
                     map_drive_to_name[i]);
             UM_INFO(GBEM_UM_EN, "GBEM: \tSub-drive number [%u]", map_drive_to_subdrive[i]);
-            UM_INFO(GBEM_UM_EN, "GBEM: \tPositive limit [%d], Negative limit [%d]", map_drive_pos_limit[i],
-                    map_drive_neg_limit[i]);
+
 
         }
     }
