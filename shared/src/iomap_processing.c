@@ -124,10 +124,9 @@ void iomap_set_pdo_out_bool(bool byte_slave, const uint16_t slave_num, const uin
                             const uint8_t bit_num, const bool val) {
     if (!byte_slave) {
         ec_pdo_set_output_bit(slave_num, bit_num, val);
-//        printf("set bit on slave_num [%u] bit_num [%u] to val [%d]\n", slave_num, bit_num, val);
-
+        //        printf("set bit on slave_num [%u] bit_num [%u] to val [%d]\n", slave_num, bit_num, val);
     } else {
-//        printf("set bit on slave_num [%u] byte_num [%u] bit_num [%u] to val [%d]\n", slave_num, byte_num, bit_num, val);
+        //        printf("set bit on slave_num [%u] byte_num [%u] bit_num [%u] to val [%d]\n", slave_num, byte_num, bit_num, val);
         ec_pdo_set_output_bit_from_byte_slave(slave_num, byte_num, bit_num, val);
     }
 }
@@ -234,9 +233,9 @@ void iomap_set_gbc_in_union(const uint16_t io_num, const ec_datatype gbc_type, c
     switch (gbc_type) {
         case ECT_BOOLEAN:
             if (val.ect_boolean) {
-                BIT_SET(dpm_in->digital, io_num);
+                BIT_SET(dpm_in->digital[0], io_num);
             } else {
-                BIT_CLEAR(dpm_in->digital, io_num);
+                BIT_CLEAR(dpm_in->digital[0], io_num);
             }
             break;
         case ECT_INTEGER32:
@@ -324,22 +323,20 @@ void iomap_set_pdo_out_union(const uint16_t slave_num, const uint32_t byte_num, 
 
 void iomap_set_gbc_digital_in_from_pdo(bool byte_slave, const uint16_t slave_num, const uint32_t byte_num,
                                        uint8_t bit_num, const uint16_t gbc_io_id) {
-
     if (!byte_slave) {
         if (ec_pdo_get_input_bit(slave_num, bit_num)) {
-            BIT_SET(dpm_in->digital, gbc_io_id);
+            BIT_SET(dpm_in->digital[0], gbc_io_id);
         } else {
-            BIT_CLEAR(dpm_in->digital, gbc_io_id);
+            BIT_CLEAR(dpm_in->digital[0], gbc_io_id);
         }
     } else {
         if (ec_pdo_get_input_bit_from_byte_slave(slave_num, byte_num, bit_num)) {
-
-//            if (ec_pdo_get_input_bit(slave_num, bit_num)) {
-            BIT_SET(dpm_in->digital, gbc_io_id);
+            //            if (ec_pdo_get_input_bit(slave_num, bit_num)) {
+            BIT_SET(dpm_in->digital[0], gbc_io_id);
         } else {
-            BIT_CLEAR(dpm_in->digital, gbc_io_id);
+            BIT_CLEAR(dpm_in->digital[0], gbc_io_id);
         }
-//        }
+        //        }
     }
 }
 
@@ -377,8 +374,7 @@ void iomap_set_gbc_in_int32_from_pdo(const ec_datatype pdo_type, const uint16_t 
             break;
         default:
             LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Invalid datatype in iomap");
-    }//end case
-
+    } //end case
 }
 
 /**
@@ -416,8 +412,7 @@ iomap_set_gbc_uint32_in_from_pdo(const ec_datatype pdo_type, const uint16_t slav
             break;
         default:
             LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Invalid datatype in iomap");
-    }//end case
-
+    } //end case
 }
 
 
@@ -458,4 +453,5 @@ void iomap_set_gbc_float_in_from_pdo(const ec_datatype pdo_type, const uint16_t 
             LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Invalid datatype in iomap");
     }
 }
+
 //todo crit fix unions with byte slaves
