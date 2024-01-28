@@ -125,7 +125,7 @@ gberror_t map_apply_custom_pdo_mapping(const uint16_t slave, map_custom_pdo_t ma
         int number_of_entries = sizeof(map.rxpdo[i].assignments) / sizeof(map.rxpdo[i].assignments[0]);
 
         if (map.rxpdo[i].num_assignments == 0) {
-            printf("zero in rxpdo map don't clear\n");
+
             continue;
         }
 
@@ -137,7 +137,7 @@ gberror_t map_apply_custom_pdo_mapping(const uint16_t slave, map_custom_pdo_t ma
         int number_of_entries = sizeof(map.txpdo[i].assignments) / sizeof(map.txpdo[i].assignments[0]);
 
         if (map.txpdo[i].num_assignments == 0) {
-            printf("zero in txpdo map don't clear\n");
+
             continue;
         }
 
