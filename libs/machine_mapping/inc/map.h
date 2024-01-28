@@ -52,12 +52,12 @@ typedef enum {
 #define MAP_FSOE_MASTER_SLOT_TO_SLAVE(...) const uint16_t map_fsoe_master_slot_to_slave[MAP_NUM_FSOE_MASTER_SLOTS] = {__VA_ARGS__};
 
 
-#define MAP_SLAVE_FSOE_SLAVE_TYPE(...) const ecm_fsoe_slave_type_t map_slave_fsoe_slave_type[MAP_NUM_SLAVES] = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_SLAVE_TYPE(...) const enum FSOE_SLAVE_TYPE map_slave_fsoe_slave_type[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_SLAVE_FUNCTION(...) const map_slave_fsoe_function_t map_slave_fsoe_function[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_FSOE_MASTER_CONTROL_FUNCTION(...) gberror_t (*map_fsoe_master_control_function_ptr)(void) = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_OFFSET_IN(...) const uint16_t map_slave_fsoe_offset_in[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_OFFSET_OUT(...) const uint16_t map_slave_fsoe_offset_out[MAP_NUM_SLAVES] = {__VA_ARGS__};
-#define MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_slave_state_function_ptr[MAP_NUM_SLAVES])(uint16_t slave,  uint32_t *state, fsoe_slave_high_level_state_t *high_level_state )  = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_slave_state_function_ptr[MAP_NUM_SLAVES])(uint16_t slave,  uint32_t *state, enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state )  = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_master_state_function_ptr[MAP_NUM_SLAVES])(uint16_t slave,uint32_t *state, fsoe_master_high_level_state_t *high_level_state, uint32_t *error_code) = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_slave_con_id_function_ptr[MAP_NUM_SLAVES])(uint16_t slave, uint16_t *con_id ) = {__VA_ARGS__};
 
@@ -267,7 +267,7 @@ extern const uint16_t map_fsoe_master_slot_to_slave[MAP_NUM_FSOE_MASTER_SLOTS];
 extern const map_mdp_slot_type_t map_slave_fsoe_master_slot_config[MAP_NUM_FSOE_MASTER_SLOTS];
 
 //FSOE
-extern const ecm_fsoe_slave_type_t map_slave_fsoe_slave_type[MAP_NUM_SLAVES];
+extern const enum FSOE_SLAVE_TYPE map_slave_fsoe_slave_type[MAP_NUM_SLAVES];
 extern const map_slave_fsoe_function_t map_slave_fsoe_function[MAP_NUM_SLAVES];
 
 
@@ -275,7 +275,7 @@ extern const uint16_t map_slave_fsoe_offset_in[MAP_NUM_SLAVES];
 extern const uint16_t map_slave_fsoe_offset_out[MAP_NUM_SLAVES];
 
 extern gberror_t (*map_slave_fsoe_get_slave_state_function_ptr[MAP_NUM_SLAVES])(
-    uint16_t slave, uint32_t *state, fsoe_slave_high_level_state_t *high_level_state);
+    uint16_t slave, uint32_t *state, enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state);
 
 extern gberror_t (*map_slave_fsoe_get_master_state_function_ptr[MAP_NUM_SLAVES])(
     uint16_t slave, uint32_t *state, fsoe_master_high_level_state_t *high_level_state, uint32_t *error_code);
