@@ -54,10 +54,10 @@ uint16_t map_SM3_index_of_assigned_PDO_aw_series_fsoe[ECM_MAX_PDO_MAPPING_ENTRIE
     //        0x1b01
 };
 
-//19
-//4
-//12
 
+/**
+ * \brief This is the custom PDO mapping for a AW J Series drive (FSoE)
+ */
 map_custom_pdo_t aw_j_series_fsoe_custom_pdo_map = {
     .sm2_assignment_object = 0x1C12,
     .num_sm2_assignments = 4,
@@ -150,120 +150,46 @@ map_custom_pdo_t aw_j_series_fsoe_custom_pdo_map = {
         }
     }
 };
-// ECT_BOOLEAN = 0x0001,
-//  ECT_INTEGER8 = 0x0002,
-//  ECT_INTEGER16 = 0x0003,
-//  ECT_INTEGER32 = 0x0004,
-//  ECT_UNSIGNED8 = 0x0005,
-//  ECT_UNSIGNED16 = 0x0006,
-//  ECT_UNSIGNED32 = 0x0007,
-//  ECT_REAL32 = 0x0008,
-//  ECT_VISIBLE_STRING = 0x0009,
-//  ECT_OCTET_STRING = 0x000A,
-//  ECT_UNICODE_STRING = 0x000B,
-//  ECT_TIME_OF_DAY = 0x000C,
-//  ECT_TIME_DIFFERENCE = 0x000D,
-//  ECT_DOMAIN = 0x000F,
-//  ECT_INTEGER24 = 0x0010,
-//  ECT_REAL64 = 0x0011,
-//  ECT_INTEGER64 = 0x0015,
-//  ECT_UNSIGNED24 = 0x0016,
-//  ECT_UNSIGNED64 = 0x001B,
-//  ECT_BIT1 = 0x0030,
-//  ECT_BIT2 = 0x0031,
-//  ECT_BIT3 = 0x0032,
-//  ECT_BIT4 = 0x0033,
-//  ECT_BIT5 = 0x0034,
-//  ECT_BIT6 = 0x0035,
-//  ECT_BIT7 = 0x0036,
-//  ECT_BIT8 = 0x0037
 
-uint32_t ec_get_datatype_size_bits(ec_datatype datatype) {
-    switch (datatype) {
-        case ECT_BOOLEAN:
-            return 1;
-        case ECT_INTEGER8:
-            return 8;
-        case ECT_INTEGER16:
-            return 16;
-        case ECT_INTEGER24:
-            return 24;
-        case ECT_INTEGER32:
-            return 32;
-        case ECT_INTEGER64:
-            return 64;
-        case ECT_UNSIGNED8:
-            return 8;
-        case ECT_UNSIGNED16:
-            return 16;
-        case ECT_UNSIGNED24:
-            return 24;
-        case ECT_UNSIGNED32:
-            return 32;
-        case ECT_UNSIGNED64:
-            return 64;
-        case ECT_REAL32:
-            return 32;
-        case ECT_REAL64:
-            return 64;
-        //todo crit finish these sizes
-        case ECT_VISIBLE_STRING:
-            return 8;
-        case ECT_OCTET_STRING:
-            return 0;
-        case ECT_UNICODE_STRING:
-            return 0;
-        case ECT_TIME_OF_DAY:
-            return 0;
-        case ECT_TIME_DIFFERENCE:
-            return 0;
-        case ECT_DOMAIN:
-            return 0;
-        case ECT_BIT1:
-            return 1;
-        case ECT_BIT2:
-            return 2;
-        case ECT_BIT3:
-            return 3;
-        case ECT_BIT4:
-            return 4;
-        case ECT_BIT5:
-            return 5;
-        case ECT_BIT6:
-            return 6;
-        case ECT_BIT7:
-            return 7;
-        case ECT_BIT8:
-            return 8;
-        default:
-            LL_FATAL("GBEM: missing ec_datatype to size definition");
-    }
-}
 
+/**
+ * \brief calculates the custom PDO map size in bits based on the custom config struct - SM2
+ * \param map
+ * \return size in bits
+ */
 uint32_t ec_pdo_map_find_size_of_custom_map_rxpdo(map_custom_pdo_t map) {
     uint32_t size = 0;
     //todo crit handling things like octect strings
     for (int i = 0; i < map.num_sm2_assignments; i++) {
         for (int j = 0; j < map.rxpdo[i].num_assignments; j++) {
-            size += ec_get_datatype_size_bits(map.rxpdo[i].assignments[j].datatype);
+            size += map_get_datatype_size_bits(map.rxpdo[i].assignments[j].datatype);
         }
     }
     return size;
 }
 
+/**
+ * \brief calculates the custom PDO map size in bits based on the custom config struct - SM3
+ * \param map
+ * \return size in bits
+ */
 uint32_t ec_pdo_map_find_size_of_custom_map_txpdo(map_custom_pdo_t map) {
     uint32_t size = 0;
     //todo crit handling things like octect strings
     for (int i = 0; i < map.num_sm3_assignments; i++) {
         for (int j = 0; j < map.txpdo[i].num_assignments; j++) {
-            size += ec_get_datatype_size_bits(map.txpdo[i].assignments[j].datatype);
+            size += map_get_datatype_size_bits(map.txpdo[i].assignments[j].datatype);
         }
     }
     return size;
 }
 
 
-//works with standard map
+/**
+ * \brief sets custom FMMU and SM sizes for AW J Series drive (FSoE)
+ * \param slave
+ * \return gberror_t
+ */
 gberror_t ec_custom_fmmu_sm_aw_j_series(const uint16_t slave) {
     ec_slave[slave].configindex = 998;
 
@@ -273,7 +199,6 @@ gberror_t ec_custom_fmmu_sm_aw_j_series(const uint16_t slave) {
     ec_slave[slave].Ibits = 8 * (AW_J_SERIES_EC_FSOE_SM3_FSOE_SIZE + AW_J_SERIES_EC_FSOE_SM3_OFFSET);
     ec_slave[slave].Obits = 8 * (AW_J_SERIES_EC_FSOE_SM2_FSOE_SIZE + AW_J_SERIES_EC_FSOE_SM2_OFFSET);
 
-    //todo crit
     // ec_slave[slave].FMMU[0].LogLength = 82;
     // ec_slave[slave].FMMU[1].LogLength = 54;
 
@@ -287,6 +212,7 @@ gberror_t ec_custom_fmmu_sm_aw_j_series(const uint16_t slave) {
     return E_SUCCESS;
 }
 
+#define USE_CUSTOM_PDO_MAP_AW_J_SERIES_FSOE 1
 
 gberror_t ec_pdo_map_aw_j_series_fsoe(const uint16_t slave) {
     ec_print_pdo_config_aw_series(slave);
@@ -298,9 +224,10 @@ gberror_t ec_pdo_map_aw_j_series_fsoe(const uint16_t slave) {
     UM_INFO(GBEM_UM_EN, "GBEM: Size of txpdo for AW series drive [%u] is [%f] bytes", map_slave_to_drive(slave),
             (double)ec_pdo_map_find_size_of_custom_map_txpdo(aw_j_series_fsoe_custom_pdo_map)/8.0);
 
-    //todo crit - does not work if we apply this
-    return map_apply_custom_pdo_mapping(slave, aw_j_series_fsoe_custom_pdo_map);
 
+#if USE_CUSTOM_PDO_MAP_AW_J_SERIES_FSOE == 1
+    return map_apply_custom_pdo_mapping(slave, aw_j_series_fsoe_custom_pdo_map);
+#else
 
     if (!ec_sdo_write_uint16(slave, map_SM2_aw_series_fsoe.SM_assignment_index, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
@@ -336,11 +263,17 @@ gberror_t ec_pdo_map_aw_j_series_fsoe(const uint16_t slave) {
                              map_SM3_aw_series_fsoe.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
+#endif
 
     ec_print_pdo_config_aw_series(slave);
+    return E_SUCCESS;
 }
 
-
+/**
+ * \brief print slot (MDP) profile for AW J Series drive
+ * \param slave
+ * \return gberror_t
+ */
 gberror_t ec_print_slots_aw_j_series_fsoe(const uint16_t slave) {
     uint8_t no_slots = 0;
 
@@ -369,7 +302,11 @@ gberror_t ec_print_slots_aw_j_series_fsoe(const uint16_t slave) {
     return E_SUCCESS;
 }
 
-
+/**
+ * \brief sets slot (MDP) info for an AW J Series drive (FSoE)
+ * \param slave
+ * \return
+ */
 gberror_t ec_set_slots_aw_j_series_fsoe(const uint16_t slave) {
     UM_INFO(GBEM_UM_EN, "GBEM: Setting slots for AW-J-Series FSoE - slave [%u]", slave);
 
@@ -401,7 +338,11 @@ gberror_t ec_set_slots_aw_j_series_fsoe(const uint16_t slave) {
     return E_SUCCESS;
 }
 
-
+/**
+ * \brief Applies standard SDOs for an AW J Series drive (FSoE)
+ * \param slave
+ * \return
+ */
 gberror_t ec_apply_standard_sdos_aw_j_series_fsoe(const uint16_t slave) {
     ec_set_slots_aw_j_series_fsoe(slave);
 
@@ -481,28 +422,14 @@ bool ec_get_safety_state_aw_j_series_fsoe(void) {
 
  */
 
-//standard
-// #define AW_J_SERIES_FSOE_BASE_SM3_OFFSET                    43 //changes with PDO map
-#define AW_J_SERIES_FSOE_BASE_SM3_OFFSET                    (AW_J_SERIES_EC_FSOE_SM3_OFFSET) //changes with PDO map
 
-
-//custom
-// #define AW_J_SERIES_FSOE_BASE_SM3_OFFSET                    49 //changes with PDO map
-
-#define AW_J_SERIES_FSOE_STATUS_WORD_0_PDO_INDEX            (AW_J_SERIES_FSOE_BASE_SM3_OFFSET + 1)
-#define AW_J_SERIES_FSOE_STATUS_WORD_1_PDO_INDEX            (AW_J_SERIES_FSOE_BASE_SM3_OFFSET + 5)
-#define AW_J_SERIES_FSOE_CONNECTION_ID_PDO_INDEX            (AW_J_SERIES_FSOE_BASE_SM3_OFFSET + 29)
-
-//standard
-// #define AW_J_SERIES_FSOE_BASE_SM2_OFFSET                    35 //changes with PDO map
-#define AW_J_SERIES_FSOE_BASE_SM2_OFFSET                    (AW_J_SERIES_EC_FSOE_SM2_OFFSET) //changes with PDO map
-//custom
-// #define AW_J_SERIES_FSOE_BASE_SM2_OFFSET                    35 //changes with PDO map
-
-#define AW_J_SERIES_FSOE_STATUS_ERROR_BIT_NO                7
-#define AW_J_SERIES_FSOE_STATUS_RESTART_ACK_REQ_BIT_NO      15
-
-
+/**
+ * \brief gets the FSoE state of an AW J Series drive
+ * \param slave
+ * \param state
+ * \param high_level_state
+ * \return gberror_t
+ */
 gberror_t ec_fsoe_get_slave_state_aw_j_series(uint16_t slave, uint32_t *state,
                                               fsoe_slave_high_level_state_t *high_level_state) {
     uint16_t status_word_0 = 0;
@@ -542,7 +469,12 @@ gberror_t ec_fsoe_get_slave_state_aw_j_series(uint16_t slave, uint32_t *state,
     return E_SUCCESS;
 }
 
-
+/**
+ * \brief gets the FSoE connection ID of an AW J Series drive
+ * \param slave
+ * \param con_id
+ * \return
+ */
 gberror_t ec_fsoe_get_slave_con_id_aw_j_series(uint16_t slave, uint16_t *con_id) {
     *con_id = ec_pdo_get_input_uint16(slave, AW_J_SERIES_FSOE_CONNECTION_ID_PDO_INDEX);
 
