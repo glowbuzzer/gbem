@@ -30,6 +30,75 @@ map_machine_type_t map_machine_type = MAP_MACHINE_UNKNOWN;
 int8_t map_drive_moo[MAP_NUM_DRIVES];
 
 
+/**
+ * \brief   get the size of the datatype in bits
+ * \param datatype
+ * \return
+ */
+uint32_t map_get_datatype_size_bits(ec_datatype datatype) {
+    switch (datatype) {
+        case ECT_BOOLEAN:
+            return 1;
+        case ECT_INTEGER8:
+            return 8;
+        case ECT_INTEGER16:
+            return 16;
+        case ECT_INTEGER24:
+            return 24;
+        case ECT_INTEGER32:
+            return 32;
+        case ECT_INTEGER64:
+            return 64;
+        case ECT_UNSIGNED8:
+            return 8;
+        case ECT_UNSIGNED16:
+            return 16;
+        case ECT_UNSIGNED24:
+            return 24;
+        case ECT_UNSIGNED32:
+            return 32;
+        case ECT_UNSIGNED64:
+            return 64;
+        case ECT_REAL32:
+            return 32;
+        case ECT_REAL64:
+            return 64;
+        //todo crit finish these sizes
+        case ECT_VISIBLE_STRING:
+            return 8;
+        case ECT_OCTET_STRING:
+            return 0;
+        case ECT_UNICODE_STRING:
+            return 0;
+        case ECT_TIME_OF_DAY:
+            return 0;
+        case ECT_TIME_DIFFERENCE:
+            return 0;
+        case ECT_DOMAIN:
+            return 0;
+        case ECT_BIT1:
+            return 1;
+        case ECT_BIT2:
+            return 2;
+        case ECT_BIT3:
+            return 3;
+        case ECT_BIT4:
+            return 4;
+        case ECT_BIT5:
+            return 5;
+        case ECT_BIT6:
+            return 6;
+        case ECT_BIT7:
+            return 7;
+        case ECT_BIT8:
+            return 8;
+        default:
+            LL_FATAL("GBEM: missing ec_datatype to size definition");
+    }
+    return 0;
+}
+
+
 uint32_t map_fsoe_master_get_overall_slot_size_out(void) {
     uint32_t size = 0;
     for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {

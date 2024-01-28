@@ -22,8 +22,6 @@
 #include "ecm_status.h"
 
 
-
-
 typedef enum {
     DRIVE_TYPE_UNDEFINED,
     DRIVE_TYPE_AW_J17,
@@ -382,6 +380,9 @@ bool map_is_valid_gbc_datatype(ec_datatype type);
 bool map_is_valid_pdo_datatype(ec_datatype type);
 
 bool map_is_valid_plc_datatype(ec_datatype type);
+
+
+uint32_t map_get_datatype_size_bits(ec_datatype datatype);
 
 
 extern map_pdo_object_t ctrl_estop_din_1;
