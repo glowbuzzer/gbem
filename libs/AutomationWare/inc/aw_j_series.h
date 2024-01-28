@@ -31,6 +31,7 @@ gberror_t ec_initial_pdo_aw_j_series(uint16_t slave);
 
 int8_t ec_get_moo_pdo_aw_j_series(uint16_t drive);
 
+gberror_t ec_apply_limits_aw_j_series(uint16_t slave);
 
 /** Error functions */
 uint8_t *ec_get_error_string_sdo_aw_j_series(uint16_t drive);
