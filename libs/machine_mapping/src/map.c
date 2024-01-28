@@ -161,22 +161,21 @@ uint32_t map_fsoe_get_slot_size_slave_in(uint16_t slave) {
 }
 
 
-
 uint32_t map_fsoe_get_slot_size_out(uint16_t slot) {
     uint32_t size = 0;
 
-            switch (map_slave_fsoe_master_slot_config[slot]) {
-                case MDP_SLOT_TYPE_NONE:
-                    UM_FATAL(
-                        "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
-                        slot);
-                break;
-                case MDP_SLOT_TYPE_BBH_32_12:
-                    size = 32;
-                break;
-                default:
-                    UM_FATAL("GBEM: Unknown slot type set for slot [%u]", slot);
-            }
+    switch (map_slave_fsoe_master_slot_config[slot]) {
+        case MDP_SLOT_TYPE_NONE:
+            UM_FATAL(
+                "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                slot);
+            break;
+        case MDP_SLOT_TYPE_BBH_32_12:
+            size = 32;
+            break;
+        default:
+            UM_FATAL("GBEM: Unknown slot type set for slot [%u]", slot);
+    }
 
 
     return size;
@@ -187,10 +186,10 @@ uint32_t map_fsoe_get_slot_size_in(uint16_t slot) {
     switch (map_slave_fsoe_master_slot_config[slot]) {
         case MDP_SLOT_TYPE_NONE:
             UM_FATAL("GBEM: No slot type set for slot [%u]", slot);
-        break;
+            break;
         case MDP_SLOT_TYPE_BBH_32_12:
             size = 12;
-        break;
+            break;
         default:
             UM_FATAL("GBEM: Unknown slot type set for slot [%u]", slot);
     }
@@ -198,8 +197,6 @@ uint32_t map_fsoe_get_slot_size_in(uint16_t slot) {
 
     return size;
 }
-
-
 
 
 /**
@@ -262,6 +259,7 @@ bool ec_check_for_follow_error(gberror_t *grc) {
  *
  */
 bool ec_check_for_internal_limit(gberror_t *gbc) {
+    bool internal_limit_active = false;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
         if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
@@ -274,11 +272,15 @@ bool ec_check_for_internal_limit(gberror_t *gbc) {
         }
         if (BIT_CHECK(drive_stat_wrd, CIA_INTERNAL_LIMIT_BIT_NUM)) {
             *gbc = E_SUCCESS;
-            return true;
+            internal_limit_active = true;
+            ecm_status.drives[i].historic_internal_limit = true;
+            ecm_status.drives[i].active_internal_limit = true;
+        } else {
+            ecm_status.drives[i].active_internal_limit = false;
         }
     }
     *gbc = E_SUCCESS;
-    return false;
+    return internal_limit_active;
 }
 
 
