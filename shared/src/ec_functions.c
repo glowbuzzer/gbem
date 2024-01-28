@@ -419,9 +419,9 @@ gberror_t print_1c32(const uint16_t slave) {
     uint16_t uib16;
     uint32_t uib32;
     static const char *const ec_sync_mode_strings[] = {
-            "Free Run", "Synchron with SM 2 Event",
-            "DC-Mode - Synchron with SYNC0 Event",
-            "DC-Mode - Synchron with SYNC1 Event"
+        "Free Run", "Synchron with SM 2 Event",
+        "DC-Mode - Synchron with SYNC0 Event",
+        "DC-Mode - Synchron with SYNC1 Event"
     };
     // Sync mode
     // 0 Free Run
@@ -516,7 +516,7 @@ bool ec_step_2_config(void) {
     ec_writestate(0);
     usleep(1000000);
 
-    RESTART_SCAN:
+RESTART_SCAN:
     if (ec_config_init(FALSE)) {
         if (ec_slavecount == 0) {
             UM_ERROR(GBEM_UM_EN, "GBEM: We failed to find any slaves on the EtherCAT network");
@@ -618,8 +618,8 @@ bool ec_step_5_error_check(void) {
     }
     if ((ec_boot_ecaterror_count > 20)) {
         UM_FATAL(
-                "GBEM: Excessive number of EtherCAT slave error messages (>%d) detected during boot (so not all have been outputted)",
-                20);
+            "GBEM: Excessive number of EtherCAT slave error messages (>%d) detected during boot (so not all have been outputted)",
+            20);
     }
     if (ec_boot_ecaterror_count > 0) {
         UM_ERROR(GBEM_UM_EN, "GBEM: Boot step 5 >failure< (Check for any slaves reporting errors)");
@@ -706,7 +706,8 @@ bool ec_step_8_slaves_match(void) {
     } else {
         UM_ERROR(GBEM_UM_EN, "GBEM: Boot step 8 >failure< (check all slaves match the configuration)");
         UM_ERROR(GBEM_UM_EN,
-                 "GBEM: Not all slaves match the configuration (this is the array of slave names manufacturer ids etc. in the machine config");
+                 "GBEM: Not all slaves match the configuration (this is the array of slave names manufacturer ids etc. in the machine config")
+        ;
         UM_ERROR(GBEM_UM_EN,
                  "GBEM: Error from slave match [%s]", gb_strerror(grc));
 
@@ -719,8 +720,6 @@ bool ec_step_8_slaves_match(void) {
  * @return
  */
 bool ec_step_9_op(void) {
-
-
     /** read the drive error code into the ecm_status struct - any initial errors */
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         read_drive_error_code_into_ecm_status(i);
@@ -728,7 +727,6 @@ bool ec_step_9_op(void) {
 
     //copy secondary name into ecm status
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-
         if (map_drive_get_secondary_name_function_ptr[i] != NULL) {
             map_drive_get_secondary_name_function_ptr[i](i, ecm_status.drives[i].secondary_name);
         }
@@ -814,7 +812,7 @@ void ECBoot(void *argument) {
 
     /******************** this is the start of the boot phase ********************/
     /* this is a goto label that we return to if boot fails */
-    boot_start_goto_label:
+boot_start_goto_label:
     UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
     UM_INFO(GBEM_UM_EN, "GBEM: ***                    Start of cyclic boot process                    ***");
     UM_INFO(GBEM_UM_EN, "GBEM: **************************************************************************");
@@ -836,7 +834,7 @@ void ECBoot(void *argument) {
 
     /* now we ask the slaves to reach PRE_OP state and wait while they do this*/
     if (ec_boot_proceed) {
-        retry_step3:
+    retry_step3:
         ecm_status.boot_state.all_slaves_pre_op = ec_step_3_preop();
         ec_boot_proceed = ecm_status.boot_state.all_slaves_pre_op;
     }
@@ -854,7 +852,8 @@ void ECBoot(void *argument) {
             error_ack_count++;
             if (error_ack_count > 5) {
                 UM_ERROR(GBEM_UM_EN,
-                         "GBEM: Slaves were in a error state and we tried acknowledging the errors but the remained in the error state");
+                         "GBEM: Slaves were in a error state and we tried acknowledging the errors but the remained in the error state")
+                ;
                 break;
             }
         }
@@ -1023,13 +1022,15 @@ void ECBoot(void *argument) {
     rc = osal_thread_create(&thread_ec_check, STACK64K * 2, &ec_check, NULL);
     if (rc != 1) {
         UM_FATAL(
-                "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
+            "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down")
+        ;
     }
 
     rc = osal_thread_create(&thread_ec_error_message, STACK64K * 2, &ec_read_error_messages, NULL);
     if (rc != 1) {
         UM_FATAL(
-                "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down");
+            "GBEM: An error occurred whilst creating the pthread (ec_check which is the thread used to check slave statuses) and GBEM will exit. This error message implies that a Linux system call (pthread_create) has failed. This could be because the system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process would be exceeded. Neither of these should occur normally. Something bad has happened deep down")
+        ;
     }
 
 #endif
@@ -1130,21 +1131,13 @@ gberror_t ec_slaves_match(void) {
  */
 void init_ecm_status(void) {
     ecm_status.drive_count = MAP_NUM_DRIVES;
-    ecm_status.gbc_max_float_in_count = DPM_NUM_ANALOGS;
-    ecm_status.gbc_max_float_out_count = DPM_NUM_ANALOGS;
-    ecm_status.gbc_max_int32_in_count = DPM_NUM_INT32S;
-    ecm_status.gbc_max_int32_out_count = DPM_NUM_INT32S;
-    ecm_status.gbc_max_uint32_in_count = DPM_NUM_UINT32S;
-    ecm_status.gbc_max_uint32_out_count = DPM_NUM_UINT32S;
-    ecm_status.gbc_max_digital_in_count = DPM_NUM_DIGITALS;
-    ecm_status.gbc_max_digital_out_count = DPM_NUM_DIGITALS;
 
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (map_drive_to_name[i] == NULL) {
             UM_FATAL(
-                    "GBEM: map_drive_names [%u] char* array is empty - initialise the array in the machine configuration",
-                    i);
+                "GBEM: map_drive_names [%u] char* array is empty - initialise the array in the machine configuration",
+                i);
         } else {
             strcpy(ecm_status.drives[i].name, map_drive_to_name[i]);
         }

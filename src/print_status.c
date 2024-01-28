@@ -52,18 +52,6 @@ void print_status(ecm_status_t *data) {
     printf("Number of slaves: %d\n", data->slavecount);
     printf("Number of drives: %d\n", data->drive_count);
 
-    printf("Number of int32 ins: %d\n", data->gbc_max_int32_in_count);
-
-    printf("Number of int32 outs: %d\n", data->gbc_max_int32_out_count);
-
-    printf("Number of float ins: %d\n", data->gbc_max_float_in_count);
-
-    printf("Number of float outs: %d\n", data->gbc_max_float_out_count);
-
-    printf("Number of digital ins: %d\n", data->gbc_max_digital_in_count);
-
-    printf("Number of digital outs: %d\n", data->gbc_max_digital_out_count);
-
 
     printf("Machine control word [%s]\n", cia_command_names[cia_ctrlwrd_to_command(dpm_out->machine_word)]);
     printf("machine status word [%s]\n", cia_state_names[cia_statwrd_to_state(dpm_in->machine_word)]);
@@ -83,26 +71,6 @@ void print_status(ecm_status_t *data) {
     printBinaryUint32(dpm_in->fault_history_word);
     printf("\n");
 
-    printf("Integers in:\n");
-    for (int i = 0; i < data->gbc_max_int32_in_count; i++) {
-        printf("%d\n", dpm_in->integer32[i]);
-    }
-
-    printf("Integers out:\n");
-    for (int i = 0; i < data->gbc_max_int32_out_count; i++) {
-        printf("%d\n", dpm_out->integer32[i]);
-    }
-
-    printf("Floats in:\n");
-
-    for (int i = 0; i < data->gbc_max_float_in_count; i++) {
-        printf("%f\n", dpm_in->analog[i]);
-    }
-
-    printf("Floats out:\n");
-    for (int i = 0; i < data->gbc_max_float_out_count; i++) {
-        printf("%f\n", dpm_out->analog[i]);
-    }
 
     if (ecm_status.cyclic_state == ECM_ERROR) {
         printf("EtherCAT error detected\n");
