@@ -431,7 +431,7 @@ bool ec_get_safety_state_aw_j_series_fsoe(void) {
  * \return gberror_t
  */
 gberror_t ec_fsoe_get_slave_state_aw_j_series(uint16_t slave, uint32_t *state,
-                                              fsoe_slave_high_level_state_t *high_level_state) {
+                                              enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state) {
     uint16_t status_word_0 = 0;
     uint16_t status_word_1 = 0;
 

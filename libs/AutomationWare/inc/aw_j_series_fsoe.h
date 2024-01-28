@@ -24,7 +24,7 @@ gberror_t ec_custom_fmmu_sm_aw_j_series(const uint16_t slave);
 bool ec_get_safety_state_aw_j_series_fsoe(void);
 
 gberror_t ec_fsoe_get_slave_state_aw_j_series(uint16_t slave, uint32_t *state,
-                                              fsoe_slave_high_level_state_t *high_level_state);
+                                              enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state);
 
 gberror_t ec_fsoe_get_slave_con_id_aw_j_series(uint16_t slave, uint16_t *con_id);
 
