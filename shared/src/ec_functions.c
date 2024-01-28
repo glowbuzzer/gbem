@@ -250,9 +250,9 @@ static int custom_slave_config(uint16 slave) {
 
     if (*map_slave_custom_fmmu_sm_function_ptr[slave - 1] != NULL) {
         if ((*map_slave_custom_fmmu_sm_function_ptr[slave - 1])(slave) == E_SUCCESS) {
-            UM_INFO(GBEM_UM_EN, "GBEM: Custom FMMU/SM mapping by netscan succeeded for slave [%u]", slave);
+            UM_INFO(GBEM_UM_EN, "GBEM: Custom FMMU/SM mapping succeeded for slave [%u]", slave);
         } else {
-            UM_ERROR(GBEM_UM_EN, "GBEM: Custom FMMU/SM mapping by netscan  failed for slave [%u]", slave);
+            UM_ERROR(GBEM_UM_EN, "GBEM: Custom FMMU/SM mapping failed for slave [%u]", slave);
         }
     }
 
@@ -563,7 +563,9 @@ RESTART_SCAN:
  * @return
  */
 bool ec_step_3_preop(void) {
-    ec_slave[0].state = EC_STATE_PRE_OP;
+    ec_slave[0]
+            .
+            state = EC_STATE_PRE_OP;
     ec_writestate(0);
 
     usleep(200);
@@ -604,6 +606,12 @@ bool ec_step_3_preop(void) {
  * @return
  */
 bool ec_step_5_error_check(void) {
+    if (ecm_status.boot_state.pdo_remap_done == false || ecm_status.boot_state.apply_standard_sdos_done == false) {
+        //we have a failure in the custom_slave config step
+        UM_ERROR(GBEM_UM_EN, "GBEM: We had a failure in PDO mapping or SDO writing");
+        return false;
+    }
+
     int ec_boot_ecaterror_count = 0;
     while (EcatError) {
         ec_boot_ecaterror_count++;
