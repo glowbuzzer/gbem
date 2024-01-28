@@ -405,63 +405,7 @@ gberror_t ec_set_slots_aw_j_series_fsoe(const uint16_t slave) {
 gberror_t ec_apply_standard_sdos_aw_j_series_fsoe(const uint16_t slave) {
     ec_set_slots_aw_j_series_fsoe(slave);
 
-
-    //nolimits is a global variable set by running gbem with a command line option - x and is used when the drive is beyond the normal limits
-
-    //Min position limit	0x607D:1	DINT	32			2147483648	Inc	readwrite	Receive PDO (Outputs)
-    //Max position limit	0x607D:2	DINT	32			2147483647	Inc	readwrite	Receive PDO (Outputs)
-
-    //encoder is 2^20  1048576 counts per rev
-
-#if MACHINE_AW_ROBOT_L2 == 1
-    if (nolimits) {
-        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                2147483647, true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-
-        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                -2147483647, true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-    } else {
-
-        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                (int32_t) (
-                                        ((double) map_drive_scales[map_slave_to_drive(slave)].position_scale)
-                                        *
-                                        ((double) map_drive_pos_limit[map_slave_to_drive(slave)] * (M_PI /
-                                                                                                    180.0))),
-                                true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max position limit [%d] on drive [%d]",
-                (int32_t) (((double) map_drive_scales[map_slave_to_drive(slave)].position_scale)
-                           *
-                           ((double) map_drive_pos_limit[map_slave_to_drive(slave)] * (M_PI /
-                                                                                       180.0))),
-                map_slave_to_drive(slave));
-
-        if (!ec_sdo_write_int32(slave, AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                (int32_t) (
-                                        ((double) map_drive_scales[map_slave_to_drive(slave)].position_scale)
-                                        *
-                                        ((double) map_drive_neg_limit[map_slave_to_drive(slave)] * (M_PI /
-                                                                                                    180.0))),
-                                true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Min position limit [%d] on drive [%d]",
-                (int32_t) (((double) map_drive_scales[map_slave_to_drive(slave)].position_scale)
-                           *
-                           ((double) map_drive_neg_limit[map_slave_to_drive(slave)] * (M_PI /
-                                                                                       180.0))),
-                map_slave_to_drive(slave));
-    }
+    ec_apply_limits_aw_j_series(slave);
 
 
     //Polarity	0x607E:0	USINT	8
@@ -477,7 +421,6 @@ gberror_t ec_apply_standard_sdos_aw_j_series_fsoe(const uint16_t slave) {
         return E_SDO_WRITE_FAILURE;
     }
 
-#endif
 
     //Configure LED gpio output pin
     if (!ec_sdo_write_uint8(slave, AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_INDEX, AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_SUB_INDEX,
