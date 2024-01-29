@@ -49,6 +49,8 @@ int32_t ec_get_actvel_wrd_aw_j_series(uint16_t drive);
 
 int32_t ec_get_acttorq_wrd_aw_j_series(uint16_t drive);
 
+int32_t ec_get_control_effort_wrd_aw_j_series(const uint16_t drive);
+
 gberror_t ec_set_setpos_wrd_aw_j_series(uint16_t drive, int32_t setpos);
 
 bool ec_get_remote_aw_j_series(uint16_t drive);
@@ -179,6 +181,9 @@ SM3 inputs
 
 #define AW_J_SERIES_CONTROLWORD_PDO_INDEX   0
 #define AW_J_SERIES_STATUSWORD_PDO_INDEX    0
+
+//todo crit
+#define AW_J_SERIES_CONTROL_EFFORT_PDO_INDEX 0
 
 #define AW_J_SERIES_MOOSET_PDO_INDEX        2
 #define AW_J_SERIES_MOODISP_PDO_INDEX       2

@@ -429,6 +429,17 @@ int32_t ec_get_acttorq_wrd_aw_j_series(const uint16_t drive) {
     return acttorq;
 }
 
+/**
+ * @brief get acttorq for an AW-J-Series drive
+ * @param drive
+ * @return int32 position
+ */
+int32_t ec_get_control_effort_wrd_aw_j_series(const uint16_t drive) {
+    int32_t control_effort = ec_pdo_get_input_int16(map_drive_to_slave[drive], AW_J_SERIES_CONTROL_EFFORT_PDO_INDEX);
+
+    return control_effort;
+}
+
 
 /**
  * @brief get ctrlwrd for for an AW-J-series drive

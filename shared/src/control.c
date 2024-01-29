@@ -57,7 +57,6 @@ cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
         [CONTROL_EVENT_ESTOP] = {.message="An error has been detected [ESTOP event]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_DRIVE_FAULT] = {.message="An error has been detected [Drive fault]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_GBC_FAULT_REQUEST] = {.message="An error has been detected [GBC requesting fault state]", .type=CYCLIC_MSG_ERROR},
-//        [CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST] = {.message="An error has been detected [Move when not in op en]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_GBC_INTERNAL_FAULT] = {.message="An error has been detected [GBC internal fault]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_HEARTBEAT_LOST] = {.message="An error has been detected [Heartbeat to GBC lost]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_LIMIT_REACHED] = {.message="An error has been detected [Drive reached limit]", .type=CYCLIC_MSG_ERROR},
@@ -66,8 +65,6 @@ cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
         [CONTROL_EVENT_DRIVE_NO_REMOTE] = {.message="An error has been detected [Drive lost remote]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_ECAT_ERROR] = {.message="An error has been detected [EtherCAT network]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_DRIVE_ALARM] = {.message="An error has been detected [Drive alarm]", .type=CYCLIC_MSG_ERROR},
-//gbc_to_plc con error is not used on GBEM it signals an error when gbc loses contact with GBEM
-//        [CONTROL_EVENT_GBC_TO_GBEM_CON_ERROR] = {.message="An error has been detected [GBC-to-GBEM connection error]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_DRIVE_MOOERROR] = {.message="An error has been detected [modes of operation]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_ECAT_SLAVE_ERROR] = {.message="An error has been detected [EtherCAT slave]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_PLC_SIGNALLED_ERROR] = {.message="An error has been detected [PLC signalled an error]", .type=CYCLIC_MSG_ERROR},
@@ -95,6 +92,7 @@ static void ctrl_copy_actvel(void);
 
 static void ctrl_copy_acttorq(void);
 
+static void ctrl_copy_control_effort(void);
 
 static void ctrl_copy_setpos(void);
 
@@ -887,25 +885,17 @@ bool cia_is_fault_condition(struct event *event) {
         control_event[CONTROL_EVENT_ESTOP].active = true;
         have_fault = true;
     }
-    //CONTROL_WORD_GBC_REQUEST_FAULT_BIT_NUM
+
     if (((event_data_t *) event->data)->machine_request_error == true) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > machine word is requesting error state");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_GBC_FAULT_REQUEST_BIT_NUM);
         control_event[CONTROL_EVENT_GBC_FAULT_REQUEST].active = true;
         have_fault = true;
     }
-    //    //CONTROL_WORD_MOVE_NOT_OP_ENABLED_FAULT_REQ_BIT_NUM
-    //    if (((event_data_t *) event->data)->machine_move_not_op_enabled_fault_req == true) {
-    //        LL_TRACE(GBEM_SM_LOG_EN,
-    //                 "sm: Fault > machine word is requesting an error because a move has been attempted and we are not in operation enabled");
-    //        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_MOVE_NOT_OP_EN_BIT_NUM);
-    //        control_event[CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST].active = true;
-    //        have_fault = true;
-    //    }
-    //    CONTROL_WORD_GBC_INTERNAL_FAULT_REQ_BIT_NUM
+
     if (((event_data_t *) event->data)->gbc_internal_fault == true) {
-        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > machine word is signalling GBC had an internal fault");
-        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_GBC_INTERNAL_ERROR_BIT_NUM);
+        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > machine word is signalling GBC had an operation errror");
+        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_GBC_OPERATION_ERROR_BIT_NUM);
         control_event[CONTROL_EVENT_GBC_INTERNAL_FAULT].active = true;
         have_fault = true;
     }
@@ -1011,6 +1001,55 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
     }
     // condition will be the state that we are currently in
 
+
+    cia_state_t drive_state = 0;
+    bool found_drive_state = false;
+
+    if (ctrl_check_all_drives_state(CIA_NOT_READY_TO_SWITCH_ON)) {
+        drive_state = CIA_NOT_READY_TO_SWITCH_ON;
+        printf("drive state is CIA_NOT_READY_TO_SWITCH_ON\n");
+        found_drive_state = true;
+    }
+    if (ctrl_check_all_drives_state(CIA_OPERATION_ENABLED)) {
+        drive_state = CIA_OPERATION_ENABLED;
+        found_drive_state = true;
+        printf("drive state is CIA_OPERATION_ENABLED\n");
+    }
+    if (ctrl_check_all_drives_state(CIA_SWITCHED_ON)) {
+        drive_state = CIA_SWITCHED_ON;
+        found_drive_state = true;
+        printf("drive state is CIA_SWITCHED_ON\n");
+    }
+    if (ctrl_check_all_drives_state(CIA_READY_TO_SWITCH_ON)) {
+        drive_state = CIA_READY_TO_SWITCH_ON;
+        found_drive_state = true;
+        printf("drive state is CIA_READY_TO_SWITCH_ON\n");
+    }
+    if (ctrl_check_all_drives_state(CIA_SWITCH_ON_DISABLED)) {
+        drive_state = CIA_SWITCH_ON_DISABLED;
+        found_drive_state = true;
+        printf("drive state is CIA_SWITCH_ON_DISABLED\n");
+    }
+    if (ctrl_check_all_drives_state(CIA_QUICK_STOP_ACTIVE)) {
+        drive_state = CIA_QUICK_STOP_ACTIVE;
+        found_drive_state = true;
+        printf("drive state is CIA_QUICK_STOP_ACTIVE\n");
+    }
+    if (ctrl_check_all_drives_state(CIA_FAULT)) {
+        drive_state = CIA_FAULT;
+        found_drive_state = true;
+        printf("drive state is CIA_FAULT\n");
+    }
+    if (ctrl_check_all_drives_state(CIA_FAULT_REACTION_ACTIVE)) {
+        drive_state = CIA_FAULT_REACTION_ACTIVE;
+        found_drive_state = true;
+        printf("drive state is CIA_FAULT_REACTION_ACTIVE\n");
+    }
+
+    if (!found_drive_state) {
+        UM_FATAL("GBEM: Could not establish drive state");
+    }
+
     /*
      * we are in op enabled
      * controlword is switch on disabled
@@ -1027,17 +1066,24 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
      */
     bool state_mismatch = false;
 
-    switch (cia_ctrlwrd_to_command(dpm_out->machine_word)) {
+    printf("machine word [%u] command [%u]\n", dpm_out->machine_word, cia_ctrlwrd_to_command(dpm_out->machine_word));
+
+    /*fault if:
+    op enabled and state is not op enabled
+    */
+
+
+    switch (drive_state) {
         //    uint32_t x=(uint32_t) ((intptr_t) condition & 0xFFFFFFFF);
 
-        // machine is commanding SHUTDOWN, our state = READY_TO_SWITCH_ON
-        case CIA_SHUTDOWN:
+
+        case CIA_READY_TO_SWITCH_ON:
             if (((cia_state_t) ((void *) condition) != CIA_READY_TO_SWITCH_ON) &&
                 (ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout)) {
                 state_mismatch = true;
             }
             break;
-        case CIA_SWITCH_ON:
+        case CIA_SWITCHED_ON:
             if (((cia_state_t) ((uintptr_t *) condition) != CIA_SWITCHED_ON) &&
                 (ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout)) {
                 state_mismatch = true;
@@ -1050,29 +1096,18 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
         //                state_mismatch = true;
         //            }
         //            break;
-        case CIA_DISABLE_VOLTAGE:
-            if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
-                 ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
-                && ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout) {
-                state_mismatch = true;
-            }
-            break;
-        case CIA_QUICK_STOP:
-            if ((((cia_state_t) ((intptr_t *) condition) != CIA_QUICK_STOP_ACTIVE) ||
-                 ((cia_state_t) ((intptr_t *) condition) != CIA_SWITCH_ON_DISABLED)) &&
+        case CIA_QUICK_STOP_ACTIVE:
+            if (((cia_state_t) ((intptr_t *) condition) != CIA_QUICK_STOP_ACTIVE) &&
                 ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout) {
                 state_mismatch = true;
             }
             break;
-        case CIA_DISABLE_OPERATION:
-            if (((cia_state_t) ((intptr_t *) condition)) != CIA_SWITCHED_ON &&
-                (ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout)) {
-                state_mismatch = true;
-            }
-            break;
-        case CIA_ENABLE_OPERATION:
-            if (((cia_state_t) ((intptr_t *) condition) == CIA_OPERATION_ENABLED) &&
-                (ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout)) {
+        case CIA_OPERATION_ENABLED:
+            printf("case CIA_OPERATION_ENABLED - %u\n", CIA_OPERATION_ENABLED);
+            printf("%u condition\n", (((cia_state_t) ((intptr_t *) condition))));
+            printf("state change timeout [%u]\n", ctrl_state_change_cycle_count * MAP_CYCLE_TIME);
+
+            if (((cia_state_t) ((intptr_t *) condition)) != CIA_OPERATION_ENABLED) {
                 state_mismatch = true;
             }
             break;
@@ -1417,12 +1452,12 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     //copy actpos from EC_IN to DPM_IN (write) (do this every cycle irrespective of state)
     ctrl_copy_actpos();
 
-    //#if CTRL_COPY_ACTVEL == 1
+
     ctrl_copy_actvel();
-    //#endif
-    //#if CTRL_COPY_ACTTORQ == 1
+
     ctrl_copy_acttorq();
-    //#endif
+
+    // ctrl_copy_control_effort();
 
     //copy statuswords from EC_IN to DPM_IN (write)
     ctrl_copy_drive_statuswords();
@@ -1602,6 +1637,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     current_state = (cia_state_t) (stateM_currentState(m)->data);
 
     ecm_status.machine_state = current_state;
+    ecm_status.commanded_machine_state = cia_ctrlwrd_to_command(dpm_in->machine_word);
     LL_TRACE(GBEM_SM_LOG_EN, "sm: Current state of state machine - %s", cia_state_names[current_state]);
 
     //    printf("fault word:%u\n", dpm_in->active_fault_word);
@@ -1705,6 +1741,23 @@ static void ctrl_copy_acttorq(void) {
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                      "GBEM: Missing function pointer for map_drive_get_acttorq_wrd on drive [%u]", i);
+        }
+    }
+}
+
+
+/**
+ * @brief control effort to be sent to GBC via DPM in is set from control effort received over EC from the drive (and update ecm_status for gui)
+ * @param
+ */
+static void ctrl_copy_control_effort(void) {
+    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+        if (*map_drive_get_control_effort_wrd_function_ptr[i] != NULL) {
+            dpm_in->joint_actual_control_effort[i] = map_drive_get_control_effort_wrd_function_ptr[i](i);
+        } else {
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                     "GBEM: Missing function pointer for map_drive_get_control_effort_wrd_function_ptr on drive [%u]",
+                     i);
         }
     }
 }
@@ -2398,8 +2451,8 @@ void copy_fsoe_data(void) {
 
     //todo crit this is quite key!
     uint32_t test_byte_no = 64;
-    iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 1, true);
-    iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 2, true);
+    // iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 1, true);
+    // iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 2, true);
 
 
     // for (int i = 0; i < 16; i++) {
@@ -2426,7 +2479,7 @@ gberror_t update_fsoe_ecm_status_slaves(void) {
 
             //todo crit is (slave - >>1<<) correct?
             uint32_t slave_state = 0;
-            fsoe_slave_high_level_state_t high_level_state = 0;
+            enum FSOE_SLAVE_HIGH_LEVEL_STATE high_level_state = 0;
 
             grc = map_slave_fsoe_get_slave_state_function_ptr[slave - 1](slave, &slave_state, &high_level_state);
 
