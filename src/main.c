@@ -55,8 +55,6 @@ char eth_interface1[SIZE_OF_IF_NAME] = {0};
 char eth_interface2[SIZE_OF_IF_NAME] = {0};
 
 
-
-
 /** array for SOEM iomap - this is the key slave comms data storage */
 uint8_t IOmap[ECM_IO_MAP_SIZE];
 
@@ -595,6 +593,8 @@ skip_command_line:
         memset(shmp->sm_buf_out, 0, sizeof(uint8_t) * SHM_BUF_SIZE);
     }
 
+    UM_INFO(GBEM_UM_EN,
+            "GBEM: Number of row in IO map [%u]", map_num_rows_in_iomap);
 
     if (!check_limits_ini_exists()) {
         UM_WARN(GBEM_UM_EN,
@@ -630,7 +630,6 @@ skip_command_line:
         }
 
 
-
         for (int i = 0; i < MAP_NUM_DRIVES; i++) {
             UM_INFO(GBEM_UM_EN,
                     "GBEM: Limits for joint [%d] are: position_limit_max [%d] position_limit_min [%d] velocity_limit [%d] torque_limit [%d] using max_motor_speed [%d] and max_motor_torque [%d]",
@@ -649,8 +648,6 @@ skip_command_line:
             UM_FATAL("GBEM: Limits parsing failed - please fix the limits file [%s]", LIMITS_INI_FILENAME);
         }
     }
-
-
 
 
 #if DISABLE_ESTOP_CHECKING == 1
