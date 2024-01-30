@@ -15,6 +15,7 @@
 #include "map.h"
 #include "ecm_status.h"
 #include "gberror.h"
+#include "shared_mem_types.h"
 
 /*functional outputs (which are our inputs, things like status)
 
@@ -77,7 +78,7 @@ uint32_t get_functional_outputs_offset_bbh_scu_1_ec(uint16_t slave) {
 
 
 gberror_t ec_fsoe_get_master_state_bbh_scu_1_ec(uint16_t slave, uint32_t *state,
-                                                fsoe_master_high_level_state_t *high_level_state,
+                                                enum FSOE_MASTER_HIGH_LEVEL_STATE *high_level_state,
                                                 uint32_t *error_code) {
     static bool first_run = true;
     static uint32_t offset = 0;
@@ -243,8 +244,42 @@ gberror_t ec_apply_standard_sdos_bbh_scu_1_ec(const uint16_t slave) {
     ec_set_slots_bbh_scu_1_ec(slave);
 }
 
+#define BBH_SCU_1_MASTER_MASTER_OUTPUT_MSG_SIZE 8
+#define BBH_SCU_1_MASTER_MASTER_INPUT_MSG_SIZE 32
+
 gberror_t ec_set_slots_bbh_scu_1_ec(const uint16_t slave) {
-    printf("GBEM: Setting slots for BBH_SCU_1_EC\n");
+    UM_INFO(GBEM_UM_EN, "GBEM: Setting slots for BBH_SCU_1_EC\n");
+
+    UM_INFO(GBEM_UM_EN,
+            "GBEM: Checking slots configuration versus functional input and output offsets for BBH_SCU_1_EC\n");
+
+    if ((map_fsoe_master_get_overall_slot_size_out() +
+         BBH_SCU_1_MASTER_MASTER_OUTPUT_MSG_SIZE) != BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BASE) {
+        UM_FATAL(
+            "GBEM: OUT Slot size for BBH_SCU_1_EC is not correct (or functional IO base address). Expected %u, got %u",
+            BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BASE, map_fsoe_master_get_overall_slot_size_out()+
+            BBH_SCU_1_MASTER_MASTER_OUTPUT_MSG_SIZE);
+    } else {
+        UM_INFO(GBEM_UM_EN,
+                "GBEM: OUT Slot size for BBH_SCU_1_EC is correct (or functional IO base address). Expected [%u], got [%u]",
+                BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BASE,
+                map_fsoe_master_get_overall_slot_size_out()+BBH_SCU_1_MASTER_MASTER_OUTPUT_MSG_SIZE);
+    }
+
+    if (map_fsoe_master_get_overall_slot_size_in() + BBH_SCU_1_MASTER_MASTER_INPUT_MSG_SIZE !=
+        BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BASE) {
+        UM_FATAL(
+            "GBEM: IN Slot size for BBH_SCU_1_EC is not correct (or functional IO base address). Expected %u, got %u",
+            BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BASE,
+            map_fsoe_master_get_overall_slot_size_in()+BBH_SCU_1_MASTER_MASTER_INPUT_MSG_SIZE);
+    } else {
+        UM_INFO(GBEM_UM_EN,
+                "GBEM: IN Slot size for BBH_SCU_1_EC is correct (or functional IO base address). Expected [%u], got [%u]",
+                BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BASE,
+                map_fsoe_get_slot_size_master_in(slave)+BBH_SCU_1_MASTER_MASTER_INPUT_MSG_SIZE);
+    }
+
+
     ec_print_slots_bbh_scu_1_ec(slave);
 
 
