@@ -2540,7 +2540,7 @@ gberror_t update_fsoe_ecm_status_master(void) {
             uint32_t master_error_code = 0;
 
 
-            fsoe_master_high_level_state_t high_level_state = 0;
+            enum FSOE_MASTER_HIGH_LEVEL_STATE high_level_state = 0;
 
             grc = map_slave_fsoe_get_master_state_function_ptr[slave - 1](
                 slave, &master_state, &high_level_state, &master_error_code);
