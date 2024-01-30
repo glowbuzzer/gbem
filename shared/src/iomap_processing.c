@@ -13,6 +13,9 @@
  */
 
 #include "iomap_processing.h"
+
+#include <user_message.h>
+
 #include "float_int_conv.h"
 #include "ethercatsetget.h"
 #include "std_defs_and_macros.h"
@@ -322,21 +325,43 @@ void iomap_set_pdo_out_union(const uint16_t slave_num, const uint32_t byte_num, 
  */
 
 void iomap_set_gbc_digital_in_from_pdo(bool byte_slave, const uint16_t slave_num, const uint32_t byte_num,
-                                       uint8_t bit_num, const uint16_t gbc_io_id) {
+                                       uint8_t bit_num, const uint16_t gbc_io_id, const map_gbc_io_type_t type) {
     if (!byte_slave) {
         if (ec_pdo_get_input_bit(slave_num, bit_num)) {
-            BIT_SET(dpm_in->digital[0], gbc_io_id);
+            if (type == GBC_IO_TYPE_NORMAL) {
+                BIT_SET(dpm_in->digital[0], gbc_io_id);
+            } else if (type == GBC_IO_TYPE_SAFETY) {
+                BIT_SET(dpm_in->safetyDigital[0], gbc_io_id);
+            } else {
+                UM_FATAL("GBEM: An external IO has been mapped to a digital in");
+            }
         } else {
-            BIT_CLEAR(dpm_in->digital[0], gbc_io_id);
+            if (type == GBC_IO_TYPE_NORMAL) {
+                BIT_CLEAR(dpm_in->digital[0], gbc_io_id);
+            } else if (type == GBC_IO_TYPE_SAFETY) {
+                BIT_CLEAR(dpm_in->safetyDigital[0], gbc_io_id);
+            } else {
+                UM_FATAL("GBEM: An external IO has been mapped to a digital in");
+            }
         }
     } else {
         if (ec_pdo_get_input_bit_from_byte_slave(slave_num, byte_num, bit_num)) {
-            //            if (ec_pdo_get_input_bit(slave_num, bit_num)) {
-            BIT_SET(dpm_in->digital[0], gbc_io_id);
+            if (type == GBC_IO_TYPE_NORMAL) {
+                BIT_SET(dpm_in->digital[0], gbc_io_id);
+            } else if (type == GBC_IO_TYPE_SAFETY) {
+                BIT_SET(dpm_in->safetyDigital[0], gbc_io_id);
+            } else {
+                UM_FATAL("GBEM: An external IO has been mapped to a digital in");
+            }
         } else {
-            BIT_CLEAR(dpm_in->digital[0], gbc_io_id);
+            if (type == GBC_IO_TYPE_NORMAL) {
+                BIT_CLEAR(dpm_in->digital[0], gbc_io_id);
+            } else if (type == GBC_IO_TYPE_SAFETY) {
+                BIT_CLEAR(dpm_in->safetyDigital[0], gbc_io_id);
+            } else {
+                UM_FATAL("GBEM: An external IO has been mapped to a digital in");
+            }
         }
-        //        }
     }
 }
 

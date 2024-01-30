@@ -40,7 +40,7 @@ void iomap_set_gbc_in_union(uint16_t io_num, ec_datatype gbc_type, ec_datatype_v
 void iomap_set_plc_in_union(ec_datatype plc_type, void *io, ec_datatype_value_t val);
 
 void iomap_set_gbc_digital_in_from_pdo(bool byte_slave, uint16_t slave_num, uint32_t byte_num, uint8_t bit_num,
-                                       uint16_t gbc_io_id);
+                                       uint16_t gbc_io_id, map_gbc_io_type_t type);
 
 void iomap_set_gbc_in_int32_from_pdo(ec_datatype pdo_type, uint16_t slave_num, uint32_t byte_num, uint16_t gbc_io_id,
                                      float max_val);

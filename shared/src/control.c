@@ -1002,6 +1002,9 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
     // condition will be the state that we are currently in
 
 
+    //todo crit remove this
+    return false;
+
     cia_state_t drive_state = 0;
     bool found_drive_state = false;
 
@@ -2009,7 +2012,7 @@ void ctrl_process_iomap_in(void) {
                 case ECT_BOOLEAN:
                     iomap_set_gbc_digital_in_from_pdo(map_iomap[i].pdo.byte_slave, map_iomap[i].pdo.slave_num,
                                                       map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
-                                                      map_iomap[i].gbc.ionum);
+                                                      map_iomap[i].gbc.ionum, map_iomap[i].gbc.type);
                     break;
                 case ECT_INTEGER32:
                     iomap_set_gbc_in_int32_from_pdo(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
@@ -2062,13 +2065,29 @@ void ctrl_process_iomap_out(const bool zero) {
                 //we have a gbc out
                 case ECT_BOOLEAN:
                     if (!zero) {
-                        iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
-                                               map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
-                                               BIT_CHECK(dpm_out->digital[0], map_iomap[i].gbc.ionum));
+                        if (map_iomap[i].gbc.type == GBC_IO_TYPE_NORMAL) {
+                            iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
+                                                   map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
+                                                   BIT_CHECK(dpm_out->digital[0], map_iomap[i].gbc.ionum));
+                        } else if (map_iomap[i].gbc.type == GBC_IO_TYPE_SAFETY) {
+                            iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
+                                                   map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
+                                                   BIT_CHECK(dpm_out->safetyDigital[0], map_iomap[i].gbc.ionum));
+                        } else {
+                            UM_FATAL("GBEM: An external IO has been mapped to a digital in");
+                        }
                     } else {
-                        iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
-                                               map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
-                                               false);
+                        if (map_iomap[i].gbc.type == GBC_IO_TYPE_NORMAL) {
+                            iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
+                                                   map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
+                                                   false);
+                        } else if (map_iomap[i].gbc.type == GBC_IO_TYPE_SAFETY) {
+                            iomap_set_pdo_out_bool(map_iomap[i].pdo.datatype, map_iomap[i].pdo.slave_num,
+                                                   map_iomap[i].pdo.byte_num, map_iomap[i].pdo.bit_num,
+                                                   false);
+                        } else {
+                            UM_FATAL("GBEM: An external IO has been mapped to a digital in");
+                        }
                     }
                     break;
                 case ECT_INTEGER32:
