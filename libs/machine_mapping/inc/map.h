@@ -80,6 +80,7 @@ typedef enum {
 #define MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(...) int32_t (*map_drive_get_actpos_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 #define MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(...) int32_t (*map_drive_get_actvel_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 #define MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(...) int32_t (*map_drive_get_acttorq_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
+#define MAP_DRIVE_GET_CONTROL_EFFORT_WRD_FUNCTIONS(...) int32_t (*map_drive_get_control_effort_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 
 #define MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(...) gberror_t (*map_drive_set_setpos_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setpos) = {__VA_ARGS__};
 #define MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(...) gberror_t (*map_drive_set_setvel_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setvel) = {__VA_ARGS__};
@@ -210,10 +211,17 @@ typedef struct {
     ec_datatype_value_t val;
 } map_force_object_t;
 
+typedef enum {
+    GBC_IO_TYPE_NORMAL,
+    GBC_IO_TYPE_SAFETY,
+    GBC_IO_TYPE_EXTERNAL
+} map_gbc_io_type_t;
+
 typedef struct {
     const map_inout_t inout;
     const ec_datatype datatype;
     const uint16_t ionum;
+    map_gbc_io_type_t type;
 } map_gbc_object_t;
 
 /** struct for iomap */
@@ -309,6 +317,8 @@ extern int32_t (*map_drive_get_actpos_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t
 extern int32_t (*map_drive_get_actvel_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
 
 extern int32_t (*map_drive_get_acttorq_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
+
+extern int32_t (*map_drive_get_control_effort_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
 
 extern gberror_t (*map_drive_set_setpos_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, int32_t setpos);
 
