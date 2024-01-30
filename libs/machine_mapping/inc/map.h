@@ -58,7 +58,7 @@ typedef enum {
 #define MAP_SLAVE_FSOE_OFFSET_IN(...) const uint16_t map_slave_fsoe_offset_in[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_OFFSET_OUT(...) const uint16_t map_slave_fsoe_offset_out[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_slave_state_function_ptr[MAP_NUM_SLAVES])(uint16_t slave,  uint32_t *state, enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state )  = {__VA_ARGS__};
-#define MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_master_state_function_ptr[MAP_NUM_SLAVES])(uint16_t slave,uint32_t *state, fsoe_master_high_level_state_t *high_level_state, uint32_t *error_code) = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_master_state_function_ptr[MAP_NUM_SLAVES])(uint16_t slave,uint32_t *state, enum FSOE_MASTER_HIGH_LEVEL_STATE *high_level_state, uint32_t *error_code) = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_slave_con_id_function_ptr[MAP_NUM_SLAVES])(uint16_t slave, uint16_t *con_id ) = {__VA_ARGS__};
 
 
@@ -286,7 +286,7 @@ extern gberror_t (*map_slave_fsoe_get_slave_state_function_ptr[MAP_NUM_SLAVES])(
     uint16_t slave, uint32_t *state, enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state);
 
 extern gberror_t (*map_slave_fsoe_get_master_state_function_ptr[MAP_NUM_SLAVES])(
-    uint16_t slave, uint32_t *state, fsoe_master_high_level_state_t *high_level_state, uint32_t *error_code);
+    uint16_t slave, uint32_t *state, enum FSOE_MASTER_HIGH_LEVEL_STATE *high_level_state, uint32_t *error_code);
 
 extern gberror_t (*map_slave_fsoe_get_slave_con_id_function_ptr[MAP_NUM_SLAVES])(uint16_t slave, uint16_t *con_id);
 
