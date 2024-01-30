@@ -42,6 +42,7 @@
 #include "ecrxtx.h"
 #include "shared_mem_types.h"
 #include "limits_ini.h"
+#include "debug_ini.h"
 #include "std_utils.h"
 #include "map_SDO_print.h"
 #include "nvram.h"
@@ -598,11 +599,11 @@ skip_command_line:
 
     if (!check_limits_ini_exists()) {
         UM_WARN(GBEM_UM_EN,
-                "GBEM: Limits file [%s] not found, we will run without soft limits (position velocity torque etc.) configured on the drives",
+                "GBEM: Limits ini file [%s] not found, we will run without soft limits (position velocity torque etc.) configured on the drives",
                 LIMITS_INI_FILENAME);
     } else {
         UM_INFO(GBEM_UM_EN,
-                "GBEM: Limits file [%s] found, we will now parse the limits from the file", LIMITS_INI_FILENAME);
+                "GBEM: Limits ini file [%s] found, we will now parse the limits from the file", LIMITS_INI_FILENAME);
         uint8_t limits_number_of_joints_in_ini = get_limits_ini_sections();
 
         if (limits_number_of_joints_in_ini != MAP_NUM_DRIVES) {
@@ -647,6 +648,61 @@ skip_command_line:
         } else {
             UM_FATAL("GBEM: Limits parsing failed - please fix the limits file [%s]", LIMITS_INI_FILENAME);
         }
+    }
+
+
+    if (!check_debug_ini_exists()) {
+        UM_WARN(GBEM_UM_EN,
+                "GBEM: Debug ini file [%s] not found, no debug options will be applied",
+                DEBUG_INI_FILENAME);
+    } else {
+        UM_INFO(GBEM_UM_EN,
+                "GBEM: Debug ini file [%s] found, we will now parse the file", DEBUG_INI_FILENAME);
+
+        // uint8_t limits_number_of_joints_in_ini = get_limits_ini_sections();
+
+        // if (limits_number_of_joints_in_ini != MAP_NUM_DRIVES) {
+        //     UM_FATAL(
+        //         "GBEM: The number of joints in the limits file [%s] does not match the number of joints in the machine config [%d]. This is a fatal error and GBEM will exit",
+        //         LIMITS_INI_FILENAME, MAP_NUM_DRIVES);
+        // } else {
+        //     UM_INFO(GBEM_UM_EN,
+        //             "GBEM: The number of joints in the limits file [%s] matches the number of joints in the machine config [%d]",
+        //             LIMITS_INI_FILENAME, MAP_NUM_DRIVES);
+        // }
+        //
+        // uint8_t parse_count = 0;
+        //
+        // gberror_t limits_read_rc = read_limits_ini(&parse_count);
+        //
+        // if (parse_count != NUM_PARAMS_IN_LIMITS_INI * MAP_NUM_DRIVES) {
+        //     UM_FATAL(
+        //         "GBEM: The limits file does not contain the correct number of parameters - please fix the limits file [%s]",
+        //         LIMITS_INI_FILENAME);
+        // } else {
+        //     UM_INFO(GBEM_UM_EN,
+        //             "GBEM: The limits file contains the correct number of parameters [%d] - we will continue",
+        //             parse_count);
+        // }
+        //
+        //
+        // for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+        //     UM_INFO(GBEM_UM_EN,
+        //             "GBEM: Limits for joint [%d] are: position_limit_max [%d] position_limit_min [%d] velocity_limit [%d] torque_limit [%d] using max_motor_speed [%d] and max_motor_torque [%d]",
+        //             i, map_machine_limits[i].position_limit_max, map_machine_limits[i].position_limit_min,
+        //             map_machine_limits[i].velocity_limit, map_machine_limits[i].torque_limit,
+        //             map_machine_limits[i].max_motor_speed, map_machine_limits[i].max_motor_torque);
+        // }
+        // if (limits_read_rc == E_SUCCESS) {
+        //     UM_INFO(GBEM_UM_EN,
+        //             "GBEM: Limits loaded - we will apply these soft limits (position velocity torque etc.) to the drives")
+        //     ;
+        //     UM_INFO(GBEM_UM_EN,
+        //             "GBEM: !IMPORTANT! - on some drives once limits are written to the drive they are persisted in NVRAM")
+        //     ;
+        // } else {
+        //     UM_FATAL("GBEM: Limits parsing failed - please fix the limits file [%s]", LIMITS_INI_FILENAME);
+        // }
     }
 
 
