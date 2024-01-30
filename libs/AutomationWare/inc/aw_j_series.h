@@ -49,7 +49,7 @@ int32_t ec_get_actvel_wrd_aw_j_series(uint16_t drive);
 
 int32_t ec_get_acttorq_wrd_aw_j_series(uint16_t drive);
 
-int32_t ec_get_control_effort_wrd_aw_j_series(const uint16_t drive);
+int32_t ec_get_control_effort_wrd_aw_j_series(uint16_t drive);
 
 gberror_t ec_set_setpos_wrd_aw_j_series(uint16_t drive, int32_t setpos);
 
