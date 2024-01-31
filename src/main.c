@@ -235,9 +235,6 @@ int main(int argc, char *argv[]) {
     //    logger_set_log_file("gbem.log", GBEM_UM_EN);
     //    logger_set_syslog("Glowbuzzer");
 
-    //print sizeof ecmstatus struct
-    UM_INFO(GBEM_UM_EN, "GBEM: sizeof ecm_status_t = [%d]", sizeof(ecm_status_t));
-
 
     //temp just for testing
     //    config_check_and_print(config_summary_json_buffer, &grc);
@@ -268,6 +265,37 @@ int main(int argc, char *argv[]) {
     } else {
         UM_FATAL("GBEM: Failed to set process priority with setpriority [%s]", strerror(errno));
     }
+
+
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - overall size [%u]", sizeof(ecm_status_t));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_boot_state_t size [%u]", sizeof(ecm_boot_state_t));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_net_scan_state_t size [%u]", sizeof(ecm_net_scan_state_t));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_active_program_t size [%u]", sizeof(ecm_active_program_t));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_status_map_t size [%u]", sizeof(ecm_status_map_t)*EC_MAXSLAVE);
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - cycle_count size [%u]", sizeof(uint64_t));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - drive_count size [%u]", sizeof(uint8_t));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - gbc_connected size [%u]", sizeof(bool));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ec_circular_slave_error_message_t size [%u]",
+            sizeof(ec_circular_slave_error_message_t));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ec_check_found_error size [%u]", sizeof(bool));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - slavecount size [%u]", sizeof(uint8_t));
+
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_status_drive_t size [%u]",
+            sizeof(ecm_status_drive_t)*MAP_MAX_NUM_DRIVES);
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ec_circular_slave_error_message_t size [%u]",
+            sizeof(ec_circular_slave_error_message_t));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - machine_state size [%u]", sizeof(cia_state_t));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - commanded_machine_state size [%u]", sizeof(cia_state_t));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - shared_mem_busy_count size [%u]", sizeof(uint64_t));
+    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - fso size [%u]", sizeof(ecm_status_fsoe_t));
+
+
+    if (sizeof(ecm_status_t) > SHM_OFFLINE_BUF_SIZE) {
+        UM_FATAL(
+            "GBEM: The size of the ecm_status data is larger than allocated in the shared memory buffer. SHM_OFFLINE_BUF_SIZE vs sizeof(ecm_status_t)")
+        ;
+    }
+
 
     /* NEW_MACHINE - add new print for machine here */
     /* handy defines to output to console what machine type has been configured */
