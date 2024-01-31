@@ -92,8 +92,12 @@ uint32_t map_get_datatype_size_bits(ec_datatype datatype) {
             return 7;
         case ECT_BIT8:
             return 8;
+        case ECT_STRING8:
+            return 64;
         default:
-            LL_FATAL("GBEM: missing ec_datatype to size definition");
+            LL_FATAL(
+                "GBEM: missing ec_datatype to size definition - this can occur when custom pdo map num entries don't match the num of elements in the array")
+            ;
     }
     return 0;
 }
@@ -140,7 +144,6 @@ uint32_t map_fsoe_master_get_overall_slot_size_in(void) {
 
 uint32_t map_fsoe_get_slot_size_master_out(uint16_t slave) {
     uint32_t size = 0;
-
     for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {
         if (map_fsoe_master_slot_to_slave[slot] == slave) {
             switch (map_slave_fsoe_master_slot_config[slot]) {
