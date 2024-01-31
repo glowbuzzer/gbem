@@ -248,10 +248,10 @@ gberror_t ec_apply_standard_sdos_bbh_scu_1_ec(const uint16_t slave) {
 #define BBH_SCU_1_MASTER_MASTER_INPUT_MSG_SIZE 32
 
 gberror_t ec_set_slots_bbh_scu_1_ec(const uint16_t slave) {
-    UM_INFO(GBEM_UM_EN, "GBEM: Setting slots for BBH_SCU_1_EC\n");
+    UM_INFO(GBEM_UM_EN, "GBEM: Setting slots for BBH_SCU_1_EC");
 
     UM_INFO(GBEM_UM_EN,
-            "GBEM: Checking slots configuration versus functional input and output offsets for BBH_SCU_1_EC\n");
+            "GBEM: Checking slots configuration versus functional input and output offsets for BBH_SCU_1_EC");
 
     if ((map_fsoe_master_get_overall_slot_size_out() +
          BBH_SCU_1_MASTER_MASTER_OUTPUT_MSG_SIZE) != BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BASE) {
