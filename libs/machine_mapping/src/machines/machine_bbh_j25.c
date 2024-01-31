@@ -67,7 +67,7 @@ MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
 /* This must be laid out in the order they appear in netscan */
 const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
         {.name = BBH_SCU_1_EC_EEP_NAME, .eep_id = BBH_SCU_1_EC_EEP_ID, .eep_man = BBH_SCU_1_EC_EEP_MAN, .eep_rev = BBH_SCU_1_EC_EEP_REV},
-        {.name = AW_J25_EEP_NAME, .eep_id = AW_J17_EEP_ID, .eep_man = AW_J17_EEP_MAN, .eep_rev = AW_J17_EEP_REV    },
+        {.name = AW_EEP_NAME, .eep_id = AW_EEP_ID, .eep_man = AW_EEP_MAN, .eep_rev = AW_EEP_REV    },
 };
 
 
@@ -80,8 +80,8 @@ MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_aw_j_series,         
 MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                                   );
 MAP_DRIVE_GET_REMOTE_FUNCTIONS(             ec_get_remote_aw_j_series,              );
 MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_aw_j_series,        );
-MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   NULL,                                   );
-MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   ec_get_error_string_sdo_aw_j_series     );
+MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   ec_get_error_string_pdo_aw_j_series,                                   );
+MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   NULL     );
 MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_aw_j_series,            );
 MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_aw_j_series,            );
 MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_aw_j_series,          );
