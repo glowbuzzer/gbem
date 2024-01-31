@@ -90,6 +90,7 @@ typedef uint8 ec_bufT[EC_BUFSIZE];
 
 /** ethernet header definition */
 PACKED_BEGIN
+
 typedef struct PACKED {
     /** destination MAC */
     uint16 da0, da1, da2;
@@ -98,6 +99,7 @@ typedef struct PACKED {
     /** ethernet type */
     uint16 etype;
 } ec_etherheadert;
+
 PACKED_END
 
 /** ethernet header size */
@@ -105,6 +107,7 @@ PACKED_END
 
 /** EtherCAT datagram header definition */
 PACKED_BEGIN
+
 typedef struct PACKED {
     /** length of EtherCAT datagram */
     uint16 elength;
@@ -121,6 +124,7 @@ typedef struct PACKED {
     /** interrupt, currently unused */
     uint16 irpt;
 } ec_comt;
+
 PACKED_END
 
 /** EtherCAT header size */
@@ -211,7 +215,8 @@ typedef enum {
     ECT_BIT5 = 0x0034,
     ECT_BIT6 = 0x0035,
     ECT_BIT7 = 0x0036,
-    ECT_BIT8 = 0x0037
+    ECT_BIT8 = 0x0037,
+    ECT_STRING8 = 0x0100,
 } ec_datatype;
 
 /** Ethercat command types */
@@ -472,9 +477,11 @@ typedef struct {
     uint8 SubIdx;
     /** Type of error */
     ec_err_type Etype;
+
     union {
         /** General abortcode */
         int32 AbortCode;
+
         /** Specific error for Emergency mailbox */
         struct {
             uint16 ErrorCode;
