@@ -36,7 +36,11 @@ gberror_t ec_apply_limits_aw_j_series(uint16_t slave);
 /** Error functions */
 uint8_t *ec_get_error_string_sdo_aw_j_series(uint16_t drive);
 
+uint8_t *ec_get_error_string_pdo_aw_j_series(uint16_t drive);
+
 uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(uint16_t drive_number);
+
+uint8_t *ec_get_detailled_error_report_pdo_aw_j_series(uint16_t drive_number);
 
 /** Drive functions */
 gberror_t ec_set_ctrl_wrd_aw_j_series(uint16_t drive, uint16_t ctrlwrd);
@@ -82,6 +86,37 @@ gberror_t ec_apply_standard_sdos_aw_j_series(uint16_t slave);
 gberror_t ec_pdo_map_aw_j_series(uint16_t slave);
 
 gberror_t ec_print_pdo_config_aw_series(const uint16_t slave);
+
+
+#define AW_EEP_NAME "SOMANET"
+#define AW_EEP_MAN AW_MOTOR_MAN
+#define AW_EEP_REV 0x0a000002
+#define AW_EEP_ID 0x00000201
+
+// #define AW_J20_EEP_NAME "SOMANET"
+// #define AW_J20_EEP_MAN AW_MOTOR_MAN
+// #define AW_J20_EEP_REV 0x0a000002
+// #define AW_J20_EEP_ID 0x00000201
+//
+// #define AW_J25_EEP_NAME "SOMANET"
+// #define AW_J25_EEP_MAN AW_MOTOR_MAN
+// #define AW_J25_EEP_REV 0x0a000002
+// #define AW_J25_EEP_ID 0x00000201
+//
+// #define AW_J32_EEP_NAME "SOMANET"
+// #define AW_J32_EEP_MAN AW_MOTOR_MAN
+// #define AW_J32_EEP_REV 0x0a000002
+// #define AW_J32_EEP_ID 0x00000201
+//
+// #define AW_J40_HP_EEP_NAME "SOMANET"
+// #define AW_J40_HP_EEP_MAN AW_MOTOR_MAN
+// #define AW_J40_HP_EEP_REV 0x0a000002
+// #define AW_J40_HP_EEP_ID 0x00000201
+//
+// #define AW_J40_LP_EEP_NAME "SOMANET"
+// #define AW_J40_LP_EEP_MAN AW_MOTOR_MAN
+// #define AW_J40_LP_EEP_REV 0x0a000002
+// #define AW_J40_LP_EEP_ID 0x00000201
 
 
 //Number of error strings and error report strings for the AW J series drives
@@ -136,67 +171,142 @@ gberror_t ec_print_pdo_config_aw_series(const uint16_t slave);
 
 #define AW_J_SERIES_TUNING_STATUS_ADDDRESS                  0x2702
 
-//PDO indexes for the AW J series drives - these are most easily found from a netscan of the drive
+#define AW_J_SERIES_ERROR_CODE_ADDRESS                      0x603F
+#define AW_J_SERIES_ERROR_REPORT_ADDRESS                    0x203F
+#define AW_J_SERIES_CONTROL_EFFORT_ADDRESS                  0x60FA
 
+//PDO indexes for the AW J series drives - these are most easily found from a netscan of the drive
 /*
-PDO mapping according to CoE :
-SM2 outputs
-[byte_offset] [addr b  ] [index:sub  ] [bitl] [data_type   ] [name                                    ]
-[0          ] [0xFFF6F13C.0] [0x6040:0x00] [0x10] [UNSIGNED16  ] [Controlword                             ]
-[2          ] [0xFFF6F13E.0] [0x6060:0x00] [0x08] [INTEGER8    ] [Modes of operation                      ]
-[3          ] [0xFFF6F13F.0] [0x6071:0x00] [0x10] [INTEGER16   ] [Target Torque                           ]
-[5          ] [0xFFF6F141.0] [0x607A:0x00] [0x20] [INTEGER32   ] [Target position                         ]
-[9          ] [0xFFF6F145.0] [0x60FF:0x00] [0x20] [INTEGER32   ] [Target velocity                         ]
-[13         ] [0xFFF6F149.0] [0x60B2:0x00] [0x10] [INTEGER16   ] [Torque offset                           ]
-[15         ] [0xFFF6F14B.0] [0x2701:0x00] [0x20] [UNSIGNED32  ] [Tuning command                          ]
-[19         ] [0xFFF6F14F.0] [0x60FE:0x01] [0x20] [UNSIGNED32  ] [Physical outputs                        ]
-[23         ] [0xFFF6F153.0] [0x60FE:0x02] [0x20] [UNSIGNED32  ] [Bit mask                                ]
-[27         ] [0xFFF6F157.0] [0x2703:0x00] [0x20] [UNSIGNED32  ] [User MOSI                               ]
-[31         ] [0xFFF6F15B.0] [0x60B1:0x00] [0x20] [INTEGER32   ] [Velocity offset                         ]
-SM3 inputs
-[byte_offset] [addr b  ] [index: sub ] [bitl] [data_type   ] [name                                    ]
-[0          ] [0xFFF6F13C.0] [0x6041:0x00] [0x10] [UNSIGNED16  ] [Statusword                              ]
-[2          ] [0xFFF6F13E.0] [0x6061:0x00] [0x08] [INTEGER8    ] [Modes of operation display              ]
-[3          ] [0xFFF6F13F.0] [0x6064:0x00] [0x20] [INTEGER32   ] [Position actual value                   ]
-[7          ] [0xFFF6F143.0] [0x606C:0x00] [0x20] [INTEGER32   ] [Velocity actual value                   ]
-[11         ] [0xFFF6F147.0] [0x6077:0x00] [0x10] [INTEGER16   ] [Torque actual value                     ]
-[13         ] [0xFFF6F149.0] [0x2401:0x00] [0x10] [UNSIGNED16  ] [Analog input 1                          ]
-[15         ] [0xFFF6F14B.0] [0x2402:0x00] [0x10] [UNSIGNED16  ] [Analog input 2                          ]
-[17         ] [0xFFF6F14D.0] [0x2403:0x00] [0x10] [UNSIGNED16  ] [Analog input 3                          ]
-[19         ] [0xFFF6F14F.0] [0x2404:0x00] [0x10] [UNSIGNED16  ] [Analog input 4                          ]
-[21         ] [0xFFF6F151.0] [0x2702:0x00] [0x20] [UNSIGNED32  ] [Tuning status                           ]
-[25         ] [0xFFF6F155.0] [0x60FD:0x00] [0x20] [UNSIGNED32  ] [Digital inputs                          ]
-[29         ] [0xFFF6F159.0] [0x2704:0x00] [0x20] [UNSIGNED32  ] [User MISO                               ]
-[33         ] [0xFFF6F15D.0] [0x20F0:0x00] [0x20] [UNSIGNED32  ] [Timestamp                               ]
-[37         ] [0xFFF6F161.0] [0x60FC:0x00] [0x20] [INTEGER32   ] [Position demand internal value          ]
-[41         ] [0xFFF6F165.0] [0x606B:0x00] [0x20] [INTEGER32   ] [Velocity demand value                   ]
-[45         ] [0xFFF6F169.0] [0x6074:0x00] [0x10] [INTEGER16   ] [Torque demand                           ]
+  SM2 outputs
+  byte offset   addr.b         index:sub   bitl data_type    name
+  [0          ] [0x0052.0] 0x6040:0x00 0x10 UNSIGNED16   Controlword
+  [2          ] [0x0054.0] 0x6060:0x00 0x08 INTEGER8     Modes of operation
+  [3          ] [0x0055.0] 0x6071:0x00 0x10 INTEGER16    Target Torque
+  [5          ] [0x0057.0] 0x607A:0x00 0x20 INTEGER32    Target position
+  [9          ] [0x005B.0] 0x60FF:0x00 0x20 INTEGER32    Target velocity
+  [13         ] [0x005F.0] 0x60B2:0x00 0x10 INTEGER16    Torque offset
+  [15         ] [0x0061.0] 0x2701:0x00 0x20 UNSIGNED32   Tuning command
+  [19         ] [0x0065.0] 0x60FE:0x01 0x20 UNSIGNED32   Physical outputs
+  [23         ] [0x0069.0] 0x60FE:0x02 0x20 UNSIGNED32   Bit mask
+  [27         ] [0x006D.0] 0x2703:0x00 0x20 UNSIGNED32   User MOSI
+  [31         ] [0x0071.0] 0x60B1:0x00 0x20 INTEGER32    Velocity offset
+  [35         ] [0x0075.0] 0x2215:0x01 0x20 UNSIGNED32   LED color
+  [39         ] [0x0079.0] 0x6770:0x01 0x08 UNSIGNED8    FSoE Command
+  [40         ] [0x007A.0] 0x6640:0x00 0x01 BOOLEAN      STO command
+  [40         ] [0x007A.1] 0x6650:0x01 0x01 BOOLEAN      SS1
+  [40         ] [0x007A.2] 0x6670:0x01 0x01 BOOLEAN      SS2
+  [40         ] [0x007A.3] 0x6668:0x01 0x01 BOOLEAN      SOS
+  [40         ] [0x007A.4] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [40         ] [0x007A.5] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [40         ] [0x007A.6] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [40         ] [0x007A.7] 0x6632:0x00 0x01 BOOLEAN      Error acknowledge
+  [41         ] [0x007B.0] 0x6690:0x01 0x01 BOOLEAN      SLS Instance 1
+  [41         ] [0x007B.1] 0x6690:0x02 0x01 BOOLEAN      SLS Instance 2
+  [41         ] [0x007B.2] 0x6690:0x03 0x01 BOOLEAN      SLS Instance 3
+  [41         ] [0x007B.3] 0x6690:0x04 0x01 BOOLEAN      SLS Instance 4
+  [41         ] [0x007B.4] 0x6630:0x00 0x01 BOOLEAN      Restart acknowledge
+  [41         ] [0x007B.5] 0x6660:0x00 0x01 BOOLEAN      SBC command
+  [41         ] [0x007B.6] 0x260A:0x00 0x01
+  [41         ] [0x007B.7] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [42         ] [0x007C.0] 0x6770:0x03 0x10 UNSIGNED16   FSoE CRC_0
+  [44         ] [0x007E.0] 0x2001:0x00 0x08 INTEGER16    Commutation angle offset
+  [45         ] [0x007F.0] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [45         ] [0x007F.1] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [45         ] [0x007F.2] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [45         ] [0x007F.3] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [45         ] [0x007F.4] 0x26F0:0x01 0x01 BOOLEAN      Safe output 1
+  [45         ] [0x007F.5] 0x26F0:0x02 0x01 BOOLEAN      Safe output 2
+  [45         ] [0x007F.6] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [45         ] [0x007F.7] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [46         ] [0x0080.0] 0x6770:0x04 0x10 UNSIGNED16   FSoE CRC_1
+  [48         ] [0x0082.0] 0x6770:0x02 0x10 UNSIGNED16   FSoE ConnectionID
+  SM3 inputs
+  byte offset   addr.b         index:sub   bitl data_type    name
+  [0          ] [0x00BB.0] 0x6041:0x00 0x10 UNSIGNED16   Statusword
+  [2          ] [0x00BD.0] 0x6061:0x00 0x08 INTEGER8     Modes of operation display
+  [3          ] [0x00BE.0] 0x6064:0x00 0x20 INTEGER32    Position actual value
+  [7          ] [0x00C2.0] 0x606C:0x00 0x20 INTEGER32    Velocity actual value
+  [11         ] [0x00C6.0] 0x6077:0x00 0x10 INTEGER16    Torque actual value
+  [13         ] [0x00C8.0] 0x603F:0x00 0x10 UNSIGNED16   Error code
+  [15         ] [0x00CA.0] 0x203F:0x01 0x40 VISIBLE_STR(64) Description
+  [23         ] [0x00D2.0] 0x2702:0x00 0x20 UNSIGNED32   Tuning status
+  [27         ] [0x00D6.0] 0x60FD:0x00 0x20 UNSIGNED32   Digital inputs
+  [31         ] [0x00DA.0] 0x60FA:0x00 0x20 INTEGER32    Control effort
+  [35         ] [0x00DE.0] 0x60FC:0x00 0x20 INTEGER32    Position demand internal value
+  [39         ] [0x00E2.0] 0x606B:0x00 0x20 INTEGER32    Velocity demand value
+  [43         ] [0x00E6.0] 0x6074:0x00 0x10 INTEGER16    Torque demand
+  [45         ] [0x00E8.0] 0x6760:0x01 0x08 UNSIGNED8    FSoE Command
+  [46         ] [0x00E9.0] 0x6640:0x00 0x01 BOOLEAN      STO command
+  [46         ] [0x00E9.1] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [46         ] [0x00E9.2] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [46         ] [0x00E9.3] 0x6668:0x01 0x01 BOOLEAN      SOS
+  [46         ] [0x00E9.4] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [46         ] [0x00E9.5] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [46         ] [0x00E9.6] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [46         ] [0x00E9.7] 0x6632:0x00 0x01 BOOLEAN      Error acknowledge
+  [47         ] [0x00EA.0] 0x6650:0x01 0x01 BOOLEAN      SS1
+  [47         ] [0x00EA.1] 0x6670:0x01 0x01 BOOLEAN      SS2
+  [47         ] [0x00EA.2] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [47         ] [0x00EA.3] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [47         ] [0x00EA.4] 0x6690:0x01 0x01 BOOLEAN      SLS Instance 1
+  [47         ] [0x00EA.5] 0x6690:0x02 0x01 BOOLEAN      SLS Instance 2
+  [47         ] [0x00EA.6] 0x6690:0x03 0x01 BOOLEAN      SLS Instance 3
+  [47         ] [0x00EA.7] 0x6690:0x04 0x01 BOOLEAN      SLS Instance 4
+  [48         ] [0x00EB.0] 0x6768:0x03 0x10
+  [50         ] [0x00ED.0] 0x6630:0x00 0x01 BOOLEAN      Restart acknowledge
+  [50         ] [0x00ED.1] 0x6660:0x00 0x01 BOOLEAN      SBC command
+  [50         ] [0x00ED.2] 0x2600:0x00 0x01 BOOLEAN      Temperature warning
+  [50         ] [0x00ED.3] 0x2601:0x00 0x01 BOOLEAN      Safe position valid
+  [50         ] [0x00ED.4] 0x2602:0x00 0x01 BOOLEAN      Safe speed valid
+  [50         ] [0x00ED.5] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [50         ] [0x00ED.6] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [50         ] [0x00ED.7] 0x2001:0x00 0x01 INTEGER16    Commutation angle offset
+  [51         ] [0x00EE.0] 0x2603:0x01 0x01 BOOLEAN      Safe input 1
+  [51         ] [0x00EE.1] 0x2603:0x02 0x01 BOOLEAN      Safe input 2
+  [51         ] [0x00EE.2] 0x2603:0x03 0x01 BOOLEAN      Safe input 3
+  [51         ] [0x00EE.3] 0x2603:0x04 0x01 BOOLEAN      Safe input 4
+  [51         ] [0x00EE.4] 0x2604:0x01 0x01 BOOLEAN      Safe output monitor 1
+  [51         ] [0x00EE.5] 0x2604:0x02 0x01 BOOLEAN      Safe output monitor 2
+  [51         ] [0x00EE.6] 0x2605:0x01 0x01 BOOLEAN      Analog diagnostic active
+  [51         ] [0x00EE.7] 0x2605:0x01 0x01 BOOLEAN      Analog diagnostic active
+  [52         ] [0x00EF.0] 0x6760:0x04 0x10 UNSIGNED16   FSoE CRC_1
+  [54         ] [0x00F1.0] 0x6611:0x00 0x10 INTEGER32    Safe position actual value
+  [56         ] [0x00F3.0] 0x6760:0x05 0x10 UNSIGNED16   FSoE CRC_2
+  [58         ] [0x00F5.0] 0x2001:0x00 0x10 INTEGER16    Commutation angle offset
+  [60         ] [0x00F7.0] 0x6760:0x06 0x10 UNSIGNED16   FSoE CRC_3
+  [62         ] [0x00F9.0] 0x6613:0x00 0x10 INTEGER32    Safe velocity actual value
+  [64         ] [0x00FB.0] 0x6760:0x07 0x10 UNSIGNED16   FSoE CRC_4
+  [66         ] [0x00FD.0] 0x2001:0x00 0x10 INTEGER16    Commutation angle offset
+  [68         ] [0x00FF.0] 0x6760:0x08 0x10 UNSIGNED16   FSoE CRC_5
+  [70         ] [0x0101.0] 0x2605:0x03 0x10 INTEGER16    Safe analog value (scaled)
+  [72         ] [0x0103.0] 0x6760:0x09 0x10 UNSIGNED16   FSoE CRC_6
+  [74         ] [0x0105.0] 0x6760:0x02 0x10 UNSIGNED16   FSoE ConnectionID
 */
 
-
 //These apply to the standard PDO mapping
-#define AW_J_SERIES_SETPOS_PDO_INDEX        5
-#define AW_J_SERIES_ACTPOS_PDO_INDEX        3
-#define AW_J_SERIES_POS_DEMAND_PDO_INDEX    37
+#define AW_J_SERIES_SETPOS_PDO_INDEX            5
+#define AW_J_SERIES_ACTPOS_PDO_INDEX            3
+#define AW_J_SERIES_POS_DEMAND_PDO_INDEX        37
 
-#define AW_J_SERIES_CONTROLWORD_PDO_INDEX   0
-#define AW_J_SERIES_STATUSWORD_PDO_INDEX    0
+#define AW_J_SERIES_CONTROLWORD_PDO_INDEX       0
+#define AW_J_SERIES_STATUSWORD_PDO_INDEX        0
 
-//todo crit
-#define AW_J_SERIES_CONTROL_EFFORT_PDO_INDEX 0
+#define AW_J_SERIES_CONTROL_EFFORT_PDO_INDEX    31
 
-#define AW_J_SERIES_MOOSET_PDO_INDEX        2
-#define AW_J_SERIES_MOODISP_PDO_INDEX       2
+#define AW_J_SERIES_MOOSET_PDO_INDEX            2
+#define AW_J_SERIES_MOODISP_PDO_INDEX           2
 
-#define AW_J_SERIES_SETVEL_PDO_INDEX        9
-#define AW_J_SERIES_ACTVEL_PDO_INDEX        7
-#define AW_J_SERIES_VEL_DEMAND_PDO_INDEX    41
-#define AW_J_SERIES_SETVEL_OFFSET_PDO_INDEX 31
+#define AW_J_SERIES_SETVEL_PDO_INDEX            9
+#define AW_J_SERIES_ACTVEL_PDO_INDEX            7
+#define AW_J_SERIES_VEL_DEMAND_PDO_INDEX        39
+#define AW_J_SERIES_SETVEL_OFFSET_PDO_INDEX     31
 
-#define AW_J_SERIES_SETTORQ_PDO_INDEX       3
-#define AW_J_SERIES_SETORQ_OFFSET_PDO_INDEX 13
-#define AW_J_SERIES_TORQ_DEMAND_PDO_INDEX   45
-#define AW_J_SERIES_ACTTORQ_PDO_INDEX       11
+#define AW_J_SERIES_SETTORQ_PDO_INDEX           3
+#define AW_J_SERIES_SETORQ_OFFSET_PDO_INDEX     13
+#define AW_J_SERIES_TORQ_DEMAND_PDO_INDEX       43
+#define AW_J_SERIES_ACTTORQ_PDO_INDEX           11
+#define AW_J_SERIES_ERROR_CODE_PDO_INDEX        13
+#define AW_J_SERIES_ERROR_DESCRIPTION_PDO_INDEX 15
 
 
 //SDO indexes for the AW J series drives

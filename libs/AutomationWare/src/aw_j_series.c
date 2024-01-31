@@ -534,6 +534,44 @@ gberror_t ec_set_settorqoffset_wrd_aw_j_series(const uint16_t drive, const int32
 }
 
 
+uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive) {
+    static uint8_t error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH];
+    memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
+    uint16_t drive_error_code = 0;
+
+    char no_error_prefix[] = "AW-J-Series: No error on drive. Detailed error report";
+
+
+    drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive], AW_J_SERIES_ERROR_CODE_PDO_INDEX);
+
+    if (drive_error_code == 0) {
+        snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
+                 "%s [%s]", no_error_prefix,
+                 ec_get_detailled_error_report_pdo_aw_j_series(drive));
+        return error_code_string;
+    }
+
+    char error_code_first[] = "AW-J-Series error code";
+    char error_code_second[] = "& Detailed error report";
+
+    for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_STRINGS; i++) {
+        if (aw_j_series_error[i].error_id == drive_error_code) {
+            snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
+                     "%s [%s] %s [%s]", error_code_first, aw_j_series_error[i].text_string, error_code_second,
+                     ec_get_detailled_error_report_pdo_aw_j_series(drive));
+
+            error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH - 1] = '\0';
+            return error_code_string;
+        }
+    }
+
+    snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
+             "AW-J-Series: Error code returned by drive did not match any in the error table. Detailed error report [%s]",
+             ec_get_detailled_error_report_pdo_aw_j_series(drive));
+    return error_code_string;
+}
+
+
 uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
     static uint8_t error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH];
     memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
@@ -545,6 +583,7 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
                            AW_J_SERIES_ERROR_CODE_SDO_SUB_INDEX,
                            &drive_error_code, false)) {
         if (drive_error_code == 0) {
+            //todo crit can skip the detailled error report read here
             snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
                      "%s [%s]", no_error_prefix,
                      ec_get_detailled_error_report_sdo_aw_j_series(drive));
@@ -576,12 +615,32 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
     return error_code_string;
 }
 
+
+uint8_t *ec_get_detailled_error_report_pdo_aw_j_series(const uint16_t drive_number) {
+    int os = 8;
+    uint8_t octet_string[8];
+    static uint8_t failed_error_code_lookup[50] = "Error string does not match any table";
+
+    for (int i = 0; i < os; i++) {
+        octet_string[i] = ec_pdo_get_input_uint8(map_drive_to_slave[drive_number],
+                                                 AW_J_SERIES_ERROR_DESCRIPTION_PDO_INDEX + i);
+    }
+    for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS; i++) {
+        if (strcmp(aw_j_series_error_report[i].error_code, (char *) octet_string) != 0) {
+            return (uint8_t *) aw_j_series_error_report[i].text_string;
+        }
+    }
+
+    return failed_error_code_lookup;
+}
+
+
 uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(const uint16_t drive_number) {
     int os = 8;
     uint8_t octet_string[8];
 
-    static uint8_t failed_error_code_read[50] = "AW-J-Series: Failed to read error code";
-    static uint8_t failed_error_code_lookup[50] = "AW-J-Series: Error code does not match table";
+    static uint8_t failed_error_code_read[50] = "Failed to read error code";
+    static uint8_t failed_error_code_lookup[50] = "Error code does not match any in table";
 
     int rc = ec_SDOread(map_drive_to_slave[drive_number], AW_J_SERIES_ERROR_DESCRIPTION_SDO_INDEX,
                         AW_J_SERIES_ERROR_DESCRIPTION_SDO_SUB_INDEX, false, &os,
