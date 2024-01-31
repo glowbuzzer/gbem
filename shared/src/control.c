@@ -1460,7 +1460,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
     ctrl_copy_acttorq();
 
-    // ctrl_copy_control_effort();
+    ctrl_copy_control_effort();
 
     //copy statuswords from EC_IN to DPM_IN (write)
     ctrl_copy_drive_statuswords();
@@ -1689,6 +1689,16 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     copy_fsoe_data();
     update_fsoe_ecm_status();
     // print_status(&ecm_status);
+
+    //copy PDO error codes into ecm status
+    for (uint16_t drive = 0; drive < MAP_NUM_DRIVES; drive++) {
+        if (*map_drive_get_error_string_pdo_function_ptr[drive] != NULL) {
+            uint8_t *error_code_string = map_drive_get_error_string_pdo_function_ptr[drive](drive);
+            memset(&ecm_status.drives[drive].error_message[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
+            memcpy(&ecm_status.drives[drive].error_message[0], error_code_string,
+                   strlen((char *) error_code_string) + 1);
+        }
+    }
 
 
     //RT-sensitive
