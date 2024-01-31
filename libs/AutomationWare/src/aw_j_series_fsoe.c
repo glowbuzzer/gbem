@@ -116,12 +116,15 @@ map_custom_pdo_t aw_j_series_fsoe_custom_pdo_map = {
         },
         {
             .pdo_assignment_object = 0x1A01,
-            .num_assignments = 5,
+            .num_assignments = 3,
             .assignments = {
-                {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ANALOG_INPUT_1_ADDRESS}, //0x2401 Analog input 1
-                {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ANALOG_INPUT_2_ADDRESS}, //0x2402 Analog input 2
-                {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ANALOG_INPUT_3_ADDRESS}, //0x2403 Analog input 3
-                {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ANALOG_INPUT_4_ADDRESS}, //0x2404 Analog input 4
+                // {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ANALOG_INPUT_1_ADDRESS}, //0x2401 Analog input 1
+                // {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ANALOG_INPUT_2_ADDRESS}, //0x2402 Analog input 2
+                // {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ANALOG_INPUT_3_ADDRESS}, //0x2403 Analog input 3
+                // {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ANALOG_INPUT_4_ADDRESS}, //0x2404 Analog input 4
+                {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ERROR_CODE_ADDRESS}, // 0x603F Error code
+                {.datatype = ECT_STRING8, .index = AW_J_SERIES_ERROR_REPORT_ADDRESS, .offset = 0x1},
+                //0x603F Error report
                 {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_TUNING_STATUS_ADDDRESS}, //0x2702Tuning status
             }
         },
@@ -134,10 +137,11 @@ map_custom_pdo_t aw_j_series_fsoe_custom_pdo_map = {
         },
         {
             .pdo_assignment_object = 0x1A03,
-            .num_assignments = 5,
+            .num_assignments = 4,
             .assignments = {
-                {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_USER_MISO_ADDRESS}, //0x2704 User MISO
-                {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_TIMESTAMP_ADDDRESS}, //0x20F0 Timestamp
+                // {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_USER_MISO_ADDRESS}, //0x2704 User MISO
+                // {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_TIMESTAMP_ADDDRESS}, //0x20F0 Timestamp
+                {.datatype = ECT_INTEGER32, .index = AW_J_SERIES_CONTROL_EFFORT_ADDRESS}, //0x60B0 Control effort
                 {.datatype = ECT_INTEGER32, .index = AW_J_SERIES_POSITION_DEMAND_INTERNAL_VALUE_ADDRESS},
                 //0x60FC Position demand internal value
                 {.datatype = ECT_INTEGER32, .index = AW_J_SERIES_VELOCITY_DEMAND_VALUE_ADDRESS},

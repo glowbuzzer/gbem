@@ -42,7 +42,7 @@ gberror_t ec_apply_standard_sdos_aw_j_series_fsoe(uint16_t slave);
 
 //these are for custom pdo map
 #define AW_J_SERIES_EC_FSOE_SM2_OFFSET   39
-#define AW_J_SERIES_EC_FSOE_SM3_OFFSET   47
+#define AW_J_SERIES_EC_FSOE_SM3_OFFSET   45
 
 
 //FSoE
