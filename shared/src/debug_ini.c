@@ -30,60 +30,13 @@ turn_off_limits_checking = true
 #define NAMEOF(s) strchr((const char *)(#s), '>') == NULL \
 ? #s : (strchr((const char *)(#s), '>') + 1)
 
-typedef enum {
-    J0,
-    J1,
-    J2,
-    J3,
-    J4,
-    J5,
-    J6,
-    J7,
-    J8,
-    J9,
-    UNKNOWN_SECTION
-} debug_ini_config_section_t;
 
-static const char *debug_ini_config_sections[UNKNOWN_SECTION + 1] = {
-    "J0",
-    "J1",
-    "J2",
-    "J3",
-    "J4",
-    "J5",
-    "J6",
-    "J7",
-    "J8",
-    "J9",
-    NULL
-};
+typedef struct {
+    uint32_t value;
+    bool enable_limits_checking;
+} debug_settings_t;
 
-
-static debug_ini_config_section_t get_section(const char *section) {
-    if (MATCH(debug_ini_config_sections[J0], section)) {
-        return J0;
-    } else if (MATCH(debug_ini_config_sections[J1], section)) {
-        return J1;
-    } else if (MATCH(debug_ini_config_sections[J2], section)) {
-        return J2;
-    } else if (MATCH(debug_ini_config_sections[J3], section)) {
-        return J3;
-    } else if (MATCH(debug_ini_config_sections[J4], section)) {
-        return J4;
-    } else if (MATCH(debug_ini_config_sections[J5], section)) {
-        return J5;
-    } else if (MATCH(debug_ini_config_sections[J6], section)) {
-        return J6;
-    } else if (MATCH(debug_ini_config_sections[J7], section)) {
-        return J7;
-    } else if (MATCH(debug_ini_config_sections[J8], section)) {
-        return J8;
-    } else if (MATCH(debug_ini_config_sections[J9], section)) {
-        return J9;
-    } else {
-        return UNKNOWN_SECTION;
-    }
-}
+static debug_settings_t debug_settings;
 
 
 bool check_debug_ini_exists(void) {
@@ -96,47 +49,32 @@ bool check_debug_ini_exists(void) {
     return true;
 }
 
-static void parse_section(map_machine_limits_t *config, const char *key,
-                          const char *value, uint32_t section) {
+static void parse_section(debug_settings_t *config, const char *key,
+                          const char *value) {
     // printf("%s\n", value);
 
-    if (MATCH("position_limit_max", key)) {
-        config[section].position_limit_max = (uint32_t) atoi(value);
-    } else if (MATCH("position_limit_min", key)) {
-        config[section].position_limit_min = (uint32_t) atoi(value);
-    } else if (MATCH("velocity_limit", key)) {
-        config[section].velocity_limit = (uint32_t) atoi(value);
-    } else if (MATCH("torque_limit", key)) {
-        config[section].torque_limit = (uint32_t) atoi(value);
-    } else if (MATCH("max_motor_speed", key)) {
-        config[section].max_motor_speed = (uint32_t) atoi(value);
-    } else if (MATCH("max_motor_torque", key)) {
-        config[section].max_motor_torque = (uint32_t) atoi(value);
+    if (MATCH("value", key)) {
+        config->value = (uint32_t) atoi(value);
+    } else if (MATCH("enable_limits_checking", key)) {
+        config->enable_limits_checking = value;
     } else {
         UM_FATAL("GBEM: Error parsing ini file. Unknown key: %s", key);
     }
 }
 
-static uint32_t parse_count = 0;
-
 
 static gberror_t config_parser(const char *section, const char *key,
                                const char *value, void *config_v) {
-    debug_ini_config_section_t s = get_section(section);
-
-
-    parse_section(config_v, key, value, s);
-
-    parse_count++;
+    parse_section(config_v, key, value);
 
     return 1;
 }
 
-uint8_t get_debug_ini_sections(void) {
+uint8_t get_debug_ini_keys(void) {
     int s;
     char section[40];
     uint8_t count = 0;
-    for (s = 0; ini_getsection(s, section, sizeof section, DEBUG_INI_FILENAME) > 0; s++) {
+    for (s = 0; ini_getkey(NULL, s, section, sizeof section, DEBUG_INI_FILENAME) > 0; s++) {
         count++;
     }
     return count;
@@ -144,9 +82,9 @@ uint8_t get_debug_ini_sections(void) {
 
 
 gberror_t read_debug_ini(uint8_t *number_of_items_found) {
-    if (!ini_browse(config_parser, &map_machine_limits, DEBUG_INI_FILENAME)) {
+    if (!ini_browse(config_parser, &debug_settings, DEBUG_INI_FILENAME)) {
         return E_LOOKUP_FAILED;
     }
-    *number_of_items_found = parse_count;
+    *number_of_items_found = get_debug_ini_keys();
     return E_SUCCESS;
 }
