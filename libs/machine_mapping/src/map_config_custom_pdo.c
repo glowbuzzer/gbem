@@ -48,9 +48,9 @@ uint32_t map_calc_index_length(ec_datatype datatype, uint16_t index, uint8_t off
         case ECT_REAL64:
             length = 0x40;
             break;
-        // case ECT_STRING8:
-        //     length = 0x80;
-        // break;
+        case ECT_STRING8:
+            length = 0x40;
+        break;
         default:
             UM_FATAL("GBEM: Invalid custom pdo map datatype");
     }
