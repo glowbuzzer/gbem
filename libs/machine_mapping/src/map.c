@@ -279,6 +279,7 @@ uint32_t map_fsoe_get_slot_size_in(uint16_t slot) {
  *
  */
 bool ec_is_warning(void) {
+    bool warning_on_drive = false;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
         if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
@@ -289,10 +290,11 @@ bool ec_is_warning(void) {
             return true;
         }
         if (BIT_CHECK(drive_stat_wrd, CIA_WARNING_BIT_NUM)) {
-            return true;
+            warning_on_drive = true;
+            ecm_status.drives[i].active_warning = true;
         }
     }
-    return false;
+    return warning_on_drive;
 }
 
 /**
@@ -303,14 +305,11 @@ bool ec_is_warning(void) {
  *
  */
 bool ec_check_for_follow_error(gberror_t *grc) {
+    bool follow_error = false;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_follow_error_function_ptr[i] != NULL) {
-            if (map_drive_get_follow_error_function_ptr[i](i)) {
-                LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
-                         "Missing function pointer for map_drive_get_follow_error on drive [%u]", i);
-                *grc = E_SUCCESS;
-                return true;
-            }
+            follow_error = map_drive_get_follow_error_function_ptr[i](i);
+            ecm_status.drives[i].active_follow_error = true;
         } else {
             //we can't check all drives for a follow error so return true that there is one - safest behaviour
             *grc = E_NO_FUNCTION_FOUND;
@@ -318,7 +317,7 @@ bool ec_check_for_follow_error(gberror_t *grc) {
         }
     }
     *grc = E_SUCCESS;
-    return false;
+    return follow_error;
 }
 
 
@@ -345,7 +344,6 @@ bool ec_check_for_internal_limit(gberror_t *gbc) {
         if (BIT_CHECK(drive_stat_wrd, CIA_INTERNAL_LIMIT_BIT_NUM)) {
             *gbc = E_SUCCESS;
             internal_limit_active = true;
-            ecm_status.drives[i].historic_internal_limit = true;
             ecm_status.drives[i].active_internal_limit = true;
         } else {
             ecm_status.drives[i].active_internal_limit = false;
