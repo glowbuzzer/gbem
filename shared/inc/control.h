@@ -28,7 +28,7 @@ typedef struct {
     bool gbc_internal_fault;
     bool estop;
     bool heartbeat_lost;
-    bool any_drive_has_alarm;
+    bool any_drive_has_warning;
     bool internal_limit;
     bool remote_ok;
     bool slave_reported_error;
@@ -37,8 +37,7 @@ typedef struct {
     int8_t moo_disp[MAP_NUM_DRIVES];
     bool ec_check_error;
     uint32_t fault_cause;
-    bool cst_csv_position_limit_error;
-    bool cst_csv_velocity_limit_error;
+    bool drive_state_mismatch;
 } event_data_t;
 
 
@@ -61,6 +60,8 @@ bool ctrl_check_all_drives_state(cia_state_t state);
 
 bool ctrl_check_any_drives_state(cia_state_t state);
 
+bool ctrl_is_drive_in_state(uint16_t drive, cia_state_t state);
+
 bool ctrl_check_all_drives_commands_sim(cia_commands_t command);
 
 void ec_push_circular_slave_error_message(ec_circular_slave_error_message_t *c, uint8_t *slave_error_message);
@@ -81,7 +82,7 @@ void ctrl_process_iomap_out(bool zero);
 
 void ctrl_process_iomap_in(void);
 
-#define NUM_CONTROL_EVENTS 17
+#define NUM_CONTROL_EVENTS 16
 
 extern cyclic_event_t control_event[NUM_CONTROL_EVENTS];
 
@@ -89,7 +90,6 @@ typedef enum {
     CONTROL_EVENT_ESTOP,
     CONTROL_EVENT_DRIVE_FAULT,
     CONTROL_EVENT_GBC_FAULT_REQUEST,
-//    CONTROL_EVENT_GBC_MOVE_NOT_OP_END_REQUEST,
     CONTROL_EVENT_GBC_INTERNAL_FAULT,
     CONTROL_EVENT_HEARTBEAT_LOST,
     CONTROL_EVENT_LIMIT_REACHED,
@@ -97,8 +97,8 @@ typedef enum {
     CONTROL_EVENT_DRIVE_FOLLOW_ERROR,
     CONTROL_EVENT_DRIVE_NO_REMOTE,
     CONTROL_EVENT_ECAT_ERROR,
-    CONTROL_EVENT_DRIVE_ALARM,
-//    CONTROL_EVENT_GBC_TO_GBEM_CON_ERROR,
+    CONTROL_EVENT_DRIVE_WARNING,
+    CONTROL_EVENT_DRIVE_STATE_MISMATCH,
     CONTROL_EVENT_DRIVE_MOOERROR,
     CONTROL_EVENT_ECAT_SLAVE_ERROR,
     CONTROL_EVENT_PLC_SIGNALLED_ERROR,

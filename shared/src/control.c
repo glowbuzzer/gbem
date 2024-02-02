@@ -61,10 +61,11 @@ cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
         [CONTROL_EVENT_HEARTBEAT_LOST] = {.message="An error has been detected [Heartbeat to GBC lost]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_LIMIT_REACHED] = {.message="An error has been detected [Drive reached limit]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_DRIVE_STATE_CHANGE_TIMEOUT] = {.message="An error has been detected [Drive state change timeout]", .type=CYCLIC_MSG_ERROR},
+        [CONTROL_EVENT_DRIVE_STATE_MISMATCH] = {.message="An error has been detected [Drive state mismatch]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_DRIVE_FOLLOW_ERROR] = {.message="An error has been detected [Drive follow error too large]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_DRIVE_NO_REMOTE] = {.message="An error has been detected [Drive lost remote]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_ECAT_ERROR] = {.message="An error has been detected [EtherCAT network]", .type=CYCLIC_MSG_ERROR},
-        [CONTROL_EVENT_DRIVE_ALARM] = {.message="An error has been detected [Drive alarm]", .type=CYCLIC_MSG_ERROR},
+        [CONTROL_EVENT_DRIVE_WARNING] = {.message="An warning has been detected [Drive warning]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_DRIVE_MOOERROR] = {.message="An error has been detected [modes of operation]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_ECAT_SLAVE_ERROR] = {.message="An error has been detected [EtherCAT slave]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_PLC_SIGNALLED_ERROR] = {.message="An error has been detected [PLC signalled an error]", .type=CYCLIC_MSG_ERROR},
@@ -867,6 +868,15 @@ bool cia_is_fault_condition(struct event *event) {
 
 
     bool have_fault = false;
+
+
+    if (((event_data_t *) event->data)->drive_state_mismatch == true) {
+        printf("drive_state_mismatch\n");
+        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > drive state mismatch");
+        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_STATE_MISMATCH_BIT_NUM);
+        control_event[CONTROL_EVENT_DRIVE_STATE_MISMATCH].active = true;
+        have_fault = true;
+    }
     if (((event_data_t *) event->data)->heartbeat_lost == true) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > heart beat lost");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_HEARTBEAT_LOST_BIT_NUM);
@@ -905,19 +915,32 @@ bool cia_is_fault_condition(struct event *event) {
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_FAULT_BIT_NUM);
         control_event[CONTROL_EVENT_DRIVE_FAULT].active = true;
         have_fault = true;
+        for (uint16_t i = 0; i < MAP_NUM_DRIVES; i++) {
+            if (ctrl_is_drive_in_state(i, CIA_FAULT_REACTION_ACTIVE)) {
+                ecm_status.drives[i].active_fault = true;
+            }
+        }
     }
     if (ctrl_check_any_drives_state(CIA_FAULT)) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > one or more drives are in FAULT");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_FAULT_BIT_NUM);
         control_event[CONTROL_EVENT_DRIVE_FAULT].active = true;
         have_fault = true;
+        for (uint16_t i = 0; i < MAP_NUM_DRIVES; i++) {
+            if (ctrl_is_drive_in_state(i, CIA_FAULT)) {
+                ecm_status.drives[i].active_fault = true;
+            }
+        }
     }
     if ((ctrl_state_change_cycle_count * MAP_CYCLE_TIME) > ctrl_state_change_timeout) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > one or more drives took too long responding to a state change request");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_STATE_CHANGE_TIMEOUT_BIT_NUM);
         control_event[CONTROL_EVENT_DRIVE_STATE_CHANGE_TIMEOUT].active = true;
         have_fault = true;
+        ctrl_state_change_cycle_count = 0;
+        control_event[CONTROL_EVENT_DRIVE_STATE_CHANGE_TIMEOUT].active = false;
     }
+
     if (((event_data_t *) event->data)->remote_ok == false) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > drives not signalling remote ok");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_NO_REMOTE_BIT_NUM);
@@ -930,10 +953,10 @@ bool cia_is_fault_condition(struct event *event) {
         control_event[CONTROL_EVENT_ECAT_ERROR].active = true;
         have_fault = true;
     }
-    if (((event_data_t *) event->data)->any_drive_has_alarm == true) {
-        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > a drive is signalling an any_drive_has_alarm");
-        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_ALARM_BIT_NUM);
-        control_event[CONTROL_EVENT_DRIVE_ALARM].active = true;
+    if (((event_data_t *) event->data)->any_drive_has_warning == true) {
+        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > a drive is signalling a warning");
+        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_WARNING_BIT_NUM);
+        control_event[CONTROL_EVENT_DRIVE_WARNING].active = true;
         have_fault = true;
     }
 
@@ -987,6 +1010,40 @@ bool cia_is_fault_condition(struct event *event) {
     return have_fault;
 }
 
+static bool check_for_drive_state_mismatch(void) {
+    cia_state_t drive_state = 0;
+    if (ctrl_check_all_drives_state(CIA_OPERATION_ENABLED)) {
+        drive_state = CIA_OPERATION_ENABLED;
+    }
+
+    bool state_mismatch = false;
+
+    static uint32_t mismatch_count = 0;
+
+    if (ecm_status.machine_state == CIA_OPERATION_ENABLED) {
+        if (drive_state != CIA_OPERATION_ENABLED) {
+            mismatch_count++;
+            if (
+                mismatch_count * MAP_CYCLE_TIME > ctrl_state_change_timeout) {
+                // ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout) {
+                printf("STATE MISMATCH!\n");
+                state_mismatch = true;
+                mismatch_count = 0;
+            }
+        }
+    }
+
+    if (state_mismatch) {
+        LL_TRACE(GBEM_SM_LOG_EN,
+                 "sm: Mismatch between drive state and the controlword and the current state & no transitions occurring")
+        ;
+        return true;
+    }
+
+    return false;
+}
+
+
 /**
  * @brief Guards transition from any state into fault reaction active - expected machine controlword drive this (apart from the trigger fault bit)
  * @param condition
@@ -997,133 +1054,23 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
     if (cia_is_fault_condition(event)) {
         //a QUICK_STOP command should send all drives back to switch on disabled
         ctrl_change_all_drives_states(CIA_QUICK_STOP_CTRLWRD);
+
+        //if we are op enabled then snapshot fault into history
+        if ((cia_state_t) ((uintptr_t *) condition) == CIA_OPERATION_ENABLED) {
+            for (uint16_t i = 0; i < MAP_NUM_DRIVES; i++) {
+                ecm_status.drives[i].historic_internal_limit = ecm_status.drives[i].active_internal_limit;
+                ecm_status.drives[i].historic_follow_error = ecm_status.drives[i].active_follow_error;
+                ecm_status.drives[i].historic_warning = ecm_status.drives[i].active_warning;
+                ecm_status.drives[i].historic_fault = ecm_status.drives[i].active_fault;
+
+                read_drive_error_code_into_ecm_status(i, true, true);
+            }
+        }
+
         return true;
     }
-    // condition will be the state that we are currently in
 
 
-    //todo crit remove this
-    return false;
-
-    cia_state_t drive_state = 0;
-    bool found_drive_state = false;
-
-    if (ctrl_check_all_drives_state(CIA_NOT_READY_TO_SWITCH_ON)) {
-        drive_state = CIA_NOT_READY_TO_SWITCH_ON;
-        printf("drive state is CIA_NOT_READY_TO_SWITCH_ON\n");
-        found_drive_state = true;
-    }
-    if (ctrl_check_all_drives_state(CIA_OPERATION_ENABLED)) {
-        drive_state = CIA_OPERATION_ENABLED;
-        found_drive_state = true;
-        printf("drive state is CIA_OPERATION_ENABLED\n");
-    }
-    if (ctrl_check_all_drives_state(CIA_SWITCHED_ON)) {
-        drive_state = CIA_SWITCHED_ON;
-        found_drive_state = true;
-        printf("drive state is CIA_SWITCHED_ON\n");
-    }
-    if (ctrl_check_all_drives_state(CIA_READY_TO_SWITCH_ON)) {
-        drive_state = CIA_READY_TO_SWITCH_ON;
-        found_drive_state = true;
-        printf("drive state is CIA_READY_TO_SWITCH_ON\n");
-    }
-    if (ctrl_check_all_drives_state(CIA_SWITCH_ON_DISABLED)) {
-        drive_state = CIA_SWITCH_ON_DISABLED;
-        found_drive_state = true;
-        printf("drive state is CIA_SWITCH_ON_DISABLED\n");
-    }
-    if (ctrl_check_all_drives_state(CIA_QUICK_STOP_ACTIVE)) {
-        drive_state = CIA_QUICK_STOP_ACTIVE;
-        found_drive_state = true;
-        printf("drive state is CIA_QUICK_STOP_ACTIVE\n");
-    }
-    if (ctrl_check_all_drives_state(CIA_FAULT)) {
-        drive_state = CIA_FAULT;
-        found_drive_state = true;
-        printf("drive state is CIA_FAULT\n");
-    }
-    if (ctrl_check_all_drives_state(CIA_FAULT_REACTION_ACTIVE)) {
-        drive_state = CIA_FAULT_REACTION_ACTIVE;
-        found_drive_state = true;
-        printf("drive state is CIA_FAULT_REACTION_ACTIVE\n");
-    }
-
-    if (!found_drive_state) {
-        UM_FATAL("GBEM: Could not establish drive state");
-    }
-
-    /*
-     * we are in op enabled
-     * controlword is switch on disabled
-     * drives are in quick stop
-     * cycle change count will be ticking up
-     * eventually if state does not match the controlword we will error (state change timeout)
-     *
-     * BUT
-     * if we are in op enabled
-     * controlword is enable op
-     * drive drops to switch on disabled
-     *
-     *
-     */
-    bool state_mismatch = false;
-
-    printf("machine word [%u] command [%u]\n", dpm_out->machine_word, cia_ctrlwrd_to_command(dpm_out->machine_word));
-
-    /*fault if:
-    op enabled and state is not op enabled
-    */
-
-
-    switch (drive_state) {
-        //    uint32_t x=(uint32_t) ((intptr_t) condition & 0xFFFFFFFF);
-
-
-        case CIA_READY_TO_SWITCH_ON:
-            if (((cia_state_t) ((void *) condition) != CIA_READY_TO_SWITCH_ON) &&
-                (ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout)) {
-                state_mismatch = true;
-            }
-            break;
-        case CIA_SWITCHED_ON:
-            if (((cia_state_t) ((uintptr_t *) condition) != CIA_SWITCHED_ON) &&
-                (ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout)) {
-                state_mismatch = true;
-            }
-            break;
-        //        case CIA_SWITCH_ON_AND_ENABLE_OPERATION:
-        //            if ((((cia_state_t) ((intptr_t *) condition) != CIA_SWITCHED_ON) ||
-        //                 ((cia_state_t) ((intptr_t *) condition) != CIA_OPERATION_ENABLED))
-        //                && ctrl_state_change_cycle_count*MAP_CYCLE_TIME > ctrl_state_change_timeout) {
-        //                state_mismatch = true;
-        //            }
-        //            break;
-        case CIA_QUICK_STOP_ACTIVE:
-            if (((cia_state_t) ((intptr_t *) condition) != CIA_QUICK_STOP_ACTIVE) &&
-                ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout) {
-                state_mismatch = true;
-            }
-            break;
-        case CIA_OPERATION_ENABLED:
-            printf("case CIA_OPERATION_ENABLED - %u\n", CIA_OPERATION_ENABLED);
-            printf("%u condition\n", (((cia_state_t) ((intptr_t *) condition))));
-            printf("state change timeout [%u]\n", ctrl_state_change_cycle_count * MAP_CYCLE_TIME);
-
-            if (((cia_state_t) ((intptr_t *) condition)) != CIA_OPERATION_ENABLED) {
-                state_mismatch = true;
-            }
-            break;
-        case CIA_FAULT_RESET:
-            break;
-    }
-    if (state_mismatch) {
-        LL_TRACE(GBEM_SM_LOG_EN,
-                 "sm: Mismatch between drive state and the controlword and the current state & no transitions occurring")
-        ;
-        ctrl_change_all_drives_states(CIA_QUICK_STOP_CTRLWRD);
-        return false;
-    }
     //	!! we transition to fault reaction active then loop in that state until drives have stopped
     return false;
 }
@@ -1209,6 +1156,21 @@ bool ctrl_check_all_drives_state(cia_state_t state) {
     }
 }
 
+
+bool ctrl_is_drive_in_state(uint16_t drive, cia_state_t state) {
+    uint16_t drive_stat_wrd = 0;
+    if (*map_drive_get_stat_wrd_function_ptr[drive] != NULL) {
+        drive_stat_wrd = map_drive_get_stat_wrd_function_ptr[drive](drive);
+    } else {
+        LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_get stat_wrd on drive [%u]",
+                 drive);
+    }
+    if (cia_statwrd_to_state(drive_stat_wrd) == state) {
+        //we found a drive in the given state
+        return true;
+    }
+    return false;
+}
 
 bool ctrl_check_any_drives_state(cia_state_t state) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
@@ -1532,7 +1494,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
     DPM_IN_PROTECT_END
 
-    bool alarm_on_any_drive = ec_is_warning();
+    bool warning_on_any_drive = ec_is_warning();
     DPM_OUT_PROTECT_START
 
     event_data.heartbeat_lost = !ctrl_check_heartbeat_ok(gbem_heartbeat, dpm_out->heartbeat);
@@ -1542,7 +1504,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 #endif
 
 
-    event_data.any_drive_has_alarm = alarm_on_any_drive;
+    event_data.any_drive_has_warning = warning_on_any_drive;
 
 
     event_data.estop = estop;
@@ -1600,6 +1562,13 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
         event_data.remote_ok = true;
     } else {
         event_data.remote_ok = false;
+    }
+
+
+    if (check_for_drive_state_mismatch()) {
+        event_data.drive_state_mismatch = true;
+    } else {
+        event_data.drive_state_mismatch = false;
     }
 
 
@@ -1691,15 +1660,17 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     // print_status(&ecm_status);
 
     //copy PDO error codes into ecm status
+    // for (uint16_t drive = 0; drive < MAP_NUM_DRIVES; drive++) {
+    //     if (*map_drive_get_error_string_pdo_function_ptr[drive] != NULL) {
+    //         uint8_t *error_code_string = map_drive_get_error_string_pdo_function_ptr[drive](drive);
+    //         memset(&ecm_status.drives[drive].error_message[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
+    //         memcpy(&ecm_status.drives[drive].error_message[0], error_code_string,
+    //                strlen((char *) error_code_string) + 1);
+    //     }
+    // }
     for (uint16_t drive = 0; drive < MAP_NUM_DRIVES; drive++) {
-        if (*map_drive_get_error_string_pdo_function_ptr[drive] != NULL) {
-            uint8_t *error_code_string = map_drive_get_error_string_pdo_function_ptr[drive](drive);
-            memset(&ecm_status.drives[drive].error_message[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
-            memcpy(&ecm_status.drives[drive].error_message[0], error_code_string,
-                   strlen((char *) error_code_string) + 1);
-        }
+        read_drive_error_code_into_ecm_status(drive, true, false);
     }
-
 
     //RT-sensitive
     //output user messages for any faults that have occurred
