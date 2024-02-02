@@ -730,7 +730,7 @@ bool ec_step_8_slaves_match(void) {
 bool ec_step_9_op(void) {
     /** read the drive error code into the ecm_status struct - any initial errors */
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-        read_drive_error_code_into_ecm_status(i);
+        read_drive_error_code_into_ecm_status(i, false, false);
     }
 
     //copy secondary name into ecm status
