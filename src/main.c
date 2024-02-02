@@ -407,7 +407,7 @@ int main(int argc, char *argv[]) {
 #if MACHINE_EL6900_J25 == 1
     map_machine_type = MAP_MACHINE_EL6900_J25;
 #endif
-#if MACHINE_EL6900_J25 == 1
+#if MACHINE_BBH_J25 == 1
     map_machine_type = MAP_MACHINE_BBH_J25;
 #endif
 
