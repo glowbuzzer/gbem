@@ -15,6 +15,6 @@
 
 #include "std_headers.h"
 
-void read_drive_error_code_into_ecm_status(uint16_t drive);
+void read_drive_error_code_into_ecm_status(uint16_t drive, bool pdo_only,bool historic);
 
 #endif //GBEM_READ_DRIVE_ERROR_CODE_INTO_ECM_STATUS_H
