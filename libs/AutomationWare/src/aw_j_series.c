@@ -533,8 +533,16 @@ gberror_t ec_set_settorqoffset_wrd_aw_j_series(const uint16_t drive, const int32
     return E_SUCCESS;
 }
 
+#define AW_J_SERIES_USE_SHORT_ERROR_REPORT 1
 
 uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive) {
+
+    bool short_report = false;
+
+#if AW_J_SERIES_USE_SHORT_ERROR_REPORT == 1
+    short_report=true;
+#endif
+
     static uint8_t error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH];
     memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
     uint16_t drive_error_code = 0;
@@ -547,7 +555,7 @@ uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive) {
     if (drive_error_code == 0) {
         snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
                  "%s [%s]", no_error_prefix,
-                 ec_get_detailled_error_report_pdo_aw_j_series(drive));
+                 ec_get_detailled_error_report_pdo_aw_j_series(drive, short_report));
         return error_code_string;
     }
 
@@ -558,7 +566,7 @@ uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive) {
         if (aw_j_series_error[i].error_id == drive_error_code) {
             snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
                      "%s [%s] %s [%s]", error_code_first, aw_j_series_error[i].text_string, error_code_second,
-                     ec_get_detailled_error_report_pdo_aw_j_series(drive));
+                     ec_get_detailled_error_report_pdo_aw_j_series(drive, short_report));
 
             error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH - 1] = '\0';
             return error_code_string;
@@ -566,13 +574,20 @@ uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive) {
     }
 
     snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
-             "AW-J-Series: Error code returned by drive did not match any in the error table. Detailed error report [%s]",
-             ec_get_detailled_error_report_pdo_aw_j_series(drive));
+             "AW-J-Series: Error code did not match. Detailed error report [%s]",
+             ec_get_detailled_error_report_pdo_aw_j_series(drive,short_report));
     return error_code_string;
 }
 
 
 uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
+
+    bool short_report = false;
+
+#if AW_J_SERIES_USE_SHORT_ERROR_REPORT == 1
+    short_report=true;
+#endif
+
     static uint8_t error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH];
     memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
     uint16_t drive_error_code = 0;
@@ -586,7 +601,7 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
             //todo crit can skip the detailled error report read here
             snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
                      "%s [%s]", no_error_prefix,
-                     ec_get_detailled_error_report_sdo_aw_j_series(drive));
+                     ec_get_detailled_error_report_sdo_aw_j_series(drive, short_report));
             return error_code_string;
         }
 
@@ -597,7 +612,7 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
             if (aw_j_series_error[i].error_id == drive_error_code) {
                 snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
                          "%s [%s] %s [%s]", error_code_first, aw_j_series_error[i].text_string, error_code_second,
-                         ec_get_detailled_error_report_sdo_aw_j_series(drive));
+                         ec_get_detailled_error_report_sdo_aw_j_series(drive, short_report));
 
                 error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH - 1] = '\0';
                 return error_code_string;
@@ -605,8 +620,8 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
         }
 
         snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
-                 "AW-J-Series: error code returned by drive did not match any in the error table. Detailed error report [%s]",
-                 ec_get_detailled_error_report_sdo_aw_j_series(drive));
+                 "AW-J-Series: Error code did not match. Detailed error report [%s]",
+                 ec_get_detailled_error_report_sdo_aw_j_series(drive, short_report));
         return error_code_string;
     }
 
@@ -616,37 +631,44 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
 }
 
 
-uint8_t *ec_get_detailled_error_report_pdo_aw_j_series(const uint16_t drive_number) {
+uint8_t *ec_get_detailled_error_report_pdo_aw_j_series(const uint16_t drive_number, bool short_report) {
     int os = 8;
-    uint8_t octet_string[8];
-    static uint8_t failed_error_code_lookup[50] = "Error string does not match any table";
+    static uint8_t octet_string[8];
+    static uint8_t failed_error_code_lookup[9] = "NoMatch";
 
     for (int i = 0; i < os; i++) {
         octet_string[i] = ec_pdo_get_input_uint8(map_drive_to_slave[drive_number],
                                                  AW_J_SERIES_ERROR_DESCRIPTION_PDO_INDEX + i);
     }
-    for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS; i++) {
-        if (strcmp(aw_j_series_error_report[i].error_code, (char *) octet_string) != 0) {
-            return (uint8_t *) aw_j_series_error_report[i].text_string;
-        }
+    if (short_report) {
+        return octet_string;
     }
+        for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS; i++) {
+            if (strcmp(aw_j_series_error_report[i].error_code, (char *) octet_string) != 0) {
+                return (uint8_t *) aw_j_series_error_report[i].text_string;
+            }
+        }
 
     return failed_error_code_lookup;
 }
 
 
-uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(const uint16_t drive_number) {
+uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(const uint16_t drive_number, bool short_report) {
     int os = 8;
-    uint8_t octet_string[8];
+    static uint8_t octet_string[8];
 
-    static uint8_t failed_error_code_read[50] = "Failed to read error code";
-    static uint8_t failed_error_code_lookup[50] = "Error code does not match any in table";
+    static uint8_t failed_error_code_read[9] = "FailRead";
+    static uint8_t failed_error_code_lookup[9] = "NoMatch";
 
     int rc = ec_SDOread(map_drive_to_slave[drive_number], AW_J_SERIES_ERROR_DESCRIPTION_SDO_INDEX,
                         AW_J_SERIES_ERROR_DESCRIPTION_SDO_SUB_INDEX, false, &os,
                         &octet_string, EC_TIMEOUTRXM);
     if (rc <= 0) {
         return failed_error_code_read;
+    }
+
+    if (short_report) {
+        return octet_string;
     }
 
     for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS; i++) {

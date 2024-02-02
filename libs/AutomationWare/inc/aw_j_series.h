@@ -38,9 +38,9 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(uint16_t drive);
 
 uint8_t *ec_get_error_string_pdo_aw_j_series(uint16_t drive);
 
-uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(uint16_t drive_number);
+uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(uint16_t drive_number, bool short_report);
 
-uint8_t *ec_get_detailled_error_report_pdo_aw_j_series(uint16_t drive_number);
+uint8_t *ec_get_detailled_error_report_pdo_aw_j_series(uint16_t drive_number, bool short_report);
 
 /** Drive functions */
 gberror_t ec_set_ctrl_wrd_aw_j_series(uint16_t drive, uint16_t ctrlwrd);
