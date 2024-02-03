@@ -164,7 +164,6 @@ void print_status(ecm_status_t *data) {
     printf("FSOE:\n");
     printf("master_slave_no: %d\n", ecm_status.fsoe.master_slave_no);
     printf("slave_count: %d\n", ecm_status.fsoe.slave_count);
-    printf("master_state: %d\n", ecm_status.fsoe.master_state);
     printf("master_error_code: %d\n", ecm_status.fsoe.master_error_code);
     printf("master_high_level_state: %d\n", ecm_status.fsoe.master_high_level_state);
 
