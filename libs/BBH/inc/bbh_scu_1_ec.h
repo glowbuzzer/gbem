@@ -22,18 +22,36 @@
 #include "bbh.h"
 #include "ecm_status.h"
 
+
+#define BBH_SCU_1_EC_DEBUG_0_PDO_OFFSET                 2
+#define BBH_SCU_1_EC_DEBUG_1_PDO_OFFSET                 3
+#define BBH_SCU_1_EC_DEBUG_2_PDO_OFFSET                 4
+#define BBH_SCU_1_EC_DEBUG_3_PDO_OFFSET                 5
+#define BBH_SCU_1_EC_DEBUG_4_PDO_OFFSET                 6
+
+#define BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_BASE_OFFSET     8
+#define BBH_SCU_1_EC_FUNCTIONAL_INPUTS_BASE_OFFSET      32
+
+#define BBH_SCU_1_MASTER_MASTER_OUTPUT_MSG_SIZE 8
+#define BBH_SCU_1_MASTER_MASTER_INPUT_MSG_SIZE 32
+
+
+gberror_t ec_fsoe_set_error_ack_state_bbh_scu_1_ec(bool state, uint16_t slave);
+
 gberror_t ec_apply_standard_sdos_bbh_scu_1_ec(uint16_t slave);
 
 gberror_t ec_custom_fmmu_sm_bbh_scu_1_ec(uint16_t slave);
 
 gberror_t ec_pdo_map_bbh_scu_1_ec(uint16_t slave);
 
-gberror_t ec_fsoe_get_master_state_bbh_scu_1_ec(uint16_t slave, uint32_t *state,
-                                                enum FSOE_MASTER_HIGH_LEVEL_STATE *high_level_state,
+gberror_t ec_fsoe_get_master_state_bbh_scu_1_ec(uint16_t slave,
+                                                enum FSOE_MASTER_HIGH_LEVEL_STATE *master_high_level_state,
                                                 uint32_t *error_code);
 
 gberror_t ec_fsoe_get_master_con_id_bbh_scu_1_ec(uint16_t slave, uint16_t *con_id);
 
+
+bool ec_fsoe_get_safety_state_bbh_scu_1_ec(uint16_t slave);
 
 #define BBH_SCU_1_EC_EEP_NAME "SCU-1-EC"
 #define BBH_SCU_1_EC_EEP_ID 0x00000006
