@@ -263,8 +263,6 @@ typedef enum {
 //the maximum number of entries in a PDO mapping object
 #define ECM_MAX_PDO_MAPPING_ENTRIES             20
 
-//the maximum length of a drive error message
-#define MAX_DRIVE_ERROR_MSG_LENGTH              300
 
 //the maximum number of drives that can be configured
 #define MAP_MAX_NUM_DRIVES                      10
