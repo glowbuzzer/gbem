@@ -383,11 +383,6 @@ gberror_t ec_apply_standard_sdos_aw_j_series_fsoe(const uint16_t slave) {
 }
 
 
-bool ec_get_safety_state_aw_j_series_fsoe(void) {
-    //this will look in the functional outputs of the bbh and decide what the overall estop states is
-}
-
-
 /* Status word 0
     0.0 - STO state
     0.1 - res
@@ -431,11 +426,11 @@ bool ec_get_safety_state_aw_j_series_fsoe(void) {
  * \brief gets the FSoE state of an AW J Series drive
  * \param slave
  * \param state
- * \param high_level_state
+ * \param slave_high_level_state
  * \return gberror_t
  */
 gberror_t ec_fsoe_get_slave_state_aw_j_series(uint16_t slave, uint32_t *state,
-                                              enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state) {
+                                              enum FSOE_SLAVE_HIGH_LEVEL_STATE *slave_high_level_state) {
     uint16_t status_word_0 = 0;
     uint16_t status_word_1 = 0;
 
@@ -447,28 +442,23 @@ gberror_t ec_fsoe_get_slave_state_aw_j_series(uint16_t slave, uint32_t *state,
     // printf("Status word 0 [%u]\n", status_word_0);
     // printf("Status word 1 [%u]\n", status_word_1);
 
+    uint8_t slave_fsoe_txpdo_command = ec_pdo_get_input_uint8(slave, AW_J_SERIES_EC_FSOE_SM3_OFFSET);
+
+    // printf("txpo %#x\n", slave_fsoe_txpdo_command);
+
+    //note use of reverse function here
+
+    uint8_t slave_fsoe_rxpdo_command = ec_pdo_get_output_uint8_rev(slave, AW_J_SERIES_EC_FSOE_SM2_OFFSET);
+    // printf("rxpdo %#x\n", slave_fsoe_rxpdo_command);
+
+    if (slave_fsoe_rxpdo_command == slave_fsoe_txpdo_command) {
+        *slave_high_level_state = map_fsoe_command_to_state(slave_fsoe_rxpdo_command);
+    } else {
+        *slave_high_level_state = FSOE_SLAVE_HIGH_LEVEL_STATE_UNKNOWN;
+    }
 
     *state = ((uint32_t) status_word_1 << 16) | status_word_0;
 
-    bool error = false;
-    bool restart_ack_req = false;
-
-    if (BIT_CHECK(*state, AW_J_SERIES_FSOE_STATUS_ERROR_BIT_NO)) {
-        error = true;
-    }
-    if (BIT_CHECK(*state, AW_J_SERIES_FSOE_STATUS_RESTART_ACK_REQ_BIT_NO)) {
-        restart_ack_req = true;
-    }
-
-    if (error && restart_ack_req) {
-        *high_level_state = FSOE_SLAVE_HIGH_LEVEL_STATE_ERROR_AND_ACK_REQ;
-    } else if (error) {
-        *high_level_state = FSOE_SLAVE_HIGH_LEVEL_STATE_ERROR;
-    } else if (restart_ack_req) {
-        *high_level_state = FSOE_SLAVE_HIGH_LEVEL_STATE_ACK_REQ;
-    } else {
-        *high_level_state = FSOE_SLAVE_HIGH_LEVEL_STATE_NONE;
-    }
 
     return E_SUCCESS;
 }
