@@ -16,6 +16,7 @@
 #include "ecm_status.h"
 #include "gberror.h"
 #include "shared_mem_types.h"
+#include "gbem_config.h"
 
 /*functional outputs (which are our inputs, things like status)
 
@@ -41,15 +42,35 @@ so for one slave they start at 32+32 = 64
 */
 
 
-#define BBH_SCU_1_EC_DEBUG_0_PDO_OFFSET                 2
-#define BBH_SCU_1_EC_DEBUG_1_PDO_OFFSET                 3
-#define BBH_SCU_1_EC_DEBUG_2_PDO_OFFSET                 4
-#define BBH_SCU_1_EC_DEBUG_3_PDO_OFFSET                 5
-#define BBH_SCU_1_EC_DEBUG_4_PDO_OFFSET                 6
+bool ec_fsoe_get_safety_state_bbh_scu_1_ec(uint16_t slave) {
+    //this will look in the functional outputs of the bbh and decide what the overall estop states is
 
-#define BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_BASE_OFFSET     8
-#define BBH_SCU_1_EC_FUNCTIONAL_INPUTS_BASE_OFFSET      32
 
+    return !ec_pdo_get_input_bit_from_byte_slave(slave, BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0,
+                                                 FSOE_STANDARD_OVERALL_SAFETY_STATE_BIT_NUM);
+
+    // if (BIT_CHECK(dpm_in->safetyDigital[0], 0)) {
+    //     return true;
+    // }
+    // if (BIT_CHECK(dpm_in->safetyDigital[0], 1)) {
+    //     return true;
+    // }
+    // return false;
+}
+
+/**
+ * \brief sets the error ack bit for the BBH SCU 1 EC Safety Controller functional inputs
+ * \param state
+ * \param slave
+ * \return
+ */
+gberror_t ec_fsoe_set_error_ack_state_bbh_scu_1_ec(bool state, uint16_t slave) {
+    ec_pdo_set_output_bit_from_byte_slave(slave, BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0,
+                                          FSOE_STANDARD_ERROR_ACK_CMD_BIT_NUM, state);
+
+    printf("set error ack\n");
+    return E_SUCCESS;
+}
 
 //todo crit slave not needed as param
 uint32_t get_functional_outputs_offset_bbh_scu_1_ec(uint16_t slave) {
@@ -77,8 +98,8 @@ uint32_t get_functional_outputs_offset_bbh_scu_1_ec(uint16_t slave) {
 }
 
 
-gberror_t ec_fsoe_get_master_state_bbh_scu_1_ec(uint16_t slave, uint32_t *state,
-                                                enum FSOE_MASTER_HIGH_LEVEL_STATE *high_level_state,
+gberror_t ec_fsoe_get_master_state_bbh_scu_1_ec(uint16_t slave,
+                                                enum FSOE_MASTER_HIGH_LEVEL_STATE *master_high_level_state,
                                                 uint32_t *error_code) {
     static bool first_run = true;
     static uint32_t offset = 0;
@@ -87,9 +108,6 @@ gberror_t ec_fsoe_get_master_state_bbh_scu_1_ec(uint16_t slave, uint32_t *state,
         first_run = false;
         offset = get_functional_outputs_offset_bbh_scu_1_ec(slave);
     }
-
-
-    *state = ec_pdo_get_input_uint16(slave, offset);
 
     uint8_t debug_0 = 0;
 
@@ -102,33 +120,33 @@ gberror_t ec_fsoe_get_master_state_bbh_scu_1_ec(uint16_t slave, uint32_t *state,
 
     switch (bbh_state) {
         case BBH_SCU_MODE_NONE:
-            *high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_NONE;
+            *master_high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_NONE;
         case BBH_SCU_MODE_START_UP:
-            *high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_START_UP;
+            *master_high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_START_UP;
             break;
         case BBH_SCU_MODE_SENDCONFIG:
-            *high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_SENDCONFIG;
+            *master_high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_SENDCONFIG;
             break;
         case BBH_SCU_MODE_STARTUP_BUS:
-            *high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_STARTUP_BUS;
+            *master_high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_STARTUP_BUS;
             break;
         case BBH_SCU_MODE_RUN:
-            *high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_RUN;
+            *master_high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_RUN;
             break;
         case BBH_SCU_MODE_STOP:
-            *high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_STOP;
+            *master_high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_STOP;
             break;
         case BBH_SCU_MODE_ERROR:
-            *high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_ERROR;
+            *master_high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_ERROR;
             break;
         case BBH_SCU_MODE_ALARM:
-            *high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_ALARM;
+            *master_high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_ALARM;
             break;
         case BBH_SCU_MODE_LOCAL_MODE:
-            *high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_NO_NETWORK;
+            *master_high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_NO_NETWORK;
             break;
         default:
-            *high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_NONE;
+            *master_high_level_state = FSOE_MASTER_HIGH_LEVEL_STATE_NONE;
             break;
     }
 
@@ -242,10 +260,9 @@ gberror_t ec_print_slots_bbh_scu_1_ec(const uint16_t slave) {
 
 gberror_t ec_apply_standard_sdos_bbh_scu_1_ec(const uint16_t slave) {
     ec_set_slots_bbh_scu_1_ec(slave);
+    return E_SUCCESS;
 }
 
-#define BBH_SCU_1_MASTER_MASTER_OUTPUT_MSG_SIZE 8
-#define BBH_SCU_1_MASTER_MASTER_INPUT_MSG_SIZE 32
 
 gberror_t ec_set_slots_bbh_scu_1_ec(const uint16_t slave) {
     UM_INFO(GBEM_UM_EN, "GBEM: Setting slots for BBH_SCU_1_EC");
