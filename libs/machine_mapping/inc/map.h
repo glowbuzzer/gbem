@@ -35,7 +35,7 @@ typedef enum {
 /** These macros build the function pointers for slave and drive startup and operational functions */
 
 /* MACHINE */
-#define MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(...) bool (*map_machine_get_safety_state_function_ptr)(void) = {__VA_ARGS__};
+#define MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(...) bool (*map_machine_get_safety_state_function_ptr)(uint16_t slave) = {__VA_ARGS__};
 
 /* SLAVES */
 #define MAP_NUM_DRIVES_ATTACHED(...) const uint8_t map_num_drives_attached[MAP_NUM_SLAVES] = {__VA_ARGS__};
@@ -51,6 +51,7 @@ typedef enum {
 #define MAP_FSOE_MASTER_SLOT_CONFIG(...) const map_mdp_slot_type_t map_slave_fsoe_master_slot_config[MAP_NUM_FSOE_MASTER_SLOTS] = {__VA_ARGS__};
 #define MAP_FSOE_MASTER_SLOT_TO_SLAVE(...) const uint16_t map_fsoe_master_slot_to_slave[MAP_NUM_FSOE_MASTER_SLOTS] = {__VA_ARGS__};
 
+#define MAP_FSOE_MASTER_SET_ERROR_ACK_STATE_FUNCTION(...) gberror_t (*map_fsoe_master_set_error_ack_state_function_ptr)(bool state, uint16_t slave) = {__VA_ARGS__};
 
 #define MAP_SLAVE_FSOE_SLAVE_TYPE(...) const enum FSOE_SLAVE_TYPE map_slave_fsoe_slave_type[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_SLAVE_FUNCTION(...) const map_slave_fsoe_function_t map_slave_fsoe_function[MAP_NUM_SLAVES] = {__VA_ARGS__};
@@ -58,7 +59,7 @@ typedef enum {
 #define MAP_SLAVE_FSOE_OFFSET_IN(...) const uint16_t map_slave_fsoe_offset_in[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_OFFSET_OUT(...) const uint16_t map_slave_fsoe_offset_out[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_slave_state_function_ptr[MAP_NUM_SLAVES])(uint16_t slave,  uint32_t *state, enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state )  = {__VA_ARGS__};
-#define MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_master_state_function_ptr[MAP_NUM_SLAVES])(uint16_t slave,uint32_t *state, enum FSOE_MASTER_HIGH_LEVEL_STATE *high_level_state, uint32_t *error_code) = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_master_state_function_ptr[MAP_NUM_SLAVES])(uint16_t slave, enum FSOE_MASTER_HIGH_LEVEL_STATE *master_high_level_state, uint32_t *error_code) = {__VA_ARGS__};
 #define MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_slave_con_id_function_ptr[MAP_NUM_SLAVES])(uint16_t slave, uint16_t *con_id ) = {__VA_ARGS__};
 
 
@@ -251,7 +252,7 @@ extern map_machine_type_t map_machine_type;
 
 
 //MACHINE
-extern bool (*map_machine_get_safety_state_function_ptr)(void);
+extern bool (*map_machine_get_safety_state_function_ptr)(uint16_t slave);
 
 //SLAVES
 extern const uint8_t map_num_drives_attached[MAP_NUM_SLAVES];
@@ -269,10 +270,11 @@ extern gberror_t (*map_slave_custom_fmmu_sm_function_ptr[MAP_NUM_SLAVES])(uint16
 extern const map_slave_dc_type_t map_dc_type[MAP_NUM_SLAVES];
 extern const int8_t map_dc_cycle[MAP_NUM_SLAVES];
 
-// extern const map_mdp_slot_type_t map_slave_mdp_slot_type[MAP_NUM_SLAVES];
 
 extern const uint16_t map_fsoe_master_slot_to_slave[MAP_NUM_FSOE_MASTER_SLOTS];
 extern const map_mdp_slot_type_t map_slave_fsoe_master_slot_config[MAP_NUM_FSOE_MASTER_SLOTS];
+
+extern gberror_t (*map_fsoe_master_set_error_ack_state_function_ptr)(bool state, uint16_t slave);
 
 //FSOE
 extern const enum FSOE_SLAVE_TYPE map_slave_fsoe_slave_type[MAP_NUM_SLAVES];
@@ -286,7 +288,7 @@ extern gberror_t (*map_slave_fsoe_get_slave_state_function_ptr[MAP_NUM_SLAVES])(
     uint16_t slave, uint32_t *state, enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state);
 
 extern gberror_t (*map_slave_fsoe_get_master_state_function_ptr[MAP_NUM_SLAVES])(
-    uint16_t slave, uint32_t *state, enum FSOE_MASTER_HIGH_LEVEL_STATE *high_level_state, uint32_t *error_code);
+    uint16_t slave, enum FSOE_MASTER_HIGH_LEVEL_STATE *high_level_state, uint32_t *error_code);
 
 extern gberror_t (*map_slave_fsoe_get_slave_con_id_function_ptr[MAP_NUM_SLAVES])(uint16_t slave, uint16_t *con_id);
 
@@ -414,5 +416,8 @@ uint32_t map_fsoe_get_slot_size_master_in(uint16_t slave);
 uint32_t map_fsoe_get_slot_size_out(uint16_t slot);
 
 uint32_t map_fsoe_get_slot_size_in(uint16_t slot);
+
+enum FSOE_SLAVE_HIGH_LEVEL_STATE map_fsoe_command_to_state(uint8_t command);
+
 
 #endif /* INC_MAP_H_ */

@@ -102,6 +102,27 @@ uint32_t map_get_datatype_size_bits(ec_datatype datatype) {
     return 0;
 }
 
+enum FSOE_SLAVE_HIGH_LEVEL_STATE map_fsoe_command_to_state(uint8_t command) {
+    switch (command) {
+        case 0x00:
+            return FSOE_SLAVE_HIGH_LEVEL_STATE_NONE;
+        case 0x36:
+            return FSOE_SLAVE_HIGH_LEVEL_STATE_PROCESS_DATA;
+        case 0x2A:
+            return FSOE_SLAVE_HIGH_LEVEL_STATE_RESET;
+        case 0x4E:
+            return FSOE_SLAVE_HIGH_LEVEL_STATE_SESSION;
+        case 0x64:
+            return FSOE_SLAVE_HIGH_LEVEL_STATE_CONNECTION;
+        case 0x52:
+            return FSOE_SLAVE_HIGH_LEVEL_STATE_PARAMETER;
+        case 0x08:
+            return FSOE_SLAVE_HIGH_LEVEL_STATE_FAILSAFEDATA;
+        default:
+            return FSOE_SLAVE_HIGH_LEVEL_STATE_UNKNOWN;
+    }
+}
+
 
 uint32_t map_fsoe_master_get_overall_slot_size_out(void) {
     uint32_t size = 0;
