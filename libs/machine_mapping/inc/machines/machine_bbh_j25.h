@@ -34,7 +34,7 @@
 #define AW_FSOE                     1
 
 /**CRITICAL! if this is defined then hardware estop is disabled! */
-#define DISABLE_ESTOP_CHECKING      1
+#define DISABLE_ESTOP_CHECKING      0
 
 
 #define MAP_NUMBER_ESTOP_DIN        0
