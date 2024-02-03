@@ -63,6 +63,15 @@
 #define CTRL_HEARTBEAT_TOLERANCE                        50
 
 
+#define FSOE_STANDARD_OVERALL_SAFETY_STATE_BIT_NUM      0
+#define FSOE_STANDARD_ERROR_STATE_BIT_NUM               1
+#define FSOE_STANDARD_RESTART_ACK_STATE_BIT_NUM         2
+
+#define FSOE_STANDARD_ERROR_ACK_CMD_BIT_NUM             0
+#define FSOE_STANDARD_RESTART_ACK_CMD_BIT_NUM           1
+#define FSOE_STANDARD_CONTROL_ALIVE_CMD_BIT_NUM         2
+
+
 /** Threshold of cycles after requesting drives change state that the transition must be made */
 //this has to be quite large as it needs to be > maximum time for the drives to stop
 #define CTRL_DRIVE_CHANGE_STATE_TIMEOUT                 5000
