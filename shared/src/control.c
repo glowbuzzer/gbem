@@ -52,6 +52,13 @@ bool estop = true;
 cia_state_t current_state = CIA_NOT_READY_TO_SWITCH_ON;
 
 
+typedef struct {
+    uint16_t slave_num;
+    bool found;
+} fsoe_master_t;
+
+fsoe_master_t fsoe_master;
+
 //@formatter:off
 cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
         [CONTROL_EVENT_ESTOP] = {.message="An error has been detected [ESTOP event]", .type=CYCLIC_MSG_ERROR},
@@ -70,6 +77,7 @@ cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
         [CONTROL_EVENT_ECAT_SLAVE_ERROR] = {.message="An error has been detected [EtherCAT slave]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_PLC_SIGNALLED_ERROR] = {.message="An error has been detected [PLC signalled an error]", .type=CYCLIC_MSG_ERROR},
         [CONTROL_EVENT_HOMING_ERROR] = {.message="\"An error has been detected [Homing error]", .type=CYCLIC_MSG_ERROR},
+    [CONTROL_EVENT_FSOE_ERROR] = {.message="\"An error has been detected [FSoE error]", .type=CYCLIC_MSG_ERROR},
 };
 
 //@formatter:on
@@ -870,8 +878,14 @@ bool cia_is_fault_condition(struct event *event) {
     bool have_fault = false;
 
 
+    if (((event_data_t *) event->data)->fsoe_error == true) {
+        LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > FSoE error");
+        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_FSOE_ERROR_BIT_NUM);
+        control_event[CONTROL_EVENT_FSOE_ERROR].active = true;
+        have_fault = true;
+    }
+
     if (((event_data_t *) event->data)->drive_state_mismatch == true) {
-        printf("drive_state_mismatch\n");
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > drive state mismatch");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_STATE_MISMATCH_BIT_NUM);
         control_event[CONTROL_EVENT_DRIVE_STATE_MISMATCH].active = true;
@@ -1448,46 +1462,15 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
 
 #if  DISABLE_ESTOP_CHECKING == 0
-    //using estop din but no reset
-    //Assumes 0 on din forces quickstop
 
-
-#if MAP_NUMBER_ESTOP_DIN == 0
-    UM_FATAL("GBEM: MAP_NUMBER_ESTOP_DIN not defined");
-#endif
-#if MAP_NUMBER_ESTOP_DIN > 2
-    UM_FATAL("GBEM: too many MAP_NUMBER_ESTOP_DIN are defined!");
-#endif
-
-#if MAP_NUMBER_ESTOP_DIN == 1
-
-    if (ctrl_estop_din_1.slave_num < 1) {
-        UM_FATAL("GBEM: no ctrl_estop_din is defined! (slave number less thhan 1)");
-    }
-
-    if (!ec_pdo_get_input_bit(ctrl_estop_din_1.slave_num, ctrl_estop_din_1.bit_num)) {
-        estop = true;
+    bool estop = true;
+    if (*map_machine_get_safety_state_function_ptr != NULL) {
+        estop = map_machine_get_safety_state_function_ptr(fsoe_master.slave_num);
+        ecm_status.safety_state = estop;
+        event_data.estop = estop;
     } else {
-        estop = false;
+        UM_FATAL("GBEM: Missing function pointer for map_machine_get_safety_state - check machine config");
     }
-#endif
-
-#if MAP_NUMBER_ESTOP_DIN == 2
-
-    if (ctrl_estop_din_1.slave_num < 1) {
-        UM_FATAL("GBEM: no ctrl_estop_din_1 is defined! (slave number less thhan 1)");
-    }
-    if (ctrl_estop_din_2.slave_num < 1) {
-        UM_FATAL("GBEM: no ctrl_estop_din_2 is defined! (slave number less thhan 1)");
-    }
-
-    if (!ec_pdo_get_input_bit(ctrl_estop_din_1.slave_num, ctrl_estop_din_1.bit_num) ||
-        !ec_pdo_get_input_bit(ctrl_estop_din_2.slave_num, ctrl_estop_din_2.bit_num)) {
-        estop = true;
-    } else {
-        estop = false;
-    }
-#endif
 
 
 #endif
@@ -1495,6 +1478,8 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     DPM_IN_PROTECT_END
 
     bool warning_on_any_drive = ec_is_warning();
+    event_data.any_drive_has_warning = warning_on_any_drive;
+
     DPM_OUT_PROTECT_START
 
     event_data.heartbeat_lost = !ctrl_check_heartbeat_ok(gbem_heartbeat, dpm_out->heartbeat);
@@ -1502,9 +1487,6 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 #if DISABLE_HEARTBEAT_CHECKING == 1
     event_data.heartbeat_lost = false;
 #endif
-
-
-    event_data.any_drive_has_warning = warning_on_any_drive;
 
 
     event_data.estop = estop;
@@ -1541,6 +1523,33 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
     event_data.homing_failed = homing_failed;
 
+    static uint64_t error_ack_start_cycle = 0;
+    static bool error_ack_timer_active = false;
+    //send error_ack
+    if (control_event[CONTROL_EVENT_FSOE_ERROR].active == true) {
+        if (error_ack_timer_active == false) {
+            error_ack_timer_active = true;
+            error_ack_start_cycle = ecm_status.cycle_count;
+
+            if (*map_fsoe_master_set_error_ack_state_function_ptr != NULL) {
+                if (fsoe_master.found) {
+                    map_fsoe_master_set_error_ack_state_function_ptr(true, fsoe_master.slave_num);
+                }
+            }
+        } else if ((ecm_status.cycle_count - error_ack_start_cycle) > 1000) {
+            if (*map_fsoe_master_set_error_ack_state_function_ptr != NULL) {
+                if (fsoe_master.found) {
+                    map_fsoe_master_set_error_ack_state_function_ptr(false, fsoe_master.slave_num);
+                }
+            }
+
+            //reset master error ack
+            error_ack_timer_active = false;
+        }
+    } else {
+        //reset master error ack
+        error_ack_timer_active = false;
+    }
 
     DPM_OUT_PROTECT_END
 
@@ -2435,6 +2444,9 @@ void copy_fsoe_data(void) {
                 }
                 fsoe_master_no = i;
                 UM_INFO(GBEM_GEN_LOG_EN, "GBEM: FSOE master found on slave [%u]", fsoe_master_no + 1);
+                //todo move this to new function
+                fsoe_master.found = true;
+                fsoe_master_no = i;
                 ecm_status.fsoe.master_slave_no = fsoe_master_no + 1;
                 found_fsoe_master = true;
             }
@@ -2466,8 +2478,10 @@ void copy_fsoe_data(void) {
 }
 
 
-gberror_t update_fsoe_ecm_status_slaves(void) {
+gberror_t update_fsoe_status_slaves(void) {
     gberror_t grc = E_SUCCESS;
+
+    bool any_fsoe_slave_is_error = false;
 
     for (int slave = 1; slave < MAP_NUM_SLAVES + 1; slave++) {
         if (*map_slave_fsoe_get_slave_state_function_ptr[slave - 1] != NULL) {
@@ -2484,6 +2498,10 @@ gberror_t update_fsoe_ecm_status_slaves(void) {
             grc = map_slave_fsoe_get_slave_state_function_ptr[slave - 1](slave, &slave_state, &high_level_state);
 
             // printf("fsoe slave state [%u]\n", fsoe_slave_state);
+            if (high_level_state != FSOE_SLAVE_HIGH_LEVEL_STATE_PROCESS_DATA) {
+                any_fsoe_slave_is_error = true;
+            }
+
 
             ecm_status.fsoe.slave_state[slave] = slave_state;
             ecm_status.fsoe.slave_high_level_state[slave] = high_level_state;
@@ -2503,6 +2521,8 @@ gberror_t update_fsoe_ecm_status_slaves(void) {
         }
     }
 
+    event_data.fsoe_error = any_fsoe_slave_is_error;
+
     return grc;
 }
 
@@ -2516,7 +2536,6 @@ gberror_t update_fsoe_ecm_status_master(void) {
                     "GBEM: FSoE master read state function mapped on slave [%u] but the slave is not tagged as the master - the mapping functions for reading FSoE master state are incorrectly configured",
                     slave);
             }
-            uint32_t master_state = 0;
 
             uint32_t master_error_code = 0;
 
@@ -2524,11 +2543,10 @@ gberror_t update_fsoe_ecm_status_master(void) {
             enum FSOE_MASTER_HIGH_LEVEL_STATE high_level_state = 0;
 
             grc = map_slave_fsoe_get_master_state_function_ptr[slave - 1](
-                slave, &master_state, &high_level_state, &master_error_code);
+                slave, &high_level_state, &master_error_code);
 
             // printf("fsoe slave state [%u]\n", fsoe_slave_state);
 
-            ecm_status.fsoe.master_state = master_state;
             ecm_status.fsoe.master_high_level_state = high_level_state;
             ecm_status.fsoe.master_error_code = master_error_code;
         }
@@ -2544,7 +2562,7 @@ gberror_t update_fsoe_ecm_status_master(void) {
 gberror_t update_fsoe_ecm_status(void) {
     gberror_t grc = E_SUCCESS;
 
-    grc = update_fsoe_ecm_status_slaves();
+    grc = update_fsoe_status_slaves();
 
     if (grc != E_SUCCESS) {
         UM_ERROR(GBEM_UM_EN, "GBEM: update_fsoe_ecm_status_slaves error [%s]", gb_strerror(grc));
