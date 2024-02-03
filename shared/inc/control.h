@@ -38,6 +38,7 @@ typedef struct {
     bool ec_check_error;
     uint32_t fault_cause;
     bool drive_state_mismatch;
+    bool fsoe_error;
 } event_data_t;
 
 
@@ -82,7 +83,7 @@ void ctrl_process_iomap_out(bool zero);
 
 void ctrl_process_iomap_in(void);
 
-#define NUM_CONTROL_EVENTS 16
+#define NUM_CONTROL_EVENTS 17
 
 extern cyclic_event_t control_event[NUM_CONTROL_EVENTS];
 
@@ -102,7 +103,8 @@ typedef enum {
     CONTROL_EVENT_DRIVE_MOOERROR,
     CONTROL_EVENT_ECAT_SLAVE_ERROR,
     CONTROL_EVENT_PLC_SIGNALLED_ERROR,
-    CONTROL_EVENT_HOMING_ERROR
+    CONTROL_EVENT_HOMING_ERROR,
+    CONTROL_EVENT_FSOE_ERROR
 } control_event_type_t;
 
 #endif /* INC_CONTROL_H_ */
