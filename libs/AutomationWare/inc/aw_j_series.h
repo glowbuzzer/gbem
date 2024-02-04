@@ -96,31 +96,6 @@ gberror_t ec_print_pdo_config_aw_series(const uint16_t slave);
 #define AW_EEP_REV 0x0a000002
 #define AW_EEP_ID 0x00000201
 
-// #define AW_J20_EEP_NAME "SOMANET"
-// #define AW_J20_EEP_MAN AW_MOTOR_MAN
-// #define AW_J20_EEP_REV 0x0a000002
-// #define AW_J20_EEP_ID 0x00000201
-//
-// #define AW_J25_EEP_NAME "SOMANET"
-// #define AW_J25_EEP_MAN AW_MOTOR_MAN
-// #define AW_J25_EEP_REV 0x0a000002
-// #define AW_J25_EEP_ID 0x00000201
-//
-// #define AW_J32_EEP_NAME "SOMANET"
-// #define AW_J32_EEP_MAN AW_MOTOR_MAN
-// #define AW_J32_EEP_REV 0x0a000002
-// #define AW_J32_EEP_ID 0x00000201
-//
-// #define AW_J40_HP_EEP_NAME "SOMANET"
-// #define AW_J40_HP_EEP_MAN AW_MOTOR_MAN
-// #define AW_J40_HP_EEP_REV 0x0a000002
-// #define AW_J40_HP_EEP_ID 0x00000201
-//
-// #define AW_J40_LP_EEP_NAME "SOMANET"
-// #define AW_J40_LP_EEP_MAN AW_MOTOR_MAN
-// #define AW_J40_LP_EEP_REV 0x0a000002
-// #define AW_J40_LP_EEP_ID 0x00000201
-
 
 //Number of error strings and error report strings for the AW J series drives
 #define NUM_OF_AW_J_SERIES_ERROR_STRINGS 26
