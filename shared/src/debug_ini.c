@@ -11,6 +11,7 @@
  ******************************************************************************
  */
 
+#include <ctype.h>
 #include <stdio.h>
 #include "minIni.h"
 #include <stdbool.h>
@@ -42,14 +43,29 @@ bool check_debug_ini_exists(void) {
     return true;
 }
 
+
+static bool get_bool(char value) {
+    bool ret = false;
+    value = toupper(value);
+    if (value == 'Y' || value == '1' || value == 'T')
+        ret = true;
+    else if (value == 'N' || value == '0' || value == 'F')
+        ret = false;
+    else
+        ret = false;
+    return ret;
+}
+
 static void parse_section(debug_settings_t *config, const char *key,
                           const char *value) {
     // printf("%s\n", value);
 
     if (MATCH("disable_drive_warn_check", key)) {
-        config->disable_drive_warn_check = (uint32_t) atoi(value);
-    } else if (MATCH("enable_limits_checking", key)) {
-        config->disable_drive_limit_check = value;
+        config->disable_drive_warn_check = get_bool(value[0]);
+    } else if (MATCH("disable_drive_limit_check", key)) {
+        config->disable_drive_limit_check = get_bool(value[0]);
+    } else if (MATCH("disable_drive_follow_error_check", key)) {
+        config->disable_drive_follow_error_check = get_bool(value[0]);
     } else {
         UM_FATAL("GBEM: Error parsing ini file. Unknown key: %s", key);
     }
