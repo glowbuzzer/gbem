@@ -41,6 +41,9 @@
 #define DPM_OUT_PROTECT_END
 
 
+//global struct holding settings read from debug ini
+debug_settings_t debug_settings = {0};
+
 /* Types of sm events */
 enum eventType {
     Event_cyclic,
@@ -1065,12 +1068,49 @@ static bool check_for_drive_state_mismatch(void) {
  * @return true=transition allowed, false=transition not allowed
  */
 static bool cia_trn13_guard(void *condition, struct event *event) {
+    // printf("%u\n", (intptr_t) condition);
+    // // CIA_NOT_READY_TO_SWITCH_ON,
+    // //     CIA_SWITCH_ON_DISABLED,
+    // //     CIA_READY_TO_SWITCH_ON,
+    // //     CIA_SWITCHED_ON,
+    // //     CIA_OPERATION_ENABLED,
+    // //     CIA_QUICK_STOP_ACTIVE,
+    // //     CIA_FAULT_REACTION_ACTIVE,
+    // //     CIA_FAULT
+    // if ((cia_state_t) (intptr_t) condition == CIA_NOT_READY_TO_SWITCH_ON) {
+    //     printf("not ready to sw on\n");
+    // }
+    // if ((cia_state_t) (intptr_t) condition == CIA_SWITCH_ON_DISABLED) {
+    //     printf("siwtch on disabled\n");
+    // }
+    //
+    // if ((cia_state_t) (intptr_t) condition == CIA_SWITCHED_ON) {
+    //     printf("siwtched on\n");
+    // }
+    // if ((cia_state_t) (intptr_t) condition == CIA_READY_TO_SWITCH_ON) {
+    //     printf("ready to switch on\n");
+    // }
+    // if ((cia_state_t) (intptr_t) condition == CIA_OPERATION_ENABLED) {
+    //     printf("op enabled\n");
+    // }
+    // if ((cia_state_t) (intptr_t) condition == CIA_FAULT) {
+    //     printf("fault\n");
+    // }
+    // if ((cia_state_t) (intptr_t) condition == CIA_FAULT_REACTION_ACTIVE) {
+    //     printf("fault reaction active\n");
+    // }
+    //
+    // if ((cia_state_t) (intptr_t) condition == CIA_QUICK_STOP_ACTIVE) {
+    //     printf("quick stop active\n");
+    // }
+
+
     if (cia_is_fault_condition(event)) {
         //a QUICK_STOP command should send all drives back to switch on disabled
         ctrl_change_all_drives_states(CIA_QUICK_STOP_CTRLWRD);
 
         //if we are op enabled then snapshot fault into history
-        if ((cia_state_t) ((uintptr_t *) condition) == CIA_OPERATION_ENABLED) {
+        if ((cia_state_t) (intptr_t) condition == CIA_OPERATION_ENABLED) {
             for (uint16_t i = 0; i < MAP_NUM_DRIVES; i++) {
                 ecm_status.drives[i].historic_internal_limit = ecm_status.drives[i].active_internal_limit;
                 ecm_status.drives[i].historic_follow_error = ecm_status.drives[i].active_follow_error;
@@ -1155,7 +1195,8 @@ bool ctrl_check_all_drives_state(cia_state_t state) {
         if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
             drive_stat_wrd = map_drive_get_stat_wrd_function_ptr[i](i);
         } else {
-            LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_get_stat_wrd on drive [%u]",
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                     "GBEM: Missing function pointer for map_drive_get_stat_wrd on drive [%u]",
                      i);
             return false;
         }
@@ -1192,7 +1233,8 @@ bool ctrl_check_any_drives_state(cia_state_t state) {
         if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
             drive_stat_wrd = map_drive_get_stat_wrd_function_ptr[i](i);
         } else {
-            LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_get stat_wrd on drive [%u]",
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                     "GBEM: Missing function pointer for map_drive_get stat_wrd on drive [%u]",
                      i);
             continue;
         }
@@ -1226,7 +1268,8 @@ void ctrl_change_all_drives_states(uint16_t controlword) {
                 LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive set ctrl wrd function error [%s]", gb_strerror(grc));
             }
         } else {
-            LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_set_ctrl_wrd on drive [%u]",
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                     "GBEM: Missing function pointer for map_drive_set_ctrl_wrd on drive [%u]",
                      i);
         }
 
@@ -1259,7 +1302,7 @@ static void cia_set_current_fault_causes_action(void *oldStateData, struct event
  */
 static void cia_generic_entry_action(void *stateData, struct event *event) {
     //The drives have been commanded to change state and checked they have changed state in the transition
-    LL_TRACE(GBEM_SM_LOG_EN, "sm: Entry action: current state = %s", cia_state_names[(int) ((cia_state_t) stateData)]);
+
 
     /* We need to:
      * a) set the ecm_status overall sm state (in the shared mem struct)
@@ -1272,7 +1315,7 @@ static void cia_generic_entry_action(void *stateData, struct event *event) {
     uint32_t bitmask_for_lower_16 = 0xFFFF0000;
 
     dpm_in->machine_word = dpm_in->machine_word & bitmask_for_lower_16;
-    switch ((cia_state_t) stateData) {
+    switch ((cia_state_t) (intptr_t) stateData) {
         case CIA_NOT_READY_TO_SWITCH_ON:
             dpm_in->machine_word = dpm_in->machine_word | CIA_NOT_READY_TO_SWITCH_ON_STATWRD;
             break;
@@ -1615,10 +1658,10 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     }
 
     //read current state of state machine
-    current_state = (cia_state_t) (stateM_currentState(m)->data);
+    current_state = (cia_state_t) (intptr_t) (stateM_currentState(m)->data);
 
     ecm_status.machine_state = current_state;
-    ecm_status.commanded_machine_state = cia_ctrlwrd_to_command(dpm_in->machine_word);
+    ecm_status.commanded_machine_state = cia_ctrlwrd_to_command(dpm_out->machine_word);
     LL_TRACE(GBEM_SM_LOG_EN, "sm: Current state of state machine - %s", cia_state_names[current_state]);
 
     //    printf("fault word:%u\n", dpm_in->active_fault_word);
@@ -1819,7 +1862,8 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                                                                              dpm_out->joint_set_torque[i]);
                     //                    printf("torq offset [%d] on drive [%d]\n", dpm_out->joint_set_torque_offset[i], i);
                     if (grc != E_SUCCESS) {
-                        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive settorqoffset function error [%s]", gb_strerror(grc));
+                        LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive settorqoffset function error [%s]",
+                                 gb_strerror(grc));
                     }
                 } else {
                     /*
@@ -1920,7 +1964,8 @@ static void ctrl_copy_drive_statuswords(void) {
             LL_TRACE(GBEM_SM_LOG_EN, "sm: Drive: %u, State: %s", i,
                      cia_state_names[cia_statwrd_to_state(dpm_in->joint_statusword[i])]);
         } else {
-            LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_get_stat_wrd on drive [%u]",
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                     "GBEM: Missing function pointer for map_drive_get_stat_wrd on drive [%u]",
                      i);
         }
         //        printf("statusword:%d\n",dpm_in->joint_statusword[i]);
@@ -1943,7 +1988,8 @@ void ctrl_copy_drive_controlwords(void) {
                 LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive set ctrl wrd function error [%s]", gb_strerror(grc));
             }
         } else {
-            LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_set_ctrl_wrd on drive [%u]",
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                     "GBEM: Missing function pointer for map_drive_set_ctrl_wrd on drive [%u]",
                      i);
         }
     }
@@ -2096,7 +2142,8 @@ void ctrl_process_iomap_out(const bool zero) {
                 case ECT_REAL32:
                     iomap_set_pdo_out_float(map_iomap[i].pdo.datatype,
                                             map_iomap[i].pdo.slave_num, map_iomap[i].pdo.byte_num,
-                                            dpm_out->analog[map_iomap[i].gbc.ionum], (float) map_iomap[i].pdo.max_val);
+                                            dpm_out->analog[map_iomap[i].gbc.ionum],
+                                            (float) map_iomap[i].pdo.max_val);
                     break;
                 default:
                     break;

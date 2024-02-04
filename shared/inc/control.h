@@ -20,6 +20,14 @@
 #include "cia402.h"
 #include "shared.h"
 
+typedef struct {
+    bool disable_drive_follow_error_check;
+    bool disable_drive_warn_check;
+    bool disable_drive_limit_check;
+} debug_settings_t;
+
+extern debug_settings_t debug_settings;
+
 
 /** sm event data (passed in with each call to execute the state machine ) */
 typedef struct {
