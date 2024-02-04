@@ -48,14 +48,6 @@ bool ec_fsoe_get_safety_state_bbh_scu_1_ec(uint16_t slave) {
 
     return !ec_pdo_get_input_bit_from_byte_slave(slave, BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0,
                                                  FSOE_STANDARD_OVERALL_SAFETY_STATE_BIT_NUM);
-
-    // if (BIT_CHECK(dpm_in->safetyDigital[0], 0)) {
-    //     return true;
-    // }
-    // if (BIT_CHECK(dpm_in->safetyDigital[0], 1)) {
-    //     return true;
-    // }
-    // return false;
 }
 
 /**
