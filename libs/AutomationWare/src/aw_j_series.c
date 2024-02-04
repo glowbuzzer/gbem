@@ -263,6 +263,50 @@ gberror_t ec_pdo_map_aw_j_series(const uint16_t slave) {
     return map_apply_custom_pdo_mapping(slave, aw_j_series_custom_pdo_map);
 }
 
+#define SYNAPTICON_FOE_PASSWORD 0
+
+gberror_t ec_get_log_file_aw_j_series(const uint16_t drive) {
+    FILE *file;
+    char output_file_name[20];
+    char *file_name = "logging_curr.log";
+    int buffer_size = 5000;
+    int bytes_read = 0;
+    char *file_buff = (char *) malloc(buffer_size);
+
+    if (file_buff == NULL) {
+        UM_ERROR(GBEM_UM_EN, "GBEM: Memory allocation failure when creating buffer for log file download over FoE");
+        return E_MALLOC;
+    }
+
+    bytes_read = ec_FOEread(map_drive_to_slave[drive], file_name,SYNAPTICON_FOE_PASSWORD, &buffer_size, file_buff,
+                            EC_TIMEOUTSTATE * 10);
+
+    if (bytes_read == 0) {
+        free(file_buff);
+        return E_NOT_FOUND;
+    }
+
+    sprintf(output_file_name, "drive_%d.log", drive);
+
+    file = fopen(output_file_name, "w");
+    if (file == NULL) {
+        free(file_buff);
+        return E_FAILED_TO_OPEN_FILE;
+    }
+
+    size_t elements_written = fwrite(file_buff, 1, bytes_read, file);
+
+    if (elements_written != bytes_read) {
+        UM_ERROR(GBEM_UM_EN, "GBEM: Could not write J Series log file");
+        fclose(file);
+        free(file_buff);
+        return E_GENERAL_FAILURE;
+    }
+
+    fclose(file);
+    free(file_buff);
+    return E_SUCCESS;
+}
 
 gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
     //set bus cycle time
@@ -536,11 +580,10 @@ gberror_t ec_set_settorqoffset_wrd_aw_j_series(const uint16_t drive, const int32
 #define AW_J_SERIES_USE_SHORT_ERROR_REPORT 1
 
 uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive) {
-
     bool short_report = false;
 
 #if AW_J_SERIES_USE_SHORT_ERROR_REPORT == 1
-    short_report=true;
+    short_report = true;
 #endif
 
     static uint8_t error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH];
@@ -575,17 +618,16 @@ uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive) {
 
     snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
              "AW-J-Series: Error code did not match. Detailed error report [%s]",
-             ec_get_detailled_error_report_pdo_aw_j_series(drive,short_report));
+             ec_get_detailled_error_report_pdo_aw_j_series(drive, short_report));
     return error_code_string;
 }
 
 
 uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
-
     bool short_report = false;
 
 #if AW_J_SERIES_USE_SHORT_ERROR_REPORT == 1
-    short_report=true;
+    short_report = true;
 #endif
 
     static uint8_t error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH];
@@ -643,11 +685,11 @@ uint8_t *ec_get_detailled_error_report_pdo_aw_j_series(const uint16_t drive_numb
     if (short_report) {
         return octet_string;
     }
-        for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS; i++) {
-            if (strcmp(aw_j_series_error_report[i].error_code, (char *) octet_string) != 0) {
-                return (uint8_t *) aw_j_series_error_report[i].text_string;
-            }
+    for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS; i++) {
+        if (strcmp(aw_j_series_error_report[i].error_code, (char *) octet_string) != 0) {
+            return (uint8_t *) aw_j_series_error_report[i].text_string;
         }
+    }
 
     return failed_error_code_lookup;
 }

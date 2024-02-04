@@ -90,6 +90,7 @@ MAP_DRIVE_RUN_HOMING(                       0,                                  
 MAP_DRIVE_GET_SECONDARY_NAME_FUNCTION(      ec_get_secondary_name_aw_j_series       );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series             );
 MAP_DRIVE_TYPE(                             DRIVE_TYPE_AW_J25                       );
+MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           ec_get_log_file_aw_j_series             );
 
 /* DRIVE PARAMETERS */
 
