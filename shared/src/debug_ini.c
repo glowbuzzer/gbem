@@ -20,6 +20,7 @@
 #include "gbem_config.h"
 #include "user_message.h"
 #include "map.h"
+#include "control.h"
 
 
 /*
@@ -29,14 +30,6 @@ turn_off_limits_checking = true
 #define MATCH(x, y) (strcasecmp(x, y) == 0)
 #define NAMEOF(s) strchr((const char *)(#s), '>') == NULL \
 ? #s : (strchr((const char *)(#s), '>') + 1)
-
-
-typedef struct {
-    uint32_t value;
-    bool enable_limits_checking;
-} debug_settings_t;
-
-static debug_settings_t debug_settings;
 
 
 bool check_debug_ini_exists(void) {
@@ -53,10 +46,10 @@ static void parse_section(debug_settings_t *config, const char *key,
                           const char *value) {
     // printf("%s\n", value);
 
-    if (MATCH("value", key)) {
-        config->value = (uint32_t) atoi(value);
+    if (MATCH("disable_drive_warn_check", key)) {
+        config->disable_drive_warn_check = (uint32_t) atoi(value);
     } else if (MATCH("enable_limits_checking", key)) {
-        config->enable_limits_checking = value;
+        config->disable_drive_limit_check = value;
     } else {
         UM_FATAL("GBEM: Error parsing ini file. Unknown key: %s", key);
     }
