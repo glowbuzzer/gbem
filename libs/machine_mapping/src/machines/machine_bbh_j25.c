@@ -21,13 +21,12 @@
 //@formatter:off
 
 /* MACHINE INFO */
-MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(      ec_fsoe_get_safety_state_bbh_scu_1_ec);
+MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(          ec_fsoe_get_safety_state_bbh_scu_1_ec);
 
-MAP_FSOE_MASTER_SLOT_CONFIG(                MDP_SLOT_TYPE_BBH_32_12);
-MAP_FSOE_MASTER_SLOT_TO_SLAVE(              MAP_AW_J25_FSOE_1);
-MAP_FSOE_MASTER_SET_ERROR_ACK_STATE_FUNCTION(ec_fsoe_set_error_ack_state_bbh_scu_1_ec);
+MAP_FSOE_MASTER_SLOT_CONFIG(                    MDP_SLOT_TYPE_BBH_32_12);
+MAP_FSOE_MASTER_SLOT_TO_SLAVE(                  MAP_AW_J25_FSOE_1);
+MAP_FSOE_MASTER_SET_ERROR_ACK_STATE_FUNCTION(   ec_fsoe_set_error_ack_state_bbh_scu_1_ec);
 
-map_machine_limits_t map_machine_limits[MAP_NUM_DRIVES];
 
 /* SLAVES */
 //                                          Slave 1                                 Slave 2
@@ -42,22 +41,14 @@ MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(         ec_custom_fmmu_sm_bbh_scu_1_ec,     
 MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,                             EC_DC_0);
 MAP_SLAVE_DC_CYCLE(                         0,                                      1) ;
 
-#define BBH_SCU_1_EC_FSOE_IN_OFFSET     0
-#define BBH_SCU_1_EC_FSOE_OUT_OFFSET    0
 
 
 
-
-
-//could have end of non FSoE PDO map #def
-
-
-// So with multiple slaves we will add the number of bytes to the offset on the master to get the
 /* FSoE */
 MAP_SLAVE_FSOE_SLAVE_TYPE(                  FSOE_SLAVE_TYPE_SCU_1_EC,               FSOE_SLAVE_TYPE_SYNAPTICON              );
 MAP_SLAVE_FSOE_SLAVE_FUNCTION(              FSOE_SLAVE_FUNCTION_MASTER,             FSOE_SLAVE_FUNCTION_SLAVE               );
-MAP_SLAVE_FSOE_OFFSET_IN(                   0,                                      AW_J_SERIES_EC_FSOE_SM2_OFFSET          );
-MAP_SLAVE_FSOE_OFFSET_OUT(                  0,                                      AW_J_SERIES_EC_FSOE_SM3_OFFSET          );
+MAP_SLAVE_FSOE_OFFSET_IN(                   BBH_SCU_1_EC_FSOE_IN_OFFSET,            AW_J_SERIES_EC_FSOE_SM2_OFFSET          );
+MAP_SLAVE_FSOE_OFFSET_OUT(                  BBH_SCU_1_EC_FSOE_OUT_OFFSET,           AW_J_SERIES_EC_FSOE_SM3_OFFSET          );
 MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(   NULL,                                   ec_fsoe_get_slave_state_aw_j_series     );
 MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS(  NULL,                                   ec_fsoe_get_slave_con_id_aw_j_series    );
 MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(  ec_fsoe_get_master_state_bbh_scu_1_ec,  NULL                                    );
@@ -108,10 +99,6 @@ MAP_DRIVE_SCALES(                           {166886,9549,32.67}                 
 /* PLC IO CONFIG */
 
 
-//there is trouble here becuase 27 depends on the number of slots
-
-// #define BBH_OFFSET (8+ (12*>>value in number of slots<< this is known at compile time
-
 
 /*IO MAP*/
 mapping_t map_iomap[13] = {
@@ -126,16 +113,13 @@ mapping_t map_iomap[13] = {
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave=true},             {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=8, .type = GBC_IO_TYPE_SAFETY},      {}},
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=9, .type = GBC_IO_TYPE_SAFETY},      {}},
 
-        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=1, .type = GBC_IO_TYPE_SAFETY},     {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=2, .type = GBC_IO_TYPE_SAFETY},     {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=3, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=0, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=1, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=2, .type = GBC_IO_TYPE_SAFETY},     {}},
 
 };
 
-
 uint16_t map_num_rows_in_iomap = sizeof(map_iomap) / sizeof(map_iomap[0]);
-
-
 
 /* REVERSE FUNCTIONS - USED FOR UNIT TESTING */
 MAP_DRIVE_GET_CTRL_WRD_REV_FUNCTIONS();
