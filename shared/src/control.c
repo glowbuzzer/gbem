@@ -879,7 +879,9 @@ bool cia_is_fault_condition(struct event *event) {
 
 
     bool have_fault = false;
-
+    for (uint16_t i = 0; i < MAP_NUM_DRIVES; i++) {
+        ecm_status.drives[i].active_fault = false;
+    }
 
     if (((event_data_t *) event->data)->fsoe_error == true) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > FSoE error");
@@ -1402,6 +1404,10 @@ bool ctrl_check_heartbeat_ok(uint32_t gbem_heartbeat_to_check, uint32_t gbc_hear
  * @warning this is called from the ec_check thread - every 500ms
  */
 void ctrl_copy_slave_error_to_ecm_status(void) {
+    // todo crit maybe we should be checking the ecat error flag here as well as EcatError
+    bool not_empty = (ecx_context.elist->head != ecx_context.elist->tail);
+
+
     uint8_t EcatError_read_count = 0;
     while (EcatError) {
         EcatError_read_count++;
@@ -2177,59 +2183,9 @@ void ctrl_set_moo_pdo(void) {
 
 
 /**
- * @brief get number of out bytes from slot
- *
- * @warning slave is zero indexed
- */
-// uint32_t fsoe_get_num_bytes_out(uint16_t slave) {
-//     switch (map_slave_mdp_slot_type[slave]) {
-//         case MDP_SLOT_TYPE_NONE:
-//             return 0;
-//             break;
-//         case MDP_SLOT_TYPE_MASTER_AGGREGATE:
-//             return 0;
-//         case MDP_SLOT_TYPE_BBH_32_12:
-//             return 31;
-//             break;
-//         default:
-//             LL_FATAL("GBEM: Invalid MDP_SLOT_TYPE [%u] on slave [%u]", map_slave_mdp_slot_type[slave], slave+1);
-//             return 0;
-//     }
-// }
-
-
-/**
- * @brief get number of out bytes from slot
- *
- * @warning slave is zero indexed
- */
-// uint32_t fsoe_get_num_bytes_in(uint16_t slot) {
-//     switch (map_slave_mdp_slot_type[slot]) {
-//         case MDP_SLOT_TYPE_NONE:
-//             return 0;
-//             break;
-//         case MDP_SLOT_TYPE_MASTER_AGGREGATE:
-//             return 0;
-//         case MDP_SLOT_TYPE_BBH_32_12:
-//             return 11;
-//             break;
-//         default:
-//             LL_FATAL("GBEM: Invalid MDP_SLOT_TYPE [%u] on slave [%u]", map_slave_mdp_slot_type[slot], slot);
-//             return 0;
-//     }
-// }
-
-
-/**
  * @brief copy fsoe data from slaves to master
  */
 void copy_fsoe_data_slaves_to_master(uint16_t fsoe_master_no) {
-    //copy from EL1904->EL2904
-    //    ec_copy_between_slave_pdos(MAP_EL1904_1, MAP_EL6900_1, 0, 0, 6);
-    //copy from EL2904->EL6900
-    //    ec_copy_between_slave_pdos(MAP_EL2904_1, MAP_EL6900_1, 0, 6, 6);
-
-
     uint32_t base_master_byte_offset = map_slave_fsoe_offset_in[fsoe_master_no];
     uint32_t cumulative_master_byte_offset = 0;
     uint32_t slave_byte_offset = 0;
@@ -2247,52 +2203,12 @@ void copy_fsoe_data_slaves_to_master(uint16_t fsoe_master_no) {
 
         cumulative_master_byte_offset += slave_fsoe_out_bytes;
     }
-
-
-    // if (found_fsoe_master) {
-    //     for (int i = 0; i < MAP_NUM_SLAVES; i++) {
-    //         if (map_slave_fsoe_function[i] == FSOE_SLAVE_FUNCTION_SLAVE) {
-    //             //we have an FSoE slave
-    //             found_at_least_one_fsoe_slave = true;
-    //
-    //             uint32_t slave_fsoe_out_bytes = map_fsoe_get_slot_size_slave_out(i + 1);
-    //             // printf("slave fsoe out bytes [%u]\n", slave_fsoe_out_bytes);
-    //
-    //             if (slave_fsoe_out_bytes == 0) {
-    //                 LL_FATAL("GBEM: Slave [%u] has no FSoE out bytes - check MDP slot config - this is a fatal error",
-    //                          i + 1);
-    //             }
-    //
-    //             if ( i != fsoe_master_no) {
-    //                 ec_copy_between_slave_pdos(i + 1, fsoe_master_no + 1, map_slave_fsoe_offset_out[i],
-    //                                            base_master_byte_offset + cumulative_master_byte_offset,
-    //                                            slave_fsoe_out_bytes);
-    //
-    //                 // UM_INFO(GBEM_GEN_LOG_EN,
-    //                 //         "GBEM: FSOE master copying [%u] bytes at [%u] offset from slave (slave no [%u]) to master    (slave no [%u]) at [%u] offset",
-    //                 //         map_slave_fsoe_out_bytes[i], map_slave_fsoe_offset_out[i], i + 1, fsoe_master_no + 1,
-    //                 //         base_master_byte_offset + cumulative_master_byte_offset);
-    //
-    //                 cumulative_master_byte_offset += slave_fsoe_out_bytes;
-    //             }
-    //         }
-    //     }
-    //     if (!found_at_least_one_fsoe_slave) {
-    //         LL_FATAL("GBEM: FSOE master found but no FSOE slaves found - this is a fatal error");
-    //     }
-    // }
 }
 
 /**
  * @brief copy fsoe data from master to slaves
  */
 void copy_fsoe_data_master_to_slaves(uint16_t fsoe_master_no) {
-    //copy from EL6900->EL1904
-    //    ec_copy_between_slave_pdos(MAP_EL6900_1, MAP_EL1904_1, 0, 0, 6);
-    //copy from EL6900->EL2904
-    //    ec_copy_between_slave_pdos(MAP_EL6900_1, MAP_EL2904_1, 6, 0, 6);
-
-
     uint32_t base_master_byte_offset = map_slave_fsoe_offset_out[fsoe_master_no];
     uint32_t cumulative_master_byte_offset = 0;
     uint32_t slave_byte_offset = 0;
@@ -2314,107 +2230,7 @@ void copy_fsoe_data_master_to_slaves(uint16_t fsoe_master_no) {
 
         cumulative_master_byte_offset += slave_fsoe_in_bytes;
     }
-
-
-    // if (map_slave_fsoe_out_bytes[fsoe_master_no] > 0) {
-    //     for (int i = 0; i < MAP_NUM_SLAVES; i++) {
-    //         if (map_slave_fsoe_in_bytes[i] > 0 && i != fsoe_master_no) {
-    //             found_at_least_one_fsoe_slave = true;
-    //             slave_byte_offset = map_slave_fsoe_offset_in[i];
-    //             ec_copy_between_slave_pdos(fsoe_master_no + 1, i + 1,
-    //                                        base_master_byte_offset + cumulative_master_byte_offset,
-    //                                        slave_byte_offset,
-    //                                        map_slave_fsoe_out_bytes[fsoe_master_no]);
-    //
-    //
-    //             if (map_slave_fsoe_out_bytes[fsoe_master_no] != map_slave_fsoe_in_bytes[i]) {
-    //                 LL_FATAL(
-    //                     "GBEM: FSOE master and slave have different number of bytes (master out to slave in) - this is a fatal error")
-    //                 ;
-    //             }
-    //
-    //             // UM_INFO(GBEM_GEN_LOG_EN,
-    //             //         "GBEM: FSOE master copying [%u] bytes at [%u] offset from master (slave no [%u]) to slave (slave no [%u]) at [%u] offset",
-    //             //         map_slave_fsoe_out_bytes[fsoe_master_no],
-    //             //         base_master_byte_offset + cumulative_master_byte_offset,
-    //             //         fsoe_master_no + 1, i + 1, slave_byte_offset);
-    //
-    //             cumulative_master_byte_offset += map_slave_fsoe_in_bytes[i];
-    //         }
-    //     }
-    //     if (!found_at_least_one_fsoe_slave) {
-    //         UM_FATAL("GBEM: FSOE master found but no FSOE slaves found - this is a fatal error");
-    //     }
-    // }
 }
-
-
-void fsoe_plc_program(void) {
-    //ESM_From_PLC : Output 1
-    //    FromPLC1 : BOOL;
-    //ESM_From_PLC : Output 2
-    //    ErrAck : BOOL;
-
-    //ESM_To_PLC : Input 1
-    //    ToPLC1 : BOOL;
-    //ESM_To_PLC : Input 2
-    //    FbErr : BOOL;
-    //ESM_To_PLC : Input 3
-    //    ComErr : BOOL;
-    //ESM_To_PLC : Input 4
-    //    OutErr : BOOL;
-
-
-    //    printf("in 0 %s\n", BIT_CHECK(dpm_in->digital, 0) ? "true" : "false");
-    //    printf("in 1 %s\n", BIT_CHECK(dpm_in->digital, 1) ? "true" : "false");
-    //    printf("in 2 %s\n", BIT_CHECK(dpm_in->digital, 2) ? "true" : "false");
-    //    printf("in 3 %s\n", BIT_CHECK(dpm_in->digital, 3) ? "true" : "false");
-    //    printf("in 4 %s\n", BIT_CHECK(dpm_in->digital, 4) ? "true" : "false");
-    //    printf("in 5 %s\n", BIT_CHECK(dpm_in->digital, 5) ? "true" : "false");
-    //    printf("in 6 %s\n", BIT_CHECK(dpm_in->digital, 6) ? "true" : "false");
-    //    printf("in 7 %s\n", BIT_CHECK(dpm_in->digital, 7) ? "true" : "false");
-    //
-    //    printf("out 0 %s\n", BIT_CHECK(dpm_out->digital, 0) ? "true" : "false");
-    //    printf("out 1 %s\n", BIT_CHECK(dpm_out->digital, 1) ? "true" : "false");
-    //    printf("out 2 %s\n", BIT_CHECK(dpm_out->digital, 2) ? "true" : "false");
-    //    printf("out 3 %s\n", BIT_CHECK(dpm_out->digital, 3) ? "true" : "false");
-    //
-    //    static bool ErrAckProxy = false;
-    //
-    //    bool temp = iomap_get_pdo_in_bool(true, MAP_EL6900_1, 12, 2);
-    //    bool temp2 = iomap_get_pdo_in_bool(true, MAP_EL6900_1, 12, 0);
-    //    if (temp2) {
-    //        printf("bit 0 in is true!\n");
-    //    }
-    //
-    //    if (temp) {
-    //        printf("bit 2 in is true\n");
-    //    }
-    //
-    //    if (ErrAckProxy) {
-    ////        BIT_CLEAR(dpm_out->digital, 1);
-    //        printf("clearing out\n");
-    //        ErrAckProxy = false;
-    //        iomap_set_pdo_out_bool(true, MAP_EL6900_1, 12, 1, false);
-    //        return;
-    //    }
-    //
-    ////    if (BIT_CHECK(dpm_in->digital, 2)) {
-    //    if (temp) {
-    //        printf("setting out\n");
-    ////        BIT_SET(dpm_out->digital, 1);
-    //        ErrAckProxy = true;
-    //        iomap_set_pdo_out_bool(true, MAP_EL6900_1, 12, 1, true);
-    //    }
-    //
-}
-
-typedef struct {
-    uint8_t command;
-    uint8_t data;
-    uint16_t crc;
-    uint16_t con_id;
-} fsoe_t;
 
 
 void print_fsoe_data(uint16_t slave_no, bool input, uint8_t byte_no, uint8_t num_bytes) {
@@ -2445,40 +2261,6 @@ void print_fsoe_data(uint16_t slave_no, bool input, uint8_t byte_no, uint8_t num
 
 
 void copy_fsoe_data(void) {
-    //    printf("EL6900\n");
-    //    print_fsoe_data(MAP_EL6900_1, true, 0, 6);
-    //    print_fsoe_data(MAP_EL6900_1, false, 0, 6);
-    //    print_fsoe_data(MAP_EL6900_1, true, 6, 6);
-    //    print_fsoe_data(MAP_EL6900_1, false, 6, 6);
-    //
-    //    printf("EL1904\n");
-    //    print_fsoe_data(MAP_EL1904_1, true, 0, 6);
-    //    print_fsoe_data(MAP_EL1904_1, false, 0, 6);
-    //    printf("EL2904\n");
-    //    print_fsoe_data(MAP_EL2904_1, true, 0, 6);
-    //    print_fsoe_data(MAP_EL2904_1, false, 0, 6);
-
-
-    // printf("BBH out offset 0 bytes 31\n");
-    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, false, 0, 11);
-    // printf("BBH in offset 0 bytes 31\n");
-    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, true, 0, 31);
-    //
-    // printf("J25 out offset 43 bytes 31\n");
-    // print_fsoe_data(MAP_AW_J25_FSOE_1, false, 43, 31);
-    // printf("J25 in offset 43 bytes 31\n");
-    // print_fsoe_data(MAP_AW_J25_FSOE_1, true, 35, 11);
-
-
-    // printf(">>>BBH out offset 0 bytes 82\n");
-    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, false, 22, 1); //debug0
-    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, false, 27, 1);
-    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, false, 28, 1);
-    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, false, 29, 1);
-
-    // print_fsoe_data(MAP_BBH_SCU_1_EC_1, true, 22, 1);
-
-
     static uint16_t fsoe_master_no = 0;
     static bool found_fsoe_master = false;
     if (!found_fsoe_master) {
@@ -2505,23 +2287,6 @@ void copy_fsoe_data(void) {
         copy_fsoe_data_master_to_slaves(fsoe_master_no);
         copy_fsoe_data_slaves_to_master(fsoe_master_no);
     }
-    //NO 31 32 33 39
-    //FAULT 34?
-
-    //todo crit this is quite key!
-    uint32_t test_byte_no = 64;
-    // iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 1, true);
-    // iomap_set_pdo_out_bool(true, MAP_BBH_SCU_1_EC_1, test_byte_no, 2, true);
-
-
-    // for (int i = 0; i < 16; i++) {
-    //     printf("in %u [%s]\n", i, BIT_CHECK(dpm_in->digital, i) ? "true" : "false");
-    // }
-    // bool temp = iomap_get_pdo_in_bool(true, MAP_BBH_SCU_1_EC_1, 27, 3);
-
-    // printf("check 0 %u [%s]\n", 3, temp ? "true" : "false");
-
-    // fsoe_plc_program();
 }
 
 
@@ -2605,6 +2370,7 @@ gberror_t update_fsoe_ecm_status_master(void) {
 
     return grc;
 }
+
 
 gberror_t update_fsoe_ecm_status(void) {
     gberror_t grc = E_SUCCESS;
