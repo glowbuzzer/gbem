@@ -22,6 +22,8 @@
 #include "bbh.h"
 #include "ecm_status.h"
 
+#define BBH_SCU_1_EC_FSOE_IN_OFFSET     0
+#define BBH_SCU_1_EC_FSOE_OUT_OFFSET    0
 
 #define BBH_SCU_1_EC_DEBUG_0_PDO_OFFSET                 2
 #define BBH_SCU_1_EC_DEBUG_1_PDO_OFFSET                 3
