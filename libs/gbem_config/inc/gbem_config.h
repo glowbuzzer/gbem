@@ -51,7 +51,7 @@
 #define LIMITS_INI_FILENAME "./limits.ini"
 #define NUM_PARAMS_IN_LIMITS_INI 6
 #define DEBUG_INI_FILENAME "./debug.ini"
-#define NUM_PARAMS_IN_DEBUG_INI 6
+#define NUM_PARAMS_IN_DEBUG_INI 3
 
 
 /*** GBC CONFIGURATION ***/
