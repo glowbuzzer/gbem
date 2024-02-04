@@ -21,7 +21,7 @@
 #include <string.h>
 #include "std_defs_and_macros.h"
 #include "user_message.h"
-
+#include "gbem_config.h"
 
 //global var holding machine type (set in main.c)
 map_machine_type_t map_machine_type = MAP_MACHINE_UNKNOWN;
@@ -332,7 +332,7 @@ bool ec_check_for_follow_error(gberror_t *grc) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_follow_error_function_ptr[i] != NULL) {
             follow_error = map_drive_get_follow_error_function_ptr[i](i);
-            ecm_status.drives[i].active_follow_error = true;
+            ecm_status.drives[i].active_follow_error = follow_error;
         } else {
             //we can't check all drives for a follow error so return true that there is one - safest behaviour
             *grc = E_NO_FUNCTION_FOUND;
@@ -353,7 +353,18 @@ bool ec_check_for_follow_error(gberror_t *grc) {
  *
  */
 bool ec_check_for_internal_limit(gberror_t *gbc) {
-    bool internal_limit_active = false;
+    // Static array to store the results of the last N cycles
+    static bool lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
+
+
+    // Shift the results to make room for the new result
+    for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
+        lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][drive] = true;
+    }
+
+
+    bool internal_limit_active = true;
+
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
         if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
@@ -364,14 +375,29 @@ bool ec_check_for_internal_limit(gberror_t *gbc) {
             *gbc = E_NO_FUNCTION_FOUND;
             return true;
         }
+        for (int j = 0; j < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1; ++j) {
+            lastResults[j][i] = lastResults[j + 1][i];
+        }
+
         if (BIT_CHECK(drive_stat_wrd, CIA_INTERNAL_LIMIT_BIT_NUM)) {
-            *gbc = E_SUCCESS;
-            internal_limit_active = true;
-            ecm_status.drives[i].active_internal_limit = true;
+            lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][i] = true;
         } else {
-            ecm_status.drives[i].active_internal_limit = false;
+            lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][i] = false;
         }
     }
+
+    //evaluate
+    for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
+        for (int i = 0; i < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER; ++i) {
+            if (!lastResults[i][drive]) {
+                internal_limit_active = false;
+                ecm_status.drives[drive].active_internal_limit = false;
+                break;
+            }
+            ecm_status.drives[drive].active_internal_limit = true;
+        }
+    }
+
     *gbc = E_SUCCESS;
     return internal_limit_active;
 }
