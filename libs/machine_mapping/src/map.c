@@ -26,6 +26,8 @@
 //global var holding machine type (set in main.c)
 map_machine_type_t map_machine_type = MAP_MACHINE_UNKNOWN;
 
+map_machine_limits_t map_machine_limits[MAP_NUM_DRIVES];
+
 
 int8_t map_drive_moo[MAP_NUM_DRIVES];
 
