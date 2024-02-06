@@ -63,6 +63,9 @@
 #define CTRL_HEARTBEAT_TOLERANCE                        50
 
 
+#define NUM_CYLCES_TO_EVALUATE_FAULTS_OVER              5
+
+
 #define FSOE_STANDARD_OVERALL_SAFETY_STATE_BIT_NUM      0
 #define FSOE_STANDARD_ERROR_STATE_BIT_NUM               1
 #define FSOE_STANDARD_RESTART_ACK_STATE_BIT_NUM         2
