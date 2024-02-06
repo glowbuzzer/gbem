@@ -145,8 +145,8 @@ extern bool plc_out_7_OUT_TOOL_2;
  * 3 SS1_CMD_SW_FB - must mirror the signal on SS1_CMD_SW
  * 4 STOP_CMD_SW_FB - must mirror the signal on STOP_CMD_SW
  * 5 SPARE
- * 6 OUT_TOOL_1 - command to gripper
- * 7 OUT_TOOL_2 - command to gripper
+ * 6 OUT_TOOL_1 - command to gripper -> map to GBC IO
+ * 7 OUT_TOOL_2 - command to gripper -> map to GBC IO
  */
 
 
