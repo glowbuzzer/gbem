@@ -23,81 +23,97 @@
 
 map_custom_pdo_t aw_j_series_custom_pdo_map = {
     .sm2_assignment_object = 0x1C12,
-    .num_sm2_assignments = 3,
+    .num_sm2_assignments = 4,
     .rxpdo = {
         {
             .pdo_assignment_object = 0x1600,
             .num_assignments = 7,
             .assignments = {
-                {.datatype = ECT_UNSIGNED16, .index = 0x6040}, //Controlword
-                {.datatype = ECT_INTEGER8, .index = 0x6060}, //Modes of operation
-                {.datatype = ECT_INTEGER16, .index = 0x6071}, //Target Torque
-                {.datatype = ECT_INTEGER32, .index = 0x607A}, //Target position
-                {.datatype = ECT_INTEGER32, .index = 0x60FF}, //Target velocity
-                {.datatype = ECT_INTEGER16, .index = 0x60B2}, //Torque offset
-                {.datatype = ECT_UNSIGNED32, .index = 0x2701}, //Tuning command
+                {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_CONTROLWORD_ADDRESS}, //0x6040 Controlword
+                {.datatype = ECT_INTEGER8, .index = AW_J_SERIES_MODES_OF_OPERATION_ADDRESS}, //0x6060 Modes of operation
+                {.datatype = ECT_INTEGER16, .index = AW_J_SERIES_TARGET_TORQUE_ADDRESS}, //0x6071 Target Torque
+                {.datatype = ECT_INTEGER32, .index = AW_J_SERIES_TARGET_POSITION_ADDRESS}, //0x607A Target position
+                {.datatype = ECT_INTEGER32, .index = AW_J_SERIES_TARGET_VELOCITY_ADDRESS}, //0x60FF Target velocity
+                {.datatype = ECT_INTEGER16, .index = AW_J_SERIES_TORQUE_OFFSET_ADDRESS}, //0x60B2 Torque offset
+                {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_TUNING_COMMAND_ADDRESS}, //0x2701 Tuning command
             }
         },
         {
             .pdo_assignment_object = 0x1601,
             .num_assignments = 2,
             .assignments = {
-                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x1}, //Physical outputs
-                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x2}, //Bit mask
+                {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_PHYSICAL_OUTPUTS_ADDRESS, .offset = 0x1},
+                //0x60FE Physical outputs
+                {.datatype = ECT_UNSIGNED32, .index = 0x60FE, .offset = 0x2}, //0x60FE Bit mask
             }
         },
         {
             .pdo_assignment_object = 0x1602,
             .num_assignments = 3,
             .assignments = {
-                {.datatype = ECT_UNSIGNED32, .index = 0x2703}, //User MOSI
-                {.datatype = ECT_INTEGER32, .index = 0x60B1}, //Velocity offset
-                {.datatype = ECT_UNSIGNED32, .index = 0x2215, .offset = 0x1}, //LED colour
+                {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_USER_MOSI_ADDRESS}, //0x2703 User MOSI
+                {.datatype = ECT_INTEGER32, .index = AW_J_SERIES_VELOCITY_OFFSET_ADDRESS}, //0x60B1 Velocity offset
+                {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_LED_COLOUR_ADDRESS, .offset = 0x1},
+                //0x2215 LED colour
             }
-        }
+        },
+        {.pdo_assignment_object = 0x1700}
     },
     .sm3_assignment_object = 0x1C13,
-    .num_sm3_assignments = 4,
+    .num_sm3_assignments = 5,
     .txpdo = {
         {
             .pdo_assignment_object = 0x1A00,
             .num_assignments = 5,
             .assignments = {
-                {.datatype = ECT_UNSIGNED16, .index = 0x6041}, //Statusword
-                {.datatype = ECT_INTEGER8, .index = 0x6061}, //Modes of operation display
-                {.datatype = ECT_INTEGER32, .index = 0x6064}, //Position actual value
-                {.datatype = ECT_INTEGER32, .index = 0x606C}, //Velocity actual value
-                {.datatype = ECT_INTEGER16, .index = 0x6077}, //Torque actual value
+                {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_STATUSWORD_ADDRESS}, //0x6041Statusword
+                {.datatype = ECT_INTEGER8, .index = AW_J_SERIES_MODES_OF_OPERATION_DISPLAY_ADDRESS},
+                //0x6061 Modes of operation display
+                {.datatype = ECT_INTEGER32, .index = AW_J_SERIES_POSITION_ACTUAL_VALUE_ADDRESS},
+                //0x6064 Position actual value
+                {.datatype = ECT_INTEGER32, .index = AW_J_SERIES_VELOCITY_ACTUAL_VALUE_ADDRESS},
+                //0x606C Velocity actual value
+                {.datatype = ECT_INTEGER16, .index = AW_J_SERIES_TORQUE_ACTUAL_VALUE_ADDRESS},
+                //0x6077 Torque actual value
             }
         },
         {
             .pdo_assignment_object = 0x1A01,
-            .num_assignments = 5,
+            .num_assignments = 3,
             .assignments = {
-                {.datatype = ECT_UNSIGNED16, .index = 0x2401}, //Analog input 1
-                {.datatype = ECT_UNSIGNED16, .index = 0x2402}, // Analog input 2
-                {.datatype = ECT_UNSIGNED16, .index = 0x2403}, //Analog input 3
-                {.datatype = ECT_UNSIGNED16, .index = 0x2404}, //Analog input 4
-                {.datatype = ECT_UNSIGNED32, .index = 0x2702}, //Tuning status
+                // {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ANALOG_INPUT_1_ADDRESS}, //0x2401 Analog input 1
+                // {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ANALOG_INPUT_2_ADDRESS}, //0x2402 Analog input 2
+                // {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ANALOG_INPUT_3_ADDRESS}, //0x2403 Analog input 3
+                // {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ANALOG_INPUT_4_ADDRESS}, //0x2404 Analog input 4
+                {.datatype = ECT_UNSIGNED16, .index = AW_J_SERIES_ERROR_CODE_ADDRESS}, // 0x603F Error code
+                {.datatype = ECT_STRING8, .index = AW_J_SERIES_ERROR_REPORT_ADDRESS, .offset = 0x1},
+                //0x603F Error report
+                {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_TUNING_STATUS_ADDDRESS}, //0x2702Tuning status
             }
         },
         {
             .pdo_assignment_object = 0x1A02,
             .num_assignments = 1,
             .assignments = {
-                {.datatype = ECT_UNSIGNED32, .index = 0x60FD}, //Digital inputs
+                {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_DIGITAL_INPUTS_ADDRESS}, //0x60FD Digital inputs
             }
         },
         {
             .pdo_assignment_object = 0x1A03,
-            .num_assignments = 5,
+            .num_assignments = 4,
             .assignments = {
-                {.datatype = ECT_UNSIGNED32, .index = 0x2704}, //User MISO
-                {.datatype = ECT_UNSIGNED32, .index = 0x20F0}, //Timestamp
-                {.datatype = ECT_INTEGER32, .index = 0x60FC}, //Position demand internal value
-                {.datatype = ECT_INTEGER32, .index = 0x606B}, //Velocity demand value
-                {.datatype = ECT_INTEGER16, .index = 0x6074} //Torque demand
+                // {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_USER_MISO_ADDRESS}, //0x2704 User MISO
+                // {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_TIMESTAMP_ADDDRESS}, //0x20F0 Timestamp
+                {.datatype = ECT_INTEGER32, .index = AW_J_SERIES_CONTROL_EFFORT_ADDRESS}, //0x60B0 Control effort
+                {.datatype = ECT_INTEGER32, .index = AW_J_SERIES_POSITION_DEMAND_INTERNAL_VALUE_ADDRESS},
+                //0x60FC Position demand internal value
+                {.datatype = ECT_INTEGER32, .index = AW_J_SERIES_VELOCITY_DEMAND_VALUE_ADDRESS},
+                //0x606B Velocity demand value
+                {.datatype = ECT_INTEGER16, .index = AW_J_SERIES_TORQUE_DEMAND_ADDRESS} //0x6074 Torque demand
             }
+        },
+        {
+            .pdo_assignment_object = 0x1B00
         }
     }
 };
@@ -269,17 +285,24 @@ gberror_t ec_get_log_file_aw_j_series(const uint16_t drive) {
     FILE *file;
     char output_file_name[20];
     char *file_name = "logging_curr.log";
-    int buffer_size = 5000;
-    int bytes_read = 0;
-    char *file_buff = (char *) malloc(buffer_size);
+    // int buffer_size = 50000;
+    size_t bytes_read = 50000; //gets overwritten with bytes read
+    char *file_buff = (char *) malloc(bytes_read);
 
     if (file_buff == NULL) {
         UM_ERROR(GBEM_UM_EN, "GBEM: Memory allocation failure when creating buffer for log file download over FoE");
         return E_MALLOC;
     }
 
-    bytes_read = ec_FOEread(map_drive_to_slave[drive], file_name,SYNAPTICON_FOE_PASSWORD, &buffer_size, file_buff,
-                            EC_TIMEOUTSTATE * 10);
+    int rc = ec_FOEread(map_drive_to_slave[drive], file_name,SYNAPTICON_FOE_PASSWORD, (int *) &bytes_read, file_buff,
+                        EC_TIMEOUTSTATE * 10);
+
+    if (rc < 1) {
+        free(file_buff);
+        return E_GENERAL_FAILURE;
+    }
+
+    UM_INFO(GBEM_UM_EN, "GBEM: Bytes read from drive log file on drive [%u] is [%u]", drive, bytes_read);
 
     if (bytes_read == 0) {
         free(file_buff);
@@ -295,6 +318,7 @@ gberror_t ec_get_log_file_aw_j_series(const uint16_t drive) {
     }
 
     size_t elements_written = fwrite(file_buff, 1, bytes_read, file);
+
 
     if (elements_written != bytes_read) {
         UM_ERROR(GBEM_UM_EN, "GBEM: Could not write J Series log file");
@@ -579,8 +603,9 @@ gberror_t ec_set_settorqoffset_wrd_aw_j_series(const uint16_t drive, const int32
 
 #define AW_J_SERIES_USE_SHORT_ERROR_REPORT 1
 
-uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive) {
+uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive, bool *error) {
     bool short_report = false;
+    *error = true;
 
 #if AW_J_SERIES_USE_SHORT_ERROR_REPORT == 1
     short_report = true;
@@ -599,11 +624,12 @@ uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive) {
         snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
                  "%s [%s]", no_error_prefix,
                  ec_get_detailled_error_report_pdo_aw_j_series(drive, short_report));
+        *error = false;
         return error_code_string;
     }
 
-    char error_code_first[] = "AW-J-Series error code";
-    char error_code_second[] = "& Detailed error report";
+    char error_code_first[] = "AW-J-Series error";
+    char error_code_second[] = "& Error report";
 
     for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_STRINGS; i++) {
         if (aw_j_series_error[i].error_id == drive_error_code) {
@@ -617,14 +643,15 @@ uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive) {
     }
 
     snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
-             "AW-J-Series: Error code did not match. Detailed error report [%s]",
+             "AW-J-Series: Error code did not match [0x%04x]. Detailed error report [%s]", drive_error_code,
              ec_get_detailled_error_report_pdo_aw_j_series(drive, short_report));
     return error_code_string;
 }
 
 
-uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
+uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive, bool *error) {
     bool short_report = false;
+    *error = true;
 
 #if AW_J_SERIES_USE_SHORT_ERROR_REPORT == 1
     short_report = true;
@@ -644,6 +671,7 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive) {
             snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
                      "%s [%s]", no_error_prefix,
                      ec_get_detailled_error_report_sdo_aw_j_series(drive, short_report));
+            *error = false;
             return error_code_string;
         }
 
@@ -938,10 +966,10 @@ const aw_j_series_error_report_string_t aw_j_series_error_report[NUM_OF_AW_J_SER
 
 /*array mapping an AW-J-Series drive detailed error reports to a text string */
 const aw_j_series_error_string_t aw_j_series_error[NUM_OF_AW_J_SERIES_ERROR_STRINGS] = {
-    {0x2220, "Continuous over current (device internal)"},
-    {0x2250, "Short circuit (device internal)"},
-    {0x2350, "Load level fault (I2t, thermal state)"},
-    {0x2351, "Load level warning (I2t, thermal state)"},
+    {0x2220, "Continuous over current (internal)"},
+    {0x2250, "Short circuit (internal)"},
+    {0x2350, "Load level fault (I2t, thermal)"},
+    {0x2351, "Load level warning (I2t, thermal)"},
     {0x3130, "Phase failure"},
     {0x3131, "Phase failure L1"},
     {0x3132, "Phase failure L2"},
@@ -960,8 +988,8 @@ const aw_j_series_error_string_t aw_j_series_error[NUM_OF_AW_J_SERIES_ERROR_STRI
     {0x7303, "Resolver 1 fault"},
     {0x7304, "Resolver 2 fault"},
     {0x7500, "Communication"},
-    {0x8611, "Positioning controller (following error)"},
-    {0x8612, "Positioning controller (reference limit)"},
+    {0x8611, "Positioning ctrl (following error)"},
+    {0x8612, "Positioning ctrl (reference limit)"},
     {0xF002, "Sub-synchronous run"},
     {0xFF00, "Manufacturer-specific"}
 };
