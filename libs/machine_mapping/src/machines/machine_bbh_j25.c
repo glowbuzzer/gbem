@@ -23,6 +23,7 @@
 /* MACHINE INFO */
 MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(          ec_fsoe_get_safety_state_bbh_scu_1_ec);
 
+/* FSOE MASTER INFO */
 MAP_FSOE_MASTER_SLOT_CONFIG(                    MDP_SLOT_TYPE_BBH_32_12);
 MAP_FSOE_MASTER_SLOT_TO_SLAVE(                  MAP_AW_J25_FSOE_1);
 MAP_FSOE_MASTER_SET_ERROR_ACK_STATE_FUNCTION(   ec_fsoe_set_error_ack_state_bbh_scu_1_ec);
