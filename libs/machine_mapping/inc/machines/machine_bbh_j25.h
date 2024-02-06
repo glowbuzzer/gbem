@@ -31,7 +31,6 @@
 #define MAP_NUM_SLAVES              2
 #define MAP_NUM_FSOE_MASTER_SLOTS   1
 
-#define AW_FSOE                     1
 
 /**CRITICAL! if this is defined then hardware estop is disabled! */
 #define DISABLE_ESTOP_CHECKING      0
@@ -40,4 +39,4 @@
 #define MAP_NUMBER_ESTOP_DIN        0
 
 
-#endif //GBEM_MACHINE_EL6900_J25_H
+#endif //GBEM_MACHINE_BBH_J25_H
