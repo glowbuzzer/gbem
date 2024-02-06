@@ -60,7 +60,7 @@ gberror_t ec_fsoe_set_error_ack_state_bbh_scu_1_ec(bool state, uint16_t slave) {
     ec_pdo_set_output_bit_from_byte_slave(slave, BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0,
                                           FSOE_STANDARD_ERROR_ACK_CMD_BIT_NUM, state);
 
-    printf("set error ack\n");
+    UM_WARN(GBEM_UM_EN, "GBEM: Sending error acknowledgement to BBG SCU 1 EC");
     return E_SUCCESS;
 }
 
@@ -221,6 +221,8 @@ gberror_t ec_pdo_map_bbh_scu_1_ec(const uint16_t slave) {
                              map_SM3_bbh_scu_1_ec.number_of_entries, true)) {
         return E_SDO_WRITE_FAILURE;
     }
+
+    return E_SUCCESS;
 }
 
 
@@ -247,6 +249,7 @@ gberror_t ec_print_slots_bbh_scu_1_ec(const uint16_t slave) {
         UM_INFO(GBEM_UM_EN, "GBEM: BBH_SCU_1_EC_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX [0x%02x] [%u] = 0x%08x",
                 BBH_SCU_1_EC_CONFIGURED_MODULE_IDENT_LIST_SDO_INDEX, i, module_id);
     }
+    return E_SUCCESS;
 }
 
 
