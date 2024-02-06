@@ -32,25 +32,26 @@ map_pdo_object_t ctrl_estop_din_1 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slav
 map_pdo_object_t ctrl_estop_din_2 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1808_1, .bit_num=2};
 
 /* SLAVES */
-//                                        Slave 1                       Slave 2                  Slave 3          Slave 4                           Slave 5                           Slave 6                         Slave 7                         Slave 8                         Slave 9
-//                                        MAP_EK1100_1                  MAP_EL2808_1             MAP_EL1808_1     MAP_AW_J40LP_CTRL_1               MAP_AW_J40LP_CTRL_1               MAP_AW_J32_CTRL_1               MAP_AW_J25_CTRL_1               MAP_AW_J25_CTRL_2               MAP_AW_J20_CTRL_1
-//                                        Coupler                       8 dig out                8 dig in         J40LP joint                       J40HP joint                       J32 joint                       J25 joint                       J25 joint                       J20 joint
-MAP_NUM_DRIVES_ATTACHED(                  0,                            0,                       0,               1,                                1,                                1,                              1,                              1,                              1                                   );
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,                         NULL,                    NULL,            NULL,                             NULL,                             NULL,                           NULL,                           NULL,                           ec_pdo_map_aw_j_series              );
-MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,                         NULL,                    NULL,            NULL,                             NULL,                             NULL,                           NULL,                           NULL,                           NULL                                );
-MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         NULL,                         NULL,                    NULL,            ec_apply_standard_sdos_aw_j40_lp, ec_apply_standard_sdos_aw_j40_hp, ec_apply_standard_sdos_aw_j32,  ec_apply_standard_sdos_aw_j25,  ec_apply_standard_sdos_aw_j25,  ec_apply_standard_sdos_aw_j20       );
-MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          NULL,                         NULL,                    NULL,            ec_initial_pdo_aw_j_series,       ec_initial_pdo_aw_j_series,       ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series,     ec_initial_pdo_aw_j_series          );
-MAP_SLAVE_DC_TYPE(                        EC_DC_NONE,                   EC_DC_NONE,              EC_DC_NONE,      EC_DC_0,                          EC_DC_0,                          EC_DC_0,                        EC_DC_0,                        EC_DC_0,                        EC_DC_0                             );
-MAP_SLAVE_DC_CYCLE(                       0,                            0,                       0,               4,                                4,                                4,                              4,                              4,                              4                                   );
+//                                         Slave 1                     Slave 2                   Slave 3                   Slave 4                              Slave 5                              Slave 6                              Slave 7                              Slave 8                              Slave 9
+//                                         MAP_EK1100_1                MAP_EL2808_1              MAP_EL1808_1              MAP_AW_J40LP_CTRL_1                  MAP_AW_J40LP_CTRL_1                  MAP_AW_J32_CTRL_1                    MAP_AW_J25_CTRL_1                    MAP_AW_J25_CTRL_2                    MAP_AW_J20_CTRL_1
+//                                         Coupler                     8 dig out                 8 dig in                  J40LP joint                          J40HP joint                          J32 joint                            J25 joint                            J25 joint                            J20 joint
+MAP_NUM_DRIVES_ATTACHED(                   0,                          0,                        0,                        1,                                   1,                                   1,                                   1,                                   1,                                   1                                   );
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(           NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                ec_pdo_map_aw_j_series              );
+MAP_SLAVE_NVRAM_SDO_FUNCTIONS(             NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
+MAP_SLAVE_STANDARD_SDO_FUNCTIONS(          NULL,                       NULL,                     NULL,                     ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series  );
+MAP_SLAVE_INITIAL_PDO_FUNCTIONS(           NULL,                       NULL,                     NULL,                     ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series          );
+MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(        NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
+MAP_SLAVE_DC_TYPE(                         EC_DC_NONE,                 EC_DC_NONE,               EC_DC_NONE,               EC_DC_0,                             EC_DC_0,                             EC_DC_0,                             EC_DC_0,                             EC_DC_0,                             EC_DC_0                             );
+MAP_SLAVE_DC_CYCLE(                        0,                          0,                        0,                        4,                                   4,                                   4,                                   4,                                   4,                                   4                                   );
 
 /* FSoE */
-MAP_SLAVE_FSOE_SLAVE_TYPE(                  FSOE_SLAVE_TYPE_NONE,       FSOE_SLAVE_TYPE_NONE,     FSOE_SLAVE_TYPE_NONE,FSOE_SLAVE_TYPE_NONE,FSOE_SLAVE_TYPE_NONE,FSOE_SLAVE_TYPE_NONE              );
-MAP_SLAVE_FSOE_SLAVE_FUNCTION(              FSOE_SLAVE_FUNCTION_NONE,   FSOE_SLAVE_FUNCTION_NONE, FSOE_SLAVE_FUNCTION_NONE,               );
-MAP_SLAVE_FSOE_OFFSET_IN(                   0,                          0,                        0,0,0,0,0,0          );
-MAP_SLAVE_FSOE_OFFSET_OUT(                  0,                          0,                        0,          );
-MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(   NULL,                       NULL,                     NULL,     );
-MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS(  NULL,                       NULL,                     NULL,    );
-MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(  NULL,                       NULL,                     NULL                                    );
+MAP_SLAVE_FSOE_SLAVE_TYPE(                 FSOE_SLAVE_TYPE_NONE,       FSOE_SLAVE_TYPE_NONE,     FSOE_SLAVE_TYPE_NONE,     FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE                );
+MAP_SLAVE_FSOE_SLAVE_FUNCTION(             FSOE_SLAVE_FUNCTION_NONE,   FSOE_SLAVE_FUNCTION_NONE, FSOE_SLAVE_FUNCTION_NONE, FSOE_SLAVE_FUNCTION_NONE,            FSOE_SLAVE_FUNCTION_NONE,            FSOE_SLAVE_FUNCTION_NONE,            FSOE_SLAVE_FUNCTION_NONE,            FSOE_SLAVE_FUNCTION_NONE,            FSOE_SLAVE_FUNCTION_NONE            );
+MAP_SLAVE_FSOE_OFFSET_IN(                  0,                          0,                        0,                        0,                                   0,                                   0,                                   0,                                   0,                                   0                                   );
+MAP_SLAVE_FSOE_OFFSET_OUT(                 0,                          0,                        0,                        0,                                   0,                                   0,                                   0,                                   0,                                   0                                   );
+MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(  NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
+MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS( NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
+MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS( NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
 MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
 
 
@@ -58,15 +59,15 @@ MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
 /*This is a zero indexed array even though the slaves are 1 indexed */
 /* This must be laid out in the order they appear in netscan */
 const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
-        {.name = EK1100_EEP_NAME,       .eep_id = EK1100_EEP_ID,        .eep_man = EK1100_EEP_MAN,          .eep_rev = EK1100_EEP_REV   },
-        {.name = EL2808_EEP_NAME,       .eep_id = EL2808_EEP_ID,        .eep_man = EL2808_EEP_MAN,          .eep_rev = EL2808_EEP_REV   },
-        {.name = EL1808_EEP_NAME,       .eep_id = EL1808_EEP_ID,        .eep_man = EL1808_EEP_MAN,          .eep_rev = EL1808_EEP_REV   },
-        {.name = AW_J17_EEP_NAME,       .eep_id = AW_J17_EEP_ID,        .eep_man = AW_J17_EEP_MAN,          .eep_rev = AW_J17_EEP_REV   },
-        {.name = AW_J20_EEP_NAME,       .eep_id = AW_J20_EEP_ID,        .eep_man = AW_J20_EEP_MAN,          .eep_rev = AW_J20_EEP_REV   },
-        {.name = AW_J20_EEP_NAME,       .eep_id = AW_J20_EEP_ID,        .eep_man = AW_J20_EEP_MAN,          .eep_rev = AW_J20_EEP_REV   },
-        {.name = AW_J25_EEP_NAME,       .eep_id = AW_J25_EEP_ID,        .eep_man = AW_J25_EEP_MAN,          .eep_rev = AW_J25_EEP_REV   },
-        {.name = AW_J32_EEP_NAME,       .eep_id = AW_J32_EEP_ID,        .eep_man = AW_J32_EEP_MAN,          .eep_rev = AW_J32_EEP_REV   },
-        {.name = AW_J32_EEP_NAME,       .eep_id = AW_J32_EEP_ID,        .eep_man = AW_J32_EEP_MAN,          .eep_rev = AW_J32_EEP_REV   },
+        {.name = EK1100_EEP_NAME,       .eep_id = EK1100_EEP_ID,        .eep_man = EK1100_EEP_MAN,      .eep_rev = EK1100_EEP_REV   },
+        {.name = EL2808_EEP_NAME,       .eep_id = EL2808_EEP_ID,        .eep_man = EL2808_EEP_MAN,      .eep_rev = EL2808_EEP_REV   },
+        {.name = EL1808_EEP_NAME,       .eep_id = EL1808_EEP_ID,        .eep_man = EL1808_EEP_MAN,      .eep_rev = EL1808_EEP_REV   },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV       },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV       },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV       },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV       },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV       },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV       },
 };
 
 
@@ -86,16 +87,18 @@ MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_aw_j_series,      
 MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_aw_j_series,          ec_set_setpos_wrd_aw_j_series,          ec_set_setpos_wrd_aw_j_series,          ec_set_setpos_wrd_aw_j_series,          ec_set_setpos_wrd_aw_j_series,          ec_set_setpos_wrd_aw_j_series           );
 MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         ec_get_actvel_wrd_aw_j_series,          ec_get_actvel_wrd_aw_j_series,          ec_get_actvel_wrd_aw_j_series,          ec_get_actvel_wrd_aw_j_series,          ec_get_actvel_wrd_aw_j_series,          ec_get_actvel_wrd_aw_j_series           );
 MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        ec_get_acttorq_wrd_aw_j_series,         ec_get_acttorq_wrd_aw_j_series,         ec_get_acttorq_wrd_aw_j_series,         ec_get_acttorq_wrd_aw_j_series,         ec_get_acttorq_wrd_aw_j_series,         ec_get_acttorq_wrd_aw_j_series          );
+MAP_DRIVE_GET_CONTROL_EFFORT_WRD_FUNCTIONS( ec_get_control_effort_wrd_aw_j_series,  ec_get_control_effort_wrd_aw_j_series,  ec_get_control_effort_wrd_aw_j_series,  ec_get_control_effort_wrd_aw_j_series,  ec_get_control_effort_wrd_aw_j_series,  ec_get_control_effort_wrd_aw_j_series   );
 MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL                                    );
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL                                    );
-MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  ec_set_settorqoffset_wrd_aw_j_series,   ec_set_settorqoffset_wrd_aw_j_series,   ec_set_settorqoffset_wrd_aw_j_series,   ec_set_settorqoffset_wrd_aw_j_series,   ec_set_settorqoffset_wrd_aw_j_series,  ec_set_settorqoffset_wrd_aw_j_series    );
-MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(   ec_set_setveloffset_wrd_aw_j_series,    ec_set_setveloffset_wrd_aw_j_series,    ec_set_setveloffset_wrd_aw_j_series,    ec_set_setveloffset_wrd_aw_j_series,    ec_set_setveloffset_wrd_aw_j_series,   ec_set_setveloffset_wrd_aw_j_series     );
+MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  ec_set_settorqoffset_wrd_aw_j_series,   ec_set_settorqoffset_wrd_aw_j_series,   ec_set_settorqoffset_wrd_aw_j_series,   ec_set_settorqoffset_wrd_aw_j_series,   ec_set_settorqoffset_wrd_aw_j_series,  ec_set_settorqoffset_wrd_aw_j_series     );
+MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(   ec_set_setveloffset_wrd_aw_j_series,    ec_set_setveloffset_wrd_aw_j_series,    ec_set_setveloffset_wrd_aw_j_series,    ec_set_setveloffset_wrd_aw_j_series,    ec_set_setveloffset_wrd_aw_j_series,   ec_set_setveloffset_wrd_aw_j_series      );
 MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(            ec_set_moo_pdo_aw_j_series,             ec_set_moo_pdo_aw_j_series,             ec_set_moo_pdo_aw_j_series,             ec_set_moo_pdo_aw_j_series,             ec_set_moo_pdo_aw_j_series,             ec_set_moo_pdo_aw_j_series              );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL                                    );
 MAP_DRIVE_RUN_HOMING(                       0,                                      0,                                      0,                                      0,                                      0,                                      0                                       );
+MAP_DRIVE_GET_SECONDARY_NAME_FUNCTION(      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series       );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series             );
-MAP_DRIVE_TYPE(                             DRIVE_TYPE_AW_J                       );
-MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           ec_get_log_file_aw_j_series             );
+MAP_DRIVE_TYPE(                             DRIVE_TYPE_AW_J_40_LP,                  DRIVE_TYPE_AW_J_40_HP,                  DRIVE_TYPE_AW_J32,                      DRIVE_TYPE_AW_J25,                      DRIVE_TYPE_AW_J25,                      DRIVE_TYPE_AW_J20                       );
+MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series             );
 
 /**
  * POS_LIMIT in degrees
@@ -105,7 +108,7 @@ MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           ec_get_log_file_aw_j_series         
 
 /* DRIVE PARAMETERS */
 MAP_DRIVE_DIRECTION(                        1,                                      1,                                      1,                                      1,                                      1,                                      1                                       );
-MAP_DRIVE_SCALES(                           {166886,9549,3.414},                    {166886,9549,2.54},                    {166886,9549,4.3},                      {166886,9549,4.3},                       {166886,9549,3.414},                    {166886,9549,16.07}                     );
+MAP_DRIVE_SCALES(                           {166886,9549,3.414},         {166886,9549,2.54},           {166886,9549,4.3},           {166886,9549,4.3},            {166886,9549,3.414},         {166886,9549,16.07}          );
 
 /* PLC IO CONFIG */
 
