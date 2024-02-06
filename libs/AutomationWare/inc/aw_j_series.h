@@ -34,9 +34,9 @@ int8_t ec_get_moo_pdo_aw_j_series(uint16_t drive);
 gberror_t ec_apply_limits_aw_j_series(uint16_t slave);
 
 /** Error functions */
-uint8_t *ec_get_error_string_sdo_aw_j_series(uint16_t drive);
+uint8_t *ec_get_error_string_sdo_aw_j_series(uint16_t drive, bool *error);
 
-uint8_t *ec_get_error_string_pdo_aw_j_series(uint16_t drive);
+uint8_t *ec_get_error_string_pdo_aw_j_series(uint16_t drive, bool *error);
 
 uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(uint16_t drive_number, bool short_report);
 
