@@ -103,7 +103,6 @@ static uint32_t __attribute__((unused)) fieldbus_roundtrip(void) {
  * @brief prints a smorgasbord of dc timing data
  */
 static void __attribute__((unused)) print_dc_timestamps(void) {
-
     LL_INFO(GBEM_GEN_LOG_EN, "GBEM: Process data cycle %12ld , Wck %3d, DCtime %12ld, dt %12ld\n",
             ecm_status.cycle_count,
             wkc,
@@ -122,11 +121,11 @@ static void add_timespec(struct timespec *ts, int64 addtime) {
     int64 sec, nsec;
     nsec = addtime % NSEC_PER_SEC;
     sec = (addtime - nsec) / NSEC_PER_SEC;
-//    printf("addtime:%lld\n", addtime);
-//    printf("nsec:%lld\n", nsec);
-//    printf("sec:%lld\n", sec);
-//    printf("ts_sec(b):%ld\n", ts->tv_sec);
-//    printf("ts:nsec(b)%ld\n", ts->tv_nsec);
+    //    printf("addtime:%lld\n", addtime);
+    //    printf("nsec:%lld\n", nsec);
+    //    printf("sec:%lld\n", sec);
+    //    printf("ts_sec(b):%ld\n", ts->tv_sec);
+    //    printf("ts:nsec(b)%ld\n", ts->tv_nsec);
     ts->tv_sec += sec;
     ts->tv_nsec += nsec;
     if (ts->tv_nsec >= NSEC_PER_SEC) {
@@ -134,9 +133,9 @@ static void add_timespec(struct timespec *ts, int64 addtime) {
         ts->tv_sec += (ts->tv_nsec - nsec) / NSEC_PER_SEC;
         ts->tv_nsec = nsec;
     }
-//    printf("ts_sec(a):%ld\n", ts->tv_sec);
-//    printf("ts:nsec(a)%ld\n", ts->tv_nsec);
-//    printf("\n");
+    //    printf("ts_sec(a):%ld\n", ts->tv_sec);
+    //    printf("ts:nsec(a)%ld\n", ts->tv_nsec);
+    //    printf("\n");
 }
 
 
@@ -157,18 +156,17 @@ static void ec_sync(int64 reftime, int64 cycletime, int64 *offsettime) {
     *offsettime = -(delta / 100) - (integral / 20);
     gl_delta = delta;
 
-//            if (gl_delta>500000){
-//            printf("large +ve delta:%12lld\n", gl_delta);
-//            }
-//    if (gl_delta<(-500000)){
-//        printf("large -ve delta:%12lld\n", gl_delta);
-//    }
-
+    //            if (gl_delta>500000){
+    //            printf("large +ve delta:%12lld\n", gl_delta);
+    //            }
+    //    if (gl_delta<(-500000)){
+    //        printf("large -ve delta:%12lld\n", gl_delta);
+    //    }
 }
 
 
 __attribute__((weak)) void cyclicTest(void) {
-//this function is used by the test framework to link into the ec_rxtx task
+    //this function is used by the test framework to link into the ec_rxtx task
 }
 
 bool print_repeater_message = false;
@@ -182,7 +180,8 @@ void ec_rxtx(void *argument) {
     bool first_run = true;
     char *proc __attribute__((unused)) = (char *) argument;
     struct timespec ts;
-    struct timespec __attribute__((unused)) ts_wall;
+    struct timespec
+    __attribute__((unused)) ts_wall;
     struct timespec tleft;
     int ht;
     int64 cycletime;
@@ -229,13 +228,13 @@ void ec_rxtx(void *argument) {
     uint32_t exec_max_ns = 0;
 #endif
 
-/* The EtherCAT frame handling is split into:
- * ec_send_processdata and ec_receive_processdata.
- * - ec_send_processdata sends the frame on the NIC and saves the frame on the stack for receive to fetch.
- * - ec_receive_processdata(EC_TIMEOUTRET) tries to fetch the frames on the stack.
- * We send an argument for how long we will try to fetch the frame.
- * ec_receive_processdata returns the working counter.
-*/
+    /* The EtherCAT frame handling is split into:
+     * ec_send_processdata and ec_receive_processdata.
+     * - ec_send_processdata sends the frame on the NIC and saves the frame on the stack for receive to fetch.
+     * - ec_receive_processdata(EC_TIMEOUTRET) tries to fetch the frames on the stack.
+     * We send an argument for how long we will try to fetch the frame.
+     * ec_receive_processdata returns the working counter.
+    */
 
     //record monotonic time
     rc = clock_gettime(CLOCK_MONOTONIC, &ts);
@@ -289,7 +288,6 @@ void ec_rxtx(void *argument) {
 
 
     while (1) {
-
         bool reminder_message_flag = false;
         bool check_gbc_flag = false;
         bool gbem_i_am_alive_flag = false;
@@ -328,11 +326,8 @@ void ec_rxtx(void *argument) {
         }
 
 
-
         // if gbc is not connected AND we are not in test mode AND it is time to try an connect again to GBC
         if (!ecm_status.gbc_connected && !ec_rxtx_test_mode && time_to_check_gbc && ec_rxtx_mode == EC_RXTX_MODE_OP) {
-
-
             grc = establish_shared_mem_and_signal_con(&shmp, 1, 1);
             if (grc == E_SUCCESS) {
                 UM_INFO(GBEM_UM_EN, "GBEM: Connection to shared memory >successfully< established ");
@@ -362,7 +357,7 @@ void ec_rxtx(void *argument) {
                 // Release the semaphore when done
                 sem_post(gbc_named_mem_protection_semaphore);
             } else {
-                UM_ERROR(GBEM_UM_EN, "GBEM: Shared mem connection busy");
+                // UM_ERROR(GBEM_UM_EN, "GBEM: Shared mem connection busy");
                 ecm_status.shared_mem_busy_count++;
             }
 
@@ -405,8 +400,8 @@ void ec_rxtx(void *argument) {
 
         if (ns_rc != 0) {
             UM_FATAL(
-                    "GBEM: The nanosleep command suffered a nasty error. The system error message was: %s (%d). This error is irrecoverable. GBEM will exit",
-                    strerror(errno), ns_rc);
+                "GBEM: The nanosleep command suffered a nasty error. The system error message was: %s (%d). This error is irrecoverable. GBEM will exit",
+                strerror(errno), ns_rc);
         }
 
         /* use this for a slave at start of chain that has a 32 bit dc time register */
@@ -469,7 +464,6 @@ void ec_rxtx(void *argument) {
                     plc_task_exec();
 #endif
 #endif
-
                 }
 
                 //this fills out ec_slave struct with the current state
@@ -484,7 +478,6 @@ void ec_rxtx(void *argument) {
                         }
                     }
                 }
-
             } else {
                 //not in opmode or home
             }
@@ -503,7 +496,6 @@ void ec_rxtx(void *argument) {
             }
 
             if (ec_slave[0].hasdc) {
-
 #if PRINT_DC_TIMESTAMPS == 1
                 if (bus_cycle_tick % 5000 == 0) {
                     print_dc_timestamps();
@@ -517,7 +509,7 @@ void ec_rxtx(void *argument) {
 
                 /* calculate toff to get GBC time and DC synced */
                 /*use this for a slave at start of chain that has a 32 bit dc time register */
-//                ec_sync(ref_dc_time, cycletime, &toff);
+                //                ec_sync(ref_dc_time, cycletime, &toff);
                 if (ec_DCtime > 0) {
 #if USE_CLOCK_DIFFERENCE == 1
                     ec_sync(ec_DCtime - (int64) (clock_difference_sec * 1000000000), cycletime, &toff);
@@ -535,19 +527,18 @@ void ec_rxtx(void *argument) {
                                                 ((t_exec_start.tv_sec * NSEC_PER_SEC) + t_exec_start.tv_nsec)) / 1000;
 
 
-//                            if (exec_time_usec > 1000) {
-//                                UM_INFO(GBEM_UM_EN, "GBEM: Execution time usecs [%]" PRIu64, exec_time_usec);
-//                                UM_INFO(GBEM_UM_EN, "GBEM: Bus cycle tick [%]" PRIu64, bus_cycle_tick);
-//                            }
+                            //                            if (exec_time_usec > 1000) {
+                            //                                UM_INFO(GBEM_UM_EN, "GBEM: Execution time usecs [%]" PRIu64, exec_time_usec);
+                            //                                UM_INFO(GBEM_UM_EN, "GBEM: Bus cycle tick [%]" PRIu64, bus_cycle_tick);
+                            //                            }
 
-/** Here we warn if the exec time (state machine gubbins plus plc jiggerypokery) is more than ur cycle time */
+                            /** Here we warn if the exec time (state machine gubbins plus plc jiggerypokery) is more than ur cycle time */
 
                             if ((uint32_t) exec_time_usec >
                                 (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_ERROR_PERCENTAGE / 100)) {
                                 ec_rxtx_event[CYCLIC_EVENT_OVERRUN].active = true;
                                 UM_ERROR(GBEM_UM_EN, "GBEM: Execution time [%u] [%llu] (error)",
                                          (uint32_t) exec_time_usec, bus_cycle_tick);
-
                             } else if ((uint32_t) exec_time_usec >
                                        (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_WARNING_PERCENTAGE / 100)) {
                                 ec_rxtx_event[CYCLIC_EVENT_TIMEWARN].active = true;
@@ -559,14 +550,12 @@ void ec_rxtx(void *argument) {
                             }
                         }
 #endif
-
                     }
-//                ec_sync(ec_DCtime, cycletime, &toff);
+                    //                ec_sync(ec_DCtime, cycletime, &toff);
 #if ECRXTX_MEASURE_TIMING == 1
                     clock_gettime(CLOCK_MONOTONIC, &endTime);
 #endif
                 }
-
             }
 
             if (!ecm_status.gbc_connected) {
@@ -583,13 +572,10 @@ void ec_rxtx(void *argument) {
                 UM_INFO(GBEM_UM_EN, "GBEM: Is running. Current bus cycle count is [%llu]", bus_cycle_tick);
             }
 #endif
-
         } else {
-
-//            UM_INFO(GBEM_UM_EN, "GBEM: No mode set for EC_RXTX. Waiting for mode to be set");
+            //            UM_INFO(GBEM_UM_EN, "GBEM: No mode set for EC_RXTX. Waiting for mode to be set");
 
             osal_usleep(MAP_CYCLE_TIME * 1000);
-
         }
     }
 }
