@@ -91,11 +91,14 @@ uint32_t ctrl_state_change_cycle_count = 1;
 uint32_t ctrl_state_change_timeout = (CTRL_DRIVE_CHANGE_STATE_TIMEOUT * MAP_CYCLE_TIME);
 
 
+gberror_t ctrl_read_drive_logs(void);
+
 /** FSoE functions */
 void copy_fsoe_data(void);
 
 gberror_t update_fsoe_ecm_status(void);
 
+void find_fsoe_master(void);
 
 /* functions to copy between EC and DPM */
 static void ctrl_copy_actpos(void);
@@ -910,7 +913,7 @@ bool cia_is_fault_condition(struct event *event) {
     }
     if (((event_data_t *) event->data)->estop == true) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > estop");
-        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_ESTOP_BIT_NUM);
+        BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_SAFETY_BIT_NUM);
         control_event[CONTROL_EVENT_ESTOP].active = true;
         have_fault = true;
     }
@@ -1118,8 +1121,6 @@ static bool cia_trn13_guard(void *condition, struct event *event) {
                 ecm_status.drives[i].historic_follow_error = ecm_status.drives[i].active_follow_error;
                 ecm_status.drives[i].historic_warning = ecm_status.drives[i].active_warning;
                 ecm_status.drives[i].historic_fault = ecm_status.drives[i].active_fault;
-
-                read_drive_error_code_into_ecm_status(i, true, true);
             }
         }
 
@@ -1405,7 +1406,7 @@ bool ctrl_check_heartbeat_ok(uint32_t gbem_heartbeat_to_check, uint32_t gbc_hear
  */
 void ctrl_copy_slave_error_to_ecm_status(void) {
     // todo crit maybe we should be checking the ecat error flag here as well as EcatError
-    bool not_empty = (ecx_context.elist->head != ecx_context.elist->tail);
+    // bool not_empty = (ecx_context.elist->head != ecx_context.elist->tail);
 
 
     uint8_t EcatError_read_count = 0;
@@ -1526,7 +1527,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
     DPM_IN_PROTECT_END
 
-    bool warning_on_any_drive = ec_is_warning();
+    bool warning_on_any_drive = ec_is_warning(!debug_settings.disable_drive_warn_check);
     event_data.any_drive_has_warning = warning_on_any_drive;
 
     DPM_OUT_PROTECT_START
@@ -1546,12 +1547,12 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     gberror_t grc;
 
 
-    event_data.follow_error = ec_check_for_follow_error(&grc);
+    event_data.follow_error = ec_check_for_follow_error(&grc, !debug_settings.disable_drive_follow_error_check);
     if (grc != E_SUCCESS) {
         UM_ERROR(GBEM_UM_EN, "GBEM: error checking drive for follow error [%s]", gb_strerror(grc));
     }
 
-    event_data.internal_limit = ec_check_for_internal_limit(&grc);
+    event_data.internal_limit = ec_check_for_internal_limit(&grc, !debug_settings.disable_drive_limit_check);
     if (grc != E_SUCCESS) {
         UM_ERROR(GBEM_UM_EN, "GBEM: error checking drive for internal limit [%s]", gb_strerror(grc));
     }
@@ -1616,7 +1617,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
         }
     }
 
-    if (ec_check_remote()) {
+    if (ec_check_remote(true)) {
         event_data.remote_ok = true;
     } else {
         event_data.remote_ok = false;
@@ -1712,9 +1713,20 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
         ctrl_process_iomap_out(false);
     }
 
-
+    find_fsoe_master();
     copy_fsoe_data();
     update_fsoe_ecm_status();
+
+    //if the control word has a bit set in run read drive logs
+    if (BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBEM_DOWNLOAD_DRIVE_LOGS_BIT_NUM)) {
+        UM_INFO(GBEM_UM_EN, "GBEM: Downloading logs from drives");
+        gberror_t crdlrc = ctrl_read_drive_logs();
+        if (crdlrc == E_SUCCESS) {
+            UM_INFO(GBEM_UM_EN, "GBEM: Logs downloaded from drives successfully");
+        } else {
+            UM_ERROR(GBEM_UM_EN, "GBEM: Logs FAILED to download from drives");
+        }
+    }
     // print_status(&ecm_status);
 
     //copy PDO error codes into ecm status
@@ -1727,7 +1739,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     //     }
     // }
     for (uint16_t drive = 0; drive < MAP_NUM_DRIVES; drive++) {
-        read_drive_error_code_into_ecm_status(drive, true, false);
+        read_drive_error_code_into_ecm_status(drive, DRIVE_ERROR_MESSAGE_READ_TYPE_PDO);
     }
 
     //RT-sensitive
@@ -2188,7 +2200,7 @@ void ctrl_set_moo_pdo(void) {
 void copy_fsoe_data_slaves_to_master(uint16_t fsoe_master_no) {
     uint32_t base_master_byte_offset = map_slave_fsoe_offset_in[fsoe_master_no];
     uint32_t cumulative_master_byte_offset = 0;
-    uint32_t slave_byte_offset = 0;
+
     // bool found_at_least_one_fsoe_slave = false;
 
     //todo maybe -1 for bytes here?
@@ -2212,7 +2224,7 @@ void copy_fsoe_data_master_to_slaves(uint16_t fsoe_master_no) {
     uint32_t base_master_byte_offset = map_slave_fsoe_offset_out[fsoe_master_no];
     uint32_t cumulative_master_byte_offset = 0;
     uint32_t slave_byte_offset = 0;
-    bool found_at_least_one_fsoe_slave = false;
+
 
     //todo maybe -1 for bytes here?
     for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {
@@ -2259,9 +2271,7 @@ void print_fsoe_data(uint16_t slave_no, bool input, uint8_t byte_no, uint8_t num
     printf("\n");
 }
 
-
-void copy_fsoe_data(void) {
-    static uint16_t fsoe_master_no = 0;
+void find_fsoe_master(void) {
     static bool found_fsoe_master = false;
     if (!found_fsoe_master) {
         for (int i = 0; i < MAP_NUM_SLAVES; i++) {
@@ -2271,25 +2281,29 @@ void copy_fsoe_data(void) {
                         "GBEM: More than one FSOE master found - this is a fatal error (MAP_SLAVE_FSOE_MASTER contains mutiple true values)")
                     ;
                 }
-                fsoe_master_no = i;
-                UM_INFO(GBEM_GEN_LOG_EN, "GBEM: FSOE master found on slave [%u]", fsoe_master_no + 1);
+                fsoe_master.slave_num = i;
+                UM_INFO(GBEM_GEN_LOG_EN, "GBEM: FSOE master found on slave [%u]", fsoe_master.slave_num + 1);
                 //todo move this to new function
                 fsoe_master.found = true;
-                fsoe_master_no = i;
-                ecm_status.fsoe.master_slave_no = fsoe_master_no + 1;
+                ecm_status.fsoe.master_slave_no = fsoe_master.slave_num + 1;
                 found_fsoe_master = true;
             }
         }
     }
-
-    //only copy fsoe data if a master is found
-    if (found_fsoe_master) {
-        copy_fsoe_data_master_to_slaves(fsoe_master_no);
-        copy_fsoe_data_slaves_to_master(fsoe_master_no);
-    }
 }
 
 
+void copy_fsoe_data(void) {
+    //only copy fsoe data if a master is found
+    if (fsoe_master.found) {
+        copy_fsoe_data_master_to_slaves(fsoe_master.slave_num);
+        copy_fsoe_data_slaves_to_master(fsoe_master.slave_num);
+    }
+}
+
+/**
+*
+*/
 gberror_t update_fsoe_status_slaves(void) {
     gberror_t grc = E_SUCCESS;
 
@@ -2390,3 +2404,45 @@ gberror_t update_fsoe_ecm_status(void) {
     return grc;
 }
 
+
+#define TIME_SECS_AFTER_WHICH_DRIVE_LOGS_CAN_BE_READ_AGAIN 60
+#define READ_DRIVE_LOGS_BIT_NUM 0
+
+gberror_t ctrl_read_drive_logs(void) {
+    gberror_t grc = E_SUCCESS;
+
+    static uint64_t start_cycle_count = 0;
+    static bool run = false;
+
+
+    if (!run) {
+        // if(BIT_CHECK(dpm_out->digital[0],READ_DRIVE_LOGS_BIT_NUM )) {
+        start_cycle_count = ecm_status.cycle_count;
+        run = true;
+        for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+            if (*map_drive_get_log_file_function_ptr[i] != NULL) {
+                grc = map_drive_get_log_file_function_ptr[i](i);
+
+                if (grc != E_SUCCESS) {
+                    LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive get log file function error [%s]", gb_strerror(grc));
+                }
+            } else {
+                LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
+                         "GBEM: Missing function pointer for map_drive_get_drive_log on drive [%u]", i);
+            }
+        }
+        // }
+    }
+
+
+    // printf("%llu\n", (ecm_status.cycle_count - start_cycle_count) / (uint64_t) 1000 * (uint64_t) MAP_CYCLE_TIME);
+    // printf("%llu\n",
+    //        (uint64_t) TIME_SECS_AFTER_WHICH_DRIVE_LOGS_CAN_BE_READ_AGAIN / (uint64_t) 1000 * (uint64_t) MAP_CYCLE_TIME);
+    //after a time period
+    if ((ecm_status.cycle_count - start_cycle_count) >
+        (uint64_t) TIME_SECS_AFTER_WHICH_DRIVE_LOGS_CAN_BE_READ_AGAIN * (uint64_t) 1000 * (uint64_t) MAP_CYCLE_TIME) {
+        run = false;
+    }
+
+    return grc;
+}
