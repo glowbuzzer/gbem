@@ -48,7 +48,9 @@ const char *map_machine_type_strings[MAP_NUM_MACHINES] = {
         "MACHINE_DRIVE_SPINNERS_VIRTUAL",
         "MACHINE_EL6900_DEADMAN",
         "MACHINE_EL6900_J25",
-        "MACHINE_BBH_J25"
+        "MACHINE_BBH_J25",
+    "MACHINE_AW_6DOF",
+    "MACHINE_AW_6DOF_FSOE"
 };
 
 

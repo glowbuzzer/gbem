@@ -51,11 +51,13 @@
 #define MACHINE_EL6900_DEADMAN              0
 #define MACHINE_EL6900_J25                  0
 #define MACHINE_BBH_J25                     1
+#define MACHINE_AW_6DOF                     0
+#define MACHINE_AW_6DOF_FSOE                0
 
 
 /* NEW_MACHINE */
 //If you add a new machine you have to increment this count to match the number above
-#define MAP_NUM_MACHINES            33
+#define MAP_NUM_MACHINES                    35
 
 extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
@@ -221,6 +223,18 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
 #endif
 
+#if MACHINE_AW_6DOF== 1
+
+#include "machine_aw_6dof.h"
+
+#endif
+
+#if MACHINE_AW_6DOF_FSOE== 1
+
+#include "machine_aw_6dof_fsoe.h"
+
+#endif
+
 /* NEW_MACHINE - add new MAP_ enum here */
 typedef enum {
     MAP_MACHINE_UNKNOWN,
@@ -255,7 +269,9 @@ typedef enum {
     MAP_MACHINE_DRIVE_SPINNERS_VIRTUAL,
     MAP_MACHINE_EL6900_DEADMAN,
     MAP_MACHINE_EL6900_J25,
-    MAP_MACHINE_BBH_J25
+    MAP_MACHINE_BBH_J25,
+    MAP_MACHINE_AW_6DOF,
+    MAP_MACHINE_AW_6DOF_FSOE
 } map_machine_type_t;
 
 #define MAX_DRIVE_NAME_LENGTH                   30
