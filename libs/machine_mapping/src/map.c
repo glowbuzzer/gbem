@@ -297,7 +297,7 @@ uint32_t map_fsoe_get_slot_size_in(uint16_t slot) {
 
 /**
  * @brief This checks the warning bit on ALL drives
- * @param void
+ * @param bool enable_check
  * @return true any one drive has the warning bit set, false warning bit not set on any drive
  * @attention based on cia402
  *
