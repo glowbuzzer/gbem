@@ -74,8 +74,8 @@ typedef enum {
 
 
 #define MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(...) bool (*map_drive_get_follow_error_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
-#define MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(...)  uint8_t *(*map_drive_get_error_string_pdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
-#define MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(...) uint8_t *(*map_drive_get_error_string_sdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
+#define MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(...)  uint8_t *(*map_drive_get_error_string_pdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, bool *error) = {__VA_ARGS__};
+#define MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(...) uint8_t *(*map_drive_get_error_string_sdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, bool *error) = {__VA_ARGS__};
 #define MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(...) gberror_t (*map_drive_set_ctrl_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, uint16_t ctrlwrd) = {__VA_ARGS__};
 #define MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(...) uint16_t (*map_drive_get_stat_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 #define MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(...) int32_t (*map_drive_get_actpos_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
@@ -307,9 +307,9 @@ extern bool (*map_drive_get_follow_error_function_ptr[MAP_NUM_DRIVES])(uint16_t 
 
 extern bool (*map_drive_get_remote_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
 
-extern uint8_t *(*map_drive_get_error_string_pdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
+extern uint8_t *(*map_drive_get_error_string_pdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, bool *error);
 
-extern uint8_t *(*map_drive_get_error_string_sdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
+extern uint8_t *(*map_drive_get_error_string_sdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, bool *error);
 
 extern gberror_t (*map_drive_set_ctrl_wrd_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, uint16_t ctrlwrd);
 
@@ -371,13 +371,13 @@ extern mapping_t map_iomap[];
 extern uint16_t map_num_rows_in_iomap;
 
 //standard functions
-bool ec_is_warning(void);
+bool ec_is_warning(bool enable_check);
 
-bool ec_check_for_follow_error(gberror_t *gbc);
+bool ec_check_for_follow_error(gberror_t *gbc, bool enable_check);
 
-bool ec_check_for_internal_limit(gberror_t *gbc);
+bool ec_check_for_internal_limit(gberror_t *gbc, bool enable_check);
 
-bool ec_check_remote(void);
+bool ec_check_remote(bool enable_check);
 
 //functions to look-up objects in the iomap
 gberror_t map_get_gbc_iomap_row(map_inout_t inout, uint16_t ionum, ec_datatype datatype, mapping_t **row);

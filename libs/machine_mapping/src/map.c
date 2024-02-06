@@ -23,6 +23,7 @@
 #include "user_message.h"
 #include "gbem_config.h"
 
+
 //global var holding machine type (set in main.c)
 map_machine_type_t map_machine_type = MAP_MACHINE_UNKNOWN;
 
@@ -301,7 +302,21 @@ uint32_t map_fsoe_get_slot_size_in(uint16_t slot) {
  * @attention based on cia402
  *
  */
-bool ec_is_warning(void) {
+bool ec_is_warning(bool enable_check) {
+    if (!enable_check) {
+        return false;
+    }
+
+    // Static array to store the results of the last N cycles
+    static bool lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
+
+
+    // Shift the results to make room for the new result
+    for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
+        lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][drive] = true;
+    }
+
+
     bool warning_on_drive = false;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
@@ -312,11 +327,27 @@ bool ec_is_warning(void) {
             //we can't check all drives for a warning so return true that there is one - safest behaviour
             return true;
         }
+        for (int j = 0; j < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1; ++j) {
+            lastResults[j][i] = lastResults[j + 1][i];
+        }
+
         if (BIT_CHECK(drive_stat_wrd, CIA_WARNING_BIT_NUM)) {
-            warning_on_drive = true;
-            ecm_status.drives[i].active_warning = true;
+            lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][i] = true;
+        } else {
+            lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][i] = false;
         }
     }
+    for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
+        for (int i = 0; i < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER; ++i) {
+            if (!lastResults[i][drive]) {
+                warning_on_drive = false;
+                ecm_status.drives[drive].active_warning = false;
+                break;
+            }
+            ecm_status.drives[drive].active_warning = true;
+        }
+    }
+
     return warning_on_drive;
 }
 
@@ -327,18 +358,46 @@ bool ec_is_warning(void) {
  * @attention based on cia402
  *
  */
-bool ec_check_for_follow_error(gberror_t *grc) {
+bool ec_check_for_follow_error(gberror_t *grc, bool enable_check) {
+    if (!enable_check) {
+        *grc = E_SUCCESS;
+        return false;
+    }
+    // Static array to store the results of the last N cycles
+    static bool lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
+
+
+    // Shift the results to make room for the new result
+    for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
+        lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][drive] = true;
+    }
+
+
     bool follow_error = false;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         if (*map_drive_get_follow_error_function_ptr[i] != NULL) {
             follow_error = map_drive_get_follow_error_function_ptr[i](i);
-            ecm_status.drives[i].active_follow_error = follow_error;
         } else {
             //we can't check all drives for a follow error so return true that there is one - safest behaviour
             *grc = E_NO_FUNCTION_FOUND;
             return true;
         }
+        for (int j = 0; j < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1; ++j) {
+            lastResults[j][i] = lastResults[j + 1][i];
+        }
+        lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][i] = follow_error;
     }
+    for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
+        for (int i = 0; i < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER; ++i) {
+            if (!lastResults[i][drive]) {
+                follow_error = false;
+                ecm_status.drives[drive].active_follow_error = false;
+                break;
+            }
+            ecm_status.drives[drive].active_follow_error = true;
+        }
+    }
+
     *grc = E_SUCCESS;
     return follow_error;
 }
@@ -352,7 +411,12 @@ bool ec_check_for_follow_error(gberror_t *grc) {
  * @warning if a new drive type is added to the frameworrk that doesnt support CIA 402 limits in the status word then this will need to be extended to be like remote
  *
  */
-bool ec_check_for_internal_limit(gberror_t *gbc) {
+bool ec_check_for_internal_limit(gberror_t *grc, bool enable_check) {
+    if (!enable_check) {
+        *grc = E_SUCCESS;
+        return false;
+    }
+
     // Static array to store the results of the last N cycles
     static bool lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
 
@@ -372,7 +436,7 @@ bool ec_check_for_internal_limit(gberror_t *gbc) {
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "Missing function pointer for map_drive_get_stat_wrd on drive [%u]", i);
             //we can't check all drives for an internal limit so return true that there is one - safest behaviour
-            *gbc = E_NO_FUNCTION_FOUND;
+            *grc = E_NO_FUNCTION_FOUND;
             return true;
         }
         for (int j = 0; j < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1; ++j) {
@@ -398,7 +462,7 @@ bool ec_check_for_internal_limit(gberror_t *gbc) {
         }
     }
 
-    *gbc = E_SUCCESS;
+    *grc = E_SUCCESS;
     return internal_limit_active;
 }
 
@@ -410,7 +474,11 @@ bool ec_check_for_internal_limit(gberror_t *gbc) {
  * @attention based on cia402
  *
  */
-bool ec_check_remote(void) {
+bool ec_check_remote(bool enable_check) {
+    if (!enable_check) {
+        return false;
+    }
+
     int j = 0;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         bool remote_ok = false;
