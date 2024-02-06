@@ -31,7 +31,7 @@
 
 #define MAP_NUM_DRIVES              1
 #define MAP_NUM_SLAVES              4
-
+#define MAP_NUM_FSOE_MASTER_SLOTS   0
 
 
 /**CRITICAL! if this is defined then hardware estop is disabled! */

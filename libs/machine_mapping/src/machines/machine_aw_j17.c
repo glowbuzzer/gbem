@@ -20,20 +20,41 @@
 
 
 //@formatter:off
+
+MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(          ec_get_safety_state_aw_j_series);
+/* FSOE MASTER INFO */
+MAP_FSOE_MASTER_SLOT_CONFIG(                    );
+MAP_FSOE_MASTER_SLOT_TO_SLAVE(                  );
+MAP_FSOE_MASTER_SET_ERROR_ACK_STATE_FUNCTION(   NULL);
+
+
 map_pdo_object_t ctrl_estop_din_1 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1008_1, .bit_num=1};
 
 
 /* SLAVES */
-//                                        Slave 1             Slave 2         Slave 3          Slave 4
-//                                        MAP_EK1100_1        MAP_EL2008_1    MAP_EL1008_1     MAP_AW_J17_CTRL
-//                                        Coupler             8 dig out       8 dig in         J17 joint
-MAP_NUM_DRIVES_ATTACHED(                  0,                  0,              0,               1                                                  );
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,               NULL,           NULL,            ec_pdo_map_aw_j_series                             );
-MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,               NULL,           NULL,            NULL                                               );
-MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         NULL,               NULL,           NULL,            ec_apply_standard_sdos_aw_j17                      );
-MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          NULL,               NULL,           NULL,            ec_initial_pdo_aw_j_series                         );
-MAP_SLAVE_DC_TYPE(                        EC_DC_NONE,         EC_DC_NONE,     EC_DC_NONE,      EC_DC_0                                            );
-MAP_SLAVE_DC_CYCLE(                       0,                  0,              0,               4                                                  );
+//                                        Slave 1                       Slave 2                     Slave 3                     Slave 4
+//                                        MAP_EK1100_1                  MAP_EL2008_1                MAP_EL1008_1                MAP_AW_J17_CTRL
+//                                        Coupler                       8 dig out                   8 dig in                    J17 joint
+MAP_NUM_DRIVES_ATTACHED(                  0,                            0,                          0,                          1);
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,                         NULL,                       NULL,                       ec_pdo_map_aw_j_series);
+MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,                         NULL,                       NULL,                       NULL);
+MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         NULL,                         NULL,                       NULL,                       ec_apply_standard_sdos_aw_j_series);
+MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          NULL,                         NULL,                       NULL,                       ec_initial_pdo_aw_j_series);
+MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(       NULL,                         NULL,                       NULL,                       NULL);
+MAP_SLAVE_DC_TYPE(                        EC_DC_NONE,                   EC_DC_NONE,                 EC_DC_NONE,                 EC_DC_0);
+MAP_SLAVE_DC_CYCLE(                       0,                            0,                          0,                          4);
+
+
+/* FSoE */
+MAP_SLAVE_FSOE_SLAVE_TYPE(                  FSOE_SLAVE_TYPE_NONE,       FSOE_SLAVE_TYPE_NONE,       FSOE_SLAVE_TYPE_NONE,       FSOE_SLAVE_TYPE_NONE);
+MAP_SLAVE_FSOE_SLAVE_FUNCTION(              FSOE_SLAVE_FUNCTION_NONE,   FSOE_SLAVE_FUNCTION_NONE,   FSOE_SLAVE_FUNCTION_NONE,   FSOE_SLAVE_FUNCTION_NONE);
+MAP_SLAVE_FSOE_OFFSET_IN(                   0,                          0,                          0,                          0);
+MAP_SLAVE_FSOE_OFFSET_OUT(                  0,                          0,                          0,                          0);
+MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(   NULL,                       NULL,                       NULL,                       NULL);
+MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS(  NULL,                       NULL,                       NULL,                       NULL);
+MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(  NULL,                       NULL,                       NULL,                       NULL);
+MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
+
 
 //set moo is in either initial PDO or custom sdos
 
@@ -52,6 +73,7 @@ MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_aw_j_series,        
 MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_aw_j_series,          );
 MAP_DRIVE_GET_ACTVEL_WRD_FUNCTIONS(         ec_get_actvel_wrd_aw_j_series,          );
 MAP_DRIVE_GET_ACTTORQ_WRD_FUNCTIONS(        ec_get_acttorq_wrd_aw_j_series,         );
+MAP_DRIVE_GET_CONTROL_EFFORT_WRD_FUNCTIONS( ec_get_control_effort_wrd_aw_j_series   );
 MAP_DRIVE_SET_SETPOS_WRD_FUNCTIONS(         ec_set_setpos_wrd_aw_j_series,          );
 MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         ec_set_setvel_wrd_aw_j_series,          );
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        ec_set_settorq_wrd_aw_j_series,         );
@@ -60,17 +82,14 @@ MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(   ec_set_setveloffset_wrd_aw_j_series 
 MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(            ec_set_moo_pdo_aw_j_series,             );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                                   );
 MAP_DRIVE_RUN_HOMING(                       0,                                      );
+MAP_DRIVE_GET_SECONDARY_NAME_FUNCTION(      ec_get_secondary_name_aw_j_series       );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series             );
+MAP_DRIVE_TYPE(                             DRIVE_TYPE_AW_J17                       );
+MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           ec_get_log_file_aw_j_series             );
 
 
 /* DRIVE PARAMETERS */
-//FOR AW DRIVES THESE ARE IN DEGREES
-MAP_DRIVE_POS_LIMIT(                        9999,                                  );
-MAP_DRIVE_NEG_LIMIT(                        -9999,                                 );
 MAP_DRIVE_DIRECTION(                        1,                                  );
-//percentage of max torque
-MAP_DRIVE_TORQ_LIMIT(                       30,                                  );
-MAP_DRIVE_VEL_LIMIT(                        50,                                  );
 MAP_DRIVE_SCALES(                           {166886,9549,32.67});
 
 
@@ -145,7 +164,7 @@ const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
         {.name = EK1100_EEP_NAME,   .eep_id = EK1100_EEP_ID,   .eep_man = EK1100_EEP_MAN,     .eep_rev = EK1100_EEP_REV },
         {.name = EL2008_EEP_NAME,   .eep_id = EL2008_EEP_ID,   .eep_man = EL2008_EEP_MAN,     .eep_rev = EL2008_EEP_REV },
         {.name = EL1008_EEP_NAME,   .eep_id = EL1008_EEP_ID,   .eep_man = EL1008_EEP_MAN,     .eep_rev = EL1008_EEP_REV },
-        {.name = AW_J17_EEP_NAME,      .eep_id = AW_J17_EEP_ID,      .eep_man = AW_J17_EEP_MAN,        .eep_rev = AW_J17_EEP_REV    },
+        {.name = AW_EEP_NAME,       .eep_id = AW_EEP_ID,      .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV    },
 };
 
 
