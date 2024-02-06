@@ -856,7 +856,7 @@ boot_start_goto_label:
             if (!slave_in_error_state) {
                 break;
             }
-            sleep(1);
+            sleep(2);
             error_ack_count++;
             if (error_ack_count > 5) {
                 UM_ERROR(GBEM_UM_EN,
@@ -866,7 +866,7 @@ boot_start_goto_label:
             }
         }
 
-        if (!slave_in_error_state) {
+        if (!slave_in_error_state || error_ack_count > 5) {
             goto retry_step3;
         }
     }
