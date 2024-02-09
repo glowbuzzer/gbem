@@ -23,7 +23,7 @@
 
 map_custom_pdo_t aw_j_series_custom_pdo_map = {
     .sm2_assignment_object = 0x1C12,
-    .num_sm2_assignments = 4,
+    .num_sm2_assignments = 3,
     .rxpdo = {
         {
             .pdo_assignment_object = 0x1600,
@@ -56,11 +56,10 @@ map_custom_pdo_t aw_j_series_custom_pdo_map = {
                 {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_LED_COLOUR_ADDRESS, .offset = 0x1},
                 //0x2215 LED colour
             }
-        },
-        {.pdo_assignment_object = 0x1700}
+}
     },
     .sm3_assignment_object = 0x1C13,
-    .num_sm3_assignments = 5,
+    .num_sm3_assignments = 4,
     .txpdo = {
         {
             .pdo_assignment_object = 0x1A00,
@@ -111,9 +110,6 @@ map_custom_pdo_t aw_j_series_custom_pdo_map = {
                 //0x606B Velocity demand value
                 {.datatype = ECT_INTEGER16, .index = AW_J_SERIES_TORQUE_DEMAND_ADDRESS} //0x6074 Torque demand
             }
-        },
-        {
-            .pdo_assignment_object = 0x1B00
         }
     }
 };
