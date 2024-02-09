@@ -91,6 +91,9 @@
 
 /* EL6xxx - EtherCAT communication */
 
+#include "EL6900.h"
+#include "EL6021.h"
+
 
 /* EL7xxx - EtherCAT drives */
 #include "EL7211.h"
