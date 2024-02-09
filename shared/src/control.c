@@ -2416,7 +2416,6 @@ gberror_t ctrl_read_drive_logs(void) {
 
 
     if (!run) {
-        // if(BIT_CHECK(dpm_out->digital[0],READ_DRIVE_LOGS_BIT_NUM )) {
         start_cycle_count = ecm_status.cycle_count;
         run = true;
         for (int i = 0; i < MAP_NUM_DRIVES; i++) {
@@ -2431,7 +2430,6 @@ gberror_t ctrl_read_drive_logs(void) {
                          "GBEM: Missing function pointer for map_drive_get_drive_log on drive [%u]", i);
             }
         }
-        // }
     }
 
 
