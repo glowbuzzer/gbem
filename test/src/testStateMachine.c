@@ -80,9 +80,9 @@ void test_StateMachineClearEstopAndResetFault(void) {
                         "estop in event_data is not true even though we are in an estop state");
     //test that we end up in FAULT_REACTION_ACTIVE because estop is true
     internal_testState(CIA_FAULT_REACTION_ACTIVE);
-    TEST_ASSERT_MESSAGE(BIT_CHECK(dpm_in->fault_history_word, FAULT_CAUSE_ESTOP_BIT_NUM),
+    TEST_ASSERT_MESSAGE(BIT_CHECK(dpm_in->fault_history_word, FAULT_CAUSE_SAFETY_BIT_NUM),
                         "We had an estop event but fault cause does not record it");
-    TEST_ASSERT_MESSAGE(BIT_CHECK(dpm_in->active_fault_word, FAULT_CAUSE_ESTOP_BIT_NUM),
+    TEST_ASSERT_MESSAGE(BIT_CHECK(dpm_in->active_fault_word, FAULT_CAUSE_SAFETY_BIT_NUM),
                         "estop bit is not set in dpm_in->active_fault_word ");
 
 
@@ -111,7 +111,7 @@ ec_pdo_set_input_bit_rev(ctrl_estop_reset_din.slave_num, ctrl_estop_reset_din.bi
     TEST_ASSERT_MESSAGE(event_data.estop == false,
                         "estop in event_data has not been set to false (estop should be cleared)");
 
-    TEST_ASSERT_MESSAGE(!BIT_CHECK(dpm_in->active_fault_word, FAULT_CAUSE_ESTOP_BIT_NUM),
+    TEST_ASSERT_MESSAGE(!BIT_CHECK(dpm_in->active_fault_word, FAULT_CAUSE_SAFETY_BIT_NUM),
                         "estop bit is still set in dpm_in->active_fault_word even though we have cleared estop");
 
     internal_setAllDriveStatus(CIA_SWITCH_ON_DISABLED);
