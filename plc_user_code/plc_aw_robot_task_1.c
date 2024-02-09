@@ -13,7 +13,6 @@
  */
 
 
-
 #include "plc_task_1.h"
 #include "plc_core.h"
 #include "time.h"
@@ -48,10 +47,8 @@ bool plc_out_6_OUT_TOOL_1;
 bool plc_out_7_OUT_TOOL_2;
 
 _Noreturn void *plc_aw_robot_task_1(void *argument) {
-
     PLC_TASK_START
 
-//        printf("plc_aw_robot_task_1\n");
 
         //These signals have to be set HIGH during the normal operation to inform the “S-PLC” that the “EEMC” is working
         plc_out_1_SW_HEARTBYTE_CH1 = true;
@@ -62,23 +59,18 @@ _Noreturn void *plc_aw_robot_task_1(void *argument) {
         plc_out_4_STOP_CMD_SW_FB = plc_in_2_STOP_CMD_SW;
 
         //handle plc_in_5_BRAKE_CHOPPER_ERROR in front end or in plc?
-//        if (plc_in_5_BRAKE_CHOPPER_ERROR) {
-//            plc_signalled_error = true;
-//        } else {
-//            plc_signalled_error = false;
-//        }
+        //        if (plc_in_5_BRAKE_CHOPPER_ERROR) {
+        //            plc_signalled_error = true;
+        //        } else {
+        //            plc_signalled_error = false;
+        //        }
 
         if (!plc_in_3_ARM_48V_SUPPLY) {
             //?
         }
 
 
-
-
-
-//        plc_task_set.tasks[task_index].exec.completed=true;
+        //        plc_task_set.tasks[task_index].exec.completed=true;
 
     PLC_TASK_END
-
-
 }
