@@ -40,6 +40,8 @@ typedef enum {
 /* SLAVES */
 #define MAP_NUM_DRIVES_ATTACHED(...) const uint8_t map_num_drives_attached[MAP_NUM_SLAVES] = {__VA_ARGS__};
 #define MAP_SLAVE_PDO_MAPPING_FUNCTIONS(...) gberror_t (*map_slave_pdo_map_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) = {__VA_ARGS__};
+#define MAP_SLAVE_EXEC_FUNCTIONS(...) gberror_t (*map_slave_exec_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) = {__VA_ARGS__};
+
 #define MAP_SLAVE_NVRAM_SDO_FUNCTIONS(...) gberror_t (*map_slave_nvram_sdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) =  {__VA_ARGS__};
 #define MAP_SLAVE_STANDARD_SDO_FUNCTIONS(...) gberror_t (*map_slave_standard_sdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) =  {__VA_ARGS__};
 #define MAP_SLAVE_INITIAL_PDO_FUNCTIONS(...)  gberror_t (*map_slave_initial_pdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) =  {__VA_ARGS__};
@@ -259,6 +261,8 @@ extern bool (*map_machine_get_safety_state_function_ptr)(uint16_t slave);
 extern const uint8_t map_num_drives_attached[MAP_NUM_SLAVES];
 
 extern gberror_t (*map_slave_pdo_map_function_ptr[MAP_NUM_SLAVES])(uint16_t slave);
+
+extern gberror_t (*map_slave_exec_function_ptr[MAP_NUM_SLAVES])(uint16_t slave);
 
 extern gberror_t (*map_slave_nvram_sdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave);
 

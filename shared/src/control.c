@@ -1717,6 +1717,17 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     copy_fsoe_data();
     update_fsoe_ecm_status();
 
+
+    for (int slave = 1; slave < MAP_NUM_SLAVES + 1; slave++) {
+        if (*map_slave_exec_function_ptr[slave - 1] != NULL) {
+            if ((*map_slave_exec_function_ptr[slave - 1])(slave) == E_SUCCESS) {
+                // UM_INFO(GBEM_UM_EN, "GBEM: XXXXfor slave [%u]", slave);
+            } else {
+                // UM_ERROR(GBEM_UM_EN, "GBEM: XXXX  failed for slave [%u]", slave);
+            }
+        }
+    }
+
     //if the control word has a bit set in run read drive logs
     if (BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBEM_DOWNLOAD_DRIVE_LOGS_BIT_NUM)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Downloading logs from drives");

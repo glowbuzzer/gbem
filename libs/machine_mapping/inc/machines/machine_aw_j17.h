@@ -22,7 +22,9 @@
 #define MAP_EK1100_1                1
 #define MAP_EL2008_1                2
 #define MAP_EL1008_1                3
-#define MAP_AW_J17_CTRL             4
+#define MAP_EL6021_1                4
+#define MAP_AW_J17_CTRL             5
+
 
 #define ECM_CHECK_EEP_MAN           0
 #define ECM_CHECK_EEP_REV           0
@@ -30,7 +32,7 @@
 
 
 #define MAP_NUM_DRIVES              1
-#define MAP_NUM_SLAVES              4
+#define MAP_NUM_SLAVES              5
 #define MAP_NUM_FSOE_MASTER_SLOTS   0
 
 

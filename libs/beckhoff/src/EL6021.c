@@ -13,65 +13,33 @@
  */
 
 #include "EL6021.h"
-#include "std_headers.h"
-#include "std_defs_and_macros.h"
-#include "log.h"
 #include "user_message.h"
 #include "ethercatsetget.h"
 #include "cia402.h"
-
-#define EL6021_CTRL_PDO_INDEX 0
-#define EL6021_DATA_OUT_PDO_INDEX 2
-
-#define EL6021_STATUS_PDO_INDEX 0
-#define EL6021_DATA_IN_PDO_INDEX 2
-
-#define EL6021_DATA_SIZE 22
-
-//Control word
-#define EL6021_TRANSMIT_REQUEST_BIT_NUM 0 //Via a change of state of this bit the controller notifies the terminal that the DataOut bytes contain the number of bytes indicated via the OL bits. The terminal acknowledges receipt of the data in the status byte via a change of state of bit SW.0 (TA). Only now new data can be transferred from the controller to the terminal.
-#define EL6021_RECEIVE_ACCEPTED_BIT_NUM 1 //The controller acknowledges receipt of data by changing the state of this bit. Only then new data can be transferred from the terminal to the controller
-#define EL6021_INIT_REQUEST_BIT_NUM 2 //The controller requests terminal for initialization. The send and receive functions are blocked, the FIFO pointers are reset, and the interface is initialized with the values of the responsible objects: baud rate 4073, data frame 4074, feature bits 4075. The terminal acknowledges completion of the initialization via bit SW.2 (IA).
-#define EL6021_SEND_CONTINUOUS_BIT_NUM 3 //Continuous sending of data from the FIFO.
-
-//Status word
-#define EL6021_TRANSMIT_ACCEPTED_BIT_NUM 0 //The terminal acknowledges receipt of data by changing the state of this bit. Only now new data can be transferred from the controller to the terminal.
-#define EL6021_RECEIVE_REQUEST_BIT_NUM 1 //Via a change of state of this bit the terminal notifies the controller that the DataIn bytes contain the number of bytes indicated via the IL bits. The controller has to acknowledge receipt of the data in the control byte via a change of state of bit CW.1 (RA). Only then new data can be transferred from the terminal to the controller.
-#define EL6021_INIT_ACCEPTED_BIT_NUM 2 //Initialization was completed by the terminal.
-#define EL6021_RX_FIFO_FULL_BIT_NUM 3 //The reception FIFO is full. All further incoming data will be lost!
+#include "map.h"
+#include "dpm.h"
 
 
-//uint16_t
-#define EL6021_BAUD_RATE_SDO_INDEX 0x4073
-#define EL6021_BAUD_RATE_SDO_SUB_INDEX 0x0
-
-//uint16_t
-#define EL6021_DATA_FRAME_SDO_INDEX 0x4074
-#define EL6021_DATA_FRAME_SDO_SUB_INDEX 0x0
-
-
-/** !!!!!!!!!COM SETTINGS later hardware!!!!!  */
-
-
-//bool FALSE RTS/CTS not enabled, TRUE RTS/CTS not enabled
-#define EL6021_FEATURE_BITS_SDO_INDEX 0x8000
-#define EL6021_FEATURE_BITS_SDO_SUB_INDEX 0x00
-
-//FALSE XON/XOFF is not supported for send data, FALSE XON/XOFF is not supported for send data
-#define EL6021_XON_XOFF_TX_SDO_BIT_NUM 0
-
-//FALSE XON/XOFF is not supported for receive data, FALSE XON/XOFF is not supported for receive data
-#define EL6021_XON_XOFF_RX_SDO_BIT_NUM 1
-
-//bool FALSE Full-duplex, TRUE half uplex - default 0
-#define EL6021_DUPLEX_SDO_BIT_NUM 2
-
-//TRUE RS422 - default 0
-#define EL6021_RS422_SDO_BIT_NUM 3
-
-#define EL6021_CONTINUOUS_SEND_SDO_BIT_NUM 4
-
-#define EL6021_ENABLE_OPTIMISATION_SDO_BIT_NUM 5
+// /** !!!!!!!!!COM SETTINGS later hardware!!!!!  */
+//
+//
+// //bool FALSE RTS/CTS not enabled, TRUE RTS/CTS not enabled
+//
+// //FALSE XON/XOFF is not supported for send data, FALSE XON/XOFF is not supported for send data
+// #define EL6021_XON_XOFF_TX_SDO_BIT_NUM 0
+//
+// //FALSE XON/XOFF is not supported for receive data, FALSE XON/XOFF is not supported for receive data
+// #define EL6021_XON_XOFF_RX_SDO_BIT_NUM 1
+//
+// //bool FALSE Full-duplex, TRUE half uplex - default 0
+// #define EL6021_DUPLEX_SDO_BIT_NUM 2
+//
+// //TRUE RS422 - default 0
+// #define EL6021_RS422_SDO_BIT_NUM 3
+//
+// #define EL6021_CONTINUOUS_SEND_SDO_BIT_NUM 4
+//
+// #define EL6021_ENABLE_OPTIMISATION_SDO_BIT_NUM 5
 
 
 /*
@@ -188,44 +156,75 @@ char m_writeData[COMM_PORT_BUFF_SIZE]
  */
 
 
-typedef enum {
-EL6021_BAUD_RATE_2400=4,
-    EL6021_BAUD_RATE_4800=5,
-    EL6021_BAUD_RATE_9600=6,
-    EL6021_BAUD_RATE_19200=7,
-    EL6021_BAUD_RATE_38400=8,
-    EL6021_BAUD_RATE_57600=9,
-    EL6021_BAUD_RATE_115200=10,
-}el6021_baud_rates_t
+static uint16_t ec_get_status_word_el6021(uint16_t slave);
+
+static gberror_t ec_set_control_word_el6021(uint16_t slave, const uint16_t control_word);
+
+static gberror_t ec_set_data_el6021(uint16_t slave, uint8_t *data, uint8_t data_size);
+
+static gberror_t ec_get_data_el6021(uint16_t slave, uint8_t *data, uint8_t data_size);
+
+uint8_t ec_get_data_size_el6021(uint16_t *word);
+
+
+gberror_t ec_set_data_size_el6021(uint16_t *word, uint8_t size);
+
+
+gberror_t ec_set_data_size_el6021(uint16_t *word, uint8_t size) {
+    *word = (uint16_t) ((size << 8) | (*word & 0x00FF));
+    return E_SUCCESS;
+}
+
+
+uint8_t ec_get_data_size_el6021(uint16_t *word) {
+    uint8_t size = (uint8_t) (*word >> 8);
+    return size;
+}
+
 
 typedef enum {
-    EL6021_ENCODING_0=4,
-    EL6021_ENCODING_7E1=1,
-    EL6021_ENCODING_7O1=2, EL6021_ENCODING_8N1=3, EL6021_ENCODING_8E1=4, EL6021_ENCODING_8O1=5, EL6021_ENCODING_7E2=9, EL6021_ENCODING_7O2=10, EL6021_ENCODING_8N2=11, EL6021_ENCODING_8E2=12, EL6021_ENCODING_8O2=13, EL6021_ENCODING_8S1=18, EL6021_ENCODING_8M1=19
-    }el6021_encoding_t
+    EL6021_BAUD_RATE_2400 = 4,
+    EL6021_BAUD_RATE_4800 = 5,
+    EL6021_BAUD_RATE_9600 = 6,
+    EL6021_BAUD_RATE_19200 = 7,
+    EL6021_BAUD_RATE_38400 = 8,
+    EL6021_BAUD_RATE_57600 = 9,
+    EL6021_BAUD_RATE_115200 = 10,
+} el6021_baud_rates_t;
+
+typedef enum {
+    EL6021_ENCODING_0 = 4,
+    EL6021_ENCODING_7E1 = 1,
+    EL6021_ENCODING_7O1 = 2, EL6021_ENCODING_8N1 = 3, EL6021_ENCODING_8E1 = 4, EL6021_ENCODING_8O1 = 5,
+    EL6021_ENCODING_7E2 = 9, EL6021_ENCODING_7O2 = 10, EL6021_ENCODING_8N2 = 11, EL6021_ENCODING_8E2 = 12,
+    EL6021_ENCODING_8O2 = 13, EL6021_ENCODING_8S1 = 18, EL6021_ENCODING_8M1 = 19
+} el6021_encoding_t;
 
 
 /* This is used for the fixed POO remapping */
 map_SM_assignment_object_t map_SM2_el6021 = {
-        .number_of_entries = 2,
-        .SM_assignment_index = 0x1c12};
+    .number_of_entries = 2,
+    .SM_assignment_index = 0x1c12
+};
 
 /* This is used for the fixed PDO remapping */
 map_SM_assignment_object_t map_SM3_el6021 = {
-        .number_of_entries = 2,
-        .SM_assignment_index = 0x1c13};
+    .number_of_entries = 2,
+    .SM_assignment_index = 0x1c13
+};
 
 
 uint16_t map_SM2_index_of_assigned_PDO_el6021[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-        0x1602,
-        0x1603};
+    0x1602,
+    0x1603
+};
 
 uint16_t map_SM3_index_of_assigned_PDO_el6021[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-        0x1a03,
-        0x1a07};
+    0x1a03,
+    0x1a07
+};
 
 gberror_t ec_pdo_map_elel6021(const uint16_t slave) {
-
     if (ec_printSDO) {
         UM_INFO(GBEM_UM_EN, "GBEM: SODs configured for PDO mapping for EL6021 slave [%u] are:",
                 slave);
@@ -242,6 +241,10 @@ gberror_t ec_pdo_map_elel6021(const uint16_t slave) {
 
 
     if (!ec_sdo_write_uint16(slave, map_SM3_el6021.SM_assignment_index, 0, 0, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    if (!ec_sdo_write_uint16(slave, 0x1c12, 0, 0, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
@@ -274,115 +277,260 @@ gberror_t ec_pdo_map_elel6021(const uint16_t slave) {
 
     //all applied correctly if here
     return E_SUCCESS;
-
-
 }
 
 
-gberror_t ec_standard_sdos_el6021(const uint16_t slave) {
+void print_status_word(uint16_t status_word) {
+    printf("Status word: ");
+    for (int i = 15; i >= 0; i--) {
+        if (BIT_CHECK(status_word, i)) {
+            printf("1");
+        } else {
+            printf("0");
+        }
+    }
+}
 
 
-uint8_t feature_bits = 0;
+void print_control_word(uint16_t control_word) {
+    printf("Control word: ");
+    for (int i = 15; i >= 0; i--) {
+        if (BIT_CHECK(control_word, i)) {
+            printf("1");
+        } else {
+            printf("0");
+        }
+    }
+    printf("\n");
+}
 
-BIT_SET(
+
+gberror_t ec_slave_exec_el6021(uint16_t slave) {
+    uint16_t el6021_status_word = ec_get_status_word_el6021(slave);
+    uint16_t el6021_control_word = 0;
 
 
-    if (!ec_sdo_write_uint8_t(slave, EL7031_MAX_CURRENT_SDO_INDEX, EL7031_MAX_CURRENT_SDO_SUB_INDEX,
-                             EL7031_MAX_CURRENT_SDO_VALUE, true)) {
+    print_status_word(el6021_status_word);
+
+    //RECEIVE
+    uint8_t rx_size = ec_get_data_size_el6021(&el6021_status_word);
+
+    if (rx_size > 0) {
+        printf("rx size = [%u]\n", rx_size);
+    }
+
+
+    //put rx_size in dpm
+    ec_get_data_el6021(slave, &dpm_in->serial.length, rx_size);
+
+    if (BIT_CHECK(el6021_status_word, EL6021_TRANSMIT_ACCEPTED_BIT_NUM)) {
+        BIT_SET(dpm_in->serial.status, SERIAL_TRANSMIT_ACCEPTED_BIT_NUM);
+    }
+
+    if (BIT_CHECK(el6021_status_word, EL6021_RECEIVE_REQUEST_BIT_NUM)) {
+        BIT_SET(dpm_in->serial.status, SERIAL_RECEIVE_ACCEPTED_BIT_NUM);
+    }
+
+    if (BIT_CHECK(el6021_status_word, EL6021_INIT_ACCEPTED_BIT_NUM)) {
+        BIT_SET(dpm_in->serial.status, SERIAL_INIT_ACCEPTED_BIT_NUM);
+    }
+
+    if (BIT_CHECK(el6021_status_word, EL6021_RX_FIFO_FULL_BIT_NUM)) {
+        BIT_SET(dpm_in->serial.status, SERIAL_ERROR_BIT_NUM);
+        UM_ERROR(GBEM_UM_EN, "EL6021: RX FIFO full error");
+    }
+    if (BIT_CHECK(el6021_status_word, EL6021_PARITY_ERROR_BIT_NUM)) {
+        BIT_SET(dpm_in->serial.status, SERIAL_ERROR_BIT_NUM);
+        UM_ERROR(GBEM_UM_EN, "EL6021: Parity error");
+    }
+    if (BIT_CHECK(el6021_status_word, EL6021_FRAMING_ERROR_BIT_NUM)) {
+        BIT_SET(dpm_in->serial.status, SERIAL_ERROR_BIT_NUM);
+        UM_ERROR(GBEM_UM_EN, "EL6021: Framing error");
+    }
+    if (BIT_CHECK(el6021_status_word, EL6021_OVERRUN_ERROR_BIT_NUM)) {
+        BIT_SET(dpm_in->serial.status, SERIAL_ERROR_BIT_NUM);
+        UM_ERROR(GBEM_UM_EN, "EL6021: Overrun error");
+    }
+
+
+    uint8_t tx_size = dpm_out->serial.length;
+
+
+    //set data size in el6021 control word (will be writen to slave later)
+    ec_set_data_size_el6021(&el6021_control_word, tx_size);
+
+
+    if (BIT_CHECK(dpm_out->serial.control, SERIAL_TRANSMIT_REQUEST_BIT_NUM)) {
+        BIT_SET(el6021_control_word, EL6021_TRANSMIT_REQUEST_BIT_NUM);
+    }
+    if (BIT_CHECK(dpm_out->serial.control, SERIAL_RECEIVE_ACCEPTED_BIT_NUM)) {
+        BIT_SET(el6021_control_word, EL6021_RECEIVE_ACCEPTED_BIT_NUM);
+    }
+    if (BIT_CHECK(dpm_out->serial.control, SERIAL_INIT_REQUEST_BIT_NUM)) {
+        printf("init bit set\n");
+        BIT_SET(el6021_control_word, EL6021_INIT_REQUEST_BIT_NUM);
+    }
+
+
+    ec_set_data_el6021(slave, dpm_out->serial.data, tx_size);
+
+    print_control_word(el6021_control_word);
+
+
+    ec_set_control_word_el6021(slave, el6021_control_word);
+    return E_SUCCESS;
+}
+
+
+static gberror_t ec_set_data_el6021(const uint16_t slave, uint8_t *data, uint8_t data_size) {
+    uint8_t *data_ptr;
+
+    data_ptr = ec_slave[slave].outputs;
+    /* Move pointer to correct byte index*/
+    data_ptr += EL6021_DATA_OUT_PDO_INDEX;
+    /* Write value byte by byte since all targets can't handle misaligned
+  addresses
+     */
+
+    for (int i = 0; i < data_size; i++) {
+        *data_ptr = data[i];
+        data_ptr++;
+    }
+
+    return E_SUCCESS;
+}
+
+static gberror_t ec_get_data_el6021(const uint16_t slave, uint8_t *data, uint8_t data_size) {
+    uint8_t *data_ptr;
+    data_ptr = ec_slave[slave].inputs;
+    /* Move pointer to correct byte index*/
+    data_ptr += EL6021_DATA_IN_PDO_INDEX;
+
+    for (int i = 0; i < data_size; i++) {
+        data[i] = *data_ptr;
+        data_ptr++;
+    }
+    return E_SUCCESS;
+}
+
+
+uint16_t ec_get_status_word_el6021(const uint16_t slave) {
+    return ec_pdo_get_input_uint16(slave, EL6021_STATUS_PDO_INDEX);
+}
+
+gberror_t ec_set_control_word_el6021(const uint16_t slave, const uint16_t control_word) {
+    ec_pdo_set_output_uint16(slave, EL6021_CTRL_PDO_INDEX, control_word);
+    return E_SUCCESS;
+}
+
+#define EL6021_HALF_DUPLEX_SOD_SUB_INDEX 1
+#define EL6021_XON_XOFF_TX_SDO_SUB_INDEX 2
+#define EL6021_XON_XOFF_RX_SDO_SUB_INDEX 3
+#define EL6021_RS422_SDO_SUB_INDEX 4
+#define EL6021_CONTINUOUS_SEND_SDO_SUB_INDEX 5
+#define EL6021_ENABLE_OPTIMISATION_SDO_SUB_INDEX 6
+
+
+gberror_t ec_read_feature_bits_el6021(const uint16_t slave, uint8_t *feature_bits) {
+    uint8_t half_duplex = 0;
+    ec_sdo_read_uint8(slave, EL6021_FEATURE_BITS_SDO_INDEX, EL6021_HALF_DUPLEX_SOD_SUB_INDEX, &half_duplex, true);
+
+    if (half_duplex == 1) {
+        BIT_SET(*feature_bits, EL6021_HALF_DUPLEX_SOD_SUB_INDEX);
+    } else {
+        BIT_CLEAR(*feature_bits, EL6021_HALF_DUPLEX_SOD_SUB_INDEX);
+    }
+    //printf true false for bool
+    UM_INFO(GBEM_UM_EN, "GBEM: EL6021 Half duplex [%s]", half_duplex==1 ? "true" : "false");
+    uint8_t xon_xoff_tx = 0;
+    ec_sdo_read_uint8(slave, EL6021_FEATURE_BITS_SDO_INDEX, EL6021_XON_XOFF_TX_SDO_SUB_INDEX,
+                      &xon_xoff_tx, true);
+    if (xon_xoff_tx == 1) {
+        BIT_SET(*feature_bits, EL6021_XON_XOFF_TX_SDO_SUB_INDEX);
+    } else {
+        BIT_CLEAR(*feature_bits, EL6021_XON_XOFF_TX_SDO_SUB_INDEX);
+    }
+
+    UM_INFO(GBEM_UM_EN, "GBEM: EL6021 XON/XOFF TX [%s]", xon_xoff_tx==1 ? "true" : "false");
+
+    uint8_t xon_xoff_rx = 0;
+
+    ec_sdo_read_uint8(slave, EL6021_FEATURE_BITS_SDO_INDEX, EL6021_XON_XOFF_RX_SDO_SUB_INDEX,
+                      &xon_xoff_rx, true);
+
+    if (xon_xoff_rx == 1) {
+        BIT_SET(*feature_bits, EL6021_XON_XOFF_RX_SDO_SUB_INDEX);
+    } else {
+        BIT_CLEAR(*feature_bits, EL6021_XON_XOFF_RX_SDO_SUB_INDEX);
+    }
+
+    UM_INFO(GBEM_UM_EN, "GBEM: EL6021 XON/XOFF RX [%s]", xon_xoff_rx==1 ? "true" : "false");
+    uint8_t rs422 = 0;
+
+    ec_sdo_read_uint8(slave, EL6021_FEATURE_BITS_SDO_INDEX, EL6021_RS422_SDO_SUB_INDEX, &rs422, true);
+
+    if (rs422 == 1) {
+        BIT_SET(*feature_bits, EL6021_RS422_SDO_SUB_INDEX);
+    } else {
+        BIT_CLEAR(*feature_bits, EL6021_RS422_SDO_SUB_INDEX);
+    }
+
+    UM_INFO(GBEM_UM_EN, "GBEM: EL6021 RS422 [%s]", rs422==1 ? "true" : "false");
+
+    uint8_t continuous_send = 0;
+
+    ec_sdo_read_uint8(slave, EL6021_FEATURE_BITS_SDO_INDEX, EL6021_CONTINUOUS_SEND_SDO_SUB_INDEX,
+                      &continuous_send, true);
+
+    if (continuous_send == 1) {
+        BIT_SET(*feature_bits, EL6021_CONTINUOUS_SEND_SDO_SUB_INDEX);
+    } else {
+        BIT_CLEAR(*feature_bits, EL6021_CONTINUOUS_SEND_SDO_SUB_INDEX);
+    }
+    UM_INFO(GBEM_UM_EN, "GBEM: EL6021 Continuous send [%s]", continuous_send==1 ? "true" : "false");
+
+    uint8_t enable_optimisation = 0;
+    ec_sdo_read_uint8(slave, EL6021_FEATURE_BITS_SDO_INDEX,
+                      EL6021_ENABLE_OPTIMISATION_SDO_SUB_INDEX, &enable_optimisation, true);
+    UM_INFO(GBEM_UM_EN, "GBEM: EL6021 Enable optimisation [%s]", enable_optimisation==1 ? "true" : "false");
+
+    if (enable_optimisation == 1) {
+        BIT_SET(*feature_bits, EL6021_ENABLE_OPTIMISATION_SDO_SUB_INDEX);
+    } else {
+        BIT_CLEAR(*feature_bits, EL6021_ENABLE_OPTIMISATION_SDO_SUB_INDEX);
+    }
+
+
+    return E_SUCCESS;
+}
+
+gberror_t ec_apply_standard_sdos_el6021(const uint16_t slave) {
+    uint8_t feature_bits = 0;
+    ec_read_feature_bits_el6021(slave, &feature_bits);
+
+
+    if (!ec_sdo_write_uint16(slave, EL6021_BAUD_RATE_SDO_INDEX, EL6021_BAUD_RATE_SDO_SUB_INDEX,
+                             EL6021_BAUD_RATE_115200, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 
-    // if (!ec_sdo_write_uint16(slave, EL7031_MAX_CURRENT_SDO_INDEX, EL7031_MAX_CURRENT_SDO_SUB_INDEX,
-    //                          EL7031_MAX_CURRENT_SDO_VALUE, true)) {
-    //     return E_SDO_WRITE_FAILURE;
-    // }
-    // if (!ec_sdo_write_uint16(slave, EL7031_REDUCED_CURRENT_SDO_INDEX, EL7031_REDUCED_CURRENT_SDO_SUB_INDEX,
-    //                          EL7031_REDUCED_CURRENT_SDO_VALUE, true)) {
-    //     return E_SDO_WRITE_FAILURE;
-    // }
-    // if (!ec_sdo_write_uint16(slave, EL7031_NOMINAL_VOLTAGE_SDO_INDEX, EL7031_NOMINAL_VOLTAGE_SDO_SUB_INDEX,
-    //                          EL7031_NOMINAL_VOLTAGE_SDO_VALUE, true)) {
-    //     return E_SDO_WRITE_FAILURE;
-    // }
-    // if (!ec_sdo_write_uint16(slave, EL7031_MOTOR_COIL_RESISTANCE_SDO_INDEX, EL7031_MOTOR_COIL_RESISTANCE_SDO_SUB_INDEX,
-    //                          EL7031_MOTOR_COIL_RESISTANCE_SDO_VALUE, true)) {
-    //     return E_SDO_WRITE_FAILURE;
-    // }
-    // if (!ec_sdo_write_uint16(slave, EL7031_MOTOR_FULL_STEPS_SDO_INDEX, EL7031_MOTOR_FULL_STEPS_SDO_SUB_INDEX,
-    //                          EL7031_MOTOR_FULL_STEPS_SDO_VALUE, true)) {
-    //     return E_SDO_WRITE_FAILURE;
-    // }
-    // if (!ec_sdo_write_uint8(slave, EL7031_OPERATION_MODE_SDO_INDEX, EL7031_OPERATION_MODE_SDO_SUB_INDEX,
-    //                         EL7031_OPERATION_MODE_SDO_VALUE, true)) {
-    //     return E_SDO_WRITE_FAILURE;
-    // }
-    // if (!ec_sdo_write_uint8(slave, EL7031_SPEED_RANGE_SDO_INDEX, EL7031_SPEED_RANGE_SDO_SUB_INDEX,
-    //                         EL7031_SPEED_RANGE_SDO_VALUE, true)) {
-    //     return E_SDO_WRITE_FAILURE;
-    // }
-    // if (!ec_sdo_write_uint8(slave, EL7031_INVERT_MOTOR_POLARITY_SDO_INDEX, EL7031_INVERT_MOTOR_POLARITY_SDO_SUB_INDEX,
-    //                         map_drive_direction[slave - 1], true)) {
-    //     return E_SDO_WRITE_FAILURE;
-    // }
+
+    if (!ec_sdo_write_uint16(slave, EL6021_DATA_FRAME_SDO_INDEX, EL6021_DATA_FRAME_SDO_SUB_INDEX,
+                             EL6021_ENCODING_8N1, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    //Enable half duplex
+    if (!ec_sdo_write_uint8(slave, EL6021_FEATURE_BITS_SDO_INDEX, EL6021_HALF_DUPLEX_SOD_SUB_INDEX,
+                            1, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
+    ec_read_feature_bits_el6021(slave, &feature_bits);
+
+
     //all applied correctly
     return E_SUCCESS;
-
 }
 
-
-// uint8_t *ec_get_error_string_sdo_el7031(const uint16_t drive) {
-//
-//
-//     uint64_t read_val = 0;
-//     int size = EL7031_DIAG_SIZE; //48bits
-//     //read in complete access mode
-//     int rc = ec_SDOread(map_drive_to_slave[drive], EL7031_DIAG_SDO_INDEX, EL7031_DIAG_SDO_SUB_INDEX, true, &size,
-//                         &read_val, EC_TIMEOUTRXM);
-//
-//     if (rc <= 0) {
-//         return (uint8_t *) "Can't read EL7031 error code from SDO";
-//     }
-//
-//     if (BIT_CHECK(read_val, EL7031_ERROR_SATURATED_BIT_NUM)) {
-//         return (uint8_t *) "EL7031: Saturated error";
-//     }
-//     if (BIT_CHECK(read_val, EL7031_ERROR_OVER_TEMPERATURE_BIT_NUM)) {
-//         return (uint8_t *) "EL7031: Over temperature error";
-//     }
-//
-//     if (BIT_CHECK(read_val, EL7031_ERROR_TORQUE_OVERLOAD_BIT_NUM)) {
-//         return (uint8_t *) "EL7031: Torque overload error";
-//     }
-//
-//     if (BIT_CHECK(read_val, EL7031_ERROR_UNDER_VOLTAGE_BIT_NUM)) {
-//         return (uint8_t *) "EL7031: Under voltage error";
-//     }
-//     if (BIT_CHECK(read_val, EL7031_ERROR_OVER_VOLTAGE_BIT_NUM)) {
-//         return (uint8_t *) "EL7031: Over volatge error";
-//     }
-//
-//     if (BIT_CHECK(read_val, EL7031_ERROR_SHORT_CIRCUIT_A_BIT_NUM)) {
-//         return (uint8_t *) "EL7031: Short circuit A error";
-//     }
-//
-//     if (BIT_CHECK(read_val, EL7031_ERROR_SHORT_CIRCUIT_B_BIT_NUM)) {
-//         return (uint8_t *) "EL7031: Short circuit B error";
-//     }
-//
-//     if (BIT_CHECK(read_val, EL7031_ERROR_NO_CONTROL_POWER_BIT_NUM)) {
-//         return (uint8_t *) "EL7031: No control power error";
-//     }
-//
-//     if (BIT_CHECK(read_val, EL7031_ERROR_MISC_ERROR_BIT_NUM)) {
-//         return (uint8_t *) "EL7031: Misc error";
-//     }
-//
-//     if (BIT_CHECK(read_val, EL7031_ERROR_CONFIG_ERROR_BIT_NUM)) {
-//         return (uint8_t *) "EL7031: Config error";
-//     }
-//
-//     return (uint8_t *) "EL7031: Unknown error";
-//
-//
-// }
 
