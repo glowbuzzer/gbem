@@ -56,7 +56,7 @@ map_custom_pdo_t aw_j_series_custom_pdo_map = {
                 {.datatype = ECT_UNSIGNED32, .index = AW_J_SERIES_LED_COLOUR_ADDRESS, .offset = 0x1},
                 //0x2215 LED colour
             }
-}
+        }
     },
     .sm3_assignment_object = 0x1C13,
     .num_sm3_assignments = 4,
@@ -448,7 +448,7 @@ gberror_t ec_set_moo_pdo_aw_j_series(const uint16_t drive, int8_t moo) {
  * @attention
  */
 gberror_t ec_initial_pdo_aw_j_series(const uint16_t slave) {
-    //    ec_pdo_set_output_int8(slave, AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
+    // ec_pdo_set_output_int8(slave, AW_J_SERIES_MOOSET_PDO_INDEX, map_drive_moo[map_slave_to_drive(slave)]);
     //
     //    UM_INFO(GBEM_UM_EN,
     //            "GBEM: Setting MOO with PDO write for AW-J-Series drive slave [%u], drive, [%u], offset [%u], value [%u]",
