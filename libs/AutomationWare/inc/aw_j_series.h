@@ -23,7 +23,7 @@
 extern map_custom_pdo_t aw_j_series_custom_pdo_map;
 
 /** Machine functions */
-bool ec_get_safety_state_aw_j_series(void);
+bool ec_get_safety_state_aw_j_series(uint16_t slave);
 
 /** Slave functions */
 
