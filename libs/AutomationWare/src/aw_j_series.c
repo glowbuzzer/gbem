@@ -167,9 +167,9 @@ gberror_t ec_apply_limits_aw_j_series(uint16_t slave) {
         }
     }
 
-    if (map_machine_limits[drive].max_motor_speed != 0 && map_machine_limits[drive].max_motor_speed) {
+    if (map_machine_limits[drive].max_motor_speed != 0 && map_machine_limits[drive].velocity_limit) {
         uint32_t max_motor_speed = (uint32_t) ((((double) map_machine_limits[drive].max_motor_speed * (double)
-                                                 map_machine_limits[drive].max_motor_speed) / (double) 100));
+                                                 map_machine_limits[drive].velocity_limit) / (double) 100));
         UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max motor speed [%d] on drive [%d]",
                 max_motor_speed,
                 map_drive_to_slave[drive]);
@@ -181,7 +181,7 @@ gberror_t ec_apply_limits_aw_j_series(uint16_t slave) {
     }
 
 
-    if (map_machine_limits[drive].position_limit_max != 0 && map_machine_limits[drive].position_limit_max != 0 &&
+    if (map_machine_limits[drive].position_limit_max != 0 && map_machine_limits[drive].position_limit_min != 0 &&
         map_drive_scales[drive].position_scale != 0) {
         if (!ec_sdo_write_int32(map_drive_to_slave[drive], AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
                                 AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
@@ -224,7 +224,7 @@ gberror_t ec_apply_limits_aw_j_series(uint16_t slave) {
 }
 
 
-bool ec_get_safety_state_aw_j_series(void) {
+bool ec_get_safety_state_aw_j_series(uint16_t slave) {
     bool estop = true;
 
 #if MAP_NUMBER_ESTOP_DIN == 0

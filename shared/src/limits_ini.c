@@ -114,9 +114,9 @@ static void parse_section(map_machine_limits_t *config, const char *key,
     // printf("%s\n", value);
 
     if (MATCH("position_limit_max", key)) {
-        config[section].position_limit_max = (uint32_t) atoi(value);
+        config[section].position_limit_max = (int32_t) atoi(value);
     } else if (MATCH("position_limit_min", key)) {
-        config[section].position_limit_min = (uint32_t) atoi(value);
+        config[section].position_limit_min = (int32_t) atoi(value);
     } else if (MATCH("velocity_limit", key)) {
         config[section].velocity_limit = (uint32_t) atoi(value);
     } else if (MATCH("torque_limit", key)) {
