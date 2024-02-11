@@ -81,7 +81,7 @@ uint16_t map_num_rows_in_iomap = sizeof (map_iomap)/ sizeof(map_iomap[0]);
 /*This is a zero indexed array even though the slaves are 1 indexed
  * This must be laid out in the order they appear in netscan
  * It is used to check the slaves match in the boot process */
-const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
+const map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {
         {
             .name = EK1100_EEP_NAME },
             {

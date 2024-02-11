@@ -93,7 +93,7 @@ uint16_t map_num_rows_in_iomap = sizeof (map_iomap)/ sizeof(map_iomap[0]);
 
 /*This is a zero indexed array even though the slaves are 1 indexed */
 /* This must be laid out in the order they appear in netscan */
-const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
+const map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {
         {.name = P366_EEP_NAME,       .eep_id = P366_EEP_ID,        .eep_man = P366_EEP_MAN,          .eep_rev = P366_EEP_REV   },
         {.name = P372_EEP_NAME,       .eep_id = P372_EEP_ID,        .eep_man = P372_EEP_MAN,          .eep_rev = P372_EEP_REV   },
         {.name = MSE_408_EEP_NAME,       .eep_id = MSE_408_EEP_ID,        .eep_man = MSE_408_EEP_MAN,          .eep_rev = MSE_408_EEP_REV   },

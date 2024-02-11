@@ -29,9 +29,12 @@ map_machine_type_t map_machine_type = MAP_MACHINE_UNKNOWN;
 
 map_machine_limits_t map_machine_limits[MAP_NUM_DRIVES];
 
+uint8_t map_num_slaves = 0;
+
 
 int8_t map_drive_moo[MAP_NUM_DRIVES];
 
+machine_config_optional_slaves_t machine_config_optional_slaves = {0};
 
 /**
  * \brief   get the size of the datatype in bits
@@ -308,16 +311,10 @@ bool ec_is_warning(bool enable_check) {
     }
 
     // Static array to store the results of the last N cycles
-    static bool lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
+    static bool lastResults[NUM_CYCLES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
 
+    bool warning_active[MAP_NUM_DRIVES] = {true};
 
-    // Shift the results to make room for the new result
-    for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
-        lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][drive] = true;
-    }
-
-
-    bool warning_on_drive = false;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
         if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
@@ -327,28 +324,38 @@ bool ec_is_warning(bool enable_check) {
             //we can't check all drives for a warning so return true that there is one - safest behaviour
             return true;
         }
-        for (int j = 0; j < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1; ++j) {
+        for (int j = 0; j < NUM_CYCLES_TO_EVALUATE_FAULTS_OVER - 1; ++j) {
             lastResults[j][i] = lastResults[j + 1][i];
         }
 
         if (BIT_CHECK(drive_stat_wrd, CIA_WARNING_BIT_NUM)) {
-            lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][i] = true;
+            lastResults[NUM_CYCLES_TO_EVALUATE_FAULTS_OVER - 1][i] = true;
         } else {
-            lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][i] = false;
-        }
-    }
-    for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
-        for (int i = 0; i < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER; ++i) {
-            if (!lastResults[i][drive]) {
-                warning_on_drive = false;
-                ecm_status.drives[drive].active_warning = false;
-                break;
-            }
-            ecm_status.drives[drive].active_warning = true;
+            lastResults[NUM_CYCLES_TO_EVALUATE_FAULTS_OVER - 1][i] = false;
         }
     }
 
-    return warning_on_drive;
+
+    //evaluate
+    for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
+        ecm_status.drives[drive].active_warning = true;
+        for (int i = 0; i < NUM_CYCLES_TO_EVALUATE_FAULTS_OVER; ++i) {
+            if (!lastResults[i][drive]) {
+                warning_active[drive] = false;
+                ecm_status.drives[drive].active_warning = false;
+                break;
+            }
+        }
+    }
+
+
+    for (int i = 0; i < MAP_NUM_DRIVES; ++i) {
+        if (warning_active[i]) {
+            return true; // If any value is true, return true
+        }
+    }
+
+    return false;
 }
 
 /**
@@ -364,17 +371,14 @@ bool ec_check_for_follow_error(gberror_t *grc, bool enable_check) {
         return false;
     }
     // Static array to store the results of the last N cycles
-    static bool lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
+    static bool lastResults[NUM_CYCLES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
 
 
-    // Shift the results to make room for the new result
-    for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
-        lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][drive] = true;
-    }
+    bool follow_error_active[MAP_NUM_DRIVES] = {true};
 
 
-    bool follow_error = false;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+        bool follow_error = true;
         if (*map_drive_get_follow_error_function_ptr[i] != NULL) {
             follow_error = map_drive_get_follow_error_function_ptr[i](i);
         } else {
@@ -382,24 +386,34 @@ bool ec_check_for_follow_error(gberror_t *grc, bool enable_check) {
             *grc = E_NO_FUNCTION_FOUND;
             return true;
         }
-        for (int j = 0; j < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1; ++j) {
+        for (int j = 0; j < NUM_CYCLES_TO_EVALUATE_FAULTS_OVER - 1; ++j) {
             lastResults[j][i] = lastResults[j + 1][i];
         }
-        lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][i] = follow_error;
+        lastResults[NUM_CYCLES_TO_EVALUATE_FAULTS_OVER - 1][i] = follow_error;
     }
+
+
+    //evaluate
     for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
-        for (int i = 0; i < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER; ++i) {
+        ecm_status.drives[drive].active_follow_error = true;
+        for (int i = 0; i < NUM_CYCLES_TO_EVALUATE_FAULTS_OVER; ++i) {
             if (!lastResults[i][drive]) {
-                follow_error = false;
+                follow_error_active[drive] = false;
                 ecm_status.drives[drive].active_follow_error = false;
                 break;
             }
-            ecm_status.drives[drive].active_follow_error = true;
         }
     }
 
     *grc = E_SUCCESS;
-    return follow_error;
+
+    for (int i = 0; i < MAP_NUM_DRIVES; ++i) {
+        if (follow_error_active[i]) {
+            return true; // If any value is true, return true
+        }
+    }
+
+    return false;
 }
 
 
@@ -417,17 +431,12 @@ bool ec_check_for_internal_limit(gberror_t *grc, bool enable_check) {
         return false;
     }
 
+
     // Static array to store the results of the last N cycles
-    static bool lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
+    static bool lastResults[NUM_CYCLES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
 
 
-    // Shift the results to make room for the new result
-    for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
-        lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][drive] = true;
-    }
-
-
-    bool internal_limit_active = true;
+    bool internal_limit_active[MAP_NUM_DRIVES] = {true};
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
@@ -439,31 +448,38 @@ bool ec_check_for_internal_limit(gberror_t *grc, bool enable_check) {
             *grc = E_NO_FUNCTION_FOUND;
             return true;
         }
-        for (int j = 0; j < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1; ++j) {
+        for (int j = 0; j < NUM_CYCLES_TO_EVALUATE_FAULTS_OVER - 1; ++j) {
             lastResults[j][i] = lastResults[j + 1][i];
         }
 
         if (BIT_CHECK(drive_stat_wrd, CIA_INTERNAL_LIMIT_BIT_NUM)) {
-            lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][i] = true;
+            lastResults[NUM_CYCLES_TO_EVALUATE_FAULTS_OVER - 1][i] = true;
         } else {
-            lastResults[NUM_CYLCES_TO_EVALUATE_FAULTS_OVER - 1][i] = false;
+            lastResults[NUM_CYCLES_TO_EVALUATE_FAULTS_OVER - 1][i] = false;
         }
     }
 
     //evaluate
     for (int drive = 0; drive < MAP_NUM_DRIVES; drive++) {
-        for (int i = 0; i < NUM_CYLCES_TO_EVALUATE_FAULTS_OVER; ++i) {
+        ecm_status.drives[drive].active_internal_limit = true;
+        for (int i = 0; i < NUM_CYCLES_TO_EVALUATE_FAULTS_OVER; ++i) {
             if (!lastResults[i][drive]) {
-                internal_limit_active = false;
+                internal_limit_active[drive] = false;
                 ecm_status.drives[drive].active_internal_limit = false;
                 break;
             }
-            ecm_status.drives[drive].active_internal_limit = true;
         }
     }
 
     *grc = E_SUCCESS;
-    return internal_limit_active;
+
+    for (int i = 0; i < MAP_NUM_DRIVES; ++i) {
+        if (internal_limit_active[i]) {
+            return true; // If any value is true, return true
+        }
+    }
+
+    return false;
 }
 
 

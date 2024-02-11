@@ -52,6 +52,9 @@
 #define NUM_PARAMS_IN_LIMITS_INI 6
 #define DEBUG_INI_FILENAME "./debug.ini"
 #define NUM_PARAMS_IN_DEBUG_INI 3
+#define MACHINE_CONFIG_INI_FILENAME "./machine_config.ini"
+#define NUM_PARAMS_IN_MACHINE_CONFIG_INI 11
+#define MAX_NUM_OPTIONAL_SLAVES 10
 
 
 /*** GBC CONFIGURATION ***/
@@ -63,7 +66,7 @@
 #define CTRL_HEARTBEAT_TOLERANCE                        50
 
 
-#define NUM_CYLCES_TO_EVALUATE_FAULTS_OVER              5
+#define NUM_CYCLES_TO_EVALUATE_FAULTS_OVER              5
 
 
 #define FSOE_STANDARD_OVERALL_SAFETY_STATE_BIT_NUM      0

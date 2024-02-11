@@ -22,6 +22,7 @@
 
 /* MACHINE INFO */
 MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(          ec_fsoe_get_safety_state_bbh_scu_1_ec);
+MAP_MACHINE_DISABLE_SLAVES_FUNCTION(            NULL);
 
 /* FSOE MASTER INFO */
 MAP_FSOE_MASTER_SLOT_CONFIG(                    MDP_SLOT_TYPE_BBH_32_12);
@@ -41,7 +42,7 @@ MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            NULL,                               
 MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(         ec_custom_fmmu_sm_bbh_scu_1_ec,         ec_custom_fmmu_sm_aw_j_series);
 MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,                             EC_DC_0);
 MAP_SLAVE_DC_CYCLE(                         0,                                      1) ;
-
+MAP_SLAVE_EXEC_FUNCTIONS(                   NULL,                                   NULL);
 
 
 
@@ -57,7 +58,7 @@ MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
 
 /*This is a zero indexed array even though the slaves are 1 indexed */
 /* This must be laid out in the order they appear in netscan */
-const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
+const map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {
         {.name = BBH_SCU_1_EC_EEP_NAME, .eep_id = BBH_SCU_1_EC_EEP_ID, .eep_man = BBH_SCU_1_EC_EEP_MAN, .eep_rev = BBH_SCU_1_EC_EEP_REV},
         {.name = AW_EEP_NAME, .eep_id = AW_EEP_ID, .eep_man = AW_EEP_MAN, .eep_rev = AW_EEP_REV    },
 };

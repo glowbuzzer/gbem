@@ -39,7 +39,7 @@ MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
 
 /*This is a zero indexed array even though the slaves are 1 indexed */
 /* This must be laid out in the order they appear in netscan */
-const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
+const map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {
         {.name = EK1100_EEP_NAME, .eep_id = EK1100_EEP_ID, .eep_man = EK1100_EEP_MAN, .eep_rev = EK1100_EEP_REV},
         {.name = EL6900_EEP_NAME, .eep_id = EL6900_EEP_ID, .eep_man = EL6900_EEP_MAN, .eep_rev = EL6900_EEP_REV},
         {.name = EL1904_EEP_NAME, .eep_id = EL1904_EEP_ID, .eep_man = EL1904_EEP_MAN, .eep_rev = EL1904_EEP_REV},

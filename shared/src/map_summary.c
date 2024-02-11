@@ -870,21 +870,21 @@ gberror_t config_process_slaves(void) {
 #endif
 
 
-    UM_INFO(GBEM_UM_EN, "GBEM: Number of slaves defined [%u]", MAP_NUM_SLAVES);
+    UM_INFO(GBEM_UM_EN, "GBEM: Number of slaves defined [%u]", map_num_slaves);
 
 
-    if (GET_ARRAY_LEN(map_dc_type) != MAP_NUM_SLAVES) {
+    if (GET_ARRAY_LEN(map_dc_type) != map_num_slaves) {
         UM_ERROR(GBEM_UM_EN, "GBEM: Not all slaves have a DC type (check map_dc_type[])");
         config_error = true;
     }
 
-    if (check_slave_function_ptrs(MAP_NUM_SLAVES) != E_SUCCESS) {
+    if (check_slave_function_ptrs(map_num_slaves) != E_SUCCESS) {
         UM_ERROR(GBEM_UM_EN, "GBEM: Error checking slave function pointers");
         config_error = true;
     }
 
     bool dc_on_any_slave = false;
-    for (int i = 1; i < MAP_NUM_SLAVES + 1; i++) {
+    for (int i = 1; i < map_num_slaves + 1; i++) {
 
         if (strlen(ecm_slave_map[i - 1].name) == 0) {
             UM_ERROR(GBEM_UM_EN, "GBEM: Slave number [%u] is missing its name in the ecm_slave_map array", i);

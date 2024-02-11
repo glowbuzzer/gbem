@@ -1450,7 +1450,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     ecm_status.cycle_count++;
 
     if (first_run) {
-        for (int slave = 1; slave < MAP_NUM_SLAVES + 1; slave++) {
+        for (int slave = 1; slave < map_num_slaves + 1; slave++) {
             //            printf("In initial pdo set: slave %u\n", slave);
             if (*map_slave_initial_pdo_function_ptr[slave - 1] != NULL) {
                 if ((*map_slave_initial_pdo_function_ptr[slave - 1])(slave) == E_SUCCESS) {
@@ -1718,7 +1718,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     update_fsoe_ecm_status();
 
 
-    for (int slave = 1; slave < MAP_NUM_SLAVES + 1; slave++) {
+    for (int slave = 1; slave < map_num_slaves + 1; slave++) {
         if (*map_slave_exec_function_ptr[slave - 1] != NULL) {
             if ((*map_slave_exec_function_ptr[slave - 1])(slave) == E_SUCCESS) {
                 // UM_INFO(GBEM_UM_EN, "GBEM: XXXXfor slave [%u]", slave);
@@ -2285,7 +2285,7 @@ void print_fsoe_data(uint16_t slave_no, bool input, uint8_t byte_no, uint8_t num
 void find_fsoe_master(void) {
     static bool found_fsoe_master = false;
     if (!found_fsoe_master) {
-        for (int i = 0; i < MAP_NUM_SLAVES; i++) {
+        for (int i = 0; i < map_num_slaves; i++) {
             if (map_slave_fsoe_function[i] == FSOE_SLAVE_FUNCTION_MASTER) {
                 if (found_fsoe_master == true) {
                     UM_FATAL(
@@ -2320,7 +2320,7 @@ gberror_t update_fsoe_status_slaves(void) {
 
     bool any_fsoe_slave_is_error = false;
 
-    for (int slave = 1; slave < MAP_NUM_SLAVES + 1; slave++) {
+    for (int slave = 1; slave < map_num_slaves + 1; slave++) {
         if (*map_slave_fsoe_get_slave_state_function_ptr[slave - 1] != NULL) {
             if (map_slave_fsoe_function[slave - 1] == FSOE_SLAVE_FUNCTION_MASTER) {
                 UM_FATAL(
@@ -2366,7 +2366,7 @@ gberror_t update_fsoe_status_slaves(void) {
 gberror_t update_fsoe_ecm_status_master(void) {
     gberror_t grc = E_SUCCESS;
 
-    for (int slave = 1; slave < MAP_NUM_SLAVES + 1; slave++) {
+    for (int slave = 1; slave < map_num_slaves + 1; slave++) {
         if (*map_slave_fsoe_get_master_state_function_ptr[slave - 1] != NULL) {
             if (map_slave_fsoe_function[slave - 1] != FSOE_SLAVE_FUNCTION_MASTER) {
                 UM_FATAL(

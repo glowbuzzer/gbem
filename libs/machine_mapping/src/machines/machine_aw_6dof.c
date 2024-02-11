@@ -21,6 +21,7 @@
 
 /* MACHINE INFO */
 MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(          ec_get_safety_state_aw_j_series);
+MAP_MACHINE_DISABLE_SLAVES_FUNCTION(            NULL);
 
 /* FSOE MASTER INFO */
 MAP_FSOE_MASTER_SLOT_CONFIG(                    );
@@ -43,6 +44,9 @@ MAP_SLAVE_INITIAL_PDO_FUNCTIONS(           NULL,                       NULL,    
 MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(        NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
 MAP_SLAVE_DC_TYPE(                         EC_DC_NONE,                 EC_DC_NONE,               EC_DC_NONE,               EC_DC_0,                             EC_DC_0,                             EC_DC_0,                             EC_DC_0,                             EC_DC_0,                             EC_DC_0                             );
 MAP_SLAVE_DC_CYCLE(                        0,                          0,                        0,                        4,                                   4,                                   4,                                   4,                                   4,                                   4                                   );
+MAP_SLAVE_EXEC_FUNCTIONS(                  NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL                                 NULL,                               );
+
+
 
 /* FSoE */
 MAP_SLAVE_FSOE_SLAVE_TYPE(                 FSOE_SLAVE_TYPE_NONE,       FSOE_SLAVE_TYPE_NONE,     FSOE_SLAVE_TYPE_NONE,     FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE                );
@@ -58,7 +62,7 @@ MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
 
 /*This is a zero indexed array even though the slaves are 1 indexed */
 /* This must be laid out in the order they appear in netscan */
-const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
+const map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {
         {.name = EK1100_EEP_NAME,       .eep_id = EK1100_EEP_ID,        .eep_man = EK1100_EEP_MAN,      .eep_rev = EK1100_EEP_REV   },
         {.name = EL2808_EEP_NAME,       .eep_id = EL2808_EEP_ID,        .eep_man = EL2808_EEP_MAN,      .eep_rev = EL2808_EEP_REV   },
         {.name = EL1808_EEP_NAME,       .eep_id = EL1808_EEP_ID,        .eep_man = EL1808_EEP_MAN,      .eep_rev = EL1808_EEP_REV   },
@@ -79,8 +83,8 @@ MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_aw_j_series,         
 MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL                                    );
 MAP_DRIVE_GET_REMOTE_FUNCTIONS(             ec_get_remote_aw_j_series,              ec_get_remote_aw_j_series,              ec_get_remote_aw_j_series,              ec_get_remote_aw_j_series,              ec_get_remote_aw_j_series,              ec_get_remote_aw_j_series               );
 MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_aw_j_series,        ec_get_follow_error_aw_j_series,        ec_get_follow_error_aw_j_series,        ec_get_follow_error_aw_j_series,        ec_get_follow_error_aw_j_series,        ec_get_follow_error_aw_j_series         );
-MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL                                    );
-MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   ec_get_error_string_sdo_aw_j_series,    ec_get_error_string_sdo_aw_j_series,    ec_get_error_string_sdo_aw_j_series,    ec_get_error_string_sdo_aw_j_series,    ec_get_error_string_sdo_aw_j_series,    ec_get_error_string_sdo_aw_j_series     );
+MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   ec_get_error_string_pdo_aw_j_series,    ec_get_error_string_pdo_aw_j_series,    ec_get_error_string_pdo_aw_j_series,    ec_get_error_string_pdo_aw_j_series,    ec_get_error_string_pdo_aw_j_series,    ec_get_error_string_pdo_aw_j_series     );
+MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL,                                   NULL                                    );
 MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_aw_j_series,            ec_set_ctrl_wrd_aw_j_series,            ec_set_ctrl_wrd_aw_j_series,            ec_set_ctrl_wrd_aw_j_series,            ec_set_ctrl_wrd_aw_j_series,            ec_set_ctrl_wrd_aw_j_series             );
 MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_aw_j_series,            ec_get_stat_wrd_aw_j_series,            ec_get_stat_wrd_aw_j_series,            ec_get_stat_wrd_aw_j_series,            ec_get_stat_wrd_aw_j_series,            ec_get_stat_wrd_aw_j_series             );
 MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_aw_j_series,          ec_get_actpos_wrd_aw_j_series,          ec_get_actpos_wrd_aw_j_series,          ec_get_actpos_wrd_aw_j_series,          ec_get_actpos_wrd_aw_j_series,          ec_get_actpos_wrd_aw_j_series           );

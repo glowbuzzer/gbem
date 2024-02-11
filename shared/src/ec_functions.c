@@ -276,7 +276,7 @@ static int custom_slave_config(uint16 slave) {
         }
     }
 
-    if (slave == MAP_NUM_SLAVES) {
+    if (slave == map_num_slaves) {
         //we are on the last slave
         if (!pdo_map_failure) {
             UM_INFO(GBEM_UM_EN, "GBEM: Boot step 4.1 <success> (PDO mapping)");
@@ -525,10 +525,10 @@ RESTART_SCAN:
 
         UM_INFO(GBEM_UM_EN, "GBEM: We found [%d] slaves on the EtherCAT network", ec_slavecount);
 
-        if (ec_slavecount != MAP_NUM_SLAVES) {
+        if (ec_slavecount != map_num_slaves) {
             UM_ERROR(GBEM_UM_EN,
-                     "GBEM: The number of slaves found on the EtherCAT network [%d] does not match the number configured in the machine map (MAP_NUM_SLAVES) [%d]",
-                     ec_slavecount, MAP_NUM_SLAVES);
+                     "GBEM: The number of slaves found on the EtherCAT network [%d] does not match the number configured in the machine map (after any optional slaves are remove) [%d]",
+                     ec_slavecount, map_num_slaves);
             UM_ERROR(GBEM_UM_EN,
                      "GBEM: We will scan the network again in 10 seconds, please check the EtherCAT network");
             sleep(10);
@@ -543,7 +543,7 @@ RESTART_SCAN:
          * hook ensure that the custom configuration will be applied when calling recover and re-configuration
          * of a slave.
          */
-        for (int i = 1; i <= MAP_NUM_SLAVES; i++) {
+        for (int i = 1; i <= map_num_slaves; i++) {
             ec_slave[i].PO2SOconfig = custom_slave_config;
         }
         /*copy the contents of the ec_slave struct to shared mem (the ecm_status struct is used by the UI and needs basic info e.g. slave names */
@@ -742,7 +742,7 @@ bool ec_step_9_op(void) {
 
     //copy fixed fsoe information into ecm_status
     uint8_t num_fsoe_slaves = 0;
-    for (int i = 1; i <= MAP_NUM_SLAVES; i++) {
+    for (int i = 1; i <= map_num_slaves; i++) {
         ecm_status.fsoe.slave_type[i] = map_slave_fsoe_slave_type[i - 1];
         if (ecm_status.fsoe.slave_type[i] != FSOE_SLAVE_TYPE_NONE) {
             num_fsoe_slaves++;
@@ -910,7 +910,7 @@ boot_start_goto_label:
 
     //    bool have_sync = false;
     //
-    //    for (int i = 1; i <= MAP_NUM_SLAVES; i++) {
+    //    for (int i = 1; i <= map_num_slaves; i++) {
     //
     //        check_slave_dc_sysdiff_less_than_threshold(i);
     //
@@ -928,7 +928,7 @@ boot_start_goto_label:
     if (ec_boot_proceed) {
         dc_clock_type_t dc_clock_type;
         /* think we can now print the slave's dc * 1c32 config and check DC clock support */
-        for (int i = 1; i <= MAP_NUM_SLAVES; i++) {
+        for (int i = 1; i <= map_num_slaves; i++) {
             dc_clock_type = check_dc_clock_type(i);
             switch (dc_clock_type) {
                 case DC_CLOCK_ERROR:
@@ -1050,7 +1050,7 @@ boot_start_goto_label:
  * @return true: slaves on network matches the map (good), false slaves don't map the network (bad)
  */
 gberror_t ec_slaves_match(void) {
-    if (ec_slavecount < MAP_NUM_SLAVES) {
+    if (ec_slavecount < map_num_slaves) {
         return E_NOT_ENOUGH_SLAVES;
     }
     /* Verify slave by slave that it is correct*/
@@ -1063,7 +1063,7 @@ gberror_t ec_slaves_match(void) {
      * #define ECM_CHECK_EEP_ID
      * */
 
-    for (int i = 0; i < MAP_NUM_SLAVES; i++) {
+    for (int i = 0; i < map_num_slaves; i++) {
         if (strcmp(ec_slave[i + 1].name, ecm_slave_map[i].name) != 0) {
             return E_SLAVE_NAME_MATCH_FAILURE;
         }

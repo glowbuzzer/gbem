@@ -14,6 +14,8 @@
 #ifndef GBEM_MACHINE_AW_6DOF_H
 #define GBEM_MACHINE_AW_6DOF_H
 
+#include "stdbool.h"
+
 
 #define MAP_CYCLE_TIME              (4)
 #define MAP_GLOBAL_DC_SYNC_OFFSET   2000U

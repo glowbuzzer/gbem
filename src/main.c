@@ -43,12 +43,14 @@
 #include "shared_mem_types.h"
 #include "limits_ini.h"
 #include "debug_ini.h"
+#include "machine_config_ini.h"
 #include "std_utils.h"
 #include "map_SDO_print.h"
 #include "nvram.h"
 #include "plc_core.h"
 #include "gbem_config.h"
 #include "linux_shm.h"
+#include "optional_slaves.h"
 
 #define BOOL_STRING(b) ((b) ? "true" : "false")
 /**global var storing the name of the nic read from command lines args */
@@ -560,6 +562,12 @@ skip_command_line:
     UM_INFO(GBEM_UM_EN, "GBEM: Software project version [%s]", PROJECT_VER);
     UM_INFO(GBEM_UM_EN, "GBEM: Release Git Tag [%s]", GIT_TAG);
 
+    //set the number of slaves in the map to be the (maximum) number of slaves defined in the machine map (this may be reduced when optional slaves are removed)
+    map_num_slaves = MAP_NUM_SLAVES;
+
+    // test();
+    // exit(0);
+
     UM_INFO(GBEM_UM_EN, "GBEM: We are running with the [%s] program on interface [%s]",
             ecm_active_program_names[ecm_status.active_program], eth_interface1);
 
@@ -717,6 +725,62 @@ skip_command_line:
             UM_FATAL("GBEM: Debug settings parsing failed - please fix the debug ini file [%s]", DEBUG_INI_FILENAME);
         }
     }
+
+
+    if (!check_machine_config_ini_exists()) {
+        UM_WARN(GBEM_UM_EN,
+                "GBEM: Machine config ini file [%s] not found, no optional slaves will be disabled",
+                MACHINE_CONFIG_INI_FILENAME);
+    } else {
+        UM_INFO(GBEM_UM_EN,
+                "GBEM: Machine config ini file [%s] found, we will now parse the file", MACHINE_CONFIG_INI_FILENAME);
+
+        uint8_t number_of_items_found = 0;
+
+        gberror_t machine_config_read_rc = read_machine_config_ini(&number_of_items_found);
+
+
+        if (number_of_items_found != NUM_PARAMS_IN_MACHINE_CONFIG_INI) {
+            UM_FATAL(
+                "GBEM: The machine config ini file does not contain the correct number of parameters [%u] - please fix the machine config ini file [%s]",
+                number_of_items_found, MACHINE_CONFIG_INI_FILENAME);
+        } else {
+            UM_INFO(GBEM_UM_EN,
+                    "GBEM: The machine config contains the correct number of parameters [%d] - we will continue",
+                    number_of_items_found);
+        }
+
+
+        UM_INFO(GBEM_UM_EN,
+                "GBEM: Machine config is: enable_optional_slave_1 [%s], enable_optional_slave_2 [%s], enable_optional_slave_3 [%s], enable_optional_slave_4 [%s], enable_optional_slave_5 [%s], enable_optional_slave_6 [%s], enable_optional_slave_7 [%s], enable_optional_slave_8 [%s], enable_optional_slave_9 [%s], enable_optional_slave_10 [%s],",
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_1),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_2),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_3),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_4),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_5),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_6),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_7),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_8),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_9),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_10)
+        );
+
+        if (machine_config_read_rc == E_SUCCESS) {
+            UM_INFO(GBEM_UM_EN,
+                    "GBEM: Machine config (optional slaves) settings loaded successfully")
+            ;
+        } else {
+            UM_FATAL("GBEM: Machine config settings parsing failed - please fix the machine config ini file [%s]",
+                     DEBUG_INI_FILENAME);
+        }
+    }
+
+    //we must disable slaves even if we dont have a config ini file as the file "turns on" slaves
+
+
+    UM_INFO(GBEM_UM_EN, "GBEM: Starting process to disable optional slaves");
+    os_disable_slaves(map_slave_optional);
+    UM_INFO(GBEM_UM_EN, "GBEM: Completed process to disable optional slaves");
 
 
 #if DISABLE_ESTOP_CHECKING == 1

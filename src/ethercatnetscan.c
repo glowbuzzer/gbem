@@ -656,7 +656,7 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
             if (apply_pdo_mapping) {
                 UM_INFO(GBEM_UM_EN, "GBEM: netscan applying PDO mapping");
 
-                for (int m = 1; m <= MAP_NUM_SLAVES; m++) {
+                for (int m = 1; m <= map_num_slaves; m++) {
                     ec_slave[m].PO2SOconfig = netscan_slave_config;
                 }
                 ec_slave[0].state = EC_STATE_PRE_OP;

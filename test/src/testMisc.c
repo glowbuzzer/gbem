@@ -134,8 +134,8 @@ void test_miscCtrlCopySlaveErrorToEcmStatus(void) {
 
 void test_miscEcSlavesMatch(void) {
 
-    ec_slavecount = MAP_NUM_SLAVES;
-    for (int i = 0; i < MAP_NUM_SLAVES; i++) {
+    ec_slavecount = map_num_slaves;
+    for (int i = 0; i < map_num_slaves; i++) {
 //        strcpy(ec_slave[i + 1].name, "Slave");
 
 //        strcpy(ecm_slave_map[i].name, "Slave");

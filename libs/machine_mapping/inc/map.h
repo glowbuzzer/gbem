@@ -37,32 +37,35 @@ typedef enum {
 /* MACHINE */
 #define MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(...) bool (*map_machine_get_safety_state_function_ptr)(uint16_t slave) = {__VA_ARGS__};
 
-/* SLAVES */
-#define MAP_NUM_DRIVES_ATTACHED(...) const uint8_t map_num_drives_attached[MAP_NUM_SLAVES] = {__VA_ARGS__};
-#define MAP_SLAVE_PDO_MAPPING_FUNCTIONS(...) gberror_t (*map_slave_pdo_map_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) = {__VA_ARGS__};
-#define MAP_SLAVE_EXEC_FUNCTIONS(...) gberror_t (*map_slave_exec_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) = {__VA_ARGS__};
 
-#define MAP_SLAVE_NVRAM_SDO_FUNCTIONS(...) gberror_t (*map_slave_nvram_sdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) =  {__VA_ARGS__};
-#define MAP_SLAVE_STANDARD_SDO_FUNCTIONS(...) gberror_t (*map_slave_standard_sdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) =  {__VA_ARGS__};
-#define MAP_SLAVE_INITIAL_PDO_FUNCTIONS(...)  gberror_t (*map_slave_initial_pdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) =  {__VA_ARGS__};
-#define MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(...) gberror_t (*map_slave_custom_fmmu_sm_function_ptr[MAP_NUM_SLAVES])(uint16_t slave) =  {__VA_ARGS__};
-#define MAP_SLAVE_DC_TYPE(...) const map_slave_dc_type_t map_dc_type[MAP_NUM_SLAVES] = {__VA_ARGS__};
-#define MAP_SLAVE_DC_CYCLE(...) const int8_t map_dc_cycle[MAP_NUM_SLAVES] = {__VA_ARGS__};
-#define MAP_SLAVE_EEP(...) const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {__VA_ARGS__};
-// #define MAP_SLAVE_MDP_SLOT_TYPE(...) const map_mdp_slot_type_t map_slave_mdp_slot_type[MAP_NUM_SLAVES] = {__VA_ARGS__};
+/* SLAVES */
+#define MAP_NUM_DRIVES_ATTACHED(...) uint8_t map_num_drives_attached[EC_MAXSLAVE] = {__VA_ARGS__};
+#define MAP_SLAVE_PDO_MAPPING_FUNCTIONS(...) gberror_t (*map_slave_pdo_map_function_ptr[EC_MAXSLAVE])(uint16_t slave) = {__VA_ARGS__};
+#define MAP_SLAVE_EXEC_FUNCTIONS(...) gberror_t (*map_slave_exec_function_ptr[EC_MAXSLAVE])(uint16_t slave) = {__VA_ARGS__};
+
+#define MAP_SLAVE_NVRAM_SDO_FUNCTIONS(...) gberror_t (*map_slave_nvram_sdo_function_ptr[EC_MAXSLAVE])(uint16_t slave) =  {__VA_ARGS__};
+#define MAP_SLAVE_STANDARD_SDO_FUNCTIONS(...) gberror_t (*map_slave_standard_sdo_function_ptr[EC_MAXSLAVE])(uint16_t slave) =  {__VA_ARGS__};
+#define MAP_SLAVE_INITIAL_PDO_FUNCTIONS(...)  gberror_t (*map_slave_initial_pdo_function_ptr[EC_MAXSLAVE])(uint16_t slave) =  {__VA_ARGS__};
+#define MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(...) gberror_t (*map_slave_custom_fmmu_sm_function_ptr[EC_MAXSLAVE])(uint16_t slave) =  {__VA_ARGS__};
+#define MAP_SLAVE_DC_TYPE(...) map_slave_dc_type_t map_dc_type[EC_MAXSLAVE] = {__VA_ARGS__};
+#define MAP_SLAVE_DC_CYCLE(...) int8_t map_dc_cycle[EC_MAXSLAVE] = {__VA_ARGS__};
+#define MAP_SLAVE_OPTIONAL(...) bool map_slave_optional[EC_MAXSLAVE] = {__VA_ARGS__};
+
+#define MAP_SLAVE_EEP(...) map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {__VA_ARGS__};
+// #define MAP_SLAVE_MDP_SLOT_TYPE(...) const map_mdp_slot_type_t map_slave_mdp_slot_type[EC_MAXSLAVE] = {__VA_ARGS__};
 #define MAP_FSOE_MASTER_SLOT_CONFIG(...) const map_mdp_slot_type_t map_slave_fsoe_master_slot_config[MAP_NUM_FSOE_MASTER_SLOTS] = {__VA_ARGS__};
 #define MAP_FSOE_MASTER_SLOT_TO_SLAVE(...) const uint16_t map_fsoe_master_slot_to_slave[MAP_NUM_FSOE_MASTER_SLOTS] = {__VA_ARGS__};
 
 #define MAP_FSOE_MASTER_SET_ERROR_ACK_STATE_FUNCTION(...) gberror_t (*map_fsoe_master_set_error_ack_state_function_ptr)(bool state, uint16_t slave) = {__VA_ARGS__};
 
-#define MAP_SLAVE_FSOE_SLAVE_TYPE(...) const enum FSOE_SLAVE_TYPE map_slave_fsoe_slave_type[MAP_NUM_SLAVES] = {__VA_ARGS__};
-#define MAP_SLAVE_FSOE_SLAVE_FUNCTION(...) const map_slave_fsoe_function_t map_slave_fsoe_function[MAP_NUM_SLAVES] = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_SLAVE_TYPE(...) enum FSOE_SLAVE_TYPE map_slave_fsoe_slave_type[EC_MAXSLAVE] = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_SLAVE_FUNCTION(...) map_slave_fsoe_function_t map_slave_fsoe_function[EC_MAXSLAVE] = {__VA_ARGS__};
 #define MAP_FSOE_MASTER_CONTROL_FUNCTION(...) gberror_t (*map_fsoe_master_control_function_ptr)(void) = {__VA_ARGS__};
-#define MAP_SLAVE_FSOE_OFFSET_IN(...) const uint16_t map_slave_fsoe_offset_in[MAP_NUM_SLAVES] = {__VA_ARGS__};
-#define MAP_SLAVE_FSOE_OFFSET_OUT(...) const uint16_t map_slave_fsoe_offset_out[MAP_NUM_SLAVES] = {__VA_ARGS__};
-#define MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_slave_state_function_ptr[MAP_NUM_SLAVES])(uint16_t slave,  uint32_t *state, enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state )  = {__VA_ARGS__};
-#define MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_master_state_function_ptr[MAP_NUM_SLAVES])(uint16_t slave, enum FSOE_MASTER_HIGH_LEVEL_STATE *master_high_level_state, uint32_t *error_code) = {__VA_ARGS__};
-#define MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_slave_con_id_function_ptr[MAP_NUM_SLAVES])(uint16_t slave, uint16_t *con_id ) = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_OFFSET_IN(...)  uint16_t map_slave_fsoe_offset_in[EC_MAXSLAVE] = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_OFFSET_OUT(...)  uint16_t map_slave_fsoe_offset_out[EC_MAXSLAVE] = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_slave_state_function_ptr[EC_MAXSLAVE])(uint16_t slave,  uint32_t *state, enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state )  = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_master_state_function_ptr[EC_MAXSLAVE])(uint16_t slave, enum FSOE_MASTER_HIGH_LEVEL_STATE *master_high_level_state, uint32_t *error_code) = {__VA_ARGS__};
+#define MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS(...) gberror_t (*map_slave_fsoe_get_slave_con_id_function_ptr[EC_MAXSLAVE])(uint16_t slave, uint16_t *con_id ) = {__VA_ARGS__};
 
 
 /* DRIVES */
@@ -134,8 +137,8 @@ typedef struct {
 
 
 typedef struct {
-    uint32_t position_limit_max;
-    uint32_t position_limit_min;
+    int32_t position_limit_max;
+    int32_t position_limit_min;
     uint32_t velocity_limit;
     uint32_t torque_limit;
     uint32_t max_motor_speed;
@@ -143,6 +146,8 @@ typedef struct {
 } map_machine_limits_t;
 
 extern map_machine_limits_t map_machine_limits[MAP_NUM_DRIVES];
+
+extern uint8_t map_num_slaves;
 
 
 typedef struct {
@@ -250,31 +255,49 @@ typedef enum {
 
 
 extern const map_drive_scales_t map_drive_scales[MAP_NUM_DRIVES];
-extern const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES];
+extern map_slave_map_t ecm_slave_map[EC_MAXSLAVE];
 extern map_machine_type_t map_machine_type;
+
+typedef struct {
+    bool enable_optional_slave_1;
+    bool enable_optional_slave_2;
+    bool enable_optional_slave_3;
+    bool enable_optional_slave_4;
+    bool enable_optional_slave_5;
+    bool enable_optional_slave_6;
+    bool enable_optional_slave_7;
+    bool enable_optional_slave_8;
+    bool enable_optional_slave_9;
+    bool enable_optional_slave_10;
+} machine_config_optional_slaves_t;
+
+extern machine_config_optional_slaves_t machine_config_optional_slaves;
 
 
 //MACHINE
 extern bool (*map_machine_get_safety_state_function_ptr)(uint16_t slave);
 
+// extern gberror_t (*map_machine_disable_slaves_function_ptr)(void);
+
 //SLAVES
-extern const uint8_t map_num_drives_attached[MAP_NUM_SLAVES];
+extern uint8_t map_num_drives_attached[EC_MAXSLAVE];
 
-extern gberror_t (*map_slave_pdo_map_function_ptr[MAP_NUM_SLAVES])(uint16_t slave);
+extern gberror_t (*map_slave_pdo_map_function_ptr[EC_MAXSLAVE])(uint16_t slave);
 
-extern gberror_t (*map_slave_exec_function_ptr[MAP_NUM_SLAVES])(uint16_t slave);
+extern gberror_t (*map_slave_exec_function_ptr[EC_MAXSLAVE])(uint16_t slave);
 
-extern gberror_t (*map_slave_nvram_sdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave);
+extern gberror_t (*map_slave_nvram_sdo_function_ptr[EC_MAXSLAVE])(uint16_t slave);
 
-extern gberror_t (*map_slave_standard_sdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave);
+extern gberror_t (*map_slave_standard_sdo_function_ptr[EC_MAXSLAVE])(uint16_t slave);
 
-extern gberror_t (*map_slave_initial_pdo_function_ptr[MAP_NUM_SLAVES])(uint16_t slave);
+extern gberror_t (*map_slave_initial_pdo_function_ptr[EC_MAXSLAVE])(uint16_t slave);
 
-extern gberror_t (*map_slave_custom_fmmu_sm_function_ptr[MAP_NUM_SLAVES])(uint16_t slave);
+extern gberror_t (*map_slave_custom_fmmu_sm_function_ptr[EC_MAXSLAVE])(uint16_t slave);
 
-extern const map_slave_dc_type_t map_dc_type[MAP_NUM_SLAVES];
-extern const int8_t map_dc_cycle[MAP_NUM_SLAVES];
+extern map_slave_dc_type_t map_dc_type[EC_MAXSLAVE];
+extern int8_t map_dc_cycle[EC_MAXSLAVE];
 
+extern bool map_slave_optional[EC_MAXSLAVE];
 
 extern const uint16_t map_fsoe_master_slot_to_slave[MAP_NUM_FSOE_MASTER_SLOTS];
 extern const map_mdp_slot_type_t map_slave_fsoe_master_slot_config[MAP_NUM_FSOE_MASTER_SLOTS];
@@ -282,20 +305,20 @@ extern const map_mdp_slot_type_t map_slave_fsoe_master_slot_config[MAP_NUM_FSOE_
 extern gberror_t (*map_fsoe_master_set_error_ack_state_function_ptr)(bool state, uint16_t slave);
 
 //FSOE
-extern const enum FSOE_SLAVE_TYPE map_slave_fsoe_slave_type[MAP_NUM_SLAVES];
-extern const map_slave_fsoe_function_t map_slave_fsoe_function[MAP_NUM_SLAVES];
+extern enum FSOE_SLAVE_TYPE map_slave_fsoe_slave_type[EC_MAXSLAVE];
+extern map_slave_fsoe_function_t map_slave_fsoe_function[EC_MAXSLAVE];
 
 
-extern const uint16_t map_slave_fsoe_offset_in[MAP_NUM_SLAVES];
-extern const uint16_t map_slave_fsoe_offset_out[MAP_NUM_SLAVES];
+extern uint16_t map_slave_fsoe_offset_in[EC_MAXSLAVE];
+extern uint16_t map_slave_fsoe_offset_out[EC_MAXSLAVE];
 
-extern gberror_t (*map_slave_fsoe_get_slave_state_function_ptr[MAP_NUM_SLAVES])(
+extern gberror_t (*map_slave_fsoe_get_slave_state_function_ptr[EC_MAXSLAVE])(
     uint16_t slave, uint32_t *state, enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state);
 
-extern gberror_t (*map_slave_fsoe_get_master_state_function_ptr[MAP_NUM_SLAVES])(
+extern gberror_t (*map_slave_fsoe_get_master_state_function_ptr[EC_MAXSLAVE])(
     uint16_t slave, enum FSOE_MASTER_HIGH_LEVEL_STATE *high_level_state, uint32_t *error_code);
 
-extern gberror_t (*map_slave_fsoe_get_slave_con_id_function_ptr[MAP_NUM_SLAVES])(uint16_t slave, uint16_t *con_id);
+extern gberror_t (*map_slave_fsoe_get_slave_con_id_function_ptr[EC_MAXSLAVE])(uint16_t slave, uint16_t *con_id);
 
 
 //DRIVES
