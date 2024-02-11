@@ -98,7 +98,7 @@ gberror_t ec_print_pdo_config_aw_series(const uint16_t slave);
 
 
 //Number of error strings and error report strings for the AW J series drives
-#define NUM_OF_AW_J_SERIES_ERROR_STRINGS 26
+#define NUM_OF_AW_J_SERIES_ERROR_STRINGS 61
 #define NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS 162
 
 
