@@ -22,6 +22,7 @@
 //@formatter:off
 
 MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(          ec_get_safety_state_aw_j_series);
+
 /* FSOE MASTER INFO */
 MAP_FSOE_MASTER_SLOT_CONFIG(                    );
 MAP_FSOE_MASTER_SLOT_TO_SLAVE(                  );
@@ -44,6 +45,18 @@ MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(         NULL,                         NULL, 
 MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,                   EC_DC_NONE,                 EC_DC_NONE,                 EC_DC_NONE,                             EC_DC_0);
 MAP_SLAVE_DC_CYCLE(                         0,                            0,                          0,                          0,                                      4);
 MAP_SLAVE_EXEC_FUNCTIONS(                   NULL,                         NULL,                       NULL,                       ec_slave_exec_el6021,                   NULL);
+MAP_SLAVE_OPTIONAL(                         false,                        false,                      false,                      true,                                   false);
+
+/*This is a zero indexed array even though the slaves are 1 indexed */
+/* This must be laid out in the order they appear in netscan */
+map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {
+ {.name = EK1100_EEP_NAME,   .eep_id = EK1100_EEP_ID,   .eep_man = EK1100_EEP_MAN,     .eep_rev = EK1100_EEP_REV },
+ {.name = EL2008_EEP_NAME,   .eep_id = EL2008_EEP_ID,   .eep_man = EL2008_EEP_MAN,     .eep_rev = EL2008_EEP_REV },
+ {.name = EL1008_EEP_NAME,   .eep_id = EL1008_EEP_ID,   .eep_man = EL1008_EEP_MAN,     .eep_rev = EL1008_EEP_REV },
+ {.name = EL6021_EEP_NAME,   .eep_id = EL6021_EEP_ID,   .eep_man = EL6021_EEP_MAN,     .eep_rev = EL6021_EEP_REV },
+ {.name = AW_EEP_NAME,       .eep_id = AW_EEP_ID,       .eep_man = AW_EEP_MAN,         .eep_rev = AW_EEP_REV    },
+};
+
 
 /* FSoE */
 MAP_SLAVE_FSOE_SLAVE_TYPE(                  FSOE_SLAVE_TYPE_NONE,         FSOE_SLAVE_TYPE_NONE,       FSOE_SLAVE_TYPE_NONE,       FSOE_SLAVE_TYPE_NONE,                   FSOE_SLAVE_TYPE_NONE);
@@ -66,8 +79,8 @@ MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(            ec_get_moo_pdo_aw_j_series,         
 MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(            NULL,                                   );
 MAP_DRIVE_GET_REMOTE_FUNCTIONS(             ec_get_remote_aw_j_series,              );
 MAP_DRIVE_GET_FOLLOW_ERROR_FUNCTIONS(       ec_get_follow_error_aw_j_series,        );
-MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   NULL,                                   );
-MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   ec_get_error_string_sdo_aw_j_series     );
+MAP_DRIVE_GET_ERROR_STRING_PDO_FUNCTIONS(   ec_get_error_string_pdo_aw_j_series     );
+MAP_DRIVE_GET_ERROR_STRING_SDO_FUNCTIONS(   NULL                                    );
 MAP_DRIVE_SET_CTRL_WRD_FUNCTIONS(           ec_set_ctrl_wrd_aw_j_series,            );
 MAP_DRIVE_GET_STAT_WRD_FUNCTIONS(           ec_get_stat_wrd_aw_j_series,            );
 MAP_DRIVE_GET_ACTPOS_WRD_FUNCTIONS(         ec_get_actpos_wrd_aw_j_series,          );
@@ -158,16 +171,6 @@ mapping_t map_iomap[14] = {
 
 uint16_t map_num_rows_in_iomap = sizeof (map_iomap)/ sizeof(map_iomap[0]);
 
-/*This is a zero indexed array even though the slaves are 1 indexed */
-/* This must be laid out in the order they appear in netscan */
-const map_slave_map_t ecm_slave_map[MAP_NUM_SLAVES] = {
-        {.name = EK1100_EEP_NAME,   .eep_id = EK1100_EEP_ID,   .eep_man = EK1100_EEP_MAN,     .eep_rev = EK1100_EEP_REV },
-        {.name = EL2008_EEP_NAME,   .eep_id = EL2008_EEP_ID,   .eep_man = EL2008_EEP_MAN,     .eep_rev = EL2008_EEP_REV },
-        {.name = EL1008_EEP_NAME,   .eep_id = EL1008_EEP_ID,   .eep_man = EL1008_EEP_MAN,     .eep_rev = EL1008_EEP_REV },
-        {.name = EL6021_EEP_NAME,   .eep_id = EL6021_EEP_ID,   .eep_man = EL6021_EEP_MAN,     .eep_rev = EL6021_EEP_REV },
-        {.name = AW_EEP_NAME,       .eep_id = AW_EEP_ID,       .eep_man = AW_EEP_MAN,         .eep_rev = AW_EEP_REV    },
-
-};
 
 
 /* REVERSE FUNCTIONS - USED FOR UNIT TESTING */
