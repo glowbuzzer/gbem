@@ -24,12 +24,13 @@
 #define MAP_EK1100_1                1
 #define MAP_EL2808_1                2
 #define MAP_EL1808_1                3
-#define MAP_AW_J40LP_CTRL_1         4
-#define MAP_AW_J40HP_CTRL_1         5
-#define MAP_AW_J32_CTRL_1           6
-#define MAP_AW_J25_CTRL_1           7
-#define MAP_AW_J25_CTRL_2           8
-#define MAP_AW_J20_CTRL_1           9
+#define MAP_EL6021_1                4
+#define MAP_AW_J40LP_CTRL_1         5
+#define MAP_AW_J40HP_CTRL_1         6
+#define MAP_AW_J32_CTRL_1           7
+#define MAP_AW_J25_CTRL_1           8
+#define MAP_AW_J25_CTRL_2           9
+#define MAP_AW_J20_CTRL_1           10
 
 
 #define ECM_CHECK_EEP_MAN           0
@@ -38,7 +39,7 @@
 
 
 #define MAP_NUM_DRIVES              6
-#define MAP_NUM_SLAVES              9
+#define MAP_NUM_SLAVES              10
 #define MAP_NUM_FSOE_MASTER_SLOTS   0
 
 /**CRITICAL! if this is defined then hardware estop is disabled! */
