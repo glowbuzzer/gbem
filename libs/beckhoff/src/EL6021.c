@@ -20,6 +20,9 @@
 #include "dpm.h"
 
 
+// We should flip CW.0 when we have data to send - slave then flips SW.0 to ack this
+// Then when there is rx data, (this is indicated by teh size in teh status word) we read teh data then flip CW.1 - slave acks this with flip of SW.1 and resets the length in the status word to zero
+
 // /** !!!!!!!!!COM SETTINGS later hardware!!!!!  */
 //
 //
@@ -310,21 +313,27 @@ gberror_t ec_slave_exec_el6021(uint16_t slave) {
     uint16_t el6021_control_word = 0;
 
 
-    print_status_word(el6021_status_word);
+    // print_status_word(el6021_status_word);
 
     //RECEIVE
     uint8_t rx_size = ec_get_data_size_el6021(&el6021_status_word);
 
     if (rx_size > 0) {
-        printf("rx size = [%u]\n", rx_size);
+        // printf("rx size = [%u]\n", rx_size);
     }
 
 
     //put rx_size in dpm
     ec_get_data_el6021(slave, &dpm_in->serial.length, rx_size);
 
+
+    dpm_in->serial.status = 0;
+
     if (BIT_CHECK(el6021_status_word, EL6021_TRANSMIT_ACCEPTED_BIT_NUM)) {
         BIT_SET(dpm_in->serial.status, SERIAL_TRANSMIT_ACCEPTED_BIT_NUM);
+        // printf("serial transmit accepted bit SET\n");
+    } else {
+        // printf("serial transmit accepted bit NOTSET\n");
     }
 
     if (BIT_CHECK(el6021_status_word, EL6021_RECEIVE_REQUEST_BIT_NUM)) {
@@ -352,6 +361,7 @@ gberror_t ec_slave_exec_el6021(uint16_t slave) {
         UM_ERROR(GBEM_UM_EN, "EL6021: Overrun error");
     }
 
+    // print_status_word(dpm_in->serial.status);
 
     uint8_t tx_size = dpm_out->serial.length;
 
@@ -362,19 +372,23 @@ gberror_t ec_slave_exec_el6021(uint16_t slave) {
 
     if (BIT_CHECK(dpm_out->serial.control, SERIAL_TRANSMIT_REQUEST_BIT_NUM)) {
         BIT_SET(el6021_control_word, EL6021_TRANSMIT_REQUEST_BIT_NUM);
+        // printf("serial transmit request bit SET\n");
+    } else {
+        // printf("serial transmit request bit NOTSET\n");
     }
+
     if (BIT_CHECK(dpm_out->serial.control, SERIAL_RECEIVE_ACCEPTED_BIT_NUM)) {
         BIT_SET(el6021_control_word, EL6021_RECEIVE_ACCEPTED_BIT_NUM);
     }
     if (BIT_CHECK(dpm_out->serial.control, SERIAL_INIT_REQUEST_BIT_NUM)) {
-        printf("init bit set\n");
+        // printf("init bit set\n");
         BIT_SET(el6021_control_word, EL6021_INIT_REQUEST_BIT_NUM);
     }
 
 
     ec_set_data_el6021(slave, dpm_out->serial.data, tx_size);
 
-    print_control_word(el6021_control_word);
+    // print_control_word(el6021_control_word);
 
 
     ec_set_control_word_el6021(slave, el6021_control_word);
@@ -525,6 +539,12 @@ gberror_t ec_apply_standard_sdos_el6021(const uint16_t slave) {
                             1, true)) {
         return E_SDO_WRITE_FAILURE;
     }
+    //Disable  point to point rs422
+    if (!ec_sdo_write_uint8(slave, EL6021_FEATURE_BITS_SDO_INDEX, EL6021_RS422_SDO_SUB_INDEX,
+                            0, true)) {
+        return E_SDO_WRITE_FAILURE;
+    }
+
 
     ec_read_feature_bits_el6021(slave, &feature_bits);
 
