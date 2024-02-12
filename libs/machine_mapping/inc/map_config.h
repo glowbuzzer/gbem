@@ -50,8 +50,8 @@
 #define MACHINE_AW_STEWART                  0
 #define MACHINE_EL6900_DEADMAN              0
 #define MACHINE_EL6900_J25                  0
-#define MACHINE_BBH_J25                     1
-#define MACHINE_AW_6DOF                     0
+#define MACHINE_BBH_J25                     0
+#define MACHINE_AW_6DOF                     1
 #define MACHINE_AW_6DOF_FSOE                0
 
 
@@ -223,7 +223,7 @@ extern const char *map_machine_type_strings[MAP_NUM_MACHINES];
 
 #endif
 
-#if MACHINE_AW_6DOF== 1
+#if MACHINE_AW_6DOF == 1
 
 #include "machine_aw_6dof.h"
 
