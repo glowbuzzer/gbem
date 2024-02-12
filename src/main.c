@@ -413,6 +413,16 @@ int main(int argc, char *argv[]) {
     map_machine_type = MAP_MACHINE_BBH_J25;
 #endif
 
+#if MACHINE_AW_6DOF == 1
+    map_machine_type = MAP_MACHINE_AW_6DOF;
+#endif
+#if MACHINE_AW_6DOF_FSOE == 1
+    map_machine_type = MAP_MACHINE_AW_6DOF_FSOE;
+#endif
+
+
+
+
 
     if (map_machine_type < MAP_NUM_MACHINES) {
         UM_INFO(GBEM_UM_EN, "GBEM: This code has been compiled for [%s]", map_machine_type_strings[map_machine_type]);
