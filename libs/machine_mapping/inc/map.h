@@ -70,7 +70,7 @@ typedef enum {
 
 /* DRIVES */
 #define MAP_DRIVE_TO_NAME(...) const char map_drive_to_name[MAP_NUM_DRIVES][MAX_DRIVE_NAME_LENGTH] = {__VA_ARGS__};
-#define MAP_DRIVE_TO_SLAVE(...) const uint16_t map_drive_to_slave[MAP_NUM_DRIVES] = {__VA_ARGS__};
+#define MAP_DRIVE_TO_SLAVE(...) uint16_t map_drive_to_slave[MAP_NUM_DRIVES] = {__VA_ARGS__};
 #define MAP_DRIVE_TO_SUBDRIVE(...) const uint16_t map_drive_to_subdrive[MAP_NUM_DRIVES] = {__VA_ARGS__};
 #define MAP_DRIVE_GET_MOO_PDO_FUNCTIONS(...) int8_t (*map_drive_get_moo_pdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 #define MAP_DRIVE_GET_MOO_SDO_FUNCTIONS(...) int8_t (*map_drive_get_moo_sdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
@@ -323,7 +323,7 @@ extern gberror_t (*map_slave_fsoe_get_slave_con_id_function_ptr[EC_MAXSLAVE])(ui
 
 //DRIVES
 extern const char map_drive_to_name[MAP_NUM_DRIVES][MAX_DRIVE_NAME_LENGTH];
-extern const uint16_t map_drive_to_slave[MAP_NUM_DRIVES];
+extern uint16_t map_drive_to_slave[MAP_NUM_DRIVES];
 extern const uint16_t map_drive_to_subdrive[MAP_NUM_DRIVES];
 
 extern int8_t (*map_drive_get_moo_pdo_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
