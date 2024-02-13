@@ -243,6 +243,11 @@ gberror_t os_disable_slaves(bool *which_slaves_are_optional) {
   }
  }
 
+ for (uint16_t drive = 0; drive < MAP_NUM_DRIVES; drive++) {
+  map_drive_to_slave[drive] = map_drive_to_slave[drive] - count_of_deleted;
+ }
+
+
  UM_INFO(GBEM_UM_EN, "GBEM: Number of slaves disabled [%u]", count_of_deleted);
  UM_INFO(GBEM_UM_EN, "GBEM: Number of slaves remaining enabled [%u] (originally [%u])", map_num_slaves, MAP_NUM_SLAVES);
 
