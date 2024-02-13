@@ -707,6 +707,13 @@ uint8_t *ec_get_detailled_error_report_pdo_aw_j_series(const uint16_t drive_numb
                                                  AW_J_SERIES_ERROR_DESCRIPTION_PDO_INDEX + i);
     }
     if (short_report) {
+        for (int i = 0; i < 8; ++i) {
+            if (octet_string[i] < 32 || octet_string[i] > 126) {
+                // If the element is not a valid ASCII character
+                return failed_error_code_lookup;
+            }
+        }
+
         return octet_string;
     }
     for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS; i++) {
