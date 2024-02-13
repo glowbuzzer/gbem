@@ -23,141 +23,6 @@
 // We should flip CW.0 when we have data to send - slave then flips SW.0 to ack this
 // Then when there is rx data, (this is indicated by teh size in teh status word) we read teh data then flip CW.1 - slave acks this with flip of SW.1 and resets the length in the status word to zero
 
-// /** !!!!!!!!!COM SETTINGS later hardware!!!!!  */
-//
-//
-// //bool FALSE RTS/CTS not enabled, TRUE RTS/CTS not enabled
-//
-// //FALSE XON/XOFF is not supported for send data, FALSE XON/XOFF is not supported for send data
-// #define EL6021_XON_XOFF_TX_SDO_BIT_NUM 0
-//
-// //FALSE XON/XOFF is not supported for receive data, FALSE XON/XOFF is not supported for receive data
-// #define EL6021_XON_XOFF_RX_SDO_BIT_NUM 1
-//
-// //bool FALSE Full-duplex, TRUE half uplex - default 0
-// #define EL6021_DUPLEX_SDO_BIT_NUM 2
-//
-// //TRUE RS422 - default 0
-// #define EL6021_RS422_SDO_BIT_NUM 3
-//
-// #define EL6021_CONTINUOUS_SEND_SDO_BIT_NUM 4
-//
-// #define EL6021_ENABLE_OPTIMISATION_SDO_BIT_NUM 5
-
-
-/*
-3 state machines
-main
-read
-write
-
-
-main
-
-0 - STANDBY
-reset m_connected
-wait for m_connect = true --> 1
-1 - SET CONFIG
-set baud rate and data frame via SDO's
-wait for Status.InitAccepted (SW.2) = false --> 2
-2 - APPLY CONFIG
-set Control.InitRequest (CW.2)
-wait for Status.InitAccepted (SW.2) = true --> 3
-3 - CONFIGURED
-clear Control.InitRequest (CW.2)
-clear Control.TransmitRequest (CW.0)
-clear Control.ReceiveAccepted (CW.1)
-reset m_transmitAccepted
-reset m_receiveRequest
-wait for Status.InitAccepted (SW.2) = false --> 4
-4 - READY
-set m_connected
-wait for m_connect = false --> 0
-
-Read State Machine
-
-0 - STANDBY
-wait for m_connected = true --> 1
-1 - READY
-wait for
-{
-if m_connected = false --> 0
-if m_receiveRequest != Status.ReceiveRequest (SW.1)
-{
-set m_receiveRequest = Status.ReceiveRequest (SW.1)
---> 2
-}
-if Status.ReceiveBufferFull (SW.3) --> 2
-}
-2 - READ DATA
-cnt = Status.ReceiveCount (SW.8..SW.15)
-for (i = 0; i < cnt; i++)
-{
-if (m_readCnt >= COMM_PORT_BUFF_SIZE)
-{
-m_readErrors++
-break;
-}
-idx = (m_readIdx + m_readCnt) % COMM_PORT_BUFF_SIZE
-m_readData[idx] = ReceiveChar[i]
-m_readCnt++
-}
-set Control.ReceiveAccepted (CW.1) = ! Control.ReceiveAccepted (CW.1)
---> 1
-
-
-Write State Machine
-
-0 - STANDBY
-wait for m_connected = true -->1
-1 - READY
-wait for
-{
-if m_connected = false --> 0
-if m_writeCnt > 0 --> 2
-}
-2 - WRITE DATA
-cnt = min(m_writeCnt, 22)
-set Control.TransmitCount (CW.8..CW..15) = cnt
-for (i = 0; i < cnt; i++)
-{
-TransmitChar[i] = m_writeData[m_writeIdx]
-m_writeIdx = (m_writeIdx + 1) % COMM_PORT_BUFF_SIZE
-m_writeCnt--
-}
-set Control.TransmitRequest (CW.0) = ! Control.TransmitRequest (CW.0)
-wait for
-{
-if (TIME_IN_STEP > 1 second)
-{
-set Control.TransmitRequest (CW.0) = ! Control.TransmitRequest (CW.0)
-reset TIME_IN_STEP
-}
-if m_connect = false --> 0
-if m_transmitAccepted != Status.TransmitAccepted (SW.0)
-{
-m_transmitAccepted != m_transmitAccepted
---> 1
-}
-}
-
-bool m_connect
-bool m_connected
-bool m_transmitAccepted
-bool m_receiveRequest
-
-int m_readCnt
-int m_readErrors
-int m_readIdx
-int m_readCnt
-char m_readData[COMM_PORT_BUFF_SIZE]
-
-int m_writeIdx
-int m_writeCnt
-char m_writeData[COMM_PORT_BUFF_SIZE]
-
- */
-
 
 static uint16_t ec_get_status_word_el6021(uint16_t slave);
 
@@ -324,7 +189,8 @@ gberror_t ec_slave_exec_el6021(uint16_t slave) {
 
 
     //put rx_size in dpm
-    ec_get_data_el6021(slave, &dpm_in->serial.length, rx_size);
+    dpm_in->serial.length = rx_size;
+    ec_get_data_el6021(slave, &dpm_in->serial.data, rx_size);
 
 
     dpm_in->serial.status = 0;
