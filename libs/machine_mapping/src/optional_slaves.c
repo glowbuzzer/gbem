@@ -243,6 +243,7 @@ gberror_t os_disable_slaves(bool *which_slaves_are_optional) {
   }
  }
 
+ //loop over map drive to slave - all drives will have been moved left by however many slaves have been deleted
  for (uint16_t drive = 0; drive < MAP_NUM_DRIVES; drive++) {
   map_drive_to_slave[drive] = map_drive_to_slave[drive] - count_of_deleted;
  }
@@ -253,6 +254,19 @@ gberror_t os_disable_slaves(bool *which_slaves_are_optional) {
 
 
  //process io map
+
+ if (count_of_deleted > 0) {
+  for (uint16_t i = 0; i < map_num_rows_in_iomap; i++) {
+   for (uint16_t j = 0; j < MAP_NUM_DRIVES; j++) {
+    if (map_iomap[i].pdo.slave_num == map_drive_to_slave[j]) {
+     map_iomap[i].pdo.slave_num = map_iomap[i].pdo.slave_num - count_of_deleted;
+    }
+   }
+  }
+ }
+
+ //todo delete any rows that have deleted slaves
+ //todo shift any pdo slave numbers that have been moved left
 
 
  return E_SUCCESS;
