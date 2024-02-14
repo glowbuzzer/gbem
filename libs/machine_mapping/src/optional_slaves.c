@@ -257,7 +257,6 @@ gberror_t os_disable_slaves(bool *which_slaves_are_optional) {
  }
 
 
-
  //todo delete any rows that have deleted slaves
  //todo shift any pdo slave numbers that have been moved left
 
