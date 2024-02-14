@@ -199,7 +199,7 @@ typedef enum {
 
 typedef struct {
     const map_inout_t inout;
-    const uint16_t slave_num;
+    uint16_t slave_num;
     const uint32_t byte_num;
     const uint8_t bit_num;
     const ec_datatype datatype;
