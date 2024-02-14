@@ -77,22 +77,22 @@ gberror_t os_delete_and_shift(void *array, size_t element_size, size_t size, siz
 // }
 
 
-void test(void) {
- // Delete the element at index 2 from the array
- os_delete_and_shift((void *) map_slave_standard_sdo_function_ptr, sizeof(gberror_t (*)(uint16_t)), 5, 2);
- for (int i = 0; i < 5; i++) {
-  printf("[%d] ", map_num_drives_attached[i]);
- }
- printf("\n");
-
- // Delete the element at index 2 from the array
- os_delete_and_shift((void *) map_num_drives_attached, sizeof(uint8_t), 5, 2);
-
- for (int i = 0; i < 5; i++) {
-  printf("[%d] ", map_num_drives_attached[i]);
- }
- printf("\n");
-}
+// void test(void) {
+//  // Delete the element at index 2 from the array
+//  os_delete_and_shift((void *) map_slave_standard_sdo_function_ptr, sizeof(gberror_t (*)(uint16_t)), 5, 2);
+//  for (int i = 0; i < 5; i++) {
+//   printf("[%d] ", map_num_drives_attached[i]);
+//  }
+//  printf("\n");
+//
+//  // Delete the element at index 2 from the array
+//  os_delete_and_shift((void *) map_num_drives_attached, sizeof(uint8_t), 5, 2);
+//
+//  for (int i = 0; i < 5; i++) {
+//   printf("[%d] ", map_num_drives_attached[i]);
+//  }
+//  printf("\n");
+// }
 
 
 void os_get_array_of_optional_slaves(machine_config_optional_slaves_t config, bool *optional_slave) {
@@ -243,18 +243,9 @@ gberror_t os_disable_slaves(bool *which_slaves_are_optional) {
   }
  }
 
- //loop over map drive to slave - all drives will have been moved left by however many slaves have been deleted
- for (uint16_t drive = 0; drive < MAP_NUM_DRIVES; drive++) {
-  map_drive_to_slave[drive] = map_drive_to_slave[drive] - count_of_deleted;
- }
-
-
- UM_INFO(GBEM_UM_EN, "GBEM: Number of slaves disabled [%u]", count_of_deleted);
- UM_INFO(GBEM_UM_EN, "GBEM: Number of slaves remaining enabled [%u] (originally [%u])", map_num_slaves, MAP_NUM_SLAVES);
-
 
  //process io map
-
+ UM_INFO(GBEM_UM_EN, "GBEM: Adjusting IO map to compensate for optional slaves");
  if (count_of_deleted > 0) {
   for (uint16_t i = 0; i < map_num_rows_in_iomap; i++) {
    for (uint16_t j = 0; j < MAP_NUM_DRIVES; j++) {
@@ -265,8 +256,20 @@ gberror_t os_disable_slaves(bool *which_slaves_are_optional) {
   }
  }
 
+
+
  //todo delete any rows that have deleted slaves
  //todo shift any pdo slave numbers that have been moved left
+
+
+ //loop over map drive to slave - all drives will have been moved left by however many slaves have been deleted
+ for (uint16_t drive = 0; drive < MAP_NUM_DRIVES; drive++) {
+  map_drive_to_slave[drive] = map_drive_to_slave[drive] - count_of_deleted;
+ }
+
+
+ UM_INFO(GBEM_UM_EN, "GBEM: Number of slaves disabled [%u]", count_of_deleted);
+ UM_INFO(GBEM_UM_EN, "GBEM: Number of slaves remaining enabled [%u] (originally [%u])", map_num_slaves, MAP_NUM_SLAVES);
 
 
  return E_SUCCESS;

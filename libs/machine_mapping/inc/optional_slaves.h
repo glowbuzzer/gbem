@@ -13,7 +13,6 @@
 #ifndef OPTIONAL_SLAVES_H
 #define OPTIONAL_SLAVES_H
 
-void test(void);
 
 gberror_t os_disable_slaves(bool *which_slaves_are_optional);
 
