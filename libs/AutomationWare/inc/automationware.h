@@ -17,12 +17,6 @@
 
 #include "aw_j_series.h"
 #include "aw_j_series_fsoe.h"
-#include "aw_j17.h"
-#include "aw_j20.h"
-#include "aw_j25.h"
-#include "aw_j32.h"
-#include "aw_j40_hp.h"
-#include "aw_j40_lp.h"
 #include "aw_j_series_misc.h"
 
 
