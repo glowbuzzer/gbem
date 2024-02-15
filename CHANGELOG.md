@@ -1,5 +1,55 @@
 # Changelog
 
+## [1.5.0](https://github.com/glowbuzzer/gbem/compare/v1.4.0...v1.5.0) (2024-02-15)
+
+
+### Features
+
+* **#100:** Add ini file for debug config ([6ca0bfa](https://github.com/glowbuzzer/gbem/commit/6ca0bfa51c5ef2ab292fee00ed4f8b170a8eb652))
+* **#101:** Add EL6021 RS485 support ([b2595b9](https://github.com/glowbuzzer/gbem/commit/b2595b914deaab35ad4abedf5de62f3925118986))
+* **#102:** Create single AW-6DOF and AW-6DOF-FSOE machine maps ([fe27328](https://github.com/glowbuzzer/gbem/commit/fe27328102f330218d7c660b4c09c7d57900d57c))
+* **#102:** Create single AW-6DOF and AW-6DOF-FSOE machine maps ([e33e01a](https://github.com/glowbuzzer/gbem/commit/e33e01a62c5b41d8f5cc40e817f95dc71430d606))
+* **#105:** Add ability to have optional slaves in machine config ([946e9d9](https://github.com/glowbuzzer/gbem/commit/946e9d9e9d4483d6d80bf67e29b79719f38e8038))
+* **#71:** Add FSoE handling for AW J series drives ([9563062](https://github.com/glowbuzzer/gbem/commit/95630626e7350d0659b227a236ac8646dfe6397f))
+* **#72:** Add support for BBH SCU-1-EC ([6a2ffe2](https://github.com/glowbuzzer/gbem/commit/6a2ffe25cd77893a954403ce473022331e4de655))
+* **#72:** Add support for BBH SCU-1-EC ([9c8c7c2](https://github.com/glowbuzzer/gbem/commit/9c8c7c2efaaefb56e55bc4b188ea5360738492a0))
+* **#72:** Add support for BBH SCU-1-EC ([06f8a07](https://github.com/glowbuzzer/gbem/commit/06f8a072d997997ef1108641a66f553d78f40e5f))
+* **#73:** Add support for Beckhoff EL6900, EL1904 and EL2904 ([5b4b572](https://github.com/glowbuzzer/gbem/commit/5b4b572efdf69cb41d7456e6de21405213bb1152))
+* **#75:** Add test machines for EL600, SCU, Synapticon FSoE ([867fbd8](https://github.com/glowbuzzer/gbem/commit/867fbd8925d7960bda86837467d906a2c412c980))
+* **#75:** Add test machines for EL600, SCU, Synapticon FSoE ([ae4395f](https://github.com/glowbuzzer/gbem/commit/ae4395f1cfa64eda7c6430118c236f403b84295d))
+* **#76:** Add custom SM/FMMU function ([9175c0d](https://github.com/glowbuzzer/gbem/commit/9175c0de7ea410cccc682ba0db635877dba63f4d))
+* **#77:** Add core FSoE copying ([10ebf51](https://github.com/glowbuzzer/gbem/commit/10ebf51a2f72d4def0d7ac47195c6aaa3db49356))
+* **#77:** Add core FSoE copying ([3e4d7a7](https://github.com/glowbuzzer/gbem/commit/3e4d7a71fa3922327ebb3df6dc535738ca9dda6e))
+* **#79:** Add Tool Outputs to IO map for AW tube robots ([56579e0](https://github.com/glowbuzzer/gbem/commit/56579e0d39664cf0275f321ac8abcba698175013))
+* **#80:** Add history to drive faults so they show current and last ([ec39b4e](https://github.com/glowbuzzer/gbem/commit/ec39b4ece5f2c86d2daafb983563f118148c0e7f))
+* **#80:** Add history to drive faults so they show current and last ([0c15d7b](https://github.com/glowbuzzer/gbem/commit/0c15d7b14fa3412c420cf4af6a54eaf8e33b5634))
+* **#80:** Add Tool Outputs to IO map for AW tube robots ([fefe9f7](https://github.com/glowbuzzer/gbem/commit/fefe9f71f5e30d923843c8e6eaff22fd29a166e8))
+* **#81:** Update synapticon error table to include new errors ([d635455](https://github.com/glowbuzzer/gbem/commit/d63545537145a616f2ff865ad8fcf6c75085c19e))
+* **#82:** Add FSoE config to all machine configs even if unused ([5fc1008](https://github.com/glowbuzzer/gbem/commit/5fc100829c9bd8af975d2ac626713c939c5dad22))
+* **#84:** Add estop function to machine configs rather than simple DIN to handle more complex FSoE scenario ([01bbf70](https://github.com/glowbuzzer/gbem/commit/01bbf70ecaa32618587c54993b0090f900cf93ea))
+* **#85:** Add estop function to machine configs rather than simple DIN to handle more complex FSoE scenarios ([90dcd85](https://github.com/glowbuzzer/gbem/commit/90dcd85e3bb7c4604205264ce733bde2af799493))
+* **#86:** Add AW J-series custom PDO map with LED control (for FSoE) ([33c5b63](https://github.com/glowbuzzer/gbem/commit/33c5b631e4e0e75160c3a7e483089e095647d158))
+* **#86:** Process AW J Series drive error messages from PDO not SDO ([5f11106](https://github.com/glowbuzzer/gbem/commit/5f111063179290f69449cb9dd1fa526e0a4a7865))
+* **#90:** Add FoE upload for synapticon logging_curr.log to GBEM ([0465317](https://github.com/glowbuzzer/gbem/commit/046531751d58c1f09735e84e9baa112f914e295b))
+* **#92:** Add ini file for drive limits ([8123e93](https://github.com/glowbuzzer/gbem/commit/8123e93fc75793f5ce08a99ddb5a5434a4d3b5df))
+* **#92:** Add ini file for drive limits ([9b05e70](https://github.com/glowbuzzer/gbem/commit/9b05e70352c42b8c123400d162e5ea3204f58718))
+* **#92:** Add ini file for drive limits ([ffa7223](https://github.com/glowbuzzer/gbem/commit/ffa7223a9eaf9a1e1fbf7d25636464317107c5f4))
+* **#93:** Add internal limit active (current and history) to status ([4be8526](https://github.com/glowbuzzer/gbem/commit/4be8526f59fb01e71b7923437b000abc027e44d8))
+* **#94:** Change AW J Series custom PDO map - remove tuning and analogs and add control effort and error codes ([81a479f](https://github.com/glowbuzzer/gbem/commit/81a479f545ce089fda8bebd510ef3535c44ff9bd))
+* **#95:** Consolidate AW J Series SDO setting from different joint sizes J17, J20, J25 et ([a491c19](https://github.com/glowbuzzer/gbem/commit/a491c19d1ca81d257c7555aefa9d55c4aef718ef))
+* **#96:** Process AW J Series drive error messages from PDO not SDO ([5b40061](https://github.com/glowbuzzer/gbem/commit/5b4006181326baed0f399ec69a4a7b82345752c1))
+* **#97:** Make internal limit active detection for AW J Series have to occur for multiple cycles to trigger error ([24744ae](https://github.com/glowbuzzer/gbem/commit/24744aebe9b78e35ce0d0a8f2aad8aa816dde671))
+* **#98:** Add control effort to Telemetry for AW J Series drives ([e52c079](https://github.com/glowbuzzer/gbem/commit/e52c07918a7fadce6454c276117446ccfe99a934))
+* **#98:** Add control effort to Telemetry for AW J Series drives ([19c7248](https://github.com/glowbuzzer/gbem/commit/19c7248e3b7661d8767fee1c5056c586bff0456c))
+* **#98:** Add control effort to Telemetry for AW J Series drives ([3fe478f](https://github.com/glowbuzzer/gbem/commit/3fe478f42d98715d6593ff3297ad23e360823ed2))
+* **#99:** Add new digital io type - safety ([9885a6d](https://github.com/glowbuzzer/gbem/commit/9885a6d59be103e2036d4da04a6b620ba1075ab2))
+* **#99:** Add new digital io type - safety ([184361f](https://github.com/glowbuzzer/gbem/commit/184361ff61a099452c557c799b5adc6d07672e67))
+
+
+### Bug Fixes
+
+* **#104:** Boot can get stuck in GBEM: Boot step 3 &gt;failure&lt; (transition all slaves to PRE OP state) ([93633d2](https://github.com/glowbuzzer/gbem/commit/93633d2f0b47826eea4fb9c7698128f905b3e81c))
+
 ## [1.4.0](https://github.com/glowbuzzer/gbem/compare/v1.3.0...v1.4.0) (2023-12-16)
 
 
