@@ -32,6 +32,10 @@ extern uint16_t map_SM3_index_of_assigned_PDO_azd3a_ked[ECM_MAX_PDO_MAPPING_ENTR
 extern uint16_t map_SM2_index_of_assigned_PDO_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
 extern uint16_t map_SM3_index_of_assigned_PDO_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES];
 
+/** Machine functions */
+bool ec_get_safety_state_azdxa_ked(uint16_t slave);
+
+
 /** Slave functions */
 gberror_t ec_pdo_map_azd2a_ked(uint16_t slave);
 
@@ -149,7 +153,6 @@ gberror_t ec_set_moo_pdo_rev_azdxa_ked(uint16_t drive);
 
 /* Homing mode control word */
 #define AZDXA_KED_HOMING_START_BIT_NUM               4
-
 
 
 /* AZD controller - controlword bit numbers (for controller command 1 */
@@ -341,7 +344,6 @@ extern const azdxa_ked_error_string_t azdxa_ked_alarm_code[NUM_OF_AZD_ERROR_STRI
 #define AZDXA_KED_WRITE_CONFIG_SDO_DRIVE4_INDEX      0x40C6
 #define AZDXA_KED_WRITE_CONFIG_SDO_DRIVE4_SUB_INDEX  0x4
 #define AZDXA_KED_WRITE_CONFIG_SDO_DRIVE4_VALUE      0x1
-
 
 
 /*

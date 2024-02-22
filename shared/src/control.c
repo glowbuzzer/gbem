@@ -60,7 +60,7 @@ typedef struct {
     bool found;
 } fsoe_master_t;
 
-fsoe_master_t fsoe_master;
+static fsoe_master_t fsoe_master;
 
 //@formatter:off
 cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
@@ -2417,7 +2417,7 @@ gberror_t update_fsoe_ecm_status(void) {
 
 
 #define TIME_SECS_AFTER_WHICH_DRIVE_LOGS_CAN_BE_READ_AGAIN 60
-#define READ_DRIVE_LOGS_BIT_NUM 0
+
 
 gberror_t ctrl_read_drive_logs(void) {
     gberror_t grc = E_SUCCESS;

@@ -51,11 +51,15 @@
 #include "gbem_config.h"
 #include "linux_shm.h"
 #include "optional_slaves.h"
+#include "gbem_ctx.h"
+
 
 #define BOOL_STRING(b) ((b) ? "true" : "false")
+
+
 /**global var storing the name of the nic read from command lines args */
-char eth_interface1[SIZE_OF_IF_NAME] = {0};
-char eth_interface2[SIZE_OF_IF_NAME] = {0};
+// char eth_interface1[SIZE_OF_IF_NAME] = {0};
+// char eth_interface2[SIZE_OF_IF_NAME] = {0};
 
 
 /** array for SOEM iomap - this is the key slave comms data storage */
@@ -269,27 +273,27 @@ int main(int argc, char *argv[]) {
     }
 
 
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - overall size [%u]", sizeof(ecm_status_t));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_boot_state_t size [%u]", sizeof(ecm_boot_state_t));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_net_scan_state_t size [%u]", sizeof(ecm_net_scan_state_t));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_active_program_t size [%u]", sizeof(ecm_active_program_t));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_status_map_t size [%u]", sizeof(ecm_status_map_t)*EC_MAXSLAVE);
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - cycle_count size [%u]", sizeof(uint64_t));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - drive_count size [%u]", sizeof(uint8_t));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - gbc_connected size [%u]", sizeof(bool));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ec_circular_slave_error_message_t size [%u]",
-            sizeof(ec_circular_slave_error_message_t));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ec_check_found_error size [%u]", sizeof(bool));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - slavecount size [%u]", sizeof(uint8_t));
-
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_status_drive_t size [%u]",
-            sizeof(ecm_status_drive_t)*MAP_MAX_NUM_DRIVES);
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ec_circular_slave_error_message_t size [%u]",
-            sizeof(ec_circular_slave_error_message_t));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - machine_state size [%u]", sizeof(cia_state_t));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - commanded_machine_state size [%u]", sizeof(cia_state_t));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - shared_mem_busy_count size [%u]", sizeof(uint64_t));
-    UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - fso size [%u]", sizeof(ecm_status_fsoe_t));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - overall size [%u]", sizeof(ecm_status_t));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_boot_state_t size [%u]", sizeof(ecm_boot_state_t));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_net_scan_state_t size [%u]", sizeof(ecm_net_scan_state_t));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_active_program_t size [%u]", sizeof(ecm_active_program_t));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_status_map_t size [%u]", sizeof(ecm_status_map_t)*EC_MAXSLAVE);
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - cycle_count size [%u]", sizeof(uint64_t));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - drive_count size [%u]", sizeof(uint8_t));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - gbc_connected size [%u]", sizeof(bool));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ec_circular_slave_error_message_t size [%u]",
+    //         sizeof(ec_circular_slave_error_message_t));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ec_check_found_error size [%u]", sizeof(bool));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - slavecount size [%u]", sizeof(uint8_t));
+    //
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ecm_status_drive_t size [%u]",
+    //         sizeof(ecm_status_drive_t)*MAP_MAX_NUM_DRIVES);
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - ec_circular_slave_error_message_t size [%u]",
+    //         sizeof(ec_circular_slave_error_message_t));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - machine_state size [%u]", sizeof(cia_state_t));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - commanded_machine_state size [%u]", sizeof(cia_state_t));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - shared_mem_busy_count size [%u]", sizeof(uint64_t));
+    // UM_INFO(GBEM_UM_EN, "GBEM: ecm_status - fso size [%u]", sizeof(ecm_status_fsoe_t));
 
 
     if (sizeof(ecm_status_t) > SHM_OFFLINE_BUF_SIZE) {
@@ -421,9 +425,6 @@ int main(int argc, char *argv[]) {
 #endif
 
 
-
-
-
     if (map_machine_type < MAP_NUM_MACHINES) {
         UM_INFO(GBEM_UM_EN, "GBEM: This code has been compiled for [%s]", map_machine_type_strings[map_machine_type]);
     } else {
@@ -516,7 +517,7 @@ int main(int argc, char *argv[]) {
                 break;
             case 'i':
                 if (optarg != NULL) {
-                    memcpy(eth_interface1, optarg, strlen(optarg));
+                    memcpy(gbem_ctx.eth_interface1, optarg, strlen(optarg));
                 } else {
                     printf("Please specify an interface with -i[name]");
                 }
@@ -544,7 +545,7 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    if (eth_interface1[0] == '\0' && !help) {
+    if (gbem_ctx.eth_interface1[0] == '\0' && !help) {
         printf("GBEM was called without a networking interface specified\n");
         main_getopt_usage();
         return EXIT_FAILURE;
@@ -579,9 +580,9 @@ skip_command_line:
     // exit(0);
 
     UM_INFO(GBEM_UM_EN, "GBEM: We are running with the [%s] program on interface [%s]",
-            ecm_active_program_names[ecm_status.active_program], eth_interface1);
+            ecm_active_program_names[ecm_status.active_program], gbem_ctx.eth_interface1);
 
-    if (check_ethernet_link(eth_interface1)) {
+    if (check_ethernet_link(gbem_ctx.eth_interface1)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Ethernet interface (1) link status is ok");
     } else {
         UM_ERROR(GBEM_UM_EN,
@@ -739,7 +740,7 @@ skip_command_line:
 
     if (!check_machine_config_ini_exists()) {
         UM_WARN(GBEM_UM_EN,
-                "GBEM: Machine config ini file [%s] not found, no optional slaves will be disabled",
+                "GBEM: Machine config ini file [%s] not found, no optional slaves will be enabled",
                 MACHINE_CONFIG_INI_FILENAME);
     } else {
         UM_INFO(GBEM_UM_EN,

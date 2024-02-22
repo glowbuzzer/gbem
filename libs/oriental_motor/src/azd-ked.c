@@ -66,6 +66,10 @@ gberror_t ec_standard_sdos_azd_ked(const uint16_t slave) {
     return E_SUCCESS;
 }
 
+bool ec_get_safety_state_azdxa_ked(uint16_t slave) {
+    return false;
+}
+
 
 /**
  * @brief sets fixed PDO mapping with a load of SDO writes for AZD-KED drive

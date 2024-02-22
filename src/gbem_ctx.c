@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file           :  optional_slaves
+ * @file           :  gbem_ctx
  * @brief          :
  ******************************************************************************
  * @attention
@@ -10,11 +10,6 @@
  *
  ******************************************************************************
  */
-#ifndef OPTIONAL_SLAVES_H
-#define OPTIONAL_SLAVES_H
+#include "gbem_ctx.h"
 
-
-gberror_t os_disable_slaves(bool *which_slaves_are_optional);
-
-
-#endif //OPTIONAL_SLAVES_H
+gbem_ctx_t gbem_ctx = {0};

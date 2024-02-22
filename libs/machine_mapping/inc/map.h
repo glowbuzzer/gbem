@@ -30,6 +30,7 @@ typedef enum {
     DRIVE_TYPE_AW_J32,
     DRIVE_TYPE_AW_J_40_LP,
     DRIVE_TYPE_AW_J_40_HP,
+    DRIVE_TYPE_OM
 } map_drive_type_t;
 
 /** These macros build the function pointers for slave and drive startup and operational functions */
@@ -199,7 +200,7 @@ typedef enum {
 
 typedef struct {
     const map_inout_t inout;
-    const uint16_t slave_num;
+    uint16_t slave_num;
     const uint32_t byte_num;
     const uint8_t bit_num;
     const ec_datatype datatype;
