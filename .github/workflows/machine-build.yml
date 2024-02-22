@@ -29,3 +29,9 @@ jobs:
 
       - name: Copy binary
         run: mkdir -p /tmp/gbem/${{ inputs.machine }} && cp ./GBEM /tmp/gbem/${{ inputs.machine }}
+
+      - name: Attach artifact to build
+        uses: actions/upload-artifact@v2
+        with:
+          name: gbem
+          path: /tmp/gbem/${{ inputs.machine }}
