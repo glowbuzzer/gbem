@@ -60,7 +60,7 @@ typedef struct {
     bool found;
 } fsoe_master_t;
 
-fsoe_master_t fsoe_master;
+static fsoe_master_t fsoe_master;
 
 //@formatter:off
 cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {

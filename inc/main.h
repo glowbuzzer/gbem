@@ -26,8 +26,8 @@ int main(int argc, char *argv[]);
 
 extern struct shm_msg *shmp;
 
-extern char eth_interface1[SIZE_OF_IF_NAME];
-extern char eth_interface2[SIZE_OF_IF_NAME];
+// extern char eth_interface1[SIZE_OF_IF_NAME];
+// extern char eth_interface2[SIZE_OF_IF_NAME];
 
 
 extern uint8_t IOmap[ECM_IO_MAP_SIZE];

@@ -48,17 +48,84 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     message(STATUS "GB: CMAKE_C_FLAGS_RELEASE is ${CMAKE_C_FLAGS_RELEASE}")
 endif ()
 
+# Define a list of possible machine names
+# NEW_MACHINE
+set(ALL_MACHINE_NAMES MACHINE_MINI MACHINE_CARTESIAN MACHINE_DRIVE_SPINNERS MACHINE_DRIVE_SPINNERS_VIRTUAL MACHINE_IGUS MACHINE_STAUBLI MACHINE_SINGLE_AKD MACHINE_CONVEYORS MACHINE_EL7211_TEST MACHINE_TEST MACHINE_JVL_MIS_TEST MACHINE_G5_TEST MACHINE_N5_TEST MACHINE_EL7031_TEST MACHINE_EL7041_TEST MACHINE_EL2522_TEST MACHINE_EL7037_TEST MACHINE_STARTER_KIT_1 MACHINE_STARTER_KIT_2 MACHINE_ASDA_A2_TEST MACHINE_SMC3_TEST MACHINE_AX5101_TEST MACHINE_AW_J17 MACHINE_AW_ROBOT_S MACHINE_AW_ROBOT_L2 MACHINE_AW_ROBOT_L MACHINE_VIRTUAL MACHINE_J17_PLUS_VIRTUAL MACHINE_AW_STEWART MACHINE_EL6900_DEADMAN MACHINE_EL6900_J25 MACHINE_BBH_J25 MACHINE_AW_6DOF MACHINE_AW_6DOF_FSOE)
+
+message(STATUS "GB: Set of machines (add one of these to machine.txt) [${ALL_MACHINE_NAMES}]")
+
+# Configure the actual content based on the text file
+configure_file("machine.txt" "${CMAKE_BINARY_DIR}/machine.txt" COPYONLY)
+
+# Read the content from the configured file
+file(READ "${CMAKE_BINARY_DIR}/machine.txt" MACHINE_CONTENT)
+
+# Variable to track if a machine name is found
+set(MACHINE_NAME_FOUND FALSE)
+
+string(REGEX MATCH "MAP_MACHINE\\s*([^\\n]*)" MATCHED_CONTENT "${MACHINE_CONTENT}")
+
+message(STATUS "GB: Content of machine.text file: ${MATCHED_CONTENT}")
+
+# Extract the machine name from the matched content
+set(MAP_MACHINE ${CMAKE_MATCH_1})
+string(STRIP "${MAP_MACHINE}" MAP_MACHINE)
+
+message(STATUS "GB: Machine that we enable is [${MAP_MACHINE}]")
+
+# Initialize a list to store found status for each machine name
+set(MACHINE_NAME_FOUND_LIST)
+
+# Iterate through all machine names
+foreach (MACHINE_NAME ${ALL_MACHINE_NAMES})
+    # Check if the current machine name is present in the file content
+    set(MACHINE_NAME_FOUND FALSE)
+
+    if (${MACHINE_NAME} STREQUAL ${MAP_MACHINE})
+        set(MATCHED_MACHINE TRUE)
+        message(STATUS "GB: The machine name from the machine.txt file matches one available in the list")
+    else ()
+        set(MATCHED_MACHINE FALSE)
+    endif ()
+
+    # Set the corresponding compile definition based on the presence of the machine name
+    if (MATCHED_MACHINE)
+        add_compile_definitions(${MACHINE_NAME}=1)
+        message(STATUS "GB: #define ${MACHINE_NAME} 1")
+        set(MACHINE_NAME_FOUND TRUE)
+    else ()
+        add_compile_definitions(${MACHINE_NAME}=0)
+    endif ()
+
+    list(APPEND MACHINE_NAME_FOUND_LIST ${MACHINE_NAME_FOUND})
+endforeach ()
+
+set(one_true 0)
+
+foreach (MACHINE_NAME_FOUND IN LISTS MACHINE_NAME_FOUND_LIST)
+    if (MACHINE_NAME_FOUND)
+        math(EXPR one_true "${one_true} + 1")
+    endif ()
+endforeach ()
+
+
+if (one_true EQUAL 1)
+    message(STATUS "GB: Enabling [${MAP_MACHINE}]")
+else ()
+    message(FATAL_ERROR "GB: The machine name from machine.txt does not match any available machine names")
+endif ()
+
 
 #If a GIT_TAG string is passed in (-D) we will add this to the version.h file. If no tag or empty string set the GIT_TAG to "dev_ver"
-#if (NOT DEFINED GIT_TAG)
-#    message(STATUS "GB: No Git Tag was passed to cmake. It will default to [dev_ver]")
-#    set(GIT_TAG "dev_ver")
-#elseif (GIT_TAG STREQUAL "")
-#    message(STATUS "GB: Git Tag was empty. It will default to [dev_ver]")
-#    set(GIT_TAG "dev_ver")
-#else ()
-#    message(STATUS "GB: The Git Tag was [${GIT_TAG}]")
-#endif ()
+if (NOT DEFINED GIT_TAG)
+    message(STATUS "GB: No Git Tag was passed to cmake. It will default to [dev_ver]")
+    set(GIT_TAG "dev_ver")
+elseif (GIT_TAG STREQUAL "")
+    message(STATUS "GB: Git Tag was empty. It will default to [dev_ver]")
+    set(GIT_TAG "dev_ver")
+else ()
+    message(STATUS "GB: The Git Tag was [${GIT_TAG}]")
+endif ()
 
 file(READ "version.txt" GIT_TAG_TMP)
 
