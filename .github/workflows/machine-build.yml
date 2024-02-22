@@ -22,10 +22,10 @@ jobs:
           submodules: true
 
       - name: Set machine
-        run: echo ${{ inputs.machine }} > machine.txt
+        run: echo "MAP_MACHINE ${{ inputs.machine }}" > machine.txt
 
       - name: Compile
         uses: ./.ci/rpi # Dockerfile
 
       - name: Copy binary
-        run: mkdir /tmp/gbem/${{ inputs.machine }} && cp ./GBEM /tmp/gbem/${{ inputs.machine }}
+        run: mkdir -p /tmp/gbem/${{ inputs.machine }} && cp ./GBEM /tmp/gbem/${{ inputs.machine }}
