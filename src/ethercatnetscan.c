@@ -22,6 +22,8 @@
 #include "main.h"
 #include <unistd.h>
 #include "ethercatsetget.h"
+#include "optional_slaves.h"
+
 
 //char IOmap[4096];
 ec_ODlistt ODlist;
@@ -627,6 +629,11 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
                 "GBEM: We are NOT going to apply any PDO mapping to the slaves. Slaves will be scanned in their un-configured state")
         ;
     }
+
+    UM_INFO(GBEM_UM_EN, "GBEM: Starting process to disable optional slaves");
+    os_disable_slaves(map_slave_optional);
+    UM_INFO(GBEM_UM_EN, "GBEM: Completed process to disable optional slaves");
+
 
     //   /* initialise SOEM, bind socket to ifname */
     if (ec_init(ifname1)) {
