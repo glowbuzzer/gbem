@@ -36,5 +36,5 @@ jobs:
       - name: Attach artifact to build
         uses: actions/upload-artifact@v2
         with:
-          name: gbem
+          name: ${{ inputs.machine }}.zip
           path: /tmp/gbem/${{ inputs.machine }}
