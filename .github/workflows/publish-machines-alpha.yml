@@ -1,0 +1,14 @@
+name: Build all supported machines and attach to output
+on:
+    push:
+        branches:
+            - machine-aw_j17
+
+jobs:
+    build:
+        uses: ./.github/workflows/machine-build.yml
+        with:
+            machine: MACHINE_AW_6DOF
+#            version: ${GITHUB_REF#refs/tags/v}
+            version: test
+        secrets: inherit

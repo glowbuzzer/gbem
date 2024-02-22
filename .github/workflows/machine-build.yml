@@ -1,12 +1,19 @@
-name: Pre-Release Build and Deploy
+name: Build machine of type
 
 on:
-  push:
-    branches:
-      - machine-*
+  workflow_call:
+    inputs:
+      machine:
+        # what machine are we building (ends up in machine.txt)
+        required: true
+        type: string
+      version:
+        # version to bake into the build
+        required: true
+        type: string
 
 jobs:
-  rpi:
+  rpi_machine_build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -14,15 +21,11 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           submodules: true
 
+      - name: Set machine
+        run: echo ${{ inputs.machine }} > machine.txt
+
       - name: Compile
         uses: ./.ci/rpi # Dockerfile
 
       - name: Copy binary
-        run: mkdir /tmp/gbem && cp ./GBEM /tmp/gbem
-
-      - name: Attach artifact to build
-        uses: actions/upload-artifact@v2
-        with:
-          name: gbem
-          path: /tmp/gbem/GBEM
-
+        run: mkdir /tmp/gbem/${{ inputs.machine }} && cp ./GBEM /tmp/gbem/${{ inputs.machine }}
