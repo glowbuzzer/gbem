@@ -127,11 +127,11 @@ else ()
     message(STATUS "GB: The Git Tag was [${GIT_TAG}]")
 endif ()
 
-file(READ "version.txt" GIT_TAG_TMP)
-
-string(STRIP ${GIT_TAG_TMP} GIT_TAG)
-
-message(STATUS "GB: GIT_TAG from version.txt is ${GIT_TAG}")
+#file(READ "version.txt" GIT_TAG_TMP)
+#
+#string(STRIP ${GIT_TAG_TMP} GIT_TAG)
+#
+#message(STATUS "GB: GIT_TAG from version.txt is ${GIT_TAG}")
 
 configure_file(version/version.h.in version/version.h)
 
