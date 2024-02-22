@@ -41,7 +41,7 @@
 #define MACHINE_ASDA_A2_TEST                0
 #define MACHINE_SMC3_TEST                   0
 #define MACHINE_AX5101_TEST                 0
-#define MACHINE_AW_J17                      0
+#define MACHINE_AW_J17                      1
 #define MACHINE_AW_ROBOT_S                  0
 #define MACHINE_AW_ROBOT_L2                 0
 #define MACHINE_AW_ROBOT_L                  0
@@ -51,7 +51,7 @@
 #define MACHINE_EL6900_DEADMAN              0
 #define MACHINE_EL6900_J25                  0
 #define MACHINE_BBH_J25                     0
-#define MACHINE_AW_6DOF                     1
+#define MACHINE_AW_6DOF                     0
 #define MACHINE_AW_6DOF_FSOE                0
 
 
