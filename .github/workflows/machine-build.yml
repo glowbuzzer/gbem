@@ -24,6 +24,9 @@ jobs:
       - name: Set machine
         run: echo "MAP_MACHINE ${{ inputs.machine }}" > machine.txt
 
+      - name: Set GBC_VERSION
+        run: echo "GBC_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
       - name: Compile
         uses: ./.ci/rpi # Dockerfile
 
