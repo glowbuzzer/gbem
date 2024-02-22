@@ -51,12 +51,15 @@
 #include "gbem_config.h"
 #include "linux_shm.h"
 #include "optional_slaves.h"
+#include "gbem_ctx.h"
+
 
 #define BOOL_STRING(b) ((b) ? "true" : "false")
 
+
 /**global var storing the name of the nic read from command lines args */
-char eth_interface1[SIZE_OF_IF_NAME] = {0};
-char eth_interface2[SIZE_OF_IF_NAME] = {0};
+// char eth_interface1[SIZE_OF_IF_NAME] = {0};
+// char eth_interface2[SIZE_OF_IF_NAME] = {0};
 
 
 /** array for SOEM iomap - this is the key slave comms data storage */
@@ -514,7 +517,7 @@ int main(int argc, char *argv[]) {
                 break;
             case 'i':
                 if (optarg != NULL) {
-                    memcpy(eth_interface1, optarg, strlen(optarg));
+                    memcpy(gbem_ctx.eth_interface1, optarg, strlen(optarg));
                 } else {
                     printf("Please specify an interface with -i[name]");
                 }
@@ -542,7 +545,7 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    if (eth_interface1[0] == '\0' && !help) {
+    if (gbem_ctx.eth_interface1[0] == '\0' && !help) {
         printf("GBEM was called without a networking interface specified\n");
         main_getopt_usage();
         return EXIT_FAILURE;
@@ -577,9 +580,9 @@ skip_command_line:
     // exit(0);
 
     UM_INFO(GBEM_UM_EN, "GBEM: We are running with the [%s] program on interface [%s]",
-            ecm_active_program_names[ecm_status.active_program], eth_interface1);
+            ecm_active_program_names[ecm_status.active_program], gbem_ctx.eth_interface1);
 
-    if (check_ethernet_link(eth_interface1)) {
+    if (check_ethernet_link(gbem_ctx.eth_interface1)) {
         UM_INFO(GBEM_UM_EN, "GBEM: Ethernet interface (1) link status is ok");
     } else {
         UM_ERROR(GBEM_UM_EN,

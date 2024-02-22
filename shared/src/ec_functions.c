@@ -33,7 +33,7 @@
 #include "read_error_messages.h"
 #include "print_slave_error_messages.h"
 #include "map.h"
-
+#include "gbem_ctx.h"
 
 /** global holding dc delta */
 extern int64 gl_delta;
@@ -70,7 +70,7 @@ static bool __attribute__((unused)) check_slave_dc_sysdiff_less_than_threshold(c
  * @param apply_pdo_mapping_before_netscan
  */
 void ECNetscan(const bool apply_pdo_mapping_before_netscan) {
-    ecm_netscan(eth_interface1, apply_pdo_mapping_before_netscan);
+    ecm_netscan(gbem_ctx.eth_interface1, apply_pdo_mapping_before_netscan);
 
 
     //copy the contents of the ec_slave struct to the ecm_status struct (shared mem to gbc-m4 for gui)
@@ -495,7 +495,7 @@ bool ec_step_1_init(void) {
 #if USE_REDUNDANT_ETHERNET_PORTS == 1
     if (ec_init_redundant(eth_interface1, eth_interface2)){
 #else
-    if (ec_init(eth_interface1)) {
+    if (ec_init(gbem_ctx.eth_interface1)) {
 #endif
 
         UM_INFO(GBEM_UM_EN, "GBEM: Boot step 1 >success< (initialisation and Ethernet IF config)");
