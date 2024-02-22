@@ -19,40 +19,40 @@
 /* MACHINE_SWAP - set the correct map here - ofc only one machine at a time can be active << THIS IS THE WAY TO SWAP MACHINES*/
 /* NEW_MACHINE */
 /* WARNING! Don't enable more than one or bad things happen when linking */
-#define MACHINE_MINI                        0
-#define MACHINE_CARTESIAN                   0
-#define MACHINE_DRIVE_SPINNERS              0
-#define MACHINE_DRIVE_SPINNERS_VIRTUAL      0
-#define MACHINE_IGUS                        0
-#define MACHINE_STAUBLI                     0
-#define MACHINE_SINGLE_AKD                  0
-#define MACHINE_CONVEYORS                   0
-#define MACHINE_EL7211_TEST                 0
-#define MACHINE_TEST                        0
-#define MACHINE_JVL_MIS_TEST                0
-#define MACHINE_G5_TEST                     0
-#define MACHINE_N5_TEST                     0
-#define MACHINE_EL7031_TEST                 0
-#define MACHINE_EL7041_TEST                 0
-#define MACHINE_EL2522_TEST                 0
-#define MACHINE_EL7037_TEST                 0
-#define MACHINE_STARTER_KIT_1               0
-#define MACHINE_STARTER_KIT_2               0
-#define MACHINE_ASDA_A2_TEST                0
-#define MACHINE_SMC3_TEST                   0
-#define MACHINE_AX5101_TEST                 0
-#define MACHINE_AW_J17                      0
-#define MACHINE_AW_ROBOT_S                  0
-#define MACHINE_AW_ROBOT_L2                 0
-#define MACHINE_AW_ROBOT_L                  0
-#define MACHINE_VIRTUAL                     0
-#define MACHINE_J17_PLUS_VIRTUAL            0
-#define MACHINE_AW_STEWART                  0
-#define MACHINE_EL6900_DEADMAN              0
-#define MACHINE_EL6900_J25                  0
-#define MACHINE_BBH_J25                     0
-#define MACHINE_AW_6DOF                     1
-#define MACHINE_AW_6DOF_FSOE                0
+// #define MACHINE_MINI                        1
+// #define MACHINE_CARTESIAN                   0
+// #define MACHINE_DRIVE_SPINNERS              0
+// #define MACHINE_DRIVE_SPINNERS_VIRTUAL      0
+// #define MACHINE_IGUS                        0
+// #define MACHINE_STAUBLI                     0
+// #define MACHINE_SINGLE_AKD                  0
+// #define MACHINE_CONVEYORS                   0
+// #define MACHINE_EL7211_TEST                 0
+// #define MACHINE_TEST                        0
+// #define MACHINE_JVL_MIS_TEST                0
+// #define MACHINE_G5_TEST                     0
+// #define MACHINE_N5_TEST                     0
+// #define MACHINE_EL7031_TEST                 0
+// #define MACHINE_EL7041_TEST                 0
+// #define MACHINE_EL2522_TEST                 0
+// #define MACHINE_EL7037_TEST                 0
+// #define MACHINE_STARTER_KIT_1               0
+// #define MACHINE_STARTER_KIT_2               0
+// #define MACHINE_ASDA_A2_TEST                0
+// #define MACHINE_SMC3_TEST                   0
+// #define MACHINE_AX5101_TEST                 0
+// #define MACHINE_AW_J17                      0
+// #define MACHINE_AW_ROBOT_S                  0
+// #define MACHINE_AW_ROBOT_L2                 0
+// #define MACHINE_AW_ROBOT_L                  0
+// #define MACHINE_VIRTUAL                     0
+// #define MACHINE_J17_PLUS_VIRTUAL            0
+// #define MACHINE_AW_STEWART                  0
+// #define MACHINE_EL6900_DEADMAN              0
+// #define MACHINE_EL6900_J25                  0
+// #define MACHINE_BBH_J25                     0
+// #define MACHINE_AW_6DOF                     0
+// #define MACHINE_AW_6DOF_FSOE                0
 
 
 /* NEW_MACHINE */
