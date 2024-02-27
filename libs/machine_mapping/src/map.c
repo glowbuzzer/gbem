@@ -313,7 +313,13 @@ bool ec_is_warning(bool enable_check) {
     // Static array to store the results of the last N cycles
     static bool lastResults[NUM_CYCLES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
 
-    bool warning_active[MAP_NUM_DRIVES] = {true};
+    bool warning_active[MAP_NUM_DRIVES];
+
+    // Initializing all elements to true using a loop
+    for (int i = 0; i < MAP_NUM_DRIVES; ++i) {
+        warning_active[i] = true;
+    }
+
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
@@ -374,7 +380,12 @@ bool ec_check_for_follow_error(gberror_t *grc, bool enable_check) {
     static bool lastResults[NUM_CYCLES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
 
 
-    bool follow_error_active[MAP_NUM_DRIVES] = {true};
+    bool follow_error_active[MAP_NUM_DRIVES];
+
+    // Initializing all elements to true using a loop
+    for (int i = 0; i < MAP_NUM_DRIVES; ++i) {
+        follow_error_active[i] = true;
+    }
 
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
@@ -431,12 +442,15 @@ bool ec_check_for_internal_limit(gberror_t *grc, bool enable_check) {
         return false;
     }
 
-
     // Static array to store the results of the last N cycles
     static bool lastResults[NUM_CYCLES_TO_EVALUATE_FAULTS_OVER][MAP_NUM_DRIVES] = {false};
 
+    bool internal_limit_active[MAP_NUM_DRIVES];
 
-    bool internal_limit_active[MAP_NUM_DRIVES] = {true};
+    // Initializing all elements to true using a loop
+    for (int i = 0; i < MAP_NUM_DRIVES; ++i) {
+        internal_limit_active[i] = true;
+    }
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
