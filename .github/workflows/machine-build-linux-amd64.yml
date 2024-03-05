@@ -28,7 +28,7 @@ jobs:
         run: echo "GBC_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       - name: Compile
-        uses: ./.ci/rpi # Dockerfile
+        uses: ./.ci/linux-amd64 # Dockerfile
 
       - name: Copy binary
         run: mkdir -p /tmp/gbem/${{ inputs.machine }} && cp ./GBEM /tmp/gbem/${{ inputs.machine }}
@@ -36,5 +36,5 @@ jobs:
       - name: Attach artifact to build
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ inputs.machine }}
+          name: ${{ inputs.machine }}-linux-amd64
           path: /tmp/gbem/${{ inputs.machine }}
