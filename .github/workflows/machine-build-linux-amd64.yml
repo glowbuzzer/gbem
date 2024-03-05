@@ -13,7 +13,7 @@ on:
         type: string
 
 jobs:
-  rpi_machine_build:
+  linux_amd64_machine_build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
