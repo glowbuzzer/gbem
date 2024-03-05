@@ -1,0 +1,81 @@
+name: Build all supported machines and attach to output
+on:
+    push:
+        branches:
+            - main
+            - machine-aw_j17
+        tags:
+            - 'v*'
+
+jobs:
+    # RASPBERRY PI BUILDS
+    MACHINE_AW_6DOF_RPI:
+        uses: ./.github/workflows/machine-build-rpi.yml
+        with:
+            machine: MACHINE_AW_6DOF
+            version: ${GITHUB_REF#refs/tags/v}
+        secrets: inherit
+
+    MACHINE_AW_6DOF_FSOE_RPI:
+        uses: ./.github/workflows/machine-build-rpi.yml
+        with:
+            machine: MACHINE_AW_6DOF_FSOE
+            version: ${GITHUB_REF#refs/tags/v}
+        secrets: inherit
+
+    MACHINE_BBH_J25_RPI:
+        uses: ./.github/workflows/machine-build-rpi.yml
+        with:
+            machine: MACHINE_BBH_J25
+            version: ${GITHUB_REF#refs/tags/v}
+        secrets: inherit
+
+    MACHINE_MINI_RPI:
+        uses: ./.github/workflows/machine-build-rpi.yml
+        with:
+            machine: MACHINE_MINI
+            version: ${GITHUB_REF#refs/tags/v}
+        secrets: inherit
+
+    MACHINE_DRIVE_SPINNERS_RPI:
+        uses: ./.github/workflows/machine-build-rpi.yml
+        with:
+            machine: MACHINE_DRIVE_SPINNERS
+            version: ${GITHUB_REF#refs/tags/v}
+        secrets: inherit
+
+    # LINUX AMD64 BUILDS
+    MACHINE_AW_6DOF:
+        uses: ./.github/workflows/machine-build-linux-amd64.yml
+        with:
+            machine: MACHINE_AW_6DOF
+            version: ${GITHUB_REF#refs/tags/v}
+        secrets: inherit
+
+    MACHINE_AW_6DOF_FSOE:
+        uses: ./.github/workflows/machine-build-linux-amd64.yml
+        with:
+            machine: MACHINE_AW_6DOF_FSOE
+            version: ${GITHUB_REF#refs/tags/v}
+        secrets: inherit
+
+    MACHINE_BBH_J25:
+        uses: ./.github/workflows/machine-build-linux-amd64.yml
+        with:
+            machine: MACHINE_BBH_J25
+            version: ${GITHUB_REF#refs/tags/v}
+        secrets: inherit
+
+    MACHINE_MINI:
+        uses: ./.github/workflows/machine-build-linux-amd64.yml
+        with:
+            machine: MACHINE_MINI
+            version: ${GITHUB_REF#refs/tags/v}
+        secrets: inherit
+
+    MACHINE_DRIVE_SPINNERS:
+        uses: ./.github/workflows/machine-build-linux-amd64.yml
+        with:
+            machine: MACHINE_DRIVE_SPINNERS
+            version: ${GITHUB_REF#refs/tags/v}
+        secrets: inherit
