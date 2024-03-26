@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.6.0](https://github.com/glowbuzzer/gbem/compare/v1.5.0...v1.6.0) (2024-03-05)
+
+
+### Features
+
+* **#108:** Move globals into context ([0fd088c](https://github.com/glowbuzzer/gbem/commit/0fd088c038b1f08a665fa8ce2b3a0234df15c991))
+* **#110:** Use github action to produce GBEM builds ([848f1eb](https://github.com/glowbuzzer/gbem/commit/848f1eb94480d3cb3987192175f43dc5843b1bc9))
+
+
+### Bug Fixes
+
+* **#109:** Make "netscan with pdo" work with optional slaves ([37bf5bb](https://github.com/glowbuzzer/gbem/commit/37bf5bbb2d2ba8e5c0d82cd10f07074ae6636990))
+* **#112:** Limit checking fails on more than one drive ([902a996](https://github.com/glowbuzzer/gbem/commit/902a99676f8927b5aa3ebdc54998b0570d511c31))
+
 ## [1.5.0](https://github.com/glowbuzzer/gbem/compare/v1.4.0...v1.5.0) (2024-02-15)
 
 
