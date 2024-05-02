@@ -14,34 +14,34 @@
 #include <inttypes.h>
 
 const char *ec_datatype_string[0x0037 + 2] = {
-    [0x0000] = "ECT_UNDEFINED",
-    [0x0001] = "ECT_BOOLEAN",
-    [0x0002] = "ECT_INTEGER8",
-    [0x0003] = "ECT_INTEGER16",
-    [0x0004] = "ECT_INTEGER32",
-    [0x0005] = "ECT_UNSIGNED8",
-    [0x0006] = "ECT_UNSIGNED16",
-    [0x0007] = "ECT_UNSIGNED32",
-    [0x0008] = "ECT_REAL32",
-    [0x0009] = "ECT_VISIBLE_STRING",
-    [0x000A] = "ECT_OCTET_STRING",
-    [0x000B] = "ECT_UNICODE_STRING",
-    [0x000C] = "ECT_TIME_OF_DAY",
-    [0x000D] = "ECT_TIME_DIFFERENCE",
-    [0x000F] = "ECT_DOMAIN",
-    [0x0010] = "ECT_INTEGER24",
-    [0x0011] = "ECT_REAL64",
-    [0x0015] = "ECT_INTEGER64",
-    [0x0016] = "ECT_UNSIGNED24",
-    [0x001B] = "ECT_UNSIGNED64",
-    [0x0030] = "ECT_BIT1",
-    [0x0031] = "ECT_BIT2",
-    [0x0032] = "ECT_BIT3",
-    [0x0033] = "ECT_BIT4",
-    [0x0034] = "ECT_BIT5",
-    [0x0035] = "ECT_BIT6",
-    [0x0036] = "ECT_BIT7",
-    [0x0037] = "ECT_BIT8"
+        [0x0000] = "ECT_UNDEFINED",
+        [0x0001] = "ECT_BOOLEAN",
+        [0x0002] = "ECT_INTEGER8",
+        [0x0003] = "ECT_INTEGER16",
+        [0x0004] = "ECT_INTEGER32",
+        [0x0005] = "ECT_UNSIGNED8",
+        [0x0006] = "ECT_UNSIGNED16",
+        [0x0007] = "ECT_UNSIGNED32",
+        [0x0008] = "ECT_REAL32",
+        [0x0009] = "ECT_VISIBLE_STRING",
+        [0x000A] = "ECT_OCTET_STRING",
+        [0x000B] = "ECT_UNICODE_STRING",
+        [0x000C] = "ECT_TIME_OF_DAY",
+        [0x000D] = "ECT_TIME_DIFFERENCE",
+        [0x000F] = "ECT_DOMAIN",
+        [0x0010] = "ECT_INTEGER24",
+        [0x0011] = "ECT_REAL64",
+        [0x0015] = "ECT_INTEGER64",
+        [0x0016] = "ECT_UNSIGNED24",
+        [0x001B] = "ECT_UNSIGNED64",
+        [0x0030] = "ECT_BIT1",
+        [0x0031] = "ECT_BIT2",
+        [0x0032] = "ECT_BIT3",
+        [0x0033] = "ECT_BIT4",
+        [0x0034] = "ECT_BIT5",
+        [0x0035] = "ECT_BIT6",
+        [0x0036] = "ECT_BIT7",
+        [0x0037] = "ECT_BIT8"
 };
 
 
@@ -430,7 +430,7 @@ bool cs_pdo_get_output_bit_rev(uint16 slave_no, uint8_t bit_no) {
     /* Get the the startbit position in slaves IO byte */
     uint8_t startbit = ec_slave[slave_no].Ostartbit;
     /* Mask bit and return boolean 0 or 1 */
-    if (*ec_slave[slave_no].outputs & BIT(bit_no - 1 + startbit))
+    if (*ec_slave[slave_no].outputs & BIT(bit_no + startbit))
         return true;
     else
         return false;
@@ -448,7 +448,7 @@ bool ec_pdo_get_input_bit(uint16 slave_no, uint8_t bit_no) {
     /* Get the the startbit position in slaves IO bit */
     uint8_t startbit = ec_slave[slave_no].Istartbit;
     /* Mask bit and return boolean 0 or 1 */
-    if (*ec_slave[slave_no].inputs & BIT(bit_no - 1 + startbit))
+    if (*ec_slave[slave_no].inputs & BIT(bit_no + startbit))
         return true;
     else
         return false;
@@ -465,9 +465,9 @@ void ec_pdo_set_output_bit(uint16_t slave_no, uint8_t bit_no, bool value) {
     uint8_t startbit = ec_slave[slave_no].Ostartbit;
     /* Set or Clear bit */
     if (value == false) {
-        *ec_slave[slave_no].outputs &= ~(1 << (bit_no - 1 + startbit));
+        *ec_slave[slave_no].outputs &= ~(1 << (bit_no + startbit));
     } else {
-        *ec_slave[slave_no].outputs |= (1 << (bit_no - 1 + startbit));
+        *ec_slave[slave_no].outputs |= (1 << (bit_no + startbit));
     }
 }
 
@@ -830,9 +830,9 @@ void ec_pdo_set_input_bit_rev(uint16_t slave_no, uint8_t bit_no, bool value) {
     uint8_t startbit = ec_slave[slave_no].Istartbit;
     /* Set or Clear bit */
     if (value == false)
-        *ec_slave[slave_no].inputs &= ~(1 << (bit_no - 1 + startbit));
+        *ec_slave[slave_no].inputs &= ~(1 << (bit_no + startbit));
     else
-        *ec_slave[slave_no].inputs |= (1 << (bit_no - 1 + startbit));
+        *ec_slave[slave_no].inputs |= (1 << (bit_no + startbit));
 }
 
 
