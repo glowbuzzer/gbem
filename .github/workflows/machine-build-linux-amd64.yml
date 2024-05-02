@@ -1,0 +1,40 @@
+name: Build machine of type
+
+on:
+  workflow_call:
+    inputs:
+      machine:
+        # what machine are we building (ends up in machine.txt)
+        required: true
+        type: string
+      version:
+        # version to bake into the build
+        required: true
+        type: string
+
+jobs:
+  linux_amd64_machine_build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          token: ${{ secrets.GH_PAT }}
+          submodules: true
+
+      - name: Set machine
+        run: echo "MAP_MACHINE ${{ inputs.machine }}" > machine.txt
+
+      - name: Set GBC_VERSION
+        run: echo "GBC_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Compile
+        uses: ./.ci/linux-amd64 # Dockerfile
+
+      - name: Copy binary
+        run: mkdir -p /tmp/gbem/${{ inputs.machine }} && cp ./GBEM /tmp/gbem/${{ inputs.machine }}
+
+      - name: Attach artifact to build
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ inputs.machine }}-linux-amd64
+          path: /tmp/gbem/${{ inputs.machine }}
