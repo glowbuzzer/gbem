@@ -360,6 +360,11 @@ gberror_t ec_print_pdo_config_aw_series(const uint16_t slave);
 #define AW_J_SERIES_TORQUE_CONSTANT_SDO_INDEX      0x2003
 #define AW_J_SERIES_TORQUE_CONSTANT_SDO_SUB_INDEX  0x2
 
+//// 0x2635:4 - “Absolute Position On Reset”.
+#define AW_J_SERIES_ABSOLUTE_POSITION_ON_RESET_SDO_INDEX   0x2635
+#define AW_J_SERIES_ABSOLUTE_POSITION_ON_RESET_SDO_SUB_INDEX  0x4
+
+
 //Order	0x2027:2	USINT	8	0	31	3		readwrite
 #define AW_J_SERIES_FIR_ORDER_SDO_INDEX      0x2027
 #define AW_J_SERIES_FIR_ORDER_SDO_SUB_INDEX  0x2
