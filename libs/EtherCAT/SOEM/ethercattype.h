@@ -219,6 +219,44 @@ typedef enum {
     ECT_STRING8 = 0x0100,
 } ec_datatype;
 
+typedef union {
+    uint8_t boolean; // For ECT_BOOLEAN
+    int8_t int8;     // For ECT_INTEGER8
+    int16_t int16;   // For ECT_INTEGER16
+    int32_t int32;   // For ECT_INTEGER32
+    uint8_t uint8;   // For ECT_UNSIGNED8
+    uint16_t uint16; // For ECT_UNSIGNED16
+    uint32_t uint32; // For ECT_UNSIGNED32
+    float real32;    // For ECT_REAL32
+    char *visible_string; // For ECT_VISIBLE_STRING
+    uint8_t *octet_string; // For ECT_OCTET_STRING
+    uint16_t *unicode_string; // For ECT_UNICODE_STRING
+    uint64_t time_of_day; // For ECT_TIME_OF_DAY
+    int64_t time_difference; // For ECT_TIME_DIFFERENCE
+    void *domain; // For ECT_DOMAIN
+    int32_t int24; // For ECT_INTEGER24, store in a 32-bit field
+    double real64; // For ECT_REAL64
+    int64_t int64; // For ECT_INTEGER64
+    uint32_t uint24; // For ECT_UNSIGNED24, store in a 32-bit field
+    uint64_t uint64; // For ECT_UNSIGNED64
+    uint8_t bit1;  // For ECT_BIT1 to ECT_BIT8
+    char *string8; // For ECT_STRING8
+} ec_value;
+
+
+typedef struct {
+    uint16_t index;
+    uint8_t subindex;
+    ec_datatype datatype;
+    ec_value value;
+} ec_sdo;
+
+typedef struct {
+    ec_sdo sdo[10][10];
+    uint8_t num_slaves;
+    uint8_t num_sdo[10];
+} ec_sdo_array;
+
 /** Ethercat command types */
 typedef enum {
     /** No operation */
