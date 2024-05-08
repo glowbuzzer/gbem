@@ -76,29 +76,29 @@ static void parse_section(machine_config_optional_slaves_t *config, const char *
         if (MATCH(map_machine_type_strings[map_machine_type], value)) {
         } else {
             UM_FATAL(
-                "GBEM: Error parsing machine config ini file. Unknown machine [%s]. The machine must match the value this GBEM version targets [%s]",
-                value, map_machine_type_strings[map_machine_type]);
+                    "GBEM: Error parsing machine config ini file. Unknown machine [%s]. The machine must match the value this GBEM version targets [%s]",
+                    value, map_machine_type_strings[map_machine_type]);
         }
     } else if (MATCH("enable_optional_slave_1", key)) {
-        config->enable_optional_slave_1 = get_bool(value[0]);
+        config->enable_optional_slave[0] = get_bool(value[0]);
     } else if (MATCH("enable_optional_slave_2", key)) {
-        config->enable_optional_slave_2 = get_bool(value[0]);
+        config->enable_optional_slave[1] = get_bool(value[0]);
     } else if (MATCH("enable_optional_slave_3", key)) {
-        config->enable_optional_slave_3 = get_bool(value[0]);
+        config->enable_optional_slave[2] = get_bool(value[0]);
     } else if (MATCH("enable_optional_slave_4", key)) {
-        config->enable_optional_slave_4 = get_bool(value[0]);
+        config->enable_optional_slave[3] = get_bool(value[0]);
     } else if (MATCH("enable_optional_slave_5", key)) {
-        config->enable_optional_slave_5 = get_bool(value[0]);
+        config->enable_optional_slave[4] = get_bool(value[0]);
     } else if (MATCH("enable_optional_slave_6", key)) {
-        config->enable_optional_slave_6 = get_bool(value[0]);
+        config->enable_optional_slave[5] = get_bool(value[0]);
     } else if (MATCH("enable_optional_slave_7", key)) {
-        config->enable_optional_slave_7 = get_bool(value[0]);
+        config->enable_optional_slave[6] = get_bool(value[0]);
     } else if (MATCH("enable_optional_slave_8", key)) {
-        config->enable_optional_slave_8 = get_bool(value[0]);
+        config->enable_optional_slave[7] = get_bool(value[0]);
     } else if (MATCH("enable_optional_slave_9", key)) {
-        config->enable_optional_slave_9 = get_bool(value[0]);
+        config->enable_optional_slave[8] = get_bool(value[0]);
     } else if (MATCH("enable_optional_slave_10", key)) {
-        config->enable_optional_slave_10 = get_bool(value[0]);
+        config->enable_optional_slave[9] = get_bool(value[0]);
     } else {
         UM_FATAL("GBEM: Error parsing ini file. Unknown key: %s", key);
     }
