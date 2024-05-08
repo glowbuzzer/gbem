@@ -68,6 +68,8 @@ int32_t ec_get_actpos_wrd_azdxa_ked(uint16_t drive);
 
 int32_t ec_get_actvel_wrd_azdxa_ked(uint16_t drive);
 
+gberror_t ec_set_moo_pdo_azdxa_ked(uint16_t drive, int8_t moo);
+
 
 gberror_t ec_set_setpos_wrd_azdxa_ked(uint16_t drive, int32_t setpos);
 
