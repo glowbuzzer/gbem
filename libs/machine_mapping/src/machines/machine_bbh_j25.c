@@ -22,7 +22,6 @@
 
 /* MACHINE INFO */
 MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(          ec_fsoe_get_safety_state_bbh_scu_1_ec);
-MAP_MACHINE_DISABLE_SLAVES_FUNCTION(            NULL);
 
 /* FSOE MASTER INFO */
 MAP_FSOE_MASTER_SLOT_CONFIG(                    MDP_SLOT_TYPE_BBH_32_12);
@@ -41,8 +40,9 @@ MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           ec_apply_standard_sdos_bbh_scu_1_ec,
 MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            NULL,                                   ec_initial_pdo_aw_j_series);
 MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(         ec_custom_fmmu_sm_bbh_scu_1_ec,         ec_custom_fmmu_sm_aw_j_series);
 MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,                             EC_DC_0);
-MAP_SLAVE_DC_CYCLE(                         0,                                      1) ;
+MAP_SLAVE_DC_CYCLE(                         0,                                      4) ;
 MAP_SLAVE_EXEC_FUNCTIONS(                   NULL,                                   NULL);
+MAP_SLAVE_OPTIONAL(                         false,                                  false);
 
 
 
@@ -58,7 +58,7 @@ MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
 
 /*This is a zero indexed array even though the slaves are 1 indexed */
 /* This must be laid out in the order they appear in netscan */
-const map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {
+map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {
         {.name = BBH_SCU_1_EC_EEP_NAME, .eep_id = BBH_SCU_1_EC_EEP_ID, .eep_man = BBH_SCU_1_EC_EEP_MAN, .eep_rev = BBH_SCU_1_EC_EEP_REV},
         {.name = AW_EEP_NAME, .eep_id = AW_EEP_ID, .eep_man = AW_EEP_MAN, .eep_rev = AW_EEP_REV    },
 };
@@ -104,7 +104,7 @@ MAP_DRIVE_SCALES(                           {166886,9549,32.67}                 
 
 
 /*IO MAP*/
-mapping_t map_iomap[13] = {
+mapping_t map_iomap[18] = {
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave=true},             {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=0, .type = GBC_IO_TYPE_SAFETY},      {}},
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1, .type = GBC_IO_TYPE_SAFETY},      {}},
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2, .type = GBC_IO_TYPE_SAFETY},      {}},
@@ -115,11 +115,16 @@ mapping_t map_iomap[13] = {
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=7, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=7, .type = GBC_IO_TYPE_SAFETY},      {}},
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave=true},             {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=8, .type = GBC_IO_TYPE_SAFETY},      {}},
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=9, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=10, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=11, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=12, .type = GBC_IO_TYPE_SAFETY},      {}},
 
+    //bit 0 is used by gbem to set the error ack
         {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=0, .type = GBC_IO_TYPE_SAFETY},     {}},
         {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=1, .type = GBC_IO_TYPE_SAFETY},     {}},
         {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=2, .type = GBC_IO_TYPE_SAFETY},     {}},
-
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=3, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=5, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=4, .type = GBC_IO_TYPE_SAFETY},     {}},
 };
 
 uint16_t map_num_rows_in_iomap = sizeof(map_iomap) / sizeof(map_iomap[0]);
