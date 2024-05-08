@@ -37,167 +37,167 @@
 
 /* This is used for the fixed POO remapping */
 map_SM_assignment_object_t map_SM2_azd2a_ked = {
-    .number_of_entries = 3,
-    .SM_assignment_index = 0x1c12
+        .number_of_entries = 3,
+        .SM_assignment_index = 0x1c12
 };
 
 /* This is used for the fixed PDO remapping */
 map_SM_assignment_object_t map_SM3_azd2a_ked = {
-    .number_of_entries = 3,
-    .SM_assignment_index = 0x1c13
+        .number_of_entries = 3,
+        .SM_assignment_index = 0x1c13
 };
 
 /* This is used for the fixed POO remapping */
 map_SM_assignment_object_t map_SM2_azd3a_ked = {
-    .number_of_entries = 4,
-    .SM_assignment_index = 0x1c12
+        .number_of_entries = 4,
+        .SM_assignment_index = 0x1c12
 };
 
 /* This is used for the fixed PDO remapping */
 map_SM_assignment_object_t map_SM3_azd3a_ked = {
-    .number_of_entries = 4,
-    .SM_assignment_index = 0x1c13
+        .number_of_entries = 4,
+        .SM_assignment_index = 0x1c13
 };
 
 /* This is used for the fixed POO remapping */
 map_SM_assignment_object_t map_SM2_azd4a_ked = {
-    .number_of_entries = 5,
-    .SM_assignment_index = 0x1c12
+        .number_of_entries = 5,
+        .SM_assignment_index = 0x1c12
 };
 
 /* This is used for the fixed PDO remapping */
 map_SM_assignment_object_t map_SM3_azd4a_ked = {
-    .number_of_entries = 5,
-    .SM_assignment_index = 0x1c13
+        .number_of_entries = 5,
+        .SM_assignment_index = 0x1c13
 };
 
 
 /* This is used for the fixed PDO remapping */
 uint16_t map_SM2_index_of_assigned_PDO_azd2a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1600,
-    0x1610,
-    0x1700
+        0x1600,
+        0x1610,
+        0x1700
 };
 
 /* This is used for the fixed PDO remapping */
 uint16_t map_SM3_index_of_assigned_PDO_azd2a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1a03,
-    0x1a13,
-    0x1b00
+        0x1a03,
+        0x1a13,
+        0x1b00
 };
 
 
 /* This is used for the fixed PDO remapping */
 uint16_t map_SM2_index_of_assigned_PDO_azd3a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1600,
-    0x1610,
-    0x1620,
-    0x1700
+        0x1600,
+        0x1610,
+        0x1620,
+        0x1700
 };
 
 /* This is used for the fixed PDO remapping */
 uint16_t map_SM3_index_of_assigned_PDO_azd3a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1a03,
-    0x1a13,
-    0x1a23,
-    0x1b00
+        0x1a03,
+        0x1a13,
+        0x1a23,
+        0x1b00
 };
 
 /* This is used for the fixed PDO remapping */
 uint16_t map_SM2_index_of_assigned_PDO_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1600,
-    0x1610,
-    0x1620,
-    0x1630,
-    0x1700
+        0x1600,
+        0x1610,
+        0x1620,
+        0x1630,
+        0x1700
 };
 
 /* This is used for the fixed PDO remapping */
 uint16_t map_SM3_index_of_assigned_PDO_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1a03,
-    0x1a13,
-    0x1a23,
-    0x1a23,
-    0x1b00
+        0x1a03,
+        0x1a13,
+        0x1a23,
+        0x1a23,
+        0x1b00
 };
 
 
 map_SM_assignment_object_t map_SM2_custom_azd2a_ked = {
-    .number_of_entries = 3,
-    .SM_assignment_index = 0x1c12
+        .number_of_entries = 3,
+        .SM_assignment_index = 0x1c12
 };
 
 
 map_SM_assignment_object_t map_SM3_custom_azd2a_ked = {
-    .number_of_entries = 3,
-    .SM_assignment_index = 0x1c13
+        .number_of_entries = 3,
+        .SM_assignment_index = 0x1c13
 };
 
 
 map_SM_assignment_object_t map_SM2_custom_azd3a_ked = {
-    .number_of_entries = 4,
-    .SM_assignment_index = 0x1c12
+        .number_of_entries = 4,
+        .SM_assignment_index = 0x1c12
 };
 
 
 map_SM_assignment_object_t map_SM3_custom_azd3a_ked = {
-    .number_of_entries = 4,
-    .SM_assignment_index = 0x1c13
+        .number_of_entries = 4,
+        .SM_assignment_index = 0x1c13
 };
 
 
 map_SM_assignment_object_t map_SM2_custom_azd4a_ked = {
-    .number_of_entries = 5,
-    .SM_assignment_index = 0x1c12
+        .number_of_entries = 5,
+        .SM_assignment_index = 0x1c12
 };
 
 
 map_SM_assignment_object_t map_SM3_custom_azd4a_ked = {
-    .number_of_entries = 5,
-    .SM_assignment_index = 0x1c13
+        .number_of_entries = 5,
+        .SM_assignment_index = 0x1c13
 };
 
 
 uint16_t map_sm2_PDO_assignment_indices_azd2a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1600,
-    0x1610,
-    0x1700
+        0x1600,
+        0x1610,
+        0x1700
 };
 
 uint16_t map_sm3_PDO_assignment_indices_azd2a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1a00,
-    0x1a10,
-    0x1b00
+        0x1a00,
+        0x1a10,
+        0x1b00
 };
 
 uint16_t map_sm2_PDO_assignment_indices_azd3a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1600,
-    0x1610,
-    0x1620,
-    0x1700
+        0x1600,
+        0x1610,
+        0x1620,
+        0x1700
 };
 
 uint16_t map_sm3_PDO_assignment_indices_azd3a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1a00,
-    0x1a10,
-    0x1a20,
-    0x1b00
+        0x1a00,
+        0x1a10,
+        0x1a20,
+        0x1b00
 };
 
 uint16_t map_sm2_PDO_assignment_indices_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1600,
-    0x1610,
-    0x1620,
-    0x1630,
-    0x1700
+        0x1600,
+        0x1610,
+        0x1620,
+        0x1630,
+        0x1700
 };
 
 uint16_t map_sm3_PDO_assignment_indices_azd4a_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1a00,
-    0x1a10,
-    0x1a20,
-    0x1a30,
-    0x1b00
+        0x1a00,
+        0x1a10,
+        0x1a20,
+        0x1a30,
+        0x1b00
 };
 
 
@@ -654,141 +654,141 @@ typedef struct {
 
 
 custom_pdo_t map_SM2_custom_pdo_velo_axis1_azd2a_ked = {
-    0x1600,
-    4,
-    {0x60400010, 0x607A0020, 0x60FF0020, 0x60600008}
+        0x1600,
+        4,
+        {0x60400010, 0x607A0020, 0x60FF0020, 0x60600008}
 };
 custom_pdo_t map_SM2_custom_pdo_velo_axis2_azd2a_ked = {
-    0x1610,
-    4,
-    {0x68400010, 0x687A0020, 0x68FF0020, 0x68600008}
+        0x1610,
+        4,
+        {0x68400010, 0x687A0020, 0x68FF0020, 0x68600008}
 };
 
 custom_pdo_t map_SM2_custom_pdo_velo_controller_azd2a_ked = {
-    0x1700,
-    2,
-    {0x2F010008, 0x2F020008}
+        0x1700,
+        2,
+        {0x2F010008, 0x2F020008}
 };
 
 
 custom_pdo_t map_SM2_custom_pdo_velo_axis1_azd3a_ked = {
-    0x1600,
-    4,
-    {0x60400010, 0x607A0020, 0x60FF0020, 0x60600008}
+        0x1600,
+        4,
+        {0x60400010, 0x607A0020, 0x60FF0020, 0x60600008}
 };
 custom_pdo_t map_SM2_custom_pdo_velo_axis2_azd3a_ked = {
-    0x1610,
-    4,
-    {0x68400010, 0x687A0020, 0x68FF0020, 0x68600008}
+        0x1610,
+        4,
+        {0x68400010, 0x687A0020, 0x68FF0020, 0x68600008}
 };
 custom_pdo_t map_SM2_custom_pdo_velo_axis3_azd3a_ked = {
-    0x1620,
-    4,
-    {0x70400010, 0x707A0020, 0x70FF0020, 0x70600008}
+        0x1620,
+        4,
+        {0x70400010, 0x707A0020, 0x70FF0020, 0x70600008}
 };
 custom_pdo_t map_SM2_custom_pdo_velo_controller_azd3a_ked = {
-    0x1700,
-    2,
-    {0x2F010008, 0x2F020008}
+        0x1700,
+        2,
+        {0x2F010008, 0x2F020008}
 };
 
 
 custom_pdo_t map_SM2_custom_pdo_velo_axis1_azd4a_ked = {
-    0x1600,
-    4,
-    {0x60400010, 0x607A0020, 0x60FF0020, 0x60600008}
+        0x1600,
+        4,
+        {0x60400010, 0x607A0020, 0x60FF0020, 0x60600008}
 };
 custom_pdo_t map_SM2_custom_pdo_velo_axis2_azd4a_ked = {
-    0x1610,
-    4,
-    {0x68400010, 0x687A0020, 0x68FF0020, 0x68600008}
+        0x1610,
+        4,
+        {0x68400010, 0x687A0020, 0x68FF0020, 0x68600008}
 };
 custom_pdo_t map_SM2_custom_pdo_velo_axis3_azd4a_ked = {
-    0x1620,
-    4,
-    {0x70400010, 0x707A0020, 0x70FF0020, 0x70600008}
+        0x1620,
+        4,
+        {0x70400010, 0x707A0020, 0x70FF0020, 0x70600008}
 };
 custom_pdo_t map_SM2_custom_pdo_velo_axis4_azd4a_ked = {
-    0x1630,
-    4,
-    {0x78400010, 0x787A0020, 0x78FF0020, 0x78600008}
+        0x1630,
+        4,
+        {0x78400010, 0x787A0020, 0x78FF0020, 0x78600008}
 };
 
 
 custom_pdo_t map_SM2_custom_pdo_velo_controller_azd4a_ked = {
-    0x1700,
-    2,
-    {0x2F010008, 0x2F020008}
+        0x1700,
+        2,
+        {0x2F010008, 0x2F020008}
 };
 
 
 custom_pdo_t map_SM3_custom_pdo_velo_axis1_azd2a_ked = {
-    0x1A00,
-    5,
-    {0x60410010, 0x60640020, 0x606C0020, 0x60610008, 0x603F0010}
+        0x1A00,
+        5,
+        {0x60410010, 0x60640020, 0x606C0020, 0x60610008, 0x603F0010}
 };
 
 custom_pdo_t map_SM3_custom_pdo_velo_axis2_azd2a_ked = {
-    0x1A10,
-    5,
-    {0x68410010, 0x68640020, 0x686C0020, 0x68610008, 0x683F0010}
+        0x1A10,
+        5,
+        {0x68410010, 0x68640020, 0x686C0020, 0x68610008, 0x683F0010}
 };
 
 custom_pdo_t map_SM3_custom_pdo_velo_controller_azd2a_ked = {
-    0x1B00,
-    2,
-    {0x2E310008, 0x2E320008}
+        0x1B00,
+        2,
+        {0x2E310008, 0x2E320008}
 };
 
 custom_pdo_t map_SM3_custom_pdo_velo_axis1_azd3a_ked = {
-    0x1A00,
-    5,
-    {0x60410010, 0x60640020, 0x606C0020, 0x60610008, 0x603F0010}
+        0x1A00,
+        5,
+        {0x60410010, 0x60640020, 0x606C0020, 0x60610008, 0x603F0010}
 };
 
 custom_pdo_t map_SM3_custom_pdo_velo_axis2_azd3a_ked = {
-    0x1A10,
-    5,
-    {0x68410010, 0x68640020, 0x686C0020, 0x68610008, 0x683F0010}
+        0x1A10,
+        5,
+        {0x68410010, 0x68640020, 0x686C0020, 0x68610008, 0x683F0010}
 };
 custom_pdo_t map_SM3_custom_pdo_velo_axis3_azd3a_ked = {
-    0x1A20,
-    5,
-    {0x70410010, 0x70640020, 0x706C0020, 0x70610008, 0x703F0010}
+        0x1A20,
+        5,
+        {0x70410010, 0x70640020, 0x706C0020, 0x70610008, 0x703F0010}
 };
 custom_pdo_t map_SM3_custom_pdo_velo_controller_azd3a_ked = {
-    0x1B00,
-    2,
-    {0x2E310008, 0x2E320008}
+        0x1B00,
+        2,
+        {0x2E310008, 0x2E320008}
 };
 
 
 custom_pdo_t map_SM3_custom_pdo_velo_axis1_azd4a_ked = {
-    0x1A00,
-    5,
-    {0x60410010, 0x60640020, 0x606C0020, 0x60610008, 0x603F0010}
+        0x1A00,
+        5,
+        {0x60410010, 0x60640020, 0x606C0020, 0x60610008, 0x603F0010}
 };
 
 custom_pdo_t map_SM3_custom_pdo_velo_axis2_azd4a_ked = {
-    0x1A10,
-    5,
-    {0x68410010, 0x68640020, 0x686C0020, 0x68610008, 0x683F0010}
+        0x1A10,
+        5,
+        {0x68410010, 0x68640020, 0x686C0020, 0x68610008, 0x683F0010}
 };
 custom_pdo_t map_SM3_custom_pdo_velo_axis3_azd4a_ked = {
-    0x1A20,
-    5,
-    {0x70410010, 0x70640020, 0x706C0020, 0x70610008, 0x703F0010}
+        0x1A20,
+        5,
+        {0x70410010, 0x70640020, 0x706C0020, 0x70610008, 0x703F0010}
 };
 
 custom_pdo_t map_SM3_custom_pdo_velo_axis4_azd4a_ked = {
-    0x1A30,
-    5,
-    {0x78400010, 0x787A0020, 0x78FF0020, 0x78600008, 0x783F0010}
+        0x1A30,
+        5,
+        {0x78400010, 0x787A0020, 0x78FF0020, 0x78600008, 0x783F0010}
 };
 custom_pdo_t map_SM3_custom_pdo_velo_controller_azd4a_ked = {
-    0x1B00,
-    2,
-    {0x2E310008, 0x2E320008}
+        0x1B00,
+        2,
+        {0x2E310008, 0x2E320008}
 };
 
 
@@ -1180,7 +1180,7 @@ int8_t ec_get_moo_pdo_azdxa_ked(const uint16_t drive) {
             return ec_pdo_get_input_int8(map_drive_to_slave[drive], AZDXA_KED_MOODISP_PDO_DRIVE4_INDEX);
         default:
             LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
-        //return a zero moo
+            //return a zero moo
             return 0;
     }
 }
@@ -1214,6 +1214,33 @@ bool ec_get_follow_error_azdxa_ked(const uint16_t drive) {
     return false;
 }
 
+gberror_t ec_set_moo_pdo_azdxa_ked(const uint16_t drive, int8_t moo) {
+
+    switch (map_drive_to_subdrive[drive]) {
+        case 1:
+            ec_pdo_set_output_int8(map_drive_to_slave[drive], AZDXA_KED_MOOSET_PDO_DRIVE1_INDEX, moo);
+            //                    printf("mooset azd sub drive 1\n");
+            break;
+        case 2:
+            ec_pdo_set_output_int8(map_drive_to_slave[drive], AZDXA_KED_MOOSET_PDO_DRIVE2_INDEX, moo);
+            //                    printf("mooset azd sub drive 2\n");
+            break;
+        case 3:
+            ec_pdo_set_output_int8(map_drive_to_slave[drive], AZDXA_KED_MOOSET_PDO_DRIVE3_INDEX, moo);
+            break;
+        case 4:
+            ec_pdo_set_output_int8(map_drive_to_slave[drive], AZDXA_KED_MOOSET_PDO_DRIVE4_INDEX, moo);
+            break;
+        default:
+            LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
+            return E_SUB_DRIVE_OUT_OF_RANGE;
+    }
+
+
+    return E_SUCCESS;
+
+
+}
 
 /**
  * @brief Perform first cycle PDO writes for AZD drives
@@ -1229,11 +1256,11 @@ gberror_t ec_initial_pdo_azdxa_ked(const uint16_t slave) {
             switch (map_drive_to_subdrive[i]) {
                 case 1:
                     ec_pdo_set_output_int8(slave, AZDXA_KED_MOOSET_PDO_DRIVE1_INDEX, map_drive_moo[i]);
-                //                    printf("mooset azd sub drive 1\n");
+                    //                    printf("mooset azd sub drive 1\n");
                     break;
                 case 2:
                     ec_pdo_set_output_int8(slave, AZDXA_KED_MOOSET_PDO_DRIVE2_INDEX, map_drive_moo[i]);
-                //                    printf("mooset azd sub drive 2\n");
+                    //                    printf("mooset azd sub drive 2\n");
                     break;
                 case 3:
                     ec_pdo_set_output_int8(slave, AZDXA_KED_MOOSET_PDO_DRIVE3_INDEX, map_drive_moo[i]);
@@ -1285,7 +1312,7 @@ uint8_t *ec_get_error_string_sdo_azdxa_ked(const uint16_t drive) {
             break;
         default:
             LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
-        //return a zero error code
+            //return a zero error code
             return 0;
     }
 
@@ -1384,7 +1411,7 @@ uint8_t *ec_get_error_string_pdo_azdxa_ked(const uint16_t drive) {
             break;
         default:
             LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
-        //return a zero error code
+            //return a zero error code
             return 0;
     }
 
@@ -1472,7 +1499,7 @@ int32_t ec_get_actpos_wrd_azdxa_ked(const uint16_t drive) {
             return ec_pdo_get_input_int32(map_drive_to_slave[drive], AZDXA_KED_ACTPOS_PDO_DRIVE4_INDEX);
         default:
             LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
-        //return 404 as a magic number error
+            //return 404 as a magic number error
             return 404;
     }
 }
@@ -1495,7 +1522,7 @@ int32_t ec_get_actvel_wrd_azdxa_ked(const uint16_t drive) {
             return ec_pdo_get_input_int32(map_drive_to_slave[drive], AZDXA_KED_ACTVEL_PDO_DRIVE4_INDEX);
         default:
             LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
-        //return 404 as a magic number error
+            //return 404 as a magic number error
             return 404;
     }
 }
@@ -1518,7 +1545,7 @@ uint16_t ec_get_ctrl_wrd_rev_azdxa_ked(const uint16_t drive) {
             return ec_pdo_get_output_uint16_rev(map_drive_to_slave[drive], AZDXA_KED_CONTROLWORD_PDO_DRIVE4_INDEX);
         default:
             LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
-        //return a zero ctrl wrd
+            //return a zero ctrl wrd
             return 0;
     }
 }
@@ -1596,7 +1623,7 @@ uint16_t ec_get_stat_wrd_azdxa_ked(const uint16_t drive) {
             return ec_pdo_get_input_uint16(map_drive_to_slave[drive], AZDXA_KED_STATUSWORD_PDO_DRIVE4_INDEX);
         default:
             LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Sub-drive index out of range");
-        //return a zero stat wrd
+            //return a zero stat wrd
             return 0;
     }
 }
@@ -1702,7 +1729,7 @@ int32_t ec_get_setpos_word_rev_azdxa_ked(const uint16_t drive) {
             return ec_pdo_get_output_int32_rev(map_drive_to_slave[drive], AZDXA_KED_SETPOS_PDO_DRIVE4_INDEX);
         default:
             LL_ERROR(GBEM_GEN_LOG_EN, "Sub-drive index out of range");
-        //return a zero setpos
+            //return a zero setpos
             return 0;
     }
 }
@@ -1881,46 +1908,46 @@ gberror_t ec_nvram_sdos_azdxa_ked(const uint16_t slave) {
 
 /*array mapping an AZD drive error code to a text string */
 const azdxa_ked_error_string_t azdxa_ked_alarm_code[NUM_OF_AZD_ERROR_STRINGS] = {
-    {0x0, "AZD: No warning"},
-    {0x10, "AZD: Excessive position deviation"},
-    {0x20, "AZD: Overcurrent"},
-    {0x21, "AZD: Main circuit overheat"},
-    {0x22, "AZD: Overvoltage"},
-    {0x23, "AZD: Main power off"},
-    {0x25, "AZD: Undervoltage"},
-    {0x26, "AZD: Motor overheat"},
-    {0x28, "AZD: Sensor error"},
-    {0x29, "AZD: CPU peripheral circuit error"},
-    {0x2A, "AZD: ABZO sensor communication error"},
-    {0x30, "AZD: Overload"},
-    {0x31, "AZD: Overspeed"},
-    {0x33, "AZD: Absolute position error"},
-    {0x34, "AZD: Command pulse error"},
-    {0x35, "AZD: Alarm detection OF other axes"},
-    {0x41, "AZD: EEPROM error"},
-    {0x42, "AZD: Sensor error AT power on"},
-    {0x43, "AZD: Rotation error AT power on"},
-    {0x44, "AZD: Encoder EEPROM error"},
-    {0x45, "AZD: Motor combination error"},
-    {0x4A, "AZD: RETURN-TO-home incomplete"},
-    {0x51, "AZD: Regeneration resistor overheat"},
-    {0x54, "AZD: Fan rotation deterioration"},
-    {0x60, "AZD: +/-LS both sides active"},
-    {0x61, "AZD: Reverse +/-LS connection"},
-    {0x62, "AZD: RETURN-TO-home operation error"},
-    {0x63, "AZD: No HOMES"},
-    {0x64, "AZD: TIM, Z, SLIT signal error"},
-    {0x66, "AZD: Hardware overtravel"},
-    {0x67, "AZD: Software overtravel"},
-    {0x6A, "AZD: RETURN-TO-home operation offset error"},
-    {0x6D, "AZD: Mechanical overtravel"},
-    {0x70, "AZD: Operation data error"},
-    {0x71, "AZD: Electronic gear setting error"},
-    {0x72, "AZD: Wrap setting error"},
-    {0x81, "AZD: Network bus error"},
-    {0x82, "AZD: Driver INTERNAL communication error 1"},
-    {0x84, "AZD: AZD: Driver INTERNAL communication error 2"},
-    {0x85, "AZD: Driver INTERNAL communication timeout"},
-    {0xF0, "AZD: CPU error"},
-    {0xFF, "AZD: End of error code list marker"}
+        {0x0,  "AZD: No warning"},
+        {0x10, "AZD: Excessive position deviation"},
+        {0x20, "AZD: Overcurrent"},
+        {0x21, "AZD: Main circuit overheat"},
+        {0x22, "AZD: Overvoltage"},
+        {0x23, "AZD: Main power off"},
+        {0x25, "AZD: Undervoltage"},
+        {0x26, "AZD: Motor overheat"},
+        {0x28, "AZD: Sensor error"},
+        {0x29, "AZD: CPU peripheral circuit error"},
+        {0x2A, "AZD: ABZO sensor communication error"},
+        {0x30, "AZD: Overload"},
+        {0x31, "AZD: Overspeed"},
+        {0x33, "AZD: Absolute position error"},
+        {0x34, "AZD: Command pulse error"},
+        {0x35, "AZD: Alarm detection OF other axes"},
+        {0x41, "AZD: EEPROM error"},
+        {0x42, "AZD: Sensor error AT power on"},
+        {0x43, "AZD: Rotation error AT power on"},
+        {0x44, "AZD: Encoder EEPROM error"},
+        {0x45, "AZD: Motor combination error"},
+        {0x4A, "AZD: RETURN-TO-home incomplete"},
+        {0x51, "AZD: Regeneration resistor overheat"},
+        {0x54, "AZD: Fan rotation deterioration"},
+        {0x60, "AZD: +/-LS both sides active"},
+        {0x61, "AZD: Reverse +/-LS connection"},
+        {0x62, "AZD: RETURN-TO-home operation error"},
+        {0x63, "AZD: No HOMES"},
+        {0x64, "AZD: TIM, Z, SLIT signal error"},
+        {0x66, "AZD: Hardware overtravel"},
+        {0x67, "AZD: Software overtravel"},
+        {0x6A, "AZD: RETURN-TO-home operation offset error"},
+        {0x6D, "AZD: Mechanical overtravel"},
+        {0x70, "AZD: Operation data error"},
+        {0x71, "AZD: Electronic gear setting error"},
+        {0x72, "AZD: Wrap setting error"},
+        {0x81, "AZD: Network bus error"},
+        {0x82, "AZD: Driver INTERNAL communication error 1"},
+        {0x84, "AZD: AZD: Driver INTERNAL communication error 2"},
+        {0x85, "AZD: Driver INTERNAL communication timeout"},
+        {0xF0, "AZD: CPU error"},
+        {0xFF, "AZD: End of error code list marker"}
 };
