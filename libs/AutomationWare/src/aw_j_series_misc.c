@@ -16,7 +16,6 @@
 #include "aw_j_series.h"
 
 gberror_t ec_get_secondary_name_aw_j_series(const uint16_t drive, char *secondary_name) {
-
     int rc = 0;
 
     int assigned_name_os = 50;
@@ -34,13 +33,11 @@ gberror_t ec_get_secondary_name_aw_j_series(const uint16_t drive, char *secondar
         return E_SDO_READ_FAILURE;
     }
     strncpy(secondary_name, (const char *) assigned_name,
-            29);  // Using 29 to leave space for the null terminator
-    secondary_name[29] = '\0';  // Ensure null-termination of the destination string}
+            29); // Using 29 to leave space for the null terminator
+    secondary_name[29] = '\0'; // Ensure null-termination of the destination string}
 
 
     return E_SUCCESS;
-
-
 }
 
 
@@ -198,6 +195,14 @@ gberror_t ec_print_params_aw_j_series(const uint16_t drive) {
                       &torque_constant, true);
     UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Torque constant [%d] on drive [%d]", torque_constant, drive);
 
+
+    // does this exist on the non fsoe drives?
+//    uint32_t abs_pos_on_reset = 0;
+//    ec_sdo_read_uint32(map_drive_to_slave[drive], AW_J_SERIES_ABSOLUTE_POSITION_ON_RESET_SDO_INDEX,
+//                       AW_J_SERIES_ABSOLUTE_POSITION_ON_RESET_SDO_SUB_INDEX,
+//                       &abs_pos_on_reset, true);
+//
+//    UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Absolute position on reset [%d] on drive [%d]", abs_pos_on_reset, drive);
 
     //default max pos: 2147483647
     //    default min pos: -2147483648
