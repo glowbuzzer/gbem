@@ -127,7 +127,7 @@ void iomap_set_pdo_out_bool(bool byte_slave, const uint16_t slave_num, const uin
                             const uint8_t bit_num, const bool val) {
     if (!byte_slave) {
         ec_pdo_set_output_bit(slave_num, bit_num, val);
-        //        printf("set bit on slave_num [%u] bit_num [%u] to val [%d]\n", slave_num, bit_num, val);
+//        printf("set bit on slave_num [%u] bit_num [%u] to val [%d]\n", slave_num, bit_num, val);
     } else {
         //        printf("set bit on slave_num [%u] byte_num [%u] bit_num [%u] to val [%d]\n", slave_num, byte_num, bit_num, val);
         ec_pdo_set_output_bit_from_byte_slave(slave_num, byte_num, bit_num, val);
