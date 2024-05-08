@@ -60,7 +60,7 @@ gberror_t ec_fsoe_set_error_ack_state_bbh_scu_1_ec(bool state, uint16_t slave) {
     ec_pdo_set_output_bit_from_byte_slave(slave, BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0,
                                           FSOE_STANDARD_ERROR_ACK_CMD_BIT_NUM, state);
 
-    UM_WARN(GBEM_UM_EN, "GBEM: Sending error acknowledgement to BBG SCU 1 EC");
+    UM_WARN(GBEM_UM_EN, "GBEM: Sending error acknowledgement to BBH SCU 1 EC");
     return E_SUCCESS;
 }
 
