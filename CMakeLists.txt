@@ -161,7 +161,7 @@ MESSAGE(STATUS "ETHTOOL_CMD_OUTPUT: " ${ETHTOOL_CMD_OUTPUT})
 
 add_executable(GBEM ${SOURCES})
 #NEW_DRIVE
-target_link_libraries(GBEM EtherCAT Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen automationware virtual_drive RTA trio delta JVL omron oriental_motor bbh unity gberror gbem_config etg m rt)
+target_link_libraries(GBEM EtherCAT jansson sdos json_conf json_msg Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen automationware virtual_drive RTA trio delta JVL omron oriental_motor bbh unity gberror gbem_config etg m rt)
 target_include_directories(GBEM PUBLIC "inc" "shared/inc" "plc_user_code" ${PROJECT_BINARY_DIR}/version ${gbem_config_BINARY_DIR})
 
 #add_executable(GBEM_testStateMachine shared/src/control.c shared/src/ec_functions.c src/ecrxtx.c src/ethercatnetscan.c src/status.c shared/src/json-maker.c shared/src/float_int_conv.c test/src/test.c test/src/testStateMachine.c shared/src/plc_core.c plc_user_code/plc_init.c src/cyclic_message.c plc_user_code/plc_task_1.c shared/src/iomap_processing.c)
@@ -255,6 +255,10 @@ add_subdirectory("libs/VirtualDrive")
 add_subdirectory("libs/RTA")
 add_subdirectory("libs/trio")
 add_subdirectory("libs/BBH")
+add_subdirectory("libs/jansson")
+add_subdirectory("libs/json_conf")
+add_subdirectory("libs/sdos")
+add_subdirectory("libs/json_msg")
 
 #this has to to be placed after the definitions
 #    add_subdirectory("apps/GBEM")
