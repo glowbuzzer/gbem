@@ -1,0 +1,133 @@
+{
+  "machine_name": "MACHINE_AW_6DOF",
+  "drives": {
+    "limits": [
+      {
+        "position_limit_max": 90,
+        "position_limit_min": -90,
+        "velocity_limit": 50,
+        "torque_limit": 50,
+        "max_motor_speed": 2500000,
+        "max_motor_torque": 4012
+      },
+      {
+        "position_limit_max": 55,
+        "position_limit_min": -55,
+        "velocity_limit": 50,
+        "torque_limit": 50,
+        "max_motor_speed": 1400000,
+        "max_motor_torque": 4056
+      },
+      {
+        "position_limit_max": 135,
+        "position_limit_min": 45,
+        "velocity_limit": 50,
+        "torque_limit": 50,
+        "max_motor_speed": 2500000,
+        "max_motor_torque": 4012
+      },
+      {
+        "position_limit_max": -180,
+        "position_limit_min": 180,
+        "velocity_limit": 50,
+        "torque_limit": 50,
+        "max_motor_speed": 2500000,
+        "max_motor_torque": 3991
+      },
+      {
+        "position_limit_max": -5,
+        "position_limit_min": -175,
+        "velocity_limit": 50,
+        "torque_limit": 50,
+        "max_motor_speed": 2500000,
+        "max_motor_torque": 3991
+      },
+      {
+        "position_limit_max": 300,
+        "position_limit_min": -300,
+        "velocity_limit": 50,
+        "torque_limit": 50,
+        "max_motor_speed": 3500000,
+        "max_motor_torque": 3991
+      }
+    ]
+  },
+  "ethercat": {
+    "ecm_cycle_shift": 0,
+    "slaves": [
+      {
+        "name": "EL1008",
+        "optional": {
+          "is_configurable": false,
+          "is_set": false
+        },
+        "sdos": [
+          {
+            "datatype": 4,
+            "index": 12,
+            "sub_index": 1,
+            "value": 3
+          },
+          {
+            "datatype": 4,
+            "index": 13,
+            "sub_index": 1,
+            "value": 4
+          }
+        ]
+      },
+      {
+        "name": "EL1008",
+        "optional": {
+          "is_configurable": true,
+          "is_set": true
+        },
+        "sdos": [
+          {
+            "datatype": 4,
+            "index": 12,
+            "sub_index": 1,
+            "value": 1
+          },
+          {
+            "datatype": 4,
+            "index": 12,
+            "sub_index": 1,
+            "value": 1
+          }
+        ]
+      },
+      {
+        "name": "EL1008",
+        "optional": {
+          "is_configurable": false,
+          "is_set": true
+        },
+        "sdos": [
+          {
+            "datatype": 4,
+            "index": 12,
+            "sub_index": 1,
+            "value": 1
+          },
+          {
+            "datatype": 4,
+            "index": 12,
+            "sub_index": 1,
+            "value": 1
+          }
+        ]
+      }
+    ]
+  },
+  "gbem": {
+    "params": {
+      "cycle_time": 4,
+      "drive_state_change_timeout": 5000
+    },
+    "debug_params": {
+      "disable_drive_warn_check": false,
+      "disable_drive_limit_check": false
+    }
+  }
+}
