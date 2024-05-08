@@ -24,6 +24,7 @@ MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(ec_get_safety_state_azdxa_ked);
 /* FSOE MASTER INFO */
 MAP_FSOE_MASTER_SLOT_CONFIG();
 MAP_FSOE_MASTER_SLOT_TO_SLAVE();
+
 MAP_FSOE_MASTER_SET_ERROR_ACK_STATE_FUNCTION(NULL);
 
 
@@ -79,7 +80,7 @@ MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         ec_set_setvel_wrd_azdxa_ked,        
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                               NULL,                               );
 MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  NULL,                               NULL,                               );
 MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(   NULL,                               NULL,                               );
-MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(            NULL,                               NULL                                );
+MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(            ec_set_moo_pdo_azdxa_ked,           ec_set_moo_pdo_azdxa_ked            );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                               NULL                                );
 MAP_DRIVE_RUN_HOMING(                       0,                                  0                                   );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               NULL                                );

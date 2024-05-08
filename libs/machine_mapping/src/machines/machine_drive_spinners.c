@@ -52,7 +52,7 @@ MAP_DRIVE_SET_SETVEL_WRD_FUNCTIONS(         NULL,                               
 MAP_DRIVE_SET_SETTORQ_WRD_FUNCTIONS(        NULL,                               NULL                                );
 MAP_DRIVE_SET_SETTORQOFFSET_WRD_FUNCTIONS(  NULL,                               NULL                                );
 MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(   NULL,                               NULL                                );
-MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(            NULL,                               NULL                                );
+MAP_DRIVE_MOO_SET_PDO_FUNCTIONS(            ec_set_moo_pdo_azdxa_ked,           ec_set_moo_pdo_azdxa_ked            );
 MAP_DRIVE_HOMING_EXEC_FUNCTIONS(            NULL,                               NULL                                );
 MAP_DRIVE_RUN_HOMING(                       0,                                  0                                   );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               NULL);
