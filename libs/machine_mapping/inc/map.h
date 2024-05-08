@@ -259,18 +259,25 @@ extern const map_drive_scales_t map_drive_scales[MAP_NUM_DRIVES];
 extern map_slave_map_t ecm_slave_map[EC_MAXSLAVE];
 extern map_machine_type_t map_machine_type;
 
+//typedef struct {
+//    bool enable_optional_slave_1;
+//    bool enable_optional_slave_2;
+//    bool enable_optional_slave_3;
+//    bool enable_optional_slave_4;
+//    bool enable_optional_slave_5;
+//    bool enable_optional_slave_6;
+//    bool enable_optional_slave_7;
+//    bool enable_optional_slave_8;
+//    bool enable_optional_slave_9;
+//    bool enable_optional_slave_10;
+//} machine_config_optional_slaves_t;
+
+#define MAX_NUM_OPTIONAL_SLAVES 10
+
 typedef struct {
-    bool enable_optional_slave_1;
-    bool enable_optional_slave_2;
-    bool enable_optional_slave_3;
-    bool enable_optional_slave_4;
-    bool enable_optional_slave_5;
-    bool enable_optional_slave_6;
-    bool enable_optional_slave_7;
-    bool enable_optional_slave_8;
-    bool enable_optional_slave_9;
-    bool enable_optional_slave_10;
+    bool enable_optional_slave[MAX_NUM_OPTIONAL_SLAVES]; // Array of 10 boolean values
 } machine_config_optional_slaves_t;
+
 
 extern machine_config_optional_slaves_t machine_config_optional_slaves;
 
@@ -314,10 +321,10 @@ extern uint16_t map_slave_fsoe_offset_in[EC_MAXSLAVE];
 extern uint16_t map_slave_fsoe_offset_out[EC_MAXSLAVE];
 
 extern gberror_t (*map_slave_fsoe_get_slave_state_function_ptr[EC_MAXSLAVE])(
-    uint16_t slave, uint32_t *state, enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state);
+        uint16_t slave, uint32_t *state, enum FSOE_SLAVE_HIGH_LEVEL_STATE *high_level_state);
 
 extern gberror_t (*map_slave_fsoe_get_master_state_function_ptr[EC_MAXSLAVE])(
-    uint16_t slave, enum FSOE_MASTER_HIGH_LEVEL_STATE *high_level_state, uint32_t *error_code);
+        uint16_t slave, enum FSOE_MASTER_HIGH_LEVEL_STATE *high_level_state, uint32_t *error_code);
 
 extern gberror_t (*map_slave_fsoe_get_slave_con_id_function_ptr[EC_MAXSLAVE])(uint16_t slave, uint16_t *con_id);
 
