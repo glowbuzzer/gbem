@@ -13,4 +13,9 @@
 #ifndef GBEM_SDOS_READ_BASED_ON_DATATYPE_H
 #define GBEM_SDOS_READ_BASED_ON_DATATYPE_H
 
+
+gberror_t
+sdos_read_based_on_datatype(const uint16_t slave, const uint16_t index, const uint8_t subindex, const uint8_t datatype,
+                            ec_value *value);
+
 #endif //GBEM_SDOS_READ_BASED_ON_DATATYPE_H

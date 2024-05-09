@@ -11,6 +11,7 @@
  ******************************************************************************
  */
 
+#include "sdo_write_from_array.h"
 
 
 gberror_t sdos_write_from_array(ec_sdo_array *array) {
