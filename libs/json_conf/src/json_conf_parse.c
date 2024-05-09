@@ -12,6 +12,7 @@
  */
 
 #include "json_conf_parse.h"
+#include "user_message.h"
 #include "json_conf_parse_limits.h"
 #include "json_conf_parse_sdo.h"
 #include "json_conf_parse_optional_slaves.h"
@@ -34,13 +35,13 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
     json_t *value;
 
     if (!json_conf_check_sha256()) {
-        fprintf(stderr, "GBEM: [JSON config] Error: SHA256 check failed\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: SHA256 check failed");
         return false;
     }
 
 
     if (json_root) {
-        fprintf(stderr, "GBEM: [JSON config] Success: Initial parse of the [%s]\n", GBEM_CONF_FILE);
+        UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: Initial parse of the [%s]", GBEM_CONF_FILE);
 
         /* print JSON structure */
         print_json(json_root);
@@ -54,9 +55,9 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
 
         //parse sdo
         if (json_conf_parse_sdo(value, ar)) {
-            printf("GBEM: [JSON config] Success: SDOs parsed\n");
+            UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: SDOs parsed");
         } else {
-            printf("GBEM: [JSON config] Error: SDO parse failed\n");
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: SDO parse failed");
             json_decref(json_root);
             return false;
         }
@@ -64,9 +65,9 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
         //parse optional slaves
 
         if (json_conf_parse_optional_slaves(value, max_num_optional_slaves, optional_slaves)) {
-            printf("GBEM: [JSON config] Success: Optional slaves parsed\n");
+            UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: Optional slaves parsed");
         } else {
-            printf("GBEM: [JSON config] Error: Optional slaves parse failed\n");
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: Optional slaves parse failed");
             json_decref(json_root);
             return false;
         }
@@ -81,9 +82,9 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
         }
 
         if (json_conf_parse_limits(value, num_drives, limits)) {
-            printf("GBEM: [JSON config] Success: Limits parsed\n");
+            UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: Limits parsed");
         } else {
-            printf("GBEM: [JSON config] Error: Limits parse failed\n");
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: Limits parse failed");
             json_decref(json_root);
             return false;
         }
@@ -97,9 +98,9 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
 
         if (json_conf_parse_gbem(value, cycle_time, drive_state_change_timeout, disable_drive_warn_check,
                                  disable_drive_limit_check)) {
-            printf("GBEM: [JSON config] Success: GBEM settings parsed\n");
+            UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: GBEM settings parsed");
         } else {
-            printf("GBEM: [JSON config] Error: GBEM settings parse failed\n");
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: GBEM settings parse failed");
             json_decref(json_root);
             return false;
         }
@@ -115,8 +116,8 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
 
 
     } else {
-        fprintf(stderr, "GBEM: [JSON config] Error: Loading JSON file [%s] failed with an error on line [%d] [%s]\n",
-                GBEM_CONF_FILE, error.line, error.text);
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: Loading JSON file [%s] failed with an error on line [%d] [%s]",
+                 GBEM_CONF_FILE, error.line, error.text);
         return false;
     }
 }

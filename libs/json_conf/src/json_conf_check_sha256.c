@@ -16,14 +16,14 @@
 #include "json_conf_parse.h"
 #include <openssl/sha.h>
 #include <string.h>
-
+#include "user_message.h"
 #include <stdio.h>
 
 bool json_conf_check_sha256(void) {
     FILE *file;
     file = fopen(GBEM_CONF_SHA256_FILE, "rb");
     if (!file) {
-        printf("GBEM: [JSON config] Error: SHA256 file not found [%s]\n", GBEM_CONF_SHA256_FILE);
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: SHA256 file not found [%s]", GBEM_CONF_SHA256_FILE);
         perror("Error opening file");
         return false;
     }
@@ -49,7 +49,7 @@ bool json_conf_check_sha256(void) {
 
     file = fopen(GBEM_CONF_FILE, "rb");
     if (!file) {
-        printf("GBEM: [JSON config] Error: JSON file not found [%s]\n", GBEM_CONF_FILE);
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: JSON file not found [%s]", GBEM_CONF_FILE);
         perror("Error opening file");
         return false;
     }
@@ -57,9 +57,9 @@ bool json_conf_check_sha256(void) {
     unsigned char sha256[SHA256_DIGEST_LENGTH];
 
     if (json_conf_calculate_sha256(file, sha256)) {
-        printf("GBEM: [JSON config] Success: SHA256 calculated\n");
+        UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: SHA256 calculated");
     } else {
-        printf("GBEM: [JSON config] Error: SHA256 calculation failed\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: SHA256 calculation failed");
         return false;
     }
 
@@ -67,9 +67,9 @@ bool json_conf_check_sha256(void) {
 
 
     if (strcmp(buffer, sha256) == 0) {
-        printf("GBEM: [JSON config] Success: SHA256 match\n");
+        UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: SHA256 match");
     } else {
-        printf("GBEM: [JSON config] Error: SHA256 mismatch\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: SHA256 mismatch");
         return false;
     }
 

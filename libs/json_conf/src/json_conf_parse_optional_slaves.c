@@ -14,6 +14,7 @@
 #include "json_conf_parse_optional_slaves.h"
 #include "json_conf_helpers.h"
 #include <string.h>
+#include "user_message.h"
 
 bool json_conf_parse_optional_slaves(json_t *json_ethercat, uint16_t max_num_optional_slaves,
                                      machine_config_optional_slaves_t *optional_slaves) {
@@ -39,13 +40,13 @@ bool json_conf_parse_optional_slaves(json_t *json_ethercat, uint16_t max_num_opt
     }
 
     if (!json_is_array(ethercat_slave_object)) {
-        printf("GBEM: [JSON config] Error: slaves object not an array\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: slaves object not an array");
         return false;
     }
 
     size = json_array_size(ethercat_slave_object);
 
-    printf("GBEM: [JSON config] Success: Slave definitions found for [%zu] slaves\n", size);
+    UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: Slave definitions found for [%zu] slaves", size);
 
 
     int num_of_optional_slaves_found = 0;
@@ -70,7 +71,7 @@ bool json_conf_parse_optional_slaves(json_t *json_ethercat, uint16_t max_num_opt
         if (json_is_boolean(is_configurable)) {
             is_configurable_slave = json_boolean_value(is_configurable);
         } else {
-            printf("GBEM: [JSON config] Error: is_configurable object not a boolean\n");
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: is_configurable object not a boolean");
             return false;
         }
 
@@ -90,7 +91,7 @@ bool json_conf_parse_optional_slaves(json_t *json_ethercat, uint16_t max_num_opt
 
 //todo fix me
             } else {
-                printf("GBEM: [JSON config] Error: is_set not a boolean\n");
+                UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: is_set not a boolean");
                 return false;
             }
 
@@ -98,11 +99,11 @@ bool json_conf_parse_optional_slaves(json_t *json_ethercat, uint16_t max_num_opt
 
     }
     if (num_of_optional_slaves_found > max_num_optional_slaves) {
-        printf("GBEM: [JSON config] Error: too many optional slaves found [%d] should be [%d]\n",
-               num_of_optional_slaves_found, max_num_optional_slaves);
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: too many optional slaves found [%d] should be [%d]",
+                 num_of_optional_slaves_found, max_num_optional_slaves);
         return false;
     } else {
-        printf("GBEM: [JSON config] Success: Optional slaves found [%d]\n", num_of_optional_slaves_found);
+        UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: Optional slaves found [%d]", num_of_optional_slaves_found);
     }
 
     return true;

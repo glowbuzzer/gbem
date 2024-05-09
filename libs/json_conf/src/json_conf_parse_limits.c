@@ -13,6 +13,7 @@
 
 #include "json_conf_parse_limits.h"
 #include "json_conf_helpers.h"
+#include "user_message.h"
 
 
 bool json_conf_parse_limits(json_t *json_drives, uint16_t num_drives, map_machine_limits_t *limits) {
@@ -30,18 +31,18 @@ bool json_conf_parse_limits(json_t *json_drives, uint16_t num_drives, map_machin
     }
 
     if (!json_is_array(json_drives_limits)) {
-        printf("GBEM: [JSON config] Error: limits object not an array\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: limits object not an array");
         return false;
     }
 
 
     size = json_array_size(json_drives_limits);
 
-    printf("GBEM: [JSON config] Success: %zu limits objects found in array\n", size);
+    UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: %zu limits objects found in array", size);
 
     if (size != num_drives) {
-        printf("GBEM: [JSON config] Error: incorrect number of limits objects [%zu] should be [%d]\n", size,
-               num_drives);
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: incorrect number of limits objects [%zu] should be [%d]", size,
+                 num_drives);
         return false;
     }
 
@@ -69,7 +70,8 @@ bool json_conf_parse_limits(json_t *json_drives, uint16_t num_drives, map_machin
         //check object size vs number expected
 
         if (size != 6) {
-            printf("GBEM: [JSON config] Error: incorrect number of entries in limits [%zu] should be [6]\n", size);
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: incorrect number of entries in limits [%zu] should be [6]",
+                     size);
             return false;
         }
 
@@ -107,7 +109,7 @@ bool json_conf_parse_limits(json_t *json_drives, uint16_t num_drives, map_machin
 //        printf("max_motor_torque: %lld\n", local_max_motor_torque);
 
         if (true_count != 6) {
-            printf("GBEM: [JSON config] Error: incorrect sections or names in limits object\n");
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: incorrect sections or names in limits object\n");
             return false;
         }
 

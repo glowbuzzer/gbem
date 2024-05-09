@@ -13,6 +13,7 @@
 #include "json_conf_parse_gbem.h"
 #include "json_conf_helpers.h"
 #include <string.h>
+#include "user_message.h"
 
 bool json_conf_parse_gbem(json_t *json_gbem, int *cycle_time, int *drive_state_change_timeout,
                           bool *disable_drive_warn_check,
@@ -46,7 +47,7 @@ bool json_conf_parse_gbem(json_t *json_gbem, int *cycle_time, int *drive_state_c
     }
 
     if (!json_is_integer(cycle_time_object)) {
-        fprintf(stderr, "GBEM: [JSON config] Error: unhandled value type at key [cycle_time] - expected INTEGER\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: unhandled value type at key [cycle_time] - expected INTEGER");
         return false;
     } else {
         *cycle_time = (int) json_integer_value(cycle_time_object);
@@ -59,8 +60,8 @@ bool json_conf_parse_gbem(json_t *json_gbem, int *cycle_time, int *drive_state_c
     }
 
     if (!json_is_integer(drive_state_change_timeout_object)) {
-        fprintf(stderr,
-                "GBEM: [JSON config] Error: unhandled value type at key [drive_state_change_timeout] - expected INTEGER\n");
+        UM_ERROR(GBEM_UM_EN,
+                 "GBEM: [JSON config] Error: unhandled value type at key [drive_state_change_timeout] - expected INTEGER");
         return false;
     } else {
         *drive_state_change_timeout = (int) json_integer_value(drive_state_change_timeout_object);
@@ -97,8 +98,8 @@ bool json_conf_parse_gbem(json_t *json_gbem, int *cycle_time, int *drive_state_c
 
 
     if (!json_is_boolean(disable_drive_limit_check_object)) {
-        fprintf(stderr,
-                "GBEM: [JSON config] Error: unhandled value type at key [disable_drive_limit_check] - expected BOOLEAN\n");
+        UM_ERROR(GBEM_UM_EN,
+                 "GBEM: [JSON config] Error: unhandled value type at key [disable_drive_limit_check] - expected BOOLEAN");
         return false;
     } else {
         *disable_drive_limit_check = json_boolean_value(disable_drive_limit_check_object);

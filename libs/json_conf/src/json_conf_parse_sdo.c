@@ -15,6 +15,7 @@
 #include "json_conf_helpers.h"
 #include "json_conf_number_checks.h"
 #include <string.h>
+#include "user_message.h"
 
 bool json_conf_parse_sdo(json_t *json_ethercat, ec_sdo_array *ar) {
     json_t *ethercat_slave_object;
@@ -34,18 +35,17 @@ bool json_conf_parse_sdo(json_t *json_ethercat, ec_sdo_array *ar) {
 
     ethercat_slave_object = json_object_get(json_ethercat, "slaves");
     if (!json_conf_check_object(ethercat_slave_object, "slaves")) {
-
         return false;
     }
 
     if (!json_is_array(ethercat_slave_object)) {
-        printf("GBEM: [JSON config] Error: slaves object not an array\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: slaves object not an array");
         return false;
     }
 
     size = json_array_size(ethercat_slave_object);
 
-    printf("GBEM: [JSON config] Success: Slave definitions found for [%zu] slaves\n", size);
+    UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: Slave definitions found for [%zu] slaves", size);
 
     ar->num_slaves = (uint8_t) size;
 
@@ -59,7 +59,7 @@ bool json_conf_parse_sdo(json_t *json_ethercat, ec_sdo_array *ar) {
         }
 
         if (!json_is_array(sdos)) {
-            printf("GBEM: [JSON config] Error: sdos object not an array\n");
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: sdos object not an array");
             return false;
         }
 
@@ -70,7 +70,9 @@ bool json_conf_parse_sdo(json_t *json_ethercat, ec_sdo_array *ar) {
 
             size = json_object_size(sdo);
             if (size != 4) {
-                printf("GBEM: [JSON config] Error: SDO object size [%lld] should be 4\n", (long long) size);
+                UM_ERROR(GBEM_UM_EN,
+                         "GBEM: [JSON config] Error: SDO object size [%lld] should be 4 (sub_index, index, slave, datatype)",
+                         (long long) size);
                 return false;
             }
 
@@ -103,7 +105,7 @@ bool json_conf_parse_sdo(json_t *json_ethercat, ec_sdo_array *ar) {
             }
 
             if (!found_index || !found_sub_index || !found_value || !found_datatype) {
-                printf("GBEM: [JSON config] Error: incorrect sections or names in SDO object\n");
+                UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: incorrect sections or names in SDO object");
                 return false;
             }
 
@@ -117,37 +119,40 @@ bool json_conf_parse_sdo(json_t *json_ethercat, ec_sdo_array *ar) {
             if (json_conf_check_integer_fits_uint16(ll_index)) {
                 ar->sdo[index1][index2].index = (uint16_t) ll_index;
             } else {
-                printf("GBEM: [JSON config] Error: index value [%lld] does not fit in int16 on slave [%zu]\n", ll_index,
-                       index1);
+                UM_ERROR(GBEM_UM_EN,
+                         "GBEM: [JSON config] Error: index value [%lld] does not fit in int16 on slave [%zu]", ll_index,
+                         index1);
                 return false;
             }
 
             if (json_conf_check_integer_fits_uint8(ll_sub_index)) {
                 ar->sdo[index1][index2].subindex = (uint8_t) ll_sub_index;
             } else {
-                printf("GBEM: [JSON config] Error: sub_index value [%lld] does not fit in int8 on slave [%zu]\n",
-                       ll_sub_index, index1);
+                UM_ERROR(GBEM_UM_EN,
+                         "GBEM: [JSON config] Error: sub_index value [%lld] does not fit in int8 on slave [%zu]",
+                         ll_sub_index, index1);
                 return false;
             }
             if (json_conf_check_integer_fits_uint16(ll_datatype)) {
                 ar->sdo[index1][index2].datatype = (uint16_t) ll_datatype;
             } else {
-                printf("GBEM: [JSON config] Error: datatype value [%lld] does not fit in int8 on slave [%zu]\n",
-                       ll_datatype, index1);
+                UM_ERROR(GBEM_UM_EN,
+                         "GBEM: [JSON config] Error: datatype value [%lld] does not fit in int8 on slave [%zu]",
+                         ll_datatype, index1);
                 return false;
 
             }
 
             if (!ec_is_valid_ec_datatype(ar->sdo[index1][index2].datatype)) {
-                printf("GBEM: [JSON config] Error: datatype value [%d] is not valid on slave [%zu]\n",
-                       ar->sdo[index1][index2].datatype, index1);
+                UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: datatype value [%d] is not valid on slave [%zu]",
+                         ar->sdo[index1][index2].datatype, index1);
                 return false;
             }
 
             json_object_foreach(sdo, key, sdo_entry) {
                 if (!json_conf_match_key_extract_ec_value(ar->sdo[index1][index2].datatype, key, "value",
                                                           &ar->sdo[index1][index2].value, sdo_entry)) {
-                    printf("GBEM: [JSON config] Error: could not extract value from SDO\n");
+                    UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: could not extract value from SDO");
                     return false;
                 }
             }

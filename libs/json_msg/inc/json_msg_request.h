@@ -17,5 +17,7 @@
 #include "user_message.h"
 #include "gberror.h"
 
+gberror_t json_msg_request_respond_handle(char *msg, char *response_json, char *request_id);
+
 
 #endif //GBEM_JSON_MSG_REQUEST_H
