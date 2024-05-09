@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file           :  json_msg
+ * @file           :  adhoc_message_processing
  * @brief          :
  ******************************************************************************
  * @attention
@@ -10,18 +10,9 @@
  *
  ******************************************************************************
  */
-#ifndef GBEM_JSON_MSG_H
-#define GBEM_JSON_MSG_H
+#ifndef GBEM_ADHOC_MESSAGE_PROCESSING_H
+#define GBEM_ADHOC_MESSAGE_PROCESSING_H
 
+void adhoc_msg_processing(void);
 
-//#define JSON_MSG_NUM_REQUEST_TYPES 1
-//typedef enum {
-//    SDO_READ
-//} json_msg_request_types_t;
-//
-//const char *json_msg_request_type_strings_t[JSON_MSG_NUM_REQUEST_TYPES] = {
-//        "sdo_read"
-//};
-
-
-#endif //GBEM_JSON_MSG_H
+#endif //GBEM_ADHOC_MESSAGE_PROCESSING_H
