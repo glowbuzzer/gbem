@@ -52,7 +52,8 @@
 #include "linux_shm.h"
 #include "optional_slaves.h"
 #include "gbem_ctx.h"
-
+#include "json_conf_parse.h"
+#include "adhoc_message_processing.h"
 
 #define BOOL_STRING(b) ((b) ? "true" : "false")
 
@@ -424,6 +425,9 @@ int main(int argc, char *argv[]) {
     map_machine_type = MAP_MACHINE_AW_6DOF_FSOE;
 #endif
 
+#if MACHINE_AW_6DOF_VIRTUAL ==1
+    map_machine_type = MAP_MACHINE_AW_6DOF_VIRTUAL;
+#endif
 
     if (map_machine_type < MAP_NUM_MACHINES) {
         UM_INFO(GBEM_UM_EN, "GBEM: This code has been compiled for [%s]", map_machine_type_strings[map_machine_type]);
@@ -524,10 +528,8 @@ int main(int argc, char *argv[]) {
                 break;
 
             case 'v':
-                UM_INFO(GBEM_UM_EN, "GBEM: Version is [%s]", GIT_TAG);
+                UM_INFO(GBEM_UM_EN, "GBEM: Version is [%s] targetting machine [%s]", GIT_TAG, map_machine_type_strings[map_machine_type]);
                 exit(EXIT_SUCCESS);
-                break;
-
 
             case '?':
                 main_getopt_usage();
@@ -576,8 +578,8 @@ skip_command_line:
     //set the number of slaves in the map to be the (maximum) number of slaves defined in the machine map (this may be reduced when optional slaves are removed)
     map_num_slaves = MAP_NUM_SLAVES;
 
-    // test();
-    // exit(0);
+
+
 
     UM_INFO(GBEM_UM_EN, "GBEM: We are running with the [%s] program on interface [%s]",
             ecm_active_program_names[ecm_status.active_program], gbem_ctx.eth_interface1);
@@ -643,6 +645,35 @@ skip_command_line:
 
     UM_INFO(GBEM_UM_EN,
             "GBEM: Number of row in IO map [%u]", map_num_rows_in_iomap);
+
+
+//    json_conf_parse(map_machine_limits, &machine_config_optional_slaves, &ar, &ecm_cycle_shift, &cycle_time, &drive_state_change_timeout,
+//                    &debug_settings.disable_drive_warn_check, &debug_settings.disable_drive_limit_check, MAP_NUM_DRIVES, MAX_NUM_OPTIONAL_SLAVES);
+
+//    todo
+// cmake json copying
+//print summary
+// add cycle time to ctx - replace MAP_CYCLE_TIME
+//add cycled shift to ctx
+
+    //gbem_ctx
+    gbem_ctx.shmp=shmp;
+
+    dpm_offline_in_t *input_struct = (dpm_offline_in_t *) gbem_ctx.shmp->sm_offline_buf_in;
+    dpm_offline_out_t *output_struct = (dpm_offline_out_t *) gbem_ctx.shmp->sm_offline_buf_out;
+
+//    *output_struct->ecm_request.request_id=1;
+
+//    strcpy(output_struct->ecm_request.data, "{\"request\": { \"requestType\"    : 1, \"payload\": {\"index\":1, \"sub_index\":22, \"slave\":1, \"datatype\": 4}}}");
+
+//    while(1) {
+//        adhoc_msg_processing();
+//        sleep(1);
+//    }
+//
+//    exit(0);
+
+
 
     if (!check_limits_ini_exists()) {
         UM_WARN(GBEM_UM_EN,
@@ -764,16 +795,16 @@ skip_command_line:
 
         UM_INFO(GBEM_UM_EN,
                 "GBEM: Machine config is: enable_optional_slave_1 [%s], enable_optional_slave_2 [%s], enable_optional_slave_3 [%s], enable_optional_slave_4 [%s], enable_optional_slave_5 [%s], enable_optional_slave_6 [%s], enable_optional_slave_7 [%s], enable_optional_slave_8 [%s], enable_optional_slave_9 [%s], enable_optional_slave_10 [%s],",
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_1),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_2),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_3),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_4),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_5),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_6),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_7),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_8),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_9),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave_10)
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[0]),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[1]),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[2]),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[3]),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[4]),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[5]),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[6]),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[7]),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[8]),
+                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[9])
         );
 
         if (machine_config_read_rc == E_SUCCESS) {
