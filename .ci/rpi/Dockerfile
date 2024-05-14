@@ -2,6 +2,8 @@ FROM idein/cross-rpi:armv6
 
 ENV SYSROOT_CROSS ${HOME}/cross
 
+RUN apt-get install -y libssl-dev
+
 #RUN wget -O /tmp/libbsd-dev.deb http://mirrordirector.raspbian.org/raspbian/pool/main/libb/libbsd/libbsd-dev_0.11.7-4_armhf.deb \
 # && dpkg-deb -x /tmp/libbsd-dev.deb ${SYSROOT_CROSS}/
 
