@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.18)
 project(json_conf C)
 
 set(CMAKE_C_STANDARD 11)
