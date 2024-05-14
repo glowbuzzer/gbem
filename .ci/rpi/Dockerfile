@@ -4,7 +4,12 @@ ENV SYSROOT_CROSS ${HOME}/cross
 
 USER root
 
-RUN apt-get install -y libssl-dev
+# Update sources list to point to the Debian archive
+RUN echo 'deb http://archive.debian.org/debian stretch main' > /etc/apt/sources.list && \
+    echo 'deb http://archive.debian.org/debian-security stretch/updates main' >> /etc/apt/sources.list && \
+    echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until && \
+    apt-get update && \
+    apt-get install -y libssl-dev
 
 #RUN wget -O /tmp/libbsd-dev.deb http://mirrordirector.raspbian.org/raspbian/pool/main/libb/libbsd/libbsd-dev_0.11.7-4_armhf.deb \
 # && dpkg-deb -x /tmp/libbsd-dev.deb ${SYSROOT_CROSS}/
