@@ -30,7 +30,8 @@ typedef enum {
     DRIVE_TYPE_AW_J32,
     DRIVE_TYPE_AW_J_40_LP,
     DRIVE_TYPE_AW_J_40_HP,
-    DRIVE_TYPE_OM
+    DRIVE_TYPE_OM,
+    DRIVE_TYPE_VIRTUAL
 } map_drive_type_t;
 
 /** These macros build the function pointers for slave and drive startup and operational functions */

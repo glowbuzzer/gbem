@@ -59,7 +59,26 @@ int8_t ec_get_moo_pdo_virtual(const uint16_t drive) {
 
 }
 
-uint8_t *ec_get_error_string_pdo_virtual(uint16_t drive) {
+gberror_t ec_set_moo_pdo_virtual(const uint16_t drive, int8_t moo) {
+    return E_SUCCESS;
+}
+
+int32_t ec_get_control_effort_wrd_virtual(uint16_t drive) {
+    return 0;
+}
+
+
+gberror_t ec_set_setveloffset_wrd_virtual(const uint16_t drive, const int32_t setveloffset) {
+    return E_SUCCESS;
+}
+
+gberror_t ec_set_settorqoffset_wrd_virtual(const uint16_t drive, const int32_t settorqoffset) {
+
+    return E_SUCCESS;
+}
+
+uint8_t *ec_get_error_string_pdo_virtual(uint16_t drive, bool *error) {
+    *error = false;
     return (uint8_t *) "No error";
 }
 
@@ -176,7 +195,7 @@ gberror_t ec_set_settorq_wrd_virtual(const uint16_t drive, const int32_t settorq
     virtual_drive_position[drive] =
             virtual_drive_position[drive] +
             (int32_t) ((double) virtual_drive_velocity[drive] * ((double) MAP_CYCLE_TIME / (double) 1000));
-    
+
     virtual_drive_torque[drive] = settorq;
     return E_SUCCESS;
 
