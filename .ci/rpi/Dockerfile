@@ -32,7 +32,4 @@ COPY build.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 USER idein
 
-RUN ls -l /usr/lib/ssl
-RUN ls -l /usr/include/openssl
-
 ENTRYPOINT ["/entrypoint.sh"]
