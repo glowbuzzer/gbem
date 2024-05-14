@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.6.0](https://github.com/glowbuzzer/gbem/compare/v1.5.0...v1.6.0) (2024-05-14)
+
+
+### Features
+
+* **#108:** Move globals into context ([0fd088c](https://github.com/glowbuzzer/gbem/commit/0fd088c038b1f08a665fa8ce2b3a0234df15c991))
+* **#110:** Use github action to produce GBEM builds ([848f1eb](https://github.com/glowbuzzer/gbem/commit/848f1eb94480d3cb3987192175f43dc5843b1bc9))
+* **#113:** Add jansson JSON lib ([7ab332c](https://github.com/glowbuzzer/gbem/commit/7ab332c6baef8d620bbb286f712fb28c7c4458e5))
+* **#114:** Add JSON config file processing ([11558d1](https://github.com/glowbuzzer/gbem/commit/11558d1aa29b4cd53465c33abf00e7d09cc9b5ce))
+* **#114:** Add JSON config file processing ([8a1c10e](https://github.com/glowbuzzer/gbem/commit/8a1c10ee1111fc0fcc13153ef4b599e28630617c))
+* **#115:** Add SDO reading based on datatype ([8310daf](https://github.com/glowbuzzer/gbem/commit/8310dafcdf645097cdd53c78146b99f2299a3dac))
+* **#116:** Make bit reading of PDOs zero indexed ([9b24c41](https://github.com/glowbuzzer/gbem/commit/9b24c41a4ec4afd10874ae46e1e8876586c6414b))
+* **#117:** Add JSON request/response processing ([9174fa2](https://github.com/glowbuzzer/gbem/commit/9174fa2b6522ac7a0a1a30ba622b39eb16b94363))
+* **#117:** Add JSON request/response processing ([b51bdf1](https://github.com/glowbuzzer/gbem/commit/b51bdf1a9b7486f9dc7e91a32fdf4f5403d2816e))
+
+
+### Bug Fixes
+
+* **#109:** Make "netscan with pdo" work with optional slaves ([37bf5bb](https://github.com/glowbuzzer/gbem/commit/37bf5bbb2d2ba8e5c0d82cd10f07074ae6636990))
+* **#112:** Limit checking fails on more than one drive ([902a996](https://github.com/glowbuzzer/gbem/commit/902a99676f8927b5aa3ebdc54998b0570d511c31))
+
 ## [1.5.0](https://github.com/glowbuzzer/gbem/compare/v1.4.0...v1.5.0) (2024-02-15)
 
 
