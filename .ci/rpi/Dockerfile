@@ -1,17 +1,22 @@
 FROM idein/cross-rpi:armv6
 
 ENV SYSROOT_CROSS ${HOME}/cross
+ENV C_INCLUDE_PATH ${SYSROOT_CROSS}/usr/include
 
-#RUN wget -O /tmp/libbsd-dev.deb http://mirrordirector.raspbian.org/raspbian/pool/main/libb/libbsd/libbsd-dev_0.11.7-4_armhf.deb \
-# && dpkg-deb -x /tmp/libbsd-dev.deb ${SYSROOT_CROSS}/
+USER root
+
+RUN wget https://www.openssl.org/source/openssl-1.1.1k.tar.gz && \
+    tar -xzvf openssl-1.1.1k.tar.gz && \
+    cd openssl-1.1.1k && \
+    export CROSS_COMPILE=~/x-tools/armv6-rpi-linux-gnueabihf/bin/armv6-rpi-linux-gnueabihf- && \
+    ./Configure linux-armv4 no-asm shared --prefix=$HOME/x-tools/armv6-rpi-linux-gnueabihf/armv6-rpi-linux-gnueabihf/sysroot --openssldir=$HOME/x-tools/armv6-rpi-linux-gnueabihf/armv6-rpi-linux-gnueabihf/sysroot/usr/openssl --cross-compile-prefix=$CROSS_COMPILE && \
+    make -j4 && \
+    make install
 
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1-linux-x86_64.sh && mkdir /tmp/cmake && sh ./cmake-3.23.1-linux-x86_64.sh --skip-license --prefix=/tmp/cmake
 
-ENV C_INCLUDE_PATH ${SYSROOT_CROSS}/usr/include
-
 COPY build.sh /entrypoint.sh
 
-USER root
 RUN chmod +x /entrypoint.sh
 USER idein
 
