@@ -30,7 +30,7 @@
 #define ECM_CHECK_EEP_ID            0
 
 
-#define MAP_NUM_DRIVES              6
+#define MAP_NUM_DRIVES              7
 #define MAP_NUM_SLAVES              1
 #define MAP_NUM_FSOE_MASTER_SLOTS   0
 
