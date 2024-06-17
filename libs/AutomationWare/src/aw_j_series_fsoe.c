@@ -22,6 +22,8 @@
 #include "ethercatsetget.h"
 #include "user_message.h"
 #include "map_config_custom_pdo.h"
+#include "sdo_write_from_array.h"
+#include "gbem_ctx.h"
 
 
 /* This is used for the fixed POO remapping */
@@ -351,6 +353,15 @@ gberror_t ec_apply_standard_sdos_aw_j_series_fsoe(const uint16_t slave) {
     ec_set_slots_aw_j_series_fsoe(slave);
 
     ec_apply_limits_aw_j_series(slave);
+
+
+    gberror_t rc = E_GENERAL_FAILURE;
+
+    rc = sdos_write_one_from_array(&gbem_ctx.ar, slave);
+
+    return rc;
+
+    //TODO
 
 
     //Polarity	0x607E:0	USINT	8

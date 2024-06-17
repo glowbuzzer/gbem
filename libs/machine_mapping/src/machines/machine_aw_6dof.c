@@ -27,9 +27,10 @@ MAP_FSOE_MASTER_SLOT_CONFIG(                    );
 MAP_FSOE_MASTER_SLOT_TO_SLAVE(                  );
 MAP_FSOE_MASTER_SET_ERROR_ACK_STATE_FUNCTION(   NULL);
 
+//todo chnaged to 0 and 1
 /* ESTOP DIN INFO */
-map_pdo_object_t ctrl_estop_din_1 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1808_1, .bit_num=1};
-map_pdo_object_t ctrl_estop_din_2 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1808_1, .bit_num=2};
+map_pdo_object_t ctrl_estop_din_1 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1808_1, .bit_num=0};
+map_pdo_object_t ctrl_estop_din_2 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1808_1, .bit_num=1};
 
 /* SLAVES */
 //                                         Slave 1                     Slave 2                   Slave 3                   Slave 4                         Slave 5                              Slave 6                              Slave 7                              Slave 8                              Slave 9                              Slave 10
