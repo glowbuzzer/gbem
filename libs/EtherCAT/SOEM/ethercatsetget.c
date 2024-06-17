@@ -1100,6 +1100,83 @@ bool ec_sdo_write_int32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int32_
     return true;
 }
 
+bool ec_sdo_write_real32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, float Value, bool umError) {
+    int os = sizeof(Value);
+    if (ec_printSDO) {
+        printf("\tSlave num: %u, ", Slave);
+        printf("Index: %#08x, Sub-index: %#08x, ", Index, SubIndex);
+        printf("Value: %f\n", Value);
+    } else {
+        int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
+        if (rc <= 0) {
+            UM_ERROR(GBEM_UM_EN,
+                     "GBEM: Could not write SDO. Index:0x%08x - sub-index:0x%08x - value:%f - (on slave %u) aborting",
+                     Index, SubIndex, Value, Slave);
+            if (umError) {
+                if (ec_iserror()) {
+                    UM_ERROR(GBEM_UM_EN,
+                             "GBEM: EtherCAT error detected after SDO write to index:0x%08x - sub-index:0x%08x - value:%f. EtherCAT error [%s]",
+                             Index,
+                             SubIndex, Value, ec_elist2string());
+                }
+            }
+            return false;
+        }
+    }
+    return true;
+}
+
+
+bool
+ec_sdo_read_real32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, float *return_val, bool umError) {
+    int os = sizeof(float);
+    int rc = ec_SDOread(Slave, Index, SubIndex, false, &os, return_val, EC_TIMEOUTRXM);
+
+    if (rc <= 0) {
+        UM_ERROR(GBEM_UM_EN, "GBEM: Could not read SDO index:0x%08x - sub-index:0x%08x (on slave:%u)", Index,
+                 SubIndex, Slave);
+        if (umError) {
+            if (ec_iserror()) {
+                UM_ERROR(GBEM_UM_EN,
+                         "GBEM: EtherCAT error detected after SDO read to index:0x%04x - sub-index:0x%04x. EtherCAT error [%s]",
+                         Index,
+                         SubIndex, ec_elist2string());
+            }
+        }
+        return false;
+    }
+    return true;
+}
+
+bool
+ec_sdo_write_string_n(uint16_t Slave, uint16_t Index, uint8_t SubIndex, const char *Value, size_t n, bool umError) {
+    int os = n;  // Size of the string to write
+
+    if (ec_printSDO) {
+        printf("\tSlave num: %u, ", Slave);
+        printf("Index: %#08x, Sub-index: %#08x, ", Index, SubIndex);
+        printf("Value: %.*s\n", (int) n, Value);  // Print only n characters of the string
+        return true;
+    } else {
+        int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, Value, EC_TIMEOUTRXM);
+        if (rc <= 0) {
+            UM_ERROR(GBEM_UM_EN,
+                     "GBEM: Could not write SDO. Index:0x%08x - sub-index:0x%08x - value:%.*s - (on slave %u) aborting",
+                     Index, SubIndex, (int) n, Value, Slave);  // Print only n characters of the string
+            if (umError) {
+                if (ec_iserror()) {
+                    UM_ERROR(GBEM_UM_EN,
+                             "GBEM: EtherCAT error detected after SDO write to index:0x%08x - sub-index:0x%08x - value:%.*s. EtherCAT error [%s]",
+                             Index,
+                             SubIndex, (int) n, Value, ec_elist2string());  // Print only n characters of the string
+                }
+            }
+            return false;
+        }
+    }
+    return true;
+}
+
 
 bool ec_sdo_read_int32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int32_t *return_val, bool umError) {
     int os = sizeof(int32_t);

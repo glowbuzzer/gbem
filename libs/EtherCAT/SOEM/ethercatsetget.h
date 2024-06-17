@@ -99,6 +99,14 @@ bool ec_sdo_write_uint32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint3
 
 bool ec_sdo_write_int32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int32_t Value, bool umError);
 
+bool ec_sdo_write_string_n(uint16_t Slave, uint16_t Index, uint8_t SubIndex, const char *Value, size_t n, bool umError);
+
+bool ec_sdo_write_real32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, float Value, bool umError);
+
+
+bool
+ec_sdo_read_real32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, float *return_val, bool umError);
+
 bool ec_sdo_read_int32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int32_t *return_val, bool umError);
 
 bool ec_sdo_read_uint32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint32_t *return_val, bool umError);
@@ -110,6 +118,53 @@ bool ec_sdo_read_uint16(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint16
 bool ec_sdo_read_int8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int8_t *return_val, bool umError);
 
 bool ec_sdo_read_uint8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint8_t *return_val, bool umError);
+
+/*
+   * ec_sdo_write_bool
+   * ec_sdo_write_real
+   * ec_sdo_write_lreal
+   * ec_sdo_write_byte_n
+   * ec_sdo_write_uin64_t
+   * ec_sdo_write_int64_t
+   *
+   * ec_sdo_read_bool
+   * ec_sdo_read_real
+   * ec_sdo_read_lreal
+   * ec_sdo_read_byte_n
+   * ec_sdo_read_string_n
+   * ec_sdo_read_uint64_t
+   * ec_sdo_read_int64_t
+   */
+
+
+//    {index: 0x0001, dataType: "BOOL"},
+//    {index: 0x0002, dataType: "SINT", bitSize: 8},
+//    {index: 0x0003, dataType: "INT", bitSize: 16},
+//    {index: 0x0004, dataType: "DINT", bitSize: 32},
+//    {index: 0x0005, dataType: "USINT", bitSize: 8},
+//    {index: 0x0006, dataType: "UINT", bitSize: 16},
+//    {index: 0x0007, dataType: "UDINT", bitSize: 32},
+//    {index: 0x0008, dataType: "REAL", bitSize: 32},
+//    {index: 0x0009, dataType: "STRING(n)"},//help
+//    {index: 0x000A, dataType: "ARRAY [0..1] OF BYTE"},//help
+//    {index: 0x000B, dataType: "UTF8_STRING(n)"},//help
+//    {index: 0x000C, dataType: "TIME_OF_DAY"},
+//    {index: 0x000D, dataType: "TIME_DIFFERENCE"},
+//    {index: 0x000F, dataType: "DOMAIN"},
+//    {index: 0x0010, dataType: "INT24", bitSize: 24},
+//    {index: 0x0011, dataType: "LREAL", bitSize: 64},
+//    {index: 0x0015, dataType: "LINT", bitSize: 64},
+//    {index: 0x0016, dataType: "UINT24", bitSize: 24},
+//    {index: 0x001B, dataType: "ULINT", bitSize: 64},
+//    {index: 0x001E, dataType: "BYTE", bitSize: 8}, //extra from SOEM
+//    {index: 0x0030, dataType: "BIT1", bitSize: 1},
+//    {index: 0x0031, dataType: "BIT2", bitSize: 2},
+//    {index: 0x0032, dataType: "BIT3", bitSize: 3},
+//    {index: 0x0033, dataType: "BIT4", bitSize: 4},
+//    {index: 0x0034, dataType: "BIT5", bitSize: 5},
+//    {index: 0x0035, dataType: "BIT6", bitSize: 6},
+//    {index: 0x0036, dataType: "BIT7", bitSize: 7},
+//    {index: 0x0037, dataType: "BIT8", bitSize: 8}
 
 
 extern bool ec_printSDO;

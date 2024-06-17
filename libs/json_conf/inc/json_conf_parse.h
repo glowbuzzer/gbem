@@ -19,8 +19,6 @@
 #include "map.h"
 #include "ethercattype.h"
 
-#define GBEM_CONF_FILE "gbem_config.json"
-#define GBEM_CONF_SHA256_FILE "gbem_config_sha256.txt"
 
 bool
 json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *optional_slaves, ec_sdo_array *ar,

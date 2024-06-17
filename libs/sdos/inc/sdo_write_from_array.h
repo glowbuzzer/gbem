@@ -17,6 +17,8 @@
 #include "sdos_write_based_on_datatype.h"
 #include "gberror.h"
 
-gberror_t sdos_write_from_array(ec_sdo_array *array);
+gberror_t sdos_write_all_from_array(ec_sdo_array *array);
+
+gberror_t sdos_write_one_from_array(ec_sdo_array *array, uint8_t slave);
 
 #endif //GBEM_SDO_WRITE_FROM_ARRAY_H

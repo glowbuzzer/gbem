@@ -20,7 +20,7 @@
 
 
 gberror_t
-sdos_write_based_on_datatype(const uint16_t slave, const uint16_t index, const uint8_t subindex, const uint8_t datatype,
-                             const ec_value value);
+sdos_write_based_on_datatype(uint16_t slave, uint16_t index, uint8_t subindex, uint8_t datatype, int len,
+                             ec_value value);
 
 #endif //GBEM_SDOS_WRITE_BASED_ON_DATATYPE_H

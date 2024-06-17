@@ -48,13 +48,16 @@
 #define NO_COMMAND_LINE_OPTIONS                         0
 
 
-#define LIMITS_INI_FILENAME "./limits.ini"
-#define NUM_PARAMS_IN_LIMITS_INI 6
-#define DEBUG_INI_FILENAME "./debug.ini"
-#define NUM_PARAMS_IN_DEBUG_INI 3
-#define MACHINE_CONFIG_INI_FILENAME "./machine_config.ini"
-#define NUM_PARAMS_IN_MACHINE_CONFIG_INI 11
+//#define LIMITS_INI_FILENAME "./limits.ini"
+//#define NUM_PARAMS_IN_LIMITS_INI 6
+//#define DEBUG_INI_FILENAME "./debug.ini"
+//#define NUM_PARAMS_IN_DEBUG_INI 3
+//#define MACHINE_CONFIG_INI_FILENAME "./machine_config.ini"
+//#define NUM_PARAMS_IN_MACHINE_CONFIG_INI 11
 #define MAX_NUM_OPTIONAL_SLAVES 10
+
+#define GBEM_CONF_FILE "/gb/gbem_config.json"
+#define GBEM_CONF_SHA256_FILE "gbem_config_sha256.txt"
 
 
 /*** GBC CONFIGURATION ***/

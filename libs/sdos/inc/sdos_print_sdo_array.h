@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file           :  limits_ini
+ * @file           :  sdos_print_sdo_array
  * @brief          :
  ******************************************************************************
  * @attention
@@ -10,14 +10,11 @@
  *
  ******************************************************************************
  */
-#ifndef LIMITS_INI_H
-#define LIMITS_INI_H
+#ifndef GBEM_SDOS_PRINT_SDO_ARRAY_H
+#define GBEM_SDOS_PRINT_SDO_ARRAY_H
 
+#include "ethercattype.h"
 
-gberror_t read_limits_ini(uint8_t *number_of_items_found);
+void sdos_print_sdo_array(ec_sdo_array *array);
 
-bool check_limits_ini_exists(void);
-
-uint8_t get_limits_ini_sections(void);
-
-#endif //LIMITS_INI_H
+#endif //GBEM_SDOS_PRINT_SDO_ARRAY_H

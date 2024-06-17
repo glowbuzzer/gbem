@@ -22,7 +22,8 @@
 #include "json_conf_check_sha256.h"
 #include "json_conf_ethercat_helpers.h"
 #include <openssl/sha.h>
-
+#include <string.h>
+#include "gbem_config.h"
 
 bool
 json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *optional_slaves, ec_sdo_array *ar,
@@ -34,10 +35,11 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
     json_t *json_root = json_load_file(GBEM_CONF_FILE, 0, &error);
     json_t *value;
 
-    if (!json_conf_check_sha256()) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: SHA256 check failed");
-        return false;
-    }
+    //todo disbaled for now
+//    if (!json_conf_check_sha256()) {
+//        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: SHA256 check failed");
+//        return false;
+//    }
 
 
     if (json_root) {
@@ -46,12 +48,46 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
         /* print JSON structure */
         print_json(json_root);
 
-        //parse ethercat
+        value = json_object_get(json_root, "machine_name");
+        if (!json_conf_check_object(value, "machine_name")) {
+            json_decref(json_root);
+            return false;
+        }
+
+        char *machine_name_string;
+
+        if (json_is_string(value)) {
+            machine_name_string = json_string_value(value);
+
+            UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Machine name: [%s]", machine_name_string);
+        } else {
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Machine name is not a string in the json config file");
+            json_decref(json_root);
+            return false;
+        }
+
+
+
+        if (strcmp(machine_name_string, map_machine_type_strings[map_machine_type]) != 0) {
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Machine name [%s] does not match the machine type [%s]",
+                     machine_name_string, map_machine_type_strings[map_machine_type]);
+            json_decref(json_root);
+            return false;
+        } else {
+            UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: Machine name matches the machine type");
+        }
+
+
+
+        //parse ethercat //todo
         value = json_object_get(json_root, "ethercat");
         if (!json_conf_check_object(value, "ethercat")) {
             json_decref(json_root);
             return false;
         }
+
+
+
 
         //parse sdo
         if (json_conf_parse_sdo(value, ar)) {

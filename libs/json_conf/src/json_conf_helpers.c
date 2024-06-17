@@ -21,7 +21,7 @@ bool json_conf_check_object(json_t *value, char *object_name) {
         return false;
     }
 
-    UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Success: [%s] object found", object_name);
+    UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: [%s] object found", object_name);
     return true;
 }
 

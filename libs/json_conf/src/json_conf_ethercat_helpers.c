@@ -23,8 +23,8 @@ bool ec_is_valid_ec_datatype(uint16_t value) {
         case ECT_UNSIGNED16:
         case ECT_UNSIGNED32:
         case ECT_REAL32:
-        case ECT_VISIBLE_STRING:
-        case ECT_OCTET_STRING:
+        case ECT_VISIBLE_STRING: //STRINGN
+        case ECT_OCTET_STRING: //BYTEN
         case ECT_UNICODE_STRING:
         case ECT_TIME_OF_DAY:
         case ECT_TIME_DIFFERENCE:

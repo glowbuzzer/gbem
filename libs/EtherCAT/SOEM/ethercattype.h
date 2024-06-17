@@ -6,6 +6,7 @@
 /** \file
  * \brief
  * General typedefs and defines for EtherCAT.
+ * Edited by gb
  *
  * Defines that could need optimisation for specific applications
  * are the EC_TIMEOUTxxx. Assumptions for the standard settings are a
@@ -24,6 +25,8 @@ extern "C"
 #endif
 
 #include "osal.h"
+
+#define EC_MAXSLAVE 20
 
 /** define EC_VER1 if version 1 default context and functions are needed
  * define EC_VER2 if application uses only ecx_ functions and own context */
@@ -218,6 +221,7 @@ typedef enum {
     ECT_BIT8 = 0x0037,
     ECT_STRING8 = 0x0100,
 } ec_datatype;
+#define MAX_SIZE_OF_STRING 256
 
 typedef union {
     uint8_t boolean; // For ECT_BOOLEAN
@@ -228,9 +232,9 @@ typedef union {
     uint16_t uint16; // For ECT_UNSIGNED16
     uint32_t uint32; // For ECT_UNSIGNED32
     float real32;    // For ECT_REAL32
-    char *visible_string; // For ECT_VISIBLE_STRING
-    uint8_t *octet_string; // For ECT_OCTET_STRING
-    uint16_t *unicode_string; // For ECT_UNICODE_STRING
+    char visible_string[MAX_SIZE_OF_STRING]; // For ECT_VISIBLE_STRING
+    uint8_t octet_string[MAX_SIZE_OF_STRING]; // For ECT_OCTET_STRING
+    uint16_t unicode_string[MAX_SIZE_OF_STRING]; // For ECT_UNICODE_STRING
     uint64_t time_of_day; // For ECT_TIME_OF_DAY
     int64_t time_difference; // For ECT_TIME_DIFFERENCE
     void *domain; // For ECT_DOMAIN
@@ -239,7 +243,7 @@ typedef union {
     int64_t int64; // For ECT_INTEGER64
     uint32_t uint24; // For ECT_UNSIGNED24, store in a 32-bit field
     uint64_t uint64; // For ECT_UNSIGNED64
-    uint8_t bit1;  // For ECT_BIT1 to ECT_BIT8
+    uint8_t bit;  // For ECT_BIT1 to ECT_BIT8
     char *string8; // For ECT_STRING8
 } ec_value;
 
@@ -249,12 +253,15 @@ typedef struct {
     uint8_t subindex;
     ec_datatype datatype;
     ec_value value;
+    uint8_t len;
 } ec_sdo;
 
+#define EC_MAXSDO 256
+
 typedef struct {
-    ec_sdo sdo[10][10];
+    ec_sdo sdo[EC_MAXSLAVE][EC_MAXSDO];
     uint8_t num_slaves;
-    uint8_t num_sdo[10];
+    uint8_t num_sdo[EC_MAXSLAVE];
 } ec_sdo_array;
 
 /** Ethercat command types */

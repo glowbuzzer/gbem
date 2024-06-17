@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include "gbem_config.h"
 #include "user_message.h"
+#include "gbem_ctx.h"
 
 // typedef enum {
 //  MAP_ARRAY_TYPE_FUNCTION_PRT,
@@ -56,6 +57,30 @@ gberror_t os_delete_and_shift(void *array, size_t element_size, size_t size, siz
 
     return E_SUCCESS;
 }
+
+
+gberror_t os_delete_and_shift_2d(void *array, size_t element_size, size_t rows, size_t cols, size_t del_row) {
+    if (del_row >= rows) {
+        // Index out of bounds, handle the error as needed
+        return E_TOO_LONG;
+    }
+
+    // Calculate the total number of elements to be moved
+    size_t elements_to_move = (rows - del_row - 1) * cols;
+
+    // Shift the rows up
+    if (elements_to_move > 0) {
+        memmove((char *) array + del_row * cols * element_size,
+                (char *) array + (del_row + 1) * cols * element_size,
+                elements_to_move * element_size);
+    }
+
+    // Clear the last row
+    memset((char *) array + (rows - 1) * cols * element_size, 0, cols * element_size);
+
+    return E_SUCCESS;
+}
+
 
 // Function to delete and shift rows based on slave_num
 // void delete_and_shift_iomap(mapping_t *array, int *size, int targetSlaveNum) {
@@ -155,7 +180,7 @@ gberror_t os_disable_slaves(bool *which_slaves_are_optional) {
     }
     if (num_optional_slaves < num_slaves_to_be_enabled_from_config) {
         UM_FATAL(
-                "GBEM: The number of optional slaves in the machine config ini  file [%u] is greater than the number of optional slaves allowed in the machine [%u]",
+                "GBEM: The number of optional slaves in the machine config json file [%u] is greater than the number of optional slaves allowed in the machine [%u]",
                 num_slaves_to_be_enabled_from_config, num_optional_slaves);
     }
 
@@ -174,10 +199,10 @@ gberror_t os_disable_slaves(bool *which_slaves_are_optional) {
 
             if (enable_slaves_from_config[count_of_config] == false) {
                 UM_INFO(GBEM_UM_EN,
-                        "GBEM: Slave [%u] [%s] is >disabled< in the machine config ini file [%s] for [%s] (or no machine config ini has been provided)",
+                        "GBEM: Slave [%u] [%s] is >disabled< in the machine config json file [%s] for [%s]",
                         i + 1,
                         ecm_slave_map[i].name,
-                        MACHINE_CONFIG_INI_FILENAME,
+                        GBEM_CONF_FILE,
                         map_machine_type_strings[map_machine_type]);
 
                 // MAP_NUM_DRIVES_ATTACHED
@@ -240,13 +265,17 @@ gberror_t os_disable_slaves(bool *which_slaves_are_optional) {
                 os_delete_and_shift(ecm_slave_map, sizeof(map_slave_map_t), map_num_slaves, i - count_of_deleted);
 
 
+                os_delete_and_shift_2d(gbem_ctx.ar.sdo, sizeof(ec_sdo), EC_MAXSLAVE, EC_MAXSDO, i - count_of_deleted);
+
+                os_delete_and_shift(gbem_ctx.ar.num_sdo, sizeof(uint8_t), EC_MAXSLAVE, i - count_of_deleted);
+
                 count_of_deleted++;
                 map_num_slaves--;
             } else {
-                UM_INFO(GBEM_UM_EN, "GBEM: Slave [%u] [%s] is >enabled< in the machine config ini file [%s] for [%s]",
+                UM_INFO(GBEM_UM_EN, "GBEM: Slave [%u] [%s] is >enabled< in the  machine config json file [%s] for [%s]",
                         i + 1,
                         ecm_slave_map[i].name,
-                        MACHINE_CONFIG_INI_FILENAME,
+                        GBEM_CONF_FILE,
                         map_machine_type_strings[map_machine_type]);
             }
             count_of_config++;
@@ -264,6 +293,7 @@ gberror_t os_disable_slaves(bool *which_slaves_are_optional) {
                 }
             }
         }
+        gbem_ctx.ar.num_slaves = gbem_ctx.ar.num_slaves - count_of_deleted;
     }
 
 
@@ -275,6 +305,16 @@ gberror_t os_disable_slaves(bool *which_slaves_are_optional) {
     for (uint16_t drive = 0; drive < MAP_NUM_DRIVES; drive++) {
         map_drive_to_slave[drive] = map_drive_to_slave[drive] - count_of_deleted;
     }
+
+
+//    typedef struct {
+//        ec_sdo sdo[10][10];
+//        uint8_t num_slaves;
+//        uint8_t num_sdo[10];
+//    } ec_sdo_array;
+
+
+
 
 
     UM_INFO(GBEM_UM_EN, "GBEM: Number of slaves disabled [%u]", count_of_deleted);

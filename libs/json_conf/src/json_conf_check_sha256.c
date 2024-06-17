@@ -18,6 +18,7 @@
 #include <string.h>
 #include "user_message.h"
 #include <stdio.h>
+#include "gbem_config.h"
 
 bool json_conf_check_sha256(void) {
     FILE *file;

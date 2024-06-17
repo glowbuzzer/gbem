@@ -69,13 +69,12 @@ bool json_conf_parse_sdo(json_t *json_ethercat, ec_sdo_array *ar) {
             ar->num_sdo[index1]++;
 
             size = json_object_size(sdo);
-            if (size != 4) {
+            if (size != 5) {
                 UM_ERROR(GBEM_UM_EN,
-                         "GBEM: [JSON config] Error: SDO object size [%lld] should be 4 (sub_index, index, slave, datatype)",
+                         "GBEM: [JSON config] xxxError: SDO object size [%lld] should be 5 (sub_index, index, slave, datatype, length)",
                          (long long) size);
                 return false;
             }
-
 
             long long ll_index = 0;
             long long ll_sub_index = 0;
