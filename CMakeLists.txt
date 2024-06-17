@@ -54,24 +54,58 @@ set(ALL_MACHINE_NAMES MACHINE_MINI MACHINE_CARTESIAN MACHINE_DRIVE_SPINNERS MACH
 
 message(STATUS "GB: Set of machines (add one of these to machine.txt) [${ALL_MACHINE_NAMES}]")
 
-# Configure the actual content based on the text file
-configure_file("machine.txt" "${CMAKE_BINARY_DIR}/machine.txt" COPYONLY)
-
-# Read the content from the configured file
-file(READ "${CMAKE_BINARY_DIR}/machine.txt" MACHINE_CONTENT)
-
 # Variable to track if a machine name is found
 set(MACHINE_NAME_FOUND FALSE)
 
-string(REGEX MATCH "MAP_MACHINE\\s*([^\\n]*)" MATCHED_CONTENT "${MACHINE_CONTENT}")
+# Configure the actual content based on the text file
+configure_file("machine.txt" "${CMAKE_BINARY_DIR}/machine.txt" COPYONLY)
 
-message(STATUS "GB: Content of machine.text file: ${MATCHED_CONTENT}")
+# Define the path to your file
+set(MACHINE_FILE "${CMAKE_BINARY_DIR}/machine.txt")
 
-# Extract the machine name from the matched content
-set(MAP_MACHINE ${CMAKE_MATCH_1})
-string(STRIP "${MAP_MACHINE}" MAP_MACHINE)
+message(STATUS "GB: MACHINE_FILE is [${MACHINE_FILE}]")
 
-message(STATUS "GB: Machine that we enable is [${MAP_MACHINE}]")
+# Read the contents of the file into a list of strings, each representing a line
+file(STRINGS "${MACHINE_FILE}" MACHINE_FILE_LINES)
+
+message(STATUS "GB: file contents: ${MACHINE_FILE_LINES}")
+
+# Output each line (for debugging)
+foreach (line IN LISTS MACHINE_FILE_LINES)
+    message(STATUS "GB: Line: ${line}")
+endforeach ()
+
+
+# Initialize variables to hold the extracted values
+set(MAP_MACHINE_VALUE "")
+set(MAP_SUB_MACHINE_VALUE "")
+
+# Iterate over each line to find and capture the values
+foreach (line IN LISTS MACHINE_FILE_LINES)
+    # Output each line for debugging
+    message(STATUS "GB: Processing line: >${line}<")
+
+    # Check if the line contains the MAP_MACHINE definition
+    string(REGEX MATCH "^MAP_MACHINE[ \t]+([^\\n\\r]*)" _ignore "${line}")
+    if (_ignore)
+        set(MAP_MACHINE_VALUE "${CMAKE_MATCH_1}")
+    endif ()
+
+    # Check if the line contains the MAP_SUB_MACHINE definition
+    string(REGEX MATCH "^MAP_SUB_MACHINE[ \t]+([^\\n\\r]*)" _ignore "${line}")
+    if (_ignore)
+        set(MAP_SUB_MACHINE_VALUE "${CMAKE_MATCH_1}")
+    endif ()
+endforeach ()
+
+# Trim leading and trailing spaces from the extracted values
+string(STRIP "${MAP_MACHINE_VALUE}" MAP_MACHINE_VALUE)
+string(STRIP "${MAP_SUB_MACHINE_VALUE}" MAP_SUB_MACHINE_VALUE)
+
+
+# Output the extracted values
+message(STATUS "GB: Machine value: >${MAP_MACHINE_VALUE}<")
+message(STATUS "GB: Sub-machine value: >${MAP_SUB_MACHINE_VALUE}<")
 
 # Initialize a list to store found status for each machine name
 set(MACHINE_NAME_FOUND_LIST)
@@ -81,7 +115,7 @@ foreach (MACHINE_NAME ${ALL_MACHINE_NAMES})
     # Check if the current machine name is present in the file content
     set(MACHINE_NAME_FOUND FALSE)
 
-    if (${MACHINE_NAME} STREQUAL ${MAP_MACHINE})
+    if (${MACHINE_NAME} STREQUAL ${MAP_MACHINE_VALUE})
         set(MATCHED_MACHINE TRUE)
         message(STATUS "GB: The machine name from the machine.txt file matches one available in the list")
     else ()
@@ -110,10 +144,44 @@ endforeach ()
 
 
 if (one_true EQUAL 1)
-    message(STATUS "GB: Enabling [${MAP_MACHINE}]")
+    message(STATUS "GB: Enabling [${MAP_MACHINE_VALUE}]")
 else ()
     message(FATAL_ERROR "GB: The machine name from machine.txt does not match any available machine names")
 endif ()
+
+
+set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/gbc_configs")
+#set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+
+include(FetchContent)
+
+FetchContent_Declare(
+        gbc_config
+        GIT_REPOSITORY "https://github.com/glowbuzzer/gbc-configs"
+        GIT_TAG "main"
+)
+
+FetchContent_MakeAvailable(gbc_config)
+
+
+# Combine MAP_MACHINE_VALUE and MAP_SUB_MACHINE_VALUE with an underscore
+string(CONCAT MACHINE_SUB_MACHINE_VALUE "${MAP_MACHINE_VALUE}" "_" "${MAP_SUB_MACHINE_VALUE}")
+
+
+# Define where the config file will be copied to
+set(CONFIG_FILE_PATH "${gbc_config_SOURCE_DIR}/${MACHINE_SUB_MACHINE_VALUE}.json")
+message(STATUS "GB: CONFIG_FILE_PATH is [${CONFIG_FILE_PATH}]")
+message(STATUS "GB: ${gbc_config_SOURCE_DIR}/${MACHINE_SUB_MACHINE_VALUE}.json")
+
+# Add a custom command to copy the file
+add_custom_target(copy_config_file ALL
+        #        OUTPUT "${CMAKE_BINARY_DIR}/config_mini.json"
+        COMMAND ${CMAKE_COMMAND} -E copy ${CONFIG_FILE_PATH} /gb/gbem_config.json
+        DEPENDS ${CONFIG_FILE_PATH}
+)
+
+# Define a custom target that depends on the copied file
+#add_custom_target(copy_config_file ALL DEPENDS "${CMAKE_BINARY_DIR}/config_mini.json")
 
 
 #If a GIT_TAG string is passed in (-D) we will add this to the version.h file. If no tag or empty string set the GIT_TAG to "dev_ver"
@@ -160,9 +228,10 @@ MESSAGE(STATUS "ETHTOOL_CMD_ERROR: " ${ETHTOOL_CMD_ERROR})
 MESSAGE(STATUS "ETHTOOL_CMD_OUTPUT: " ${ETHTOOL_CMD_OUTPUT})
 
 add_executable(GBEM ${SOURCES})
+add_dependencies(GBEM copy_config_file)
 #NEW_DRIVE
 target_link_libraries(GBEM EtherCAT jansson sdos json_conf json_msg Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen automationware virtual_drive RTA trio delta JVL omron oriental_motor bbh unity gberror gbem_config etg m rt)
-target_include_directories(GBEM PUBLIC "inc" "shared/inc" "plc_user_code" ${PROJECT_BINARY_DIR}/version ${gbem_config_BINARY_DIR})
+target_include_directories(GBEM PUBLIC inc "shared/inc" "plc_user_code" ${PROJECT_BINARY_DIR}/version ${gbem_config_BINARY_DIR})
 
 #add_executable(GBEM_testStateMachine shared/src/control.c shared/src/ec_functions.c src/ecrxtx.c src/ethercatnetscan.c src/status.c shared/src/json-maker.c shared/src/float_int_conv.c test/src/test.c test/src/testStateMachine.c shared/src/plc_core.c plc_user_code/plc_init.c src/cyclic_message.c plc_user_code/plc_task_1.c shared/src/iomap_processing.c)
 #target_link_libraries(GBEM_testStateMachine mjson EtherCAT gbem_config machine_mapping Logging common-misc cia state_machine dpm minini linux-shm pid sleep beckhoff delta kollmorgen oriental_motor unity gberror m)
@@ -282,9 +351,12 @@ add_subdirectory("gclibs/state_machine")
 add_subdirectory("gclibs/ecm_status")
 
 
+#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/libs/json_conf/MACHINE_BBH_J25.json
+#        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
+
+
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     message(FATAL_ERROR “GB: In-source builds not allowed! Create a build directory and run CMake from there.”)
 endif ()
-
 
 install(TARGETS GBEM DESTINATION bin CONFIGURATIONS Release)
