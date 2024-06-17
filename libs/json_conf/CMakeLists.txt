@@ -5,9 +5,12 @@ set(CMAKE_C_STANDARD 11)
 
 find_package(OpenSSL REQUIRED)
 
-file(GLOB SOURCES "src/*.c")
+#file(GLOB SOURCES "src/*.c")
 
-add_library(json_conf STATIC ${SOURCES})
+#add_library(json_conf STATIC ${SOURCES})
+
+add_library(json_conf STATIC src/json_conf_parse_limits.c src/json_conf_calculate_sha256.c src/json_conf_parse_sdo.c src/json_conf_parse.c src/json_conf_check_sha256.c src/json_conf_ethercat_helpers.c src/json_conf_number_checks.c src/json_conf_print.c src/json_conf_parse_optional_slaves.c src/json_conf_parse_gbem.c src/json_conf_parse_optional_slaves.c src/json_conf_helpers.c)
+
 
 target_link_libraries(json_conf jansson EtherCAT machine_mapping OpenSSL::SSL OpenSSL::Crypto)
 target_include_directories(json_conf PUBLIC inc)
