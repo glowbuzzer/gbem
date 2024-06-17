@@ -35,17 +35,27 @@
 
 #define EL6021_DATA_SIZE 22
 
+
+//enum SERIAL_CONTROL_WORD {
+//    SERIAL_TRANSMIT_REQUEST_BIT_NUM                     = (0),
+//    SERIAL_RECEIVE_ACCEPTED_BIT_NUM                     = (1),
+//    SERIAL_INIT_REQUEST_BIT_NUM                         = (2),
+//};
+//enum SERIAL_STATUS_WORD {
+//    SERIAL_TRANSMIT_ACCEPTED_BIT_NUM                    = (0),
+//    SERIAL_RECEIVE_REQUEST_BIT_NUM                      = (1),
+//    SERIAL_INIT_ACCEPTED_BIT_NUM                        = (2),
+//    SERIAL_ERROR_BIT_NUM                                = (3),
+//};
+
 //Control word
 #define EL6021_TRANSMIT_REQUEST_BIT_NUM 0 //Via a change of state of this bit the controller notifies the terminal that the DataOut bytes contain the number of bytes indicated via the OL bits. The terminal acknowledges receipt of the data in the status byte via a change of state of bit SW.0 (TA). Only now new data can be transferred from the controller to the terminal.
-
 
 
 #define EL6021_RECEIVE_ACCEPTED_BIT_NUM 1 //The controller acknowledges receipt of data by changing the state of this bit. Only then new data can be transferred from the terminal to the controller
 
 
-
 #define EL6021_INIT_REQUEST_BIT_NUM 2 //The controller requests terminal for initialization. The send and receive functions are blocked, the FIFO pointers are reset, and the interface is initialized with the values of the responsible objects: baud rate 4073, data frame 4074, feature bits 4075. The terminal acknowledges completion of the initialization via bit SW.2 (IA).
-
 
 
 #define EL6021_SEND_CONTINUOUS_BIT_NUM 3 //Continuous sending of data from the FIFO.
@@ -54,9 +64,7 @@
 #define EL6021_TRANSMIT_ACCEPTED_BIT_NUM 0 //The terminal acknowledges receipt of data by changing the state of this bit. Only now new data can be transferred from the controller to the terminal.
 
 
-
 #define EL6021_RECEIVE_REQUEST_BIT_NUM 1 //Via a change of state of this bit the terminal notifies the controller that the DataIn bytes contain the number of bytes indicated via the IL bits. The controller has to acknowledge receipt of the data in the control byte via a change of state of bit CW.1 (RA). Only then new data can be transferred from the terminal to the controller.
-
 
 
 #define EL6021_INIT_ACCEPTED_BIT_NUM 2 //Initialization was completed by the terminal.
@@ -77,6 +85,7 @@
 
 #define EL6021_FEATURE_BITS_SDO_INDEX 0x4075
 
+gberror_t ec_slave_exec_el6021n(uint16_t slave);
 
 gberror_t ec_slave_exec_el6021(uint16_t slave);
 
