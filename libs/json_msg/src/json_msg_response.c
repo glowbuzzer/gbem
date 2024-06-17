@@ -17,6 +17,7 @@
 #include "json_msg.h"
 #include "shared_mem_types.h"
 #include "dpm.h"
+#include "user_message.h"
 
 //{
 //response: {
@@ -62,13 +63,13 @@ json_msg_response(char *request_id, int request_type, bool error, char *message,
 
     size_t size = json_dumpb(responsebody, NULL, 0, 0);
     if (size > DPM_REQUEST_RESPONSE_DATA_LENGTH) {
-        printf("size [%zu] overlfow", size);
 
-//        write short error replay
+        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: response size [%zu] overflow", size);
 
-        //todo
+
     } else {
-        printf("size [%zu]", size);
+        //todo debug remove
+        printf("Response size to message request [%zu]", size);
     }
 
     strcpy(response_json, json_dumps(response, JSON_COMPACT));
@@ -149,28 +150,28 @@ json_msg_response_sdo_read(char *request_id, ec_value value, ec_datatype datatyp
                 json_object_set(response_payload, "value", json_integer(value.uint64));
                 break;
             case ECT_BIT1:
-                json_object_set(response_payload, "value", json_integer(value.bit1));
+                json_object_set(response_payload, "value", json_integer(value.bit));
                 break;
             case ECT_BIT2:
-                json_object_set(response_payload, "value", json_integer(value.bit1));
+                json_object_set(response_payload, "value", json_integer(value.bit));
                 break;
             case ECT_BIT3:
-                json_object_set(response_payload, "value", json_integer(value.bit1));
+                json_object_set(response_payload, "value", json_integer(value.bit));
                 break;
             case ECT_BIT4:
-                json_object_set(response_payload, "value", json_integer(value.bit1));
+                json_object_set(response_payload, "value", json_integer(value.bit));
                 break;
             case ECT_BIT5:
-                json_object_set(response_payload, "value", json_integer(value.bit1));
+                json_object_set(response_payload, "value", json_integer(value.bit));
                 break;
             case ECT_BIT6:
-                json_object_set(response_payload, "value", json_integer(value.bit1));
+                json_object_set(response_payload, "value", json_integer(value.bit));
                 break;
             case ECT_BIT7:
-                json_object_set(response_payload, "value", json_integer(value.bit1));
+                json_object_set(response_payload, "value", json_integer(value.bit));
                 break;
             case ECT_BIT8:
-                json_object_set(response_payload, "value", json_integer(value.bit1));
+                json_object_set(response_payload, "value", json_integer(value.bit));
                 break;
             case ECT_STRING8:
                 json_object_set(response_payload, "value", json_string(value.string8));

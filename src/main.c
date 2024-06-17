@@ -54,6 +54,7 @@
 #include "gbem_ctx.h"
 #include "json_conf_parse.h"
 #include "adhoc_message_processing.h"
+#include "sdos_print_sdo_array.h"
 
 #define BOOL_STRING(b) ((b) ? "true" : "false")
 
@@ -177,7 +178,7 @@ static void main_getopt_usage(void) {
 //Catch nasty signals and try and cleanup before exit
 void cleanup(int sig) {
     //todo crit - debug remove
-    printf("Performing cleanup\n");
+    printf("Performing cleanup - signal [%d]\n", sig);
 
     //set status word to zeros to clear things like GBEM_ALIVE bit
     dpm_in->machine_word = 0;
@@ -647,11 +648,27 @@ skip_command_line:
             "GBEM: Number of row in IO map [%u]", map_num_rows_in_iomap);
 
 
-//    json_conf_parse(map_machine_limits, &machine_config_optional_slaves, &ar, &ecm_cycle_shift, &cycle_time, &drive_state_change_timeout,
-//                    &debug_settings.disable_drive_warn_check, &debug_settings.disable_drive_limit_check, MAP_NUM_DRIVES, MAX_NUM_OPTIONAL_SLAVES);
+
+    int ecm_cycle_shift;
+    int cycle_time;
+    int drive_state_change_timeout;
+
+
+
+    if (!json_conf_parse(map_machine_limits, &machine_config_optional_slaves, &gbem_ctx.ar, &ecm_cycle_shift, &cycle_time, &drive_state_change_timeout,
+                    &debug_settings.disable_drive_warn_check, &debug_settings.disable_drive_limit_check, MAP_NUM_DRIVES, MAX_NUM_OPTIONAL_SLAVES)){
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] loading of the [%s] failed. Without a config file we can't continue", GBEM_CONF_FILE);
+        exit(0);
+}else{
+
+        UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] [%s] file successfully loaded", GBEM_CONF_FILE);
+}
+//will need to process arr for optional slaves
+//arr is zero indexed!
+
 
 //    todo
-// cmake json copying
+// cmake json copying based on machine type
 //print summary
 // add cycle time to ctx - replace MAP_CYCLE_TIME
 //add cycled shift to ctx
@@ -675,154 +692,155 @@ skip_command_line:
 
 
 
-    if (!check_limits_ini_exists()) {
-        UM_WARN(GBEM_UM_EN,
-                "GBEM: Limits ini file [%s] not found, we will run without soft limits (position velocity torque etc.) configured on the drives",
-                LIMITS_INI_FILENAME);
-    } else {
-        UM_INFO(GBEM_UM_EN,
-                "GBEM: Limits ini file [%s] found, we will now parse the limits from the file", LIMITS_INI_FILENAME);
-        uint8_t limits_number_of_joints_in_ini = get_limits_ini_sections();
-
-        if (limits_number_of_joints_in_ini != MAP_NUM_DRIVES) {
-            UM_FATAL(
-                "GBEM: The number of joints in the limits file [%s] does not match the number of joints in the machine config [%d]. This is a fatal error and GBEM will exit",
-                LIMITS_INI_FILENAME, MAP_NUM_DRIVES);
-        } else {
-            UM_INFO(GBEM_UM_EN,
-                    "GBEM: The number of joints in the limits file [%s] matches the number of joints in the machine config [%d]",
-                    LIMITS_INI_FILENAME, MAP_NUM_DRIVES);
-        }
-
-        uint8_t parse_count = 0;
-
-        gberror_t limits_read_rc = read_limits_ini(&parse_count);
-
-        if (parse_count != NUM_PARAMS_IN_LIMITS_INI * MAP_NUM_DRIVES) {
-            UM_FATAL(
-                "GBEM: The limits ini file does not contain the correct number of parameters - please fix the limits ini file [%s]",
-                LIMITS_INI_FILENAME);
-        } else {
-            UM_INFO(GBEM_UM_EN,
-                    "GBEM: The limits ini file contains the correct number of parameters [%d] - we will continue",
-                    parse_count);
-        }
-
-
-        for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-            UM_INFO(GBEM_UM_EN,
-                    "GBEM: Limits for joint [%d] are: position_limit_max [%d] position_limit_min [%d] velocity_limit [%d] torque_limit [%d] using max_motor_speed [%d] and max_motor_torque [%d]",
-                    i, map_machine_limits[i].position_limit_max, map_machine_limits[i].position_limit_min,
-                    map_machine_limits[i].velocity_limit, map_machine_limits[i].torque_limit,
-                    map_machine_limits[i].max_motor_speed, map_machine_limits[i].max_motor_torque);
-        }
-        if (limits_read_rc == E_SUCCESS) {
-            UM_INFO(GBEM_UM_EN,
-                    "GBEM: Limits loaded - we will apply these soft limits (position velocity torque etc.) to the drives")
-            ;
-            UM_INFO(GBEM_UM_EN,
-                    "GBEM: !IMPORTANT! - on some drives once limits are written to the drive they are persisted in NVRAM")
-            ;
-        } else {
-            UM_FATAL("GBEM: Limits parsing failed - please fix the limits file [%s]", LIMITS_INI_FILENAME);
-        }
-    }
-
-
-    if (!check_debug_ini_exists()) {
-        UM_WARN(GBEM_UM_EN,
-                "GBEM: Debug ini file [%s] not found, no debug options will be applied",
-                DEBUG_INI_FILENAME);
-    } else {
-        UM_INFO(GBEM_UM_EN,
-                "GBEM: Debug ini file [%s] found, we will now parse the file", DEBUG_INI_FILENAME);
-
-        uint8_t number_of_items_found = 0;
-
-        gberror_t debug_read_rc = read_debug_ini(&number_of_items_found);
+//    if (!check_limits_ini_exists()) {
+//        UM_WARN(GBEM_UM_EN,
+//                "GBEM: Limits ini file [%s] not found, we will run without soft limits (position velocity torque etc.) configured on the drives",
+//                LIMITS_INI_FILENAME);
+//    } else {
+//        UM_INFO(GBEM_UM_EN,
+//                "GBEM: Limits ini file [%s] found, we will now parse the limits from the file", LIMITS_INI_FILENAME);
+//        uint8_t limits_number_of_joints_in_ini = get_limits_ini_sections();
+//
+//        if (limits_number_of_joints_in_ini != MAP_NUM_DRIVES) {
+//            UM_FATAL(
+//                "GBEM: The number of joints in the limits file [%s] does not match the number of joints in the machine config [%d]. This is a fatal error and GBEM will exit",
+//                LIMITS_INI_FILENAME, MAP_NUM_DRIVES);
+//        } else {
+//            UM_INFO(GBEM_UM_EN,
+//                    "GBEM: The number of joints in the limits file [%s] matches the number of joints in the machine config [%d]",
+//                    LIMITS_INI_FILENAME, MAP_NUM_DRIVES);
+//        }
+//
+//        uint8_t parse_count = 0;
+//
+//        gberror_t limits_read_rc = read_limits_ini(&parse_count);
+//
+//        if (parse_count != NUM_PARAMS_IN_LIMITS_INI * MAP_NUM_DRIVES) {
+//            UM_FATAL(
+//                "GBEM: The limits ini file does not contain the correct number of parameters - please fix the limits ini file [%s]",
+//                LIMITS_INI_FILENAME);
+//        } else {
+//            UM_INFO(GBEM_UM_EN,
+//                    "GBEM: The limits ini file contains the correct number of parameters [%d] - we will continue",
+//                    parse_count);
+//        }
+//
+//
+//        for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+//            UM_INFO(GBEM_UM_EN,
+//                    "GBEM: Limits for joint [%d] are: position_limit_max [%d] position_limit_min [%d] velocity_limit [%d] torque_limit [%d] using max_motor_speed [%d] and max_motor_torque [%d]",
+//                    i, map_machine_limits[i].position_limit_max, map_machine_limits[i].position_limit_min,
+//                    map_machine_limits[i].velocity_limit, map_machine_limits[i].torque_limit,
+//                    map_machine_limits[i].max_motor_speed, map_machine_limits[i].max_motor_torque);
+//        }
+//        if (limits_read_rc == E_SUCCESS) {
+//            UM_INFO(GBEM_UM_EN,
+//                    "GBEM: Limits loaded - we will apply these soft limits (position velocity torque etc.) to the drives")
+//            ;
+//            UM_INFO(GBEM_UM_EN,
+//                    "GBEM: !IMPORTANT! - on some drives once limits are written to the drive they are persisted in NVRAM")
+//            ;
+//        } else {
+//            UM_FATAL("GBEM: Limits parsing failed - please fix the limits file [%s]", LIMITS_INI_FILENAME);
+//        }
+//    }
 
 
-        if (number_of_items_found != NUM_PARAMS_IN_DEBUG_INI) {
-            UM_FATAL(
-                "GBEM: The debug ini file does not contain the correct number of parameters [%u] - please fix the debug ini file [%s]",
-                number_of_items_found, DEBUG_INI_FILENAME);
-        } else {
-            UM_INFO(GBEM_UM_EN,
-                    "GBEM: The debug file contains the correct number of parameters [%d] - we will continue",
-                    number_of_items_found);
-        }
+//    if (!check_debug_ini_exists()) {
+//        UM_WARN(GBEM_UM_EN,
+//                "GBEM: Debug ini file [%s] not found, no debug options will be applied",
+//                DEBUG_INI_FILENAME);
+//    } else {
+//        UM_INFO(GBEM_UM_EN,
+//                "GBEM: Debug ini file [%s] found, we will now parse the file", DEBUG_INI_FILENAME);
+//
+//        uint8_t number_of_items_found = 0;
+//
+//        gberror_t debug_read_rc = read_debug_ini(&number_of_items_found);
+//
+//
+//        if (number_of_items_found != NUM_PARAMS_IN_DEBUG_INI) {
+//            UM_FATAL(
+//                "GBEM: The debug ini file does not contain the correct number of parameters [%u] - please fix the debug ini file [%s]",
+//                number_of_items_found, DEBUG_INI_FILENAME);
+//        } else {
+//            UM_INFO(GBEM_UM_EN,
+//                    "GBEM: The debug file contains the correct number of parameters [%d] - we will continue",
+//                    number_of_items_found);
+//        }
+//
+//
+//        UM_INFO(GBEM_UM_EN,
+//                "GBEM: Debug config is: disable_drive_follow_error_check [%s], disable_drive_follow_error_check [%s], disable_drive_follow_error_check [%s]",
+//                BOOL_STRING(debug_settings.disable_drive_follow_error_check),
+//                BOOL_STRING(debug_settings.disable_drive_follow_error_check),
+//                BOOL_STRING(debug_settings.disable_drive_follow_error_check));
+//
+//        if (debug_read_rc == E_SUCCESS) {
+//            UM_INFO(GBEM_UM_EN,
+//                    "GBEM: Debug settings loaded successfully")
+//            ;
+//        } else {
+//            UM_FATAL("GBEM: Debug settings parsing failed - please fix the debug ini file [%s]", DEBUG_INI_FILENAME);
+//        }
+//    }
 
 
-        UM_INFO(GBEM_UM_EN,
-                "GBEM: Debug config is: disable_drive_follow_error_check [%s], disable_drive_follow_error_check [%s], disable_drive_follow_error_check [%s]",
-                BOOL_STRING(debug_settings.disable_drive_follow_error_check),
-                BOOL_STRING(debug_settings.disable_drive_follow_error_check),
-                BOOL_STRING(debug_settings.disable_drive_follow_error_check));
-
-        if (debug_read_rc == E_SUCCESS) {
-            UM_INFO(GBEM_UM_EN,
-                    "GBEM: Debug settings loaded successfully")
-            ;
-        } else {
-            UM_FATAL("GBEM: Debug settings parsing failed - please fix the debug ini file [%s]", DEBUG_INI_FILENAME);
-        }
-    }
-
-
-    if (!check_machine_config_ini_exists()) {
-        UM_WARN(GBEM_UM_EN,
-                "GBEM: Machine config ini file [%s] not found, no optional slaves will be enabled",
-                MACHINE_CONFIG_INI_FILENAME);
-    } else {
-        UM_INFO(GBEM_UM_EN,
-                "GBEM: Machine config ini file [%s] found, we will now parse the file", MACHINE_CONFIG_INI_FILENAME);
-
-        uint8_t number_of_items_found = 0;
-
-        gberror_t machine_config_read_rc = read_machine_config_ini(&number_of_items_found);
-
-
-        if (number_of_items_found != NUM_PARAMS_IN_MACHINE_CONFIG_INI) {
-            UM_FATAL(
-                "GBEM: The machine config ini file does not contain the correct number of parameters [%u] - please fix the machine config ini file [%s]",
-                number_of_items_found, MACHINE_CONFIG_INI_FILENAME);
-        } else {
-            UM_INFO(GBEM_UM_EN,
-                    "GBEM: The machine config contains the correct number of parameters [%d] - we will continue",
-                    number_of_items_found);
-        }
-
-
-        UM_INFO(GBEM_UM_EN,
-                "GBEM: Machine config is: enable_optional_slave_1 [%s], enable_optional_slave_2 [%s], enable_optional_slave_3 [%s], enable_optional_slave_4 [%s], enable_optional_slave_5 [%s], enable_optional_slave_6 [%s], enable_optional_slave_7 [%s], enable_optional_slave_8 [%s], enable_optional_slave_9 [%s], enable_optional_slave_10 [%s],",
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[0]),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[1]),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[2]),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[3]),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[4]),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[5]),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[6]),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[7]),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[8]),
-                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[9])
-        );
-
-        if (machine_config_read_rc == E_SUCCESS) {
-            UM_INFO(GBEM_UM_EN,
-                    "GBEM: Machine config (optional slaves) settings loaded successfully")
-            ;
-        } else {
-            UM_FATAL("GBEM: Machine config settings parsing failed - please fix the machine config ini file [%s]",
-                     DEBUG_INI_FILENAME);
-        }
-    }
+//    if (!check_machine_config_ini_exists()) {
+//        UM_WARN(GBEM_UM_EN,
+//                "GBEM: Machine config ini file [%s] not found, no optional slaves will be enabled",
+//                MACHINE_CONFIG_INI_FILENAME);
+//    } else {
+//        UM_INFO(GBEM_UM_EN,
+//                "GBEM: Machine config ini file [%s] found, we will now parse the file", MACHINE_CONFIG_INI_FILENAME);
+//
+//        uint8_t number_of_items_found = 0;
+//
+//        gberror_t machine_config_read_rc = read_machine_config_ini(&number_of_items_found);
+//
+//
+//        if (number_of_items_found != NUM_PARAMS_IN_MACHINE_CONFIG_INI) {
+//            UM_FATAL(
+//                "GBEM: The machine config ini file does not contain the correct number of parameters [%u] - please fix the machine config ini file [%s]",
+//                number_of_items_found, MACHINE_CONFIG_INI_FILENAME);
+//        } else {
+//            UM_INFO(GBEM_UM_EN,
+//                    "GBEM: The machine config contains the correct number of parameters [%d] - we will continue",
+//                    number_of_items_found);
+//        }
+//
+//
+//        UM_INFO(GBEM_UM_EN,
+//                "GBEM: Machine config is: enable_optional_slave_1 [%s], enable_optional_slave_2 [%s], enable_optional_slave_3 [%s], enable_optional_slave_4 [%s], enable_optional_slave_5 [%s], enable_optional_slave_6 [%s], enable_optional_slave_7 [%s], enable_optional_slave_8 [%s], enable_optional_slave_9 [%s], enable_optional_slave_10 [%s],",
+//                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[0]),
+//                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[1]),
+//                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[2]),
+//                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[3]),
+//                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[4]),
+//                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[5]),
+//                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[6]),
+//                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[7]),
+//                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[8]),
+//                BOOL_STRING(machine_config_optional_slaves.enable_optional_slave[9])
+//        );
+//
+//        if (machine_config_read_rc == E_SUCCESS) {
+//            UM_INFO(GBEM_UM_EN,
+//                    "GBEM: Machine config (optional slaves) settings loaded successfully")
+//            ;
+//        } else {
+//            UM_FATAL("GBEM: Machine config settings parsing failed - please fix the machine config ini file [%s]",
+//                     DEBUG_INI_FILENAME);
+//        }
+//    }
 
     //we must disable slaves even if we dont have a config ini file as the file "turns on" slaves
 
-
+    sdos_print_sdo_array(&gbem_ctx.ar);
     UM_INFO(GBEM_UM_EN, "GBEM: Starting process to disable optional slaves");
     os_disable_slaves(map_slave_optional);
     UM_INFO(GBEM_UM_EN, "GBEM: Completed process to disable optional slaves");
+    sdos_print_sdo_array(&gbem_ctx.ar);
 
 
 #if DISABLE_ESTOP_CHECKING == 1

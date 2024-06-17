@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
  * @file           :  sdos_read_based_on_datatype
- * @brief          :
+ * @brief          :  read the sdo value based on the datatype
  ******************************************************************************
  * @attention
  *
@@ -16,11 +16,15 @@
 #include <stdint.h>
 #include "ethercattype.h"
 #include "ethercatsetget.h"
+#include "log.h"
+#include "user_message.h"
 
 gberror_t
 sdos_read_based_on_datatype(const uint16_t slave, const uint16_t index, const uint8_t subindex, const uint8_t datatype,
+                            int len,
                             ec_value *value) {
 
+    int rc = E_GENERAL_FAILURE;
 
     switch (datatype) {
 
@@ -50,8 +54,8 @@ sdos_read_based_on_datatype(const uint16_t slave, const uint16_t index, const ui
 
         case ECT_INTEGER32:
 
-            value->int32 = 42;
-            return E_SUCCESS;
+//            value->int32 = 42;
+//            return E_SUCCESS;
             if (ec_sdo_read_int32(slave, index, subindex, &value->int32, false)) {
                 return E_SUCCESS;
             } else {
@@ -84,56 +88,86 @@ sdos_read_based_on_datatype(const uint16_t slave, const uint16_t index, const ui
 
         case ECT_REAL32:
 
-//            if (ec_sdo_read_real32(slave, index, subindex, &value->real32, false)) {
-//                return E_SUCCESS;
-//            } else {
-//                return E_SDO_READ_FAILURE;
-//            }
+            if (ec_sdo_read_real32(slave, index, subindex, &value->real32, false)) {
+                return E_SUCCESS;
+            } else {
+                return E_SDO_READ_FAILURE;
+            }
 
-            break;
         case ECT_VISIBLE_STRING:
-            break;
+            rc = ec_SDOread(slave, index, subindex, false, &len, &value->visible_string, EC_TIMEOUTRXM);
+            value->visible_string[len + 1] = '\0';
+            if (rc <= 0) {
+                UM_ERROR(GBEM_UM_EN, "GBEM: Could not read SDO index:0x%08x - sub-index:0x%08x - len: %d (on slave:%u)",
+                         index,
+                         subindex, len, slave);
+                return E_SDO_READ_FAILURE;
+            } else {
+                return E_SUCCESS;
+            }
         case ECT_OCTET_STRING:
-            break;
+            rc = ec_SDOread(slave, index, subindex, false, &len, &value->octet_string, EC_TIMEOUTRXM);
+
+            if (rc <= 0) {
+                UM_ERROR(GBEM_UM_EN, "GBEM: Could not read SDO index:0x%08x - sub-index:0x%08x - len: %d (on slave:%u)",
+                         index,
+                         subindex, len, slave);
+                return E_SDO_READ_FAILURE;
+            } else {
+                return E_SUCCESS;
+            }
         case ECT_UNICODE_STRING:
-            break;
+            rc = ec_SDOread(slave, index, subindex, false, &len, &value->unicode_string, EC_TIMEOUTRXM);
+
+            if (rc <= 0) {
+                UM_ERROR(GBEM_UM_EN, "GBEM: Could not read SDO index:0x%08x - sub-index:0x%08x - len: %d (on slave:%u)",
+                         index,
+                         subindex, len, slave);
+                return E_SDO_READ_FAILURE;
+            } else {
+                return E_SUCCESS;
+            }
         case ECT_TIME_OF_DAY:
+            UM_FATAL("GBEM: Time of day datatype not supported");
             break;
         case ECT_TIME_DIFFERENCE:
+            UM_FATAL("GBEM: Time difference datatype not supported");
             break;
         case ECT_DOMAIN:
+            UM_FATAL("GBEM: Domain datatype not supported");
             break;
         case ECT_INTEGER24:
+            UM_FATAL("GBEM: Integer 24 datatype not supported");
             break;
         case ECT_REAL64:
+            UM_FATAL("GBEM: Real 64 datatype not supported");
             break;
         case ECT_INTEGER64:
+            UM_FATAL("GBEM: Integer 64 datatype not supported");
             break;
         case ECT_UNSIGNED24:
+            UM_FATAL("GBEM: Unsigned 24 datatype not supported");
             break;
         case ECT_UNSIGNED64:
+            UM_FATAL("GBEM: Unsigned 64 datatype not supported");
             break;
         case ECT_BIT1:
-            break;
         case ECT_BIT2:
-            break;
         case ECT_BIT3:
-            break;
         case ECT_BIT4:
-            break;
         case ECT_BIT5:
-            break;
         case ECT_BIT6:
-            break;
         case ECT_BIT7:
-            break;
         case ECT_BIT8:
-            break;
+            if (ec_sdo_read_uint8(slave, index, subindex, &value->bit, false)) {
+                return E_SUCCESS;
+            } else {
+                return E_SDO_READ_FAILURE;
+            }
         case ECT_STRING8:
-        default:
-            //todo
-//            LL_FATAL("Unknown datatype: %d", datatype);
             break;
+        default:
+            UM_FATAL("GBEM: Unknown datatype: %d", datatype);
 
     }
     return E_SUCCESS;

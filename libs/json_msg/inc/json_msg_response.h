@@ -24,4 +24,9 @@ json_msg_response_sdo_read(char *request_id, ec_value value, ec_datatype datatyp
 
 gberror_t json_msg_response_error(char *request_id, int request_type, char *message, char *response_json);
 
+
+gberror_t
+json_msg_response(char *request_id, int request_type, bool error, char *message, json_t *response_payload,
+                  char *response_json);
+
 #endif //GBEM_JSON_MSG_RESPONSE_H
