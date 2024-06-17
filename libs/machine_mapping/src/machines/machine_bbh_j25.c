@@ -17,6 +17,7 @@
 
 #include "bbh.h"
 #include "automationware.h"
+#include "beckhoff.h"
 
 //@formatter:off
 
@@ -30,36 +31,38 @@ MAP_FSOE_MASTER_SET_ERROR_ACK_STATE_FUNCTION(   ec_fsoe_set_error_ack_state_bbh_
 
 
 /* SLAVES */
-//                                          Slave 1                                 Slave 2
-//                                          MAP_BBH_SCU_1_EC_                       MAP_AW_J25_FSOE_1
-//                                          Safety PLC                              AW J25 joint FSoE
-MAP_NUM_DRIVES_ATTACHED(                    0,                                      1);
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            NULL,                                   ec_pdo_map_aw_j_series_fsoe);
-MAP_SLAVE_NVRAM_SDO_FUNCTIONS(              NULL,                                   NULL);
-MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           ec_apply_standard_sdos_bbh_scu_1_ec,    ec_apply_standard_sdos_aw_j_series_fsoe );
-MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            NULL,                                   ec_initial_pdo_aw_j_series);
-MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(         ec_custom_fmmu_sm_bbh_scu_1_ec,         ec_custom_fmmu_sm_aw_j_series);
-MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,                             EC_DC_0);
-MAP_SLAVE_DC_CYCLE(                         0,                                      4) ;
-MAP_SLAVE_EXEC_FUNCTIONS(                   NULL,                                   NULL);
-MAP_SLAVE_OPTIONAL(                         false,                                  false);
+//                                          Slave 1                                 Slave 2             Slave 3                         Slave 4
+//                                          MAP_BBH_SCU_1_EC_1                      MAP_EK1100_1        MAP_EL6021_1                    MAP_AW_J25_FSOE_1
+//                                          Safety PLC                              Coupler             Serial comms                    AW J25 joint FSoE
+MAP_NUM_DRIVES_ATTACHED(                    0,                                      0,                  0,                              1);
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            NULL,                                   NULL,               NULL,                           ec_pdo_map_aw_j_series_fsoe);
+MAP_SLAVE_NVRAM_SDO_FUNCTIONS(              NULL,                                   NULL,               NULL,                           NULL);
+MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           ec_apply_standard_sdos_bbh_scu_1_ec,    NULL,               ec_apply_standard_sdos_el6021,  ec_apply_standard_sdos_aw_j_series_fsoe );
+MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            NULL,                                   NULL,               NULL,                           ec_initial_pdo_aw_j_series);
+MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(         ec_custom_fmmu_sm_bbh_scu_1_ec,         NULL,               NULL,                           ec_custom_fmmu_sm_aw_j_series);
+MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,                             EC_DC_NONE,         EC_DC_NONE,                     EC_DC_0);
+MAP_SLAVE_DC_CYCLE(                         0,                                      4,                  4,                              4) ;
+MAP_SLAVE_EXEC_FUNCTIONS(                   NULL,                                   NULL,               ec_slave_exec_el6021,          NULL);
+MAP_SLAVE_OPTIONAL(                         false,                                  false,              false,                          false);
 
 
 
 /* FSoE */
-MAP_SLAVE_FSOE_SLAVE_TYPE(                  FSOE_SLAVE_TYPE_SCU_1_EC,               FSOE_SLAVE_TYPE_SYNAPTICON              );
-MAP_SLAVE_FSOE_SLAVE_FUNCTION(              FSOE_SLAVE_FUNCTION_MASTER,             FSOE_SLAVE_FUNCTION_SLAVE               );
-MAP_SLAVE_FSOE_OFFSET_IN(                   BBH_SCU_1_EC_FSOE_IN_OFFSET,            AW_J_SERIES_EC_FSOE_SM2_OFFSET          );
-MAP_SLAVE_FSOE_OFFSET_OUT(                  BBH_SCU_1_EC_FSOE_OUT_OFFSET,           AW_J_SERIES_EC_FSOE_SM3_OFFSET          );
-MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(   NULL,                                   ec_fsoe_get_slave_state_aw_j_series     );
-MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS(  NULL,                                   ec_fsoe_get_slave_con_id_aw_j_series    );
-MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(  ec_fsoe_get_master_state_bbh_scu_1_ec,  NULL                                    );
+MAP_SLAVE_FSOE_SLAVE_TYPE(                  FSOE_SLAVE_TYPE_SCU_1_EC,               FSOE_SLAVE_TYPE_NONE,       FSOE_SLAVE_TYPE_NONE,       FSOE_SLAVE_TYPE_SYNAPTICON              );
+MAP_SLAVE_FSOE_SLAVE_FUNCTION(              FSOE_SLAVE_FUNCTION_MASTER,             FSOE_SLAVE_FUNCTION_NONE,   FSOE_SLAVE_FUNCTION_NONE,   FSOE_SLAVE_FUNCTION_SLAVE               );
+MAP_SLAVE_FSOE_OFFSET_IN(                   BBH_SCU_1_EC_FSOE_IN_OFFSET,            0,                          0,                          AW_J_SERIES_EC_FSOE_SM2_OFFSET          );
+MAP_SLAVE_FSOE_OFFSET_OUT(                  BBH_SCU_1_EC_FSOE_OUT_OFFSET,           0,                          0,                          AW_J_SERIES_EC_FSOE_SM3_OFFSET          );
+MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(   NULL,                                   NULL,                       NULL,                       ec_fsoe_get_slave_state_aw_j_series     );
+MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS(  NULL,                                   NULL,                       NULL,                       ec_fsoe_get_slave_con_id_aw_j_series    );
+MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS(  ec_fsoe_get_master_state_bbh_scu_1_ec,  NULL,                       NULL,                       NULL                                    );
 MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
 
 /*This is a zero indexed array even though the slaves are 1 indexed */
 /* This must be laid out in the order they appear in netscan */
 map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {
         {.name = BBH_SCU_1_EC_EEP_NAME, .eep_id = BBH_SCU_1_EC_EEP_ID, .eep_man = BBH_SCU_1_EC_EEP_MAN, .eep_rev = BBH_SCU_1_EC_EEP_REV},
+        { .name = EK1100_EEP_NAME,       .eep_id = EK1100_EEP_ID,        .eep_man = EK1100_EEP_MAN,      .eep_rev = EK1100_EEP_REV   },
+        {.name = EL6021_EEP_NAME,       .eep_id = EL6021_EEP_ID,        .eep_man = EL6021_EEP_MAN,      .eep_rev = EL6021_EEP_REV   },
         {.name = AW_EEP_NAME, .eep_id = AW_EEP_ID, .eep_man = AW_EEP_MAN, .eep_rev = AW_EEP_REV    },
 };
 

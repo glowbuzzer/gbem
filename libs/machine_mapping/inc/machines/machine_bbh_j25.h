@@ -15,20 +15,21 @@
 #define GBEM_MACHINE_BBH_J25_H
 
 
-#define MAP_CYCLE_TIME              (1)
+#define MAP_CYCLE_TIME              (4)
 #define MAP_GLOBAL_DC_SYNC_OFFSET   2000U
 
 /* Slaves must be defined in order that they appear on the EtherCAT network */
 #define MAP_BBH_SCU_1_EC_1          1
-#define MAP_AW_J25_FSOE_1           2
-
+#define MAP_EK1100_1                2
+#define MAP_EL6021_1                3
+#define MAP_AW_J25_FSOE_1           4
 
 #define ECM_CHECK_EEP_MAN           0
 #define ECM_CHECK_EEP_REV           0
 #define ECM_CHECK_EEP_ID            0
 
 #define MAP_NUM_DRIVES              1
-#define MAP_NUM_SLAVES              2
+#define MAP_NUM_SLAVES              4
 #define MAP_NUM_FSOE_MASTER_SLOTS   1
 
 
