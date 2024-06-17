@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file           :  machine_config_ini
+ * @file           :  json_msg_get_version
  * @brief          :
  ******************************************************************************
  * @attention
@@ -10,14 +10,13 @@
  *
  ******************************************************************************
  */
-#ifndef MACHINE_CONFIG_INI_H
-#define MACHINE_CONFIG_INI_H
+#ifndef GBEM_JSON_MSG_GET_VERSION_H
+#define GBEM_JSON_MSG_GET_VERSION_H
 
+#include "jansson.h"
+#include "gberror.h"
 
-gberror_t read_machine_config_ini(uint8_t *number_of_items_found);
+gberror_t
+json_msg_response_get_version(char *request_id, char *response_json);
 
-bool check_machine_config_ini_exists(void);
-
-uint8_t get_machine_config_ini_sections(void);
-
-#endif //MACHINE_CONFIG_INI_H
+#endif //GBEM_JSON_MSG_GET_VERSION_H
