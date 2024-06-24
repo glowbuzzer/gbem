@@ -19,6 +19,7 @@
 #include "ethercatsetget.h"
 #include "cia402.h"
 #include <math.h>
+#include "gbem_ctx.h"
 
 
 map_custom_pdo_t aw_j_series_custom_pdo_map = {
@@ -154,69 +155,75 @@ gberror_t ec_print_pdo_config_aw_series(const uint16_t slave) {
 gberror_t ec_apply_limits_aw_j_series(uint16_t slave) {
     uint16_t drive = map_slave_to_drive(slave);
 
-    if (map_machine_limits[drive].torque_limit != 0 && map_machine_limits[drive].max_motor_torque) {
-        uint16_t torque_limit = (uint16_t) ((((double) map_machine_limits[drive].max_motor_torque * (double)
-                map_machine_limits[drive].torque_limit) / (double) 100));
-        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max torque limit [%d] on drive [%d]",
-                torque_limit,
-                map_drive_to_slave[drive]);
-        if (!ec_sdo_write_uint16(map_drive_to_slave[drive], AW_J_SERIES_MAX_TORQUE_SDO_INDEX,
-                                 AW_J_SERIES_MAX_TORQUE_SDO_SUB_INDEX,
-                                 torque_limit, true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-    }
+    if (!gbem_ctx.no_limits) {
 
-    if (map_machine_limits[drive].max_motor_speed != 0 && map_machine_limits[drive].velocity_limit) {
-        uint32_t max_motor_speed = (uint32_t) ((((double) map_machine_limits[drive].max_motor_speed * (double)
-                map_machine_limits[drive].velocity_limit) / (double) 100));
-        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max motor speed [%d] on drive [%d]",
-                max_motor_speed,
-                map_drive_to_slave[drive]);
-        if (!ec_sdo_write_uint32(map_drive_to_slave[drive], AW_J_SERIES_MAX_MOTOR_SPEED_SDO_INDEX,
-                                 AW_J_SERIES_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
-                                 max_motor_speed, true)) {
-            return E_SDO_WRITE_FAILURE;
-        }
-    }
-
-
-    if (map_machine_limits[drive].position_limit_max != 0 && map_machine_limits[drive].position_limit_min != 0 &&
-        map_drive_scales[drive].position_scale != 0) {
-        if (!ec_sdo_write_int32(map_drive_to_slave[drive], AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
-                                (int32_t) (
-                                        ((double) map_drive_scales[drive].position_scale)
-                                        *
-                                        ((double) map_machine_limits[drive].position_limit_max * (M_PI /
-                                                                                                  180.0))),
-                                true)) {
-            return E_SDO_WRITE_FAILURE;
+        if (map_machine_limits[drive].torque_limit != 0 && map_machine_limits[drive].max_motor_torque) {
+            uint16_t torque_limit = (uint16_t) ((((double) map_machine_limits[drive].max_motor_torque * (double)
+                    map_machine_limits[drive].torque_limit) / (double) 100));
+            UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max torque limit [%d] on drive [%d]",
+                    torque_limit,
+                    map_drive_to_slave[drive]);
+            if (!ec_sdo_write_uint16(map_drive_to_slave[drive], AW_J_SERIES_MAX_TORQUE_SDO_INDEX,
+                                     AW_J_SERIES_MAX_TORQUE_SDO_SUB_INDEX,
+                                     torque_limit, true)) {
+                return E_SDO_WRITE_FAILURE;
+            }
         }
 
-        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max position limit [%d] on drive [%d]",
-                (int32_t) (((double) map_drive_scales[drive].position_scale)
-                           *
-                           ((double) map_machine_limits[drive].position_limit_min * (M_PI /
-                                                                                     180.0))),
-                drive);
-
-        if (!ec_sdo_write_int32(map_drive_to_slave[drive], AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
-                                AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
-                                (int32_t) (
-                                        ((double) map_drive_scales[drive].position_scale)
-                                        *
-                                        ((double) map_machine_limits[drive].position_limit_min * (M_PI /
-                                                                                                  180.0))),
-                                true)) {
-            return E_SDO_WRITE_FAILURE;
+        if (map_machine_limits[drive].max_motor_speed != 0 && map_machine_limits[drive].velocity_limit) {
+            uint32_t max_motor_speed = (uint32_t) ((((double) map_machine_limits[drive].max_motor_speed * (double)
+                    map_machine_limits[drive].velocity_limit) / (double) 100));
+            UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max motor speed [%d] on drive [%d]",
+                    max_motor_speed,
+                    map_drive_to_slave[drive]);
+            if (!ec_sdo_write_uint32(map_drive_to_slave[drive], AW_J_SERIES_MAX_MOTOR_SPEED_SDO_INDEX,
+                                     AW_J_SERIES_MAX_MOTOR_SPEED_SDO_SUB_INDEX,
+                                     max_motor_speed, true)) {
+                return E_SDO_WRITE_FAILURE;
+            }
         }
-        UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Min position limit [%d] on drive [%d]",
-                (int32_t) (((double) map_drive_scales[drive].position_scale)
-                           *
-                           ((double) map_machine_limits[drive].position_limit_min * (M_PI /
-                                                                                     180.0))),
-                drive);
+
+
+        if (map_machine_limits[drive].position_limit_max != 0 && map_machine_limits[drive].position_limit_min != 0 &&
+            map_drive_scales[drive].position_scale != 0) {
+            if (!ec_sdo_write_int32(map_drive_to_slave[drive], AW_J_SERIES_MAX_POSITION_LIMIT_SDO_INDEX,
+                                    AW_J_SERIES_MAX_POSITION_LIMIT_SDO_SUB_INDEX,
+                                    (int32_t) (
+                                            ((double) map_drive_scales[drive].position_scale)
+                                            *
+                                            ((double) map_machine_limits[drive].position_limit_max * (M_PI /
+                                                                                                      180.0))),
+                                    true)) {
+                return E_SDO_WRITE_FAILURE;
+            }
+
+            UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Max position limit [%d] on drive [%d]",
+                    (int32_t) (((double) map_drive_scales[drive].position_scale)
+                               *
+                               ((double) map_machine_limits[drive].position_limit_min * (M_PI /
+                                                                                         180.0))),
+                    drive);
+
+            if (!ec_sdo_write_int32(map_drive_to_slave[drive], AW_J_SERIES_MIN_POSITION_LIMIT_SDO_INDEX,
+                                    AW_J_SERIES_MIN_POSITION_LIMIT_SDO_SUB_INDEX,
+                                    (int32_t) (
+                                            ((double) map_drive_scales[drive].position_scale)
+                                            *
+                                            ((double) map_machine_limits[drive].position_limit_min * (M_PI /
+                                                                                                      180.0))),
+                                    true)) {
+                return E_SDO_WRITE_FAILURE;
+            }
+            UM_INFO(GBEM_UM_EN, "GBEM: AW-J-Series - Min position limit [%d] on drive [%d]",
+                    (int32_t) (((double) map_drive_scales[drive].position_scale)
+                               *
+                               ((double) map_machine_limits[drive].position_limit_min * (M_PI /
+                                                                                         180.0))),
+                    drive);
+        }
+    } else {
+        UM_INFO(GBEM_UM_EN,
+                "GBEM: AW-J-Series - NO LIMITS set in the config do drive pos/vel/torque limits will be applied");
     }
 
 
