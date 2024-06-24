@@ -12,4 +12,5 @@ add_library(automationware STATIC src/aw_j_series.c src/aw_j_series_fsoe.c src/a
 target_link_libraries(automationware common-misc Logging machine_mapping EtherCAT sdos linux-shm dpm state_machine)
 #target_include_directories(automationware PUBLIC inc)
 
-target_include_directories(automationware PUBLIC inc ${CMAKE_SOURCE_DIR}/inc "${CMAKE_SOURCE_DIR}/shared/inc")
+target_include_directories(automationware PUBLIC inc "${CMAKE_SOURCE_DIR}/inc" "${CMAKE_SOURCE_DIR}/shared/inc")
+
