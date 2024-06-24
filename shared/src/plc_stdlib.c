@@ -33,7 +33,8 @@
  * the units of the velocity are "steps / ms" or steps being whatever the base unit of actpos for the drive is
  *
  */
-float plcsl_calc_cartesian_velocity(uint8_t drive_num_x, uint8_t drive_num_y,uint8_t drive_num_z, uint8_t num_axis, uint8_t cycle_time_ms, gberror_t *grc){
+float plcsl_calc_cartesian_velocity(uint8_t drive_num_x, uint8_t drive_num_y, uint8_t drive_num_z, uint8_t num_axis,
+                                    uint8_t cycle_time_ms, gberror_t *grc) {
     static int32_t last_pos_x = 0;
     static int32_t last_pos_y = 0;
     static int32_t last_pos_z = 0;
@@ -42,12 +43,12 @@ float plcsl_calc_cartesian_velocity(uint8_t drive_num_x, uint8_t drive_num_y,uin
     int32_t current_pos_y = 0;
     int32_t current_pos_z = 0;
 
-    if (num_axis != 1 && num_axis != 2 && num_axis !=3 ){
+    if (num_axis != 1 && num_axis != 2 && num_axis != 3) {
         *grc = E_INVALID_PARAMETER;
         return 0;
     }
 
-    if (*map_drive_get_actpos_wrd_function_ptr[drive_num_x] != NULL) {
+    if (map_drive_get_actpos_wrd_function_ptr[drive_num_x] != NULL) {
         current_pos_x = map_drive_get_actpos_wrd_function_ptr[drive_num_x](drive_num_x);
     } else {
         LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
@@ -55,16 +56,16 @@ float plcsl_calc_cartesian_velocity(uint8_t drive_num_x, uint8_t drive_num_y,uin
     }
 
 
-    if (num_axis == 2 || num_axis == 3){
-        if (*map_drive_get_actpos_wrd_function_ptr[drive_num_y] != NULL) {
+    if (num_axis == 2 || num_axis == 3) {
+        if (map_drive_get_actpos_wrd_function_ptr[drive_num_y] != NULL) {
             current_pos_y = map_drive_get_actpos_wrd_function_ptr[drive_num_y](drive_num_y);
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
                      "GBEM: Missing function pointer for map_drive_get_actpos_wrd on drive [%u]", drive_num_y);
         }
     }
-    if (num_axis == 3){
-        if (*map_drive_get_actpos_wrd_function_ptr[drive_num_z] != NULL) {
+    if (num_axis == 3) {
+        if (map_drive_get_actpos_wrd_function_ptr[drive_num_z] != NULL) {
             current_pos_z = map_drive_get_actpos_wrd_function_ptr[drive_num_z](drive_num_z);
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
@@ -73,10 +74,12 @@ float plcsl_calc_cartesian_velocity(uint8_t drive_num_x, uint8_t drive_num_y,uin
     }
 
     float cart_velo;
-    cart_velo =  ((float)sqrt( pow(((float)current_pos_x - (float)last_pos_x),2) + pow(((float)current_pos_y - (float)last_pos_y),2)+ + pow(((float)current_pos_z - (float)last_pos_z),2)));
+    cart_velo = ((float) sqrt(pow(((float) current_pos_x - (float) last_pos_x), 2) +
+                              pow(((float) current_pos_y - (float) last_pos_y), 2) +
+                              +pow(((float) current_pos_z - (float) last_pos_z), 2)));
 
     //here we scale the velocity by the cycle time
-    cart_velo *= (float)cycle_time_ms;
+    cart_velo *= (float) cycle_time_ms;
 
     //store current pos as last pos in a static
     last_pos_x = current_pos_x;
@@ -123,18 +126,18 @@ void plcsl_clock_pulse(clock_pulse_t *c, int n, bool r) {
  * @param r
  * @param clk
  */
-void plcsl_clock_div(clock_div_t *c, bool r, bool clk){
+void plcsl_clock_div(clock_div_t *c, bool r, bool clk) {
 
-    if(r){
-        c->private.cnt=0;
-        c->q0=0;
-        c->q1=0;
-        c->q2=0;
-        c->q4=0;
-        c->q5=0;
-        c->q6=0;
-        c->q7=0;
-    } else if (clk){
+    if (r) {
+        c->private.cnt = 0;
+        c->q0 = 0;
+        c->q1 = 0;
+        c->q2 = 0;
+        c->q4 = 0;
+        c->q5 = 0;
+        c->q6 = 0;
+        c->q7 = 0;
+    } else if (clk) {
         c->private.cnt++;
         c->q0 = BIT_CHECK(c->private.cnt, 0);
         c->q1 = BIT_CHECK(c->private.cnt, 1);
@@ -162,7 +165,7 @@ void plcsl_clock_div(clock_div_t *c, bool r, bool clk){
 void plcsl_ctu(ctu_t *c, bool cu, bool r) {
     if (r) {
         c->cv = 0;
-    } else if ((cu && !c->private.prev_cu) && (c->cv < c->pv)){
+    } else if ((cu && !c->private.prev_cu) && (c->cv < c->pv)) {
         c->cv++;
     }
     c->q = (c->cv >= c->pv);
@@ -196,13 +199,13 @@ void plcsl_ctd(ctd_t *c, bool cd, bool ld) {
  *
  * in ctud_t struct bool qu, qd (output), uint32_t pv (pre-load value) uint32_t cv (counter value)
  */
-void plcsl_ctud(ctud_t *c, bool cu, bool cd, bool r, bool ld){
+void plcsl_ctud(ctud_t *c, bool cu, bool cd, bool r, bool ld) {
 
-    if (r){
-        c->cv=0;
+    if (r) {
+        c->cv = 0;
     } else if (ld) {
         c->cv = c->pv;
-    } else{
+    } else {
 
         if (!((cu && c->private.prev_cu) && (cd && c->private.prev_cd))) {
 
@@ -252,29 +255,29 @@ state   1   +----+   |        +---+   +----+   |
 //@formatter:on
 
 void plcsl_ton(ton_t *t, bool in) {
-    if (t->private.state==0 && !t->private.prev_in && in) { //rising edge
+    if (t->private.state == 0 && !t->private.prev_in && in) { //rising edge
         //start timer
         t->private.state = 1;
         t->q = false;
         t->private.start_count = plc_ms_counter;
     } else {
         //state is 1 or 2
-        if (!in){
-            t->et=0;
-            t->q=false;
-            t->private.state=0;
-        } else if (t->private.state==1){
-            if (t->private.start_count + t->pt <= plc_ms_counter){
-                t->private.state=2;
-                t->q=true;
-                t->et=t->pt;
-            }else{
+        if (!in) {
+            t->et = 0;
+            t->q = false;
+            t->private.state = 0;
+        } else if (t->private.state == 1) {
+            if (t->private.start_count + t->pt <= plc_ms_counter) {
+                t->private.state = 2;
+                t->q = true;
+                t->et = t->pt;
+            } else {
                 t->et = plc_ms_counter - t->private.start_count;
             }
         }
     }
 
-  t->private.prev_in = in;
+    t->private.prev_in = in;
 }
 
 
@@ -311,29 +314,29 @@ state   1              +----+   |   +---+        +----+
 
 void plcsl_tof(tof_t *t, bool in) {
 
-    if (t->private.state==0 && t->private.prev_in && !in) { //falling edge
+    if (t->private.state == 0 && t->private.prev_in && !in) { //falling edge
         //start timer
         t->private.state = 1;
         t->private.start_count = plc_ms_counter;
-    }else {
-    //state is 1 or 2
-    if (in) {
-        t->et = 0;
-        t->private.state = 0;
-    }else if (t->private.state==1) {
+    } else {
+        //state is 1 or 2
+        if (in) {
+            t->et = 0;
+            t->private.state = 0;
+        } else if (t->private.state == 1) {
 
-        if (t->private.start_count + t->pt <= plc_ms_counter) {
+            if (t->private.start_count + t->pt <= plc_ms_counter) {
 
-            t->private.state = 2;
-            t->et = t->pt;
-        } else {
-            t->et = plc_ms_counter = t->private.start_count;
+                t->private.state = 2;
+                t->et = t->pt;
+            } else {
+                t->et = plc_ms_counter = t->private.start_count;
+            }
         }
     }
-    }
-    t->q = in || (t->private.state==1);
+    t->q = in || (t->private.state == 1);
 
-    t->private.prev_in=in;
+    t->private.prev_in = in;
 }
 
 
@@ -367,24 +370,24 @@ state   1   +----+   |     +----|  +----+   |
 
 void plcsl_tp(tp_t *t, bool in) {
 
-    if (t->private.state==0 && !t->private.prev_in && in){ //rising edge
+    if (t->private.state == 0 && !t->private.prev_in && in) { //rising edge
 //start timer
-        t->private.state=1;
-        t->q=true;
-        t->private.start_count=plc_ms_counter;
-    } else if (t->private.state==1){
+        t->private.state = 1;
+        t->q = true;
+        t->private.start_count = plc_ms_counter;
+    } else if (t->private.state == 1) {
 
-        if (t->private.start_count + (uint64_t )t->pt <= plc_ms_counter){
-            t->private.state=2;
-            t->q=false;
-            t->et=t->pt;
-        }else{
-            t->et=plc_ms_counter - t->private.start_count;
+        if (t->private.start_count + (uint64_t) t->pt <= plc_ms_counter) {
+            t->private.state = 2;
+            t->q = false;
+            t->et = t->pt;
+        } else {
+            t->et = plc_ms_counter - t->private.start_count;
         }
     }
-    if (t->private.state==2 && !in){
-        t->et=0;
-        t->private.state=0;
+    if (t->private.state == 2 && !in) {
+        t->et = 0;
+        t->private.state = 0;
     }
 
     t->private.prev_in = in;
@@ -411,7 +414,7 @@ void plcsl_r_trig(r_trig_t *r, bool clk) {
  */
 void plcsl_f_trig(f_trig_t *f, bool clk) {
     f->q = !clk && !f->private.m;
-     f->private.m = !clk;
+    f->private.m = !clk;
 }
 
 /* SIGNAL PROCESSING - INTEGRATE, DIFF, PID */
@@ -508,7 +511,7 @@ Q1------|     |    |   |
 */
 //@formatter:on
 
-void plcsl_rs (rs_t rs, bool s, bool r) {
+void plcsl_rs(rs_t rs, bool s, bool r) {
     rs.q = (!r) && (s || rs.q);
 }
 
@@ -527,9 +530,9 @@ void plcsl_rs (rs_t rs, bool s, bool r) {
  * The output win will be high when in is between low and high.
  *
  */
-void plcsl_hysteresis(hysteresis_t *h, double in){
+void plcsl_hysteresis(hysteresis_t *h, double in) {
 
-    if (h->on>=h->off) {
+    if (h->on >= h->off) {
         if (in < h->off) {
             h->q = false;
             h->win = false;
@@ -539,7 +542,7 @@ void plcsl_hysteresis(hysteresis_t *h, double in){
         } else {
             h->win = true;
         }
-    }else {
+    } else {
         if (in > h->off) {
             h->q = false;
             h->win = false;
