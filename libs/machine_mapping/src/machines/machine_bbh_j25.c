@@ -43,7 +43,7 @@ MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(         ec_custom_fmmu_sm_bbh_scu_1_ec,     
 MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,                             EC_DC_NONE,         EC_DC_NONE,                     EC_DC_0);
 MAP_SLAVE_DC_CYCLE(                         0,                                      4,                  4,                              4) ;
 MAP_SLAVE_EXEC_FUNCTIONS(                   NULL,                                   NULL,               ec_slave_exec_el6021,          NULL);
-MAP_SLAVE_OPTIONAL(                         false,                                  false,              false,                          false);
+MAP_SLAVE_OPTIONAL(                         false,                                  false,              true,                          false);
 
 
 
