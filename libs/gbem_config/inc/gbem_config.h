@@ -96,7 +96,7 @@
 /*** *** ETHERCAT DEFINES *** ***/
 
 /** This defines the global cycle shift */
-#define ECM_CYCLE_SHIFT                                 0U
+//#define ECM_CYCLE_SHIFT                                 0U
 
 /** ms to ns conversions for cycletime */
 #define ECM_CYCLE_TIME                                  (MAP_CYCLE_TIME * 1000000U)
