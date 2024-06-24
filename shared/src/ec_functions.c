@@ -248,7 +248,7 @@ static int custom_slave_config(uint16 slave) {
     UM_INFO(GBEM_UM_EN, "GBEM: Running custom_slave_config for slave [%u] (PREOP->SAFEOP hook)", slave);
 
 
-    if (*map_slave_custom_fmmu_sm_function_ptr[slave - 1] != NULL) {
+    if (map_slave_custom_fmmu_sm_function_ptr[slave - 1] != NULL) {
         if ((*map_slave_custom_fmmu_sm_function_ptr[slave - 1])(slave) == E_SUCCESS) {
             UM_INFO(GBEM_UM_EN, "GBEM: Custom FMMU/SM mapping succeeded for slave [%u]", slave);
         } else {
@@ -258,7 +258,7 @@ static int custom_slave_config(uint16 slave) {
 
     //if the function pointer for the current slave is not null call it
     //    printf("slave for fp %u", slave);
-    if (*map_slave_pdo_map_function_ptr[slave - 1] != NULL) {
+    if (map_slave_pdo_map_function_ptr[slave - 1] != NULL) {
         if ((*map_slave_pdo_map_function_ptr[slave - 1])(slave) == E_SUCCESS) {
             UM_INFO(GBEM_UM_EN, "GBEM: PDO mapping succeeded for slave [%u]", slave);
         } else {
@@ -267,7 +267,7 @@ static int custom_slave_config(uint16 slave) {
         }
     }
 
-    if (*map_slave_standard_sdo_function_ptr[slave - 1] != NULL) {
+    if (map_slave_standard_sdo_function_ptr[slave - 1] != NULL) {
         if ((*map_slave_standard_sdo_function_ptr[slave - 1])(slave) == E_SUCCESS) {
             UM_INFO(GBEM_UM_EN, "GBEM: Applying standard SDOs succeeded for slave [%u]", slave);
         } else {
@@ -299,15 +299,16 @@ static int custom_slave_config(uint16 slave) {
     /* apply DC config */
 
     if (map_dc_type[slave - 1] == EC_DC_0) {
-        //        ec_dcsync0(slave, TRUE, (uint32_t)map_dc_cycle[slave -1] * 1000000, ECM_CYCLE_SHIFT);
-        ec_dcsync0(slave, TRUE, ECM_CYCLE_TIME, ECM_CYCLE_SHIFT);
+        //        ec_dcsync0(slave, TRUE, (uint32_t)map_dc_cycle[slave -1] * 1000000, gbem_ctx.ecm_cycle_shift);
+        ec_dcsync0(slave, TRUE, gbem_ctx.map_cycle_time * 1000000, gbem_ctx.ecm_cycle_shift);
         UM_INFO(GBEM_UM_EN, "GBEM: Applying DC 0 in PO->SO hook for slave [%d]", slave);
         applied_dc = true;
     }
     if (map_dc_type[slave - 1] == EC_DC_01) {
-        ec_dcsync01(slave, TRUE, ECM_CYCLE_TIME, ECM_CYCLE_TIME, ECM_CYCLE_SHIFT);
+        ec_dcsync01(slave, TRUE, gbem_ctx.map_cycle_time * 1000000, gbem_ctx.map_cycle_time * 1000000,
+                    gbem_ctx.ecm_cycle_shift);
 
-        //        ec_dcsync01(slave, TRUE, (uint32_t)map_dc_cycle[slave -1] * 1000000,(uint32_t)map_dc_cycle[slave -1] * 1000000, ECM_CYCLE_SHIFT);
+        //        ec_dcsync01(slave, TRUE, (uint32_t)map_dc_cycle[slave -1] * 1000000,(uint32_t)map_dc_cycle[slave -1] * 1000000, gbem_ctx.ecm_cycle_shift);
         UM_INFO(GBEM_UM_EN, "GBEM: Applying DC 01 in PO->SO hook for slave [%d]", slave);
         applied_dc = true;
     }
@@ -973,7 +974,7 @@ void ECBoot(void *argument) {
 
         //This calls a function that can be defined for each drive to print out useful config information
         for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-            if (*map_drive_print_params_function_ptr[i] != NULL) {
+            if (map_drive_print_params_function_ptr[i] != NULL) {
                 map_drive_print_params_function_ptr[i](i);
             } else {
                 LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
@@ -1067,6 +1068,10 @@ gberror_t ec_slaves_match(void) {
         }
 
         if (strcmp(ec_slave[i + 1].name, ecm_slave_map[i].name) != 0) {
+
+            UM_ERROR(GBEM_GEN_LOG_EN, "GBEM: Slave name mismatch for slave [%u] (expected [%s] got [%s])", i,
+                     ecm_slave_map[i].name, ec_slave[i + 1].name);
+
             return E_SLAVE_NAME_MATCH_FAILURE;
         }
 #if ECM_CHECK_EEP_MAN == 1
@@ -1074,6 +1079,10 @@ gberror_t ec_slaves_match(void) {
             LL_WARN(GBEM_GEN_LOG_EN, "GBEM: ECM_CHECK_EEP_MAN is defined but slave [%u] has a 0 manufacturer");
         }
         if (ec_slave[i + 1].eep_man != ecm_slave_map[i].eep_man) {
+
+            UM_ERROR(GBEM_GEN_LOG_EN, "GBEM: Slave manufacturer mismatch for slave [%u] (expected [%u] got [%u])", i,
+                     ecm_slave_map[i].eep_man, ec_slave[i+1].eep_man);
+
             return E_SLAVE_EEP_MAN_MATCH_FAILURE;
         }
 #endif
@@ -1084,6 +1093,10 @@ gberror_t ec_slaves_match(void) {
         }
 
         if (ec_slave[i + 1].eep_id != ecm_slave_map[i].eep_id) {
+
+            UM_ERROR(GBEM_GEN_LOG_EN, "GBEM: Slave id mismatch for slave [%u] (expected [%u] got [%u])", i,
+                     ecm_slave_map[i].eep_id, ec_slave[i+1].eep_id);
+
             return E_SLAVE_EEP_ID_MATCH_FAILURE;
         }
 #endif
@@ -1092,6 +1105,8 @@ gberror_t ec_slaves_match(void) {
             LL_WARN(GBEM_GEN_LOG_EN, "GBEM: ECM_CHECK_EEP_REV is defined but slave [%u] has a 0 revision id");
         }
         if (ec_slave[i + 1].eep_rev != ecm_slave_map[i].eep_rev) {
+            UM_ERROR(GBEM_GEN_LOG_EN, "GBEM: Slave revision mismatch for slave [%u] (expected [%u] got [%u])", i,
+                     ecm_slave_map[i].eep_rev, ec_slave[i+1].eep_rev);
             return E_SLAVE_EEP_REV_MATCH_FAILURE;
         }
 #endif

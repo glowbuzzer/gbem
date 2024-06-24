@@ -36,6 +36,7 @@
 #include "status_control_word_bit_definitions.h"
 #include "linux_shm.h"
 #include "print_status.h"
+#include "gbem_ctx.h"
 
 bool homing_failed = false;
 extern char proc_name[100];
@@ -181,7 +182,7 @@ void ec_rxtx(void *argument) {
     char *proc __attribute__((unused)) = (char *) argument;
     struct timespec ts;
     struct timespec
-    __attribute__((unused)) ts_wall;
+            __attribute__((unused)) ts_wall;
     struct timespec tleft;
     int ht;
     int64 cycletime;
@@ -277,7 +278,7 @@ void ec_rxtx(void *argument) {
         ts.tv_nsec -= NSEC_PER_SEC;
     }
 
-    cycletime = ECM_CYCLE_TIME; /* cycletime in ns */
+    cycletime = gbem_ctx.map_cycle_time * 1000000; /* cycletime in ns */
     toff = 0;
 
     bool __attribute__((unused)) print_i_am_alive_message = false;
@@ -293,7 +294,7 @@ void ec_rxtx(void *argument) {
         bool gbem_i_am_alive_flag = false;
 
         //RT-sensitive
-        for (int i = 0; i < MAP_CYCLE_TIME; i++) {
+        for (int i = 0; i < gbem_ctx.map_cycle_time; i++) {
             ms_tick++;
 
             if ((ms_tick) % ECRXTX_REMINDER_MESSAGE_INTERVAL_MS == 0) {
@@ -400,8 +401,8 @@ void ec_rxtx(void *argument) {
 
         if (ns_rc != 0) {
             UM_FATAL(
-                "GBEM: The nanosleep command suffered a nasty error. The system error message was: %s (%d). This error is irrecoverable. GBEM will exit",
-                strerror(errno), ns_rc);
+                    "GBEM: The nanosleep command suffered a nasty error. The system error message was: %s (%d). This error is irrecoverable. GBEM will exit",
+                    strerror(errno), ns_rc);
         }
 
         /* use this for a slave at start of chain that has a 32 bit dc time register */
@@ -473,7 +474,7 @@ void ec_rxtx(void *argument) {
                 //in homing
                 for (int i = 0; i < MAP_NUM_DRIVES; i++) {
                     if (map_drive_run_homing[i]) {
-                        if (*map_drive_homing_exec_function_ptr[i] != NULL) {
+                        if (map_drive_homing_exec_function_ptr[i] != NULL) {
                             map_drive_get_stat_wrd_function_ptr[i](i);
                         }
                     }
@@ -535,12 +536,13 @@ void ec_rxtx(void *argument) {
                             /** Here we warn if the exec time (state machine gubbins plus plc jiggerypokery) is more than ur cycle time */
 
                             if ((uint32_t) exec_time_usec >
-                                (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_ERROR_PERCENTAGE / 100)) {
+                                (uint32_t) (gbem_ctx.map_cycle_time * 1000 * ECRXTX_EXEC_TIME_ERROR_PERCENTAGE / 100)) {
                                 ec_rxtx_event[CYCLIC_EVENT_OVERRUN].active = true;
                                 UM_ERROR(GBEM_UM_EN, "GBEM: Execution time [%u] [%llu] (error)",
                                          (uint32_t) exec_time_usec, bus_cycle_tick);
                             } else if ((uint32_t) exec_time_usec >
-                                       (uint32_t) (MAP_CYCLE_TIME * 1000 * ECRXTX_EXEC_TIME_WARNING_PERCENTAGE / 100)) {
+                                       (uint32_t) (gbem_ctx.map_cycle_time * 1000 *
+                                                   ECRXTX_EXEC_TIME_WARNING_PERCENTAGE / 100)) {
                                 ec_rxtx_event[CYCLIC_EVENT_TIMEWARN].active = true;
                                 UM_WARN(GBEM_UM_EN, "GBEM: Execution time [%u] [%llu] (warning)",
                                         (uint32_t) exec_time_usec, bus_cycle_tick);
@@ -575,7 +577,7 @@ void ec_rxtx(void *argument) {
         } else {
             //            UM_INFO(GBEM_UM_EN, "GBEM: No mode set for EC_RXTX. Waiting for mode to be set");
 
-            osal_usleep(MAP_CYCLE_TIME * 1000);
+            osal_usleep(gbem_ctx.map_cycle_time * 1000);
         }
     }
 }

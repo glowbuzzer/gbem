@@ -588,7 +588,7 @@ void si_sdo(int cnt) {
 static int netscan_slave_config(uint16 slave) {
     UM_INFO(GBEM_UM_EN, "GBEM: In PO2SO hook for slave [%u]", slave);
 
-    if (*map_slave_pdo_map_function_ptr[slave - 1] != NULL) {
+    if (map_slave_pdo_map_function_ptr[slave - 1] != NULL) {
         if ((*map_slave_pdo_map_function_ptr[slave - 1])(slave) == E_SUCCESS) {
             UM_INFO(GBEM_UM_EN, "GBEM: PDO mapping by netscan succeeded for slave [%u]", slave);
         } else {
@@ -597,7 +597,7 @@ static int netscan_slave_config(uint16 slave) {
         }
     }
 
-    if (*map_slave_custom_fmmu_sm_function_ptr[slave - 1] != NULL) {
+    if (map_slave_custom_fmmu_sm_function_ptr[slave - 1] != NULL) {
         if ((*map_slave_custom_fmmu_sm_function_ptr[slave - 1])(slave) == E_SUCCESS) {
             UM_INFO(GBEM_UM_EN, "GBEM: Custom FMMU/SM mapping by netscan succeeded for slave [%u]", slave);
         } else {
@@ -626,8 +626,7 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
         UM_INFO(GBEM_UM_EN, "GBEM: We are going to apply the configured PDO mapping to all slaves");
     } else {
         UM_INFO(GBEM_UM_EN,
-                "GBEM: We are NOT going to apply any PDO mapping to the slaves. Slaves will be scanned in their un-configured state")
-        ;
+                "GBEM: We are NOT going to apply any PDO mapping to the slaves. Slaves will be scanned in their un-configured state");
     }
 
     UM_INFO(GBEM_UM_EN, "GBEM: Starting process to disable optional slaves");
@@ -722,10 +721,10 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
             printf("*** Starting network scanning output ***");
             for (cnt = 1; cnt <= ec_slavecount; cnt++) {
                 printf(
-                    "\nSlave: %d\n Name: %s\n Output size: %dbits\n Input size: %dbits\n State: %d\n Delay: %d[ns]\n Has DC: %d\n",
-                    cnt, ec_slave[cnt].name, ec_slave[cnt].Obits,
-                    ec_slave[cnt].Ibits,
-                    ec_slave[cnt].state, ec_slave[cnt].pdelay, ec_slave[cnt].hasdc);
+                        "\nSlave: %d\n Name: %s\n Output size: %dbits\n Input size: %dbits\n State: %d\n Delay: %d[ns]\n Has DC: %d\n",
+                        cnt, ec_slave[cnt].name, ec_slave[cnt].Obits,
+                        ec_slave[cnt].Ibits,
+                        ec_slave[cnt].state, ec_slave[cnt].pdelay, ec_slave[cnt].hasdc);
                 if (ec_slave[cnt].hasdc)
                     printf(" DCParentport: %d\n", ec_slave[cnt].parentport);
                 printf(" Activeports: %d.%d.%d.%d\n", (ec_slave[cnt].activeports & 0x01) > 0,
