@@ -332,12 +332,12 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
     //set bus cycle time
     //Communication cycle period	0x1006:0	DINT	32			100		readwrite
 //    if (!ec_sdo_write_int32(slave, AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_INDEX,
-//                            AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_SUB_INDEX, MAP_CYCLE_TIME * 100, true)) {
+//                            AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_SUB_INDEX, gbem_ctx.map_cycle_time * 100, true)) {
 //        return E_SDO_WRITE_FAILURE;
 //    }
 
 
-//    switch (MAP_CYCLE_TIME) {
+//    switch (gbem_ctx.map_cycle_time) {
 //        case 1:
 //            if (!ec_sdo_write_uint8(slave, AW_J_SERIES_FIR_ORDER_SDO_INDEX, AW_J_SERIES_FIR_ORDER_SDO_SUB_INDEX, 3,
 //                                    true)) {
@@ -599,6 +599,51 @@ gberror_t ec_set_settorqoffset_wrd_aw_j_series(const uint16_t drive, const int32
 
 #define AW_J_SERIES_USE_SHORT_ERROR_REPORT 1
 
+//uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive, bool *error) {
+//    bool short_report = false;
+//    *error = true;
+//
+//#if AW_J_SERIES_USE_SHORT_ERROR_REPORT == 1
+//    short_report = true;
+//#endif
+//
+//    static uint8_t error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH];
+//    memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
+//    uint16_t drive_error_code = 0;
+//
+//    char no_error_prefix[] = "AW-J-Series: No error on drive. Detailed error report";
+//
+//
+//    drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive], AW_J_SERIES_ERROR_CODE_PDO_INDEX);
+//
+//    if (drive_error_code == 0) {
+//        snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
+//                 "%s [%s]", no_error_prefix,
+//                 ec_get_detailled_error_report_pdo_aw_j_series(drive, short_report));
+//        *error = false;
+//        return error_code_string;
+//    }
+//
+//    char error_code_first[] = "AW-J-Series error";
+//    char error_code_second[] = "& Error report";
+//
+//    for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_STRINGS; i++) {
+//        if (aw_j_series_error[i].error_id == drive_error_code) {
+//            snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
+//                     "%s [%s] %s [%s]", error_code_first, aw_j_series_error[i].text_string, error_code_second,
+//                     ec_get_detailled_error_report_pdo_aw_j_series(drive, short_report));
+//
+//            error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH - 1] = '\0';
+//            return error_code_string;
+//        }
+//    }
+//
+//    snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
+//             "AW-J-Series: Error code did not match [0x%04x]. Detailed error report [%s]", drive_error_code,
+//             ec_get_detailled_error_report_pdo_aw_j_series(drive, short_report));
+//    return error_code_string;
+//}
+
 uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive, bool *error) {
     bool short_report = false;
     *error = true;
@@ -608,11 +653,10 @@ uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive, bool *error) 
 #endif
 
     static uint8_t error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH];
-    memset(&error_code_string[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
+    memset(error_code_string, 0, MAX_DRIVE_ERROR_MSG_LENGTH);
+
     uint16_t drive_error_code = 0;
-
     char no_error_prefix[] = "AW-J-Series: No error on drive. Detailed error report";
-
 
     drive_error_code = ec_pdo_get_input_uint16(map_drive_to_slave[drive], AW_J_SERIES_ERROR_CODE_PDO_INDEX);
 
@@ -632,8 +676,6 @@ uint8_t *ec_get_error_string_pdo_aw_j_series(const uint16_t drive, bool *error) 
             snprintf((char *) error_code_string, MAX_DRIVE_ERROR_MSG_LENGTH,
                      "%s [%s] %s [%s]", error_code_first, aw_j_series_error[i].text_string, error_code_second,
                      ec_get_detailled_error_report_pdo_aw_j_series(drive, short_report));
-
-            error_code_string[MAX_DRIVE_ERROR_MSG_LENGTH - 1] = '\0';
             return error_code_string;
         }
     }
@@ -697,27 +739,57 @@ uint8_t *ec_get_error_string_sdo_aw_j_series(const uint16_t drive, bool *error) 
 }
 
 
+//uint8_t *ec_get_detailled_error_report_pdo_aw_j_series(const uint16_t drive_number, bool short_report) {
+//    int os = 8;
+//    static uint8_t octet_string[8];
+//    static uint8_t failed_error_code_lookup[9] = "NoMatch";
+//
+//    for (int i = 0; i < os; i++) {
+//        octet_string[i] = ec_pdo_get_input_uint8(map_drive_to_slave[drive_number],
+//                                                 AW_J_SERIES_ERROR_DESCRIPTION_PDO_INDEX + i);
+//    }
+//    if (short_report) {
+//        for (int i = 0; i < 8; ++i) {
+//            if (octet_string[i] < 32 || octet_string[i] > 126) {
+//                // If the element is not a valid ASCII character
+//                return failed_error_code_lookup;
+//            }
+//        }
+//
+//        return octet_string;
+//    }
+//    for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS; i++) {
+//        if (strcmp(aw_j_series_error_report[i].error_code, (char *) octet_string) != 0) {
+//            return (uint8_t *) aw_j_series_error_report[i].text_string;
+//        }
+//    }
+//
+//    return failed_error_code_lookup;
+//}
+
+
 uint8_t *ec_get_detailled_error_report_pdo_aw_j_series(const uint16_t drive_number, bool short_report) {
     int os = 8;
-    static uint8_t octet_string[8];
+    static uint8_t octet_string[9]; // Increased to 9 for null termination
     static uint8_t failed_error_code_lookup[9] = "NoMatch";
 
     for (int i = 0; i < os; i++) {
         octet_string[i] = ec_pdo_get_input_uint8(map_drive_to_slave[drive_number],
                                                  AW_J_SERIES_ERROR_DESCRIPTION_PDO_INDEX + i);
     }
+    octet_string[os] = '\0'; // Null terminate
+
     if (short_report) {
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < os; ++i) {
             if (octet_string[i] < 32 || octet_string[i] > 126) {
-                // If the element is not a valid ASCII character
                 return failed_error_code_lookup;
             }
         }
-
         return octet_string;
     }
+
     for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS; i++) {
-        if (strcmp(aw_j_series_error_report[i].error_code, (char *) octet_string) != 0) {
+        if (strcmp(aw_j_series_error_report[i].error_code, (char *) octet_string) == 0) {
             return (uint8_t *) aw_j_series_error_report[i].text_string;
         }
     }
@@ -745,7 +817,7 @@ uint8_t *ec_get_detailled_error_report_sdo_aw_j_series(const uint16_t drive_numb
     }
 
     for (int i = 0; i < NUM_OF_AW_J_SERIES_ERROR_REPORT_STRINGS; i++) {
-        if (strcmp(aw_j_series_error_report[i].error_code, (char *) octet_string) != 0) {
+        if (strcmp(aw_j_series_error_report[i].error_code, (char *) octet_string) == 0) {
             return (uint8_t *) aw_j_series_error_report[i].text_string;
         }
     }

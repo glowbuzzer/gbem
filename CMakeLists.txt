@@ -165,7 +165,15 @@ FetchContent_MakeAvailable(gbc_config)
 
 
 # Combine MAP_MACHINE_VALUE and MAP_SUB_MACHINE_VALUE with an underscore
-string(CONCAT MACHINE_SUB_MACHINE_VALUE "${MAP_MACHINE_VALUE}" "_" "${MAP_SUB_MACHINE_VALUE}")
+#string(CONCAT MACHINE_SUB_MACHINE_VALUE "${MAP_MACHINE_VALUE}" "_" "${MAP_SUB_MACHINE_VALUE}")
+
+if (MAP_SUB_MACHINE_VALUE)
+    # Concatenate with underscore if MAP_SUB_MACHINE_VALUE is not empty
+    string(CONCAT MACHINE_SUB_MACHINE_VALUE "${MAP_MACHINE_VALUE}" "_" "${MAP_SUB_MACHINE_VALUE}")
+else ()
+    # Only use MAP_MACHINE_VALUE if MAP_SUB_MACHINE_VALUE is empty
+    set(MACHINE_SUB_MACHINE_VALUE "${MAP_MACHINE_VALUE}")
+endif ()
 
 
 # Define where the config file will be copied to

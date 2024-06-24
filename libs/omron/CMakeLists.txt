@@ -6,4 +6,4 @@ file(GLOB SOURCES "src/*.c")
 
 add_library(omron STATIC ${SOURCES})
 target_link_libraries(omron common-misc Logging machine_mapping EtherCAT)
-target_include_directories(omron PUBLIC inc)
+target_include_directories(omron PUBLIC inc ${CMAKE_SOURCE_DIR}/inc "${CMAKE_SOURCE_DIR}/shared/inc")

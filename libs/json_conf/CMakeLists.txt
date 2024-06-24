@@ -9,7 +9,7 @@ find_package(OpenSSL REQUIRED)
 
 #add_library(json_conf STATIC ${SOURCES})
 
-add_library(json_conf STATIC src/json_conf_parse_limits.c src/json_conf_calculate_sha256.c src/json_conf_parse_sdo.c src/json_conf_parse.c src/json_conf_check_sha256.c src/json_conf_ethercat_helpers.c src/json_conf_number_checks.c src/json_conf_print.c src/json_conf_parse_optional_slaves.c src/json_conf_parse_gbem.c src/json_conf_parse_optional_slaves.c src/json_conf_helpers.c)
+add_library(json_conf STATIC src/json_conf_parse_limits.c src/json_conf_calculate_sha256.c src/json_conf_parse_sdo.c src/json_conf_parse.c src/json_conf_check_sha256.c src/json_conf_ethercat_helpers.c src/json_conf_number_checks.c src/json_conf_print.c src/json_conf_parse_optional_slaves.c src/json_conf_parse_gbem.c src/json_conf_parse_optional_slaves.c src/json_conf_helpers.c src/json_conf_parse_eep_name.c src/json_conf_parse_cycle_shift.c)
 
 
 target_link_libraries(json_conf jansson EtherCAT machine_mapping OpenSSL::SSL OpenSSL::Crypto)
