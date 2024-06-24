@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.7.0](https://github.com/glowbuzzer/gbem/compare/v1.6.0...v1.7.0) (2024-06-24)
+
+
+### Features
+
+* **#107:** Make cmake builds to use machine.txt file indicating the machine to be built ([1b178e5](https://github.com/glowbuzzer/gbem/commit/1b178e575f2e4a0f6768dfc03151e9f56dfe575f))
+* **#118:** Add "proper" modbus handling for EL6021 ([6605756](https://github.com/glowbuzzer/gbem/commit/6605756a03eb24d13820c7e4ad556c346f9099c7))
+* **#119:** Read config from json file ([975cd8f](https://github.com/glowbuzzer/gbem/commit/975cd8fc0e8c23aafb01ff302b079f7e5832f70d))
+* **#120:** Add get version json msg function ([9f15dfb](https://github.com/glowbuzzer/gbem/commit/9f15dfb244ed87e06437ce49605d22ba6addfddc))
+* **#121:** Add json msg handling ([44caf51](https://github.com/glowbuzzer/gbem/commit/44caf51cdd8bb2df9eaf3346f145604b0e6d75ae))
+
 ## [1.6.0](https://github.com/glowbuzzer/gbem/compare/v1.5.0...v1.6.0) (2024-05-14)
 
 
