@@ -34,6 +34,7 @@
 #include "shared_mem_types.h"
 #include "print_status.h"
 #include "adhoc_message_processing.h"
+#include "gbem_ctx.h"
 
 //todo review need for semaphores in control.c and ec_rxtx.c
 #define DPM_IN_PROTECT_START
@@ -89,8 +90,9 @@ cyclic_event_t control_event[NUM_CONTROL_EVENTS] = {
 
 /**global variable to check how long drives take to response to state change request */
 uint32_t ctrl_state_change_cycle_count = 1;
-uint32_t ctrl_state_change_timeout = (CTRL_DRIVE_CHANGE_STATE_TIMEOUT * MAP_CYCLE_TIME);
+uint32_t ctrl_state_change_timeout = 0;
 
+//uint32_t ctrl_state_change_timeout = (CTRL_DRIVE_CHANGE_STATE_TIMEOUT * gbem_ctx.map_cycle_time);
 
 gberror_t ctrl_read_drive_logs(void);
 
@@ -954,7 +956,7 @@ bool cia_is_fault_condition(struct event *event) {
             }
         }
     }
-    if ((ctrl_state_change_cycle_count * MAP_CYCLE_TIME) > ctrl_state_change_timeout) {
+    if ((ctrl_state_change_cycle_count * gbem_ctx.map_cycle_time) > ctrl_state_change_timeout) {
         LL_TRACE(GBEM_SM_LOG_EN, "sm: Fault > one or more drives took too long responding to a state change request");
         BIT_SET(((event_data_t *) event->data)->fault_cause, FAULT_CAUSE_DRIVE_STATE_CHANGE_TIMEOUT_BIT_NUM);
         control_event[CONTROL_EVENT_DRIVE_STATE_CHANGE_TIMEOUT].active = true;
@@ -1046,9 +1048,10 @@ static bool check_for_drive_state_mismatch(void) {
         if (drive_state != CIA_OPERATION_ENABLED) {
             mismatch_count++;
             if (
-                    mismatch_count * MAP_CYCLE_TIME > ctrl_state_change_timeout) {
-                // ctrl_state_change_cycle_count * MAP_CYCLE_TIME > ctrl_state_change_timeout) {
-                printf("STATE MISMATCH!\n");
+                    mismatch_count * gbem_ctx.map_cycle_time > ctrl_state_change_timeout) {
+                // ctrl_state_change_cycle_count * gbem_ctx.map_cycle_time > ctrl_state_change_timeout) {
+                UM_INFO(GBEM_UM_EN,
+                        "GBEM: SM: Mismatch between drive state and the controlword and the current state & no transitions occurring");
                 state_mismatch = true;
                 mismatch_count = 0;
             }
@@ -1194,7 +1197,7 @@ bool ctrl_check_all_drives_state(cia_state_t state) {
     int j = 0;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
-        if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
+        if (map_drive_get_stat_wrd_function_ptr[i] != NULL) {
             drive_stat_wrd = map_drive_get_stat_wrd_function_ptr[i](i);
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
@@ -1216,7 +1219,7 @@ bool ctrl_check_all_drives_state(cia_state_t state) {
 
 bool ctrl_is_drive_in_state(uint16_t drive, cia_state_t state) {
     uint16_t drive_stat_wrd = 0;
-    if (*map_drive_get_stat_wrd_function_ptr[drive] != NULL) {
+    if (map_drive_get_stat_wrd_function_ptr[drive] != NULL) {
         drive_stat_wrd = map_drive_get_stat_wrd_function_ptr[drive](drive);
     } else {
         LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_get stat_wrd on drive [%u]",
@@ -1232,7 +1235,7 @@ bool ctrl_is_drive_in_state(uint16_t drive, cia_state_t state) {
 bool ctrl_check_any_drives_state(cia_state_t state) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
-        if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
+        if (map_drive_get_stat_wrd_function_ptr[i] != NULL) {
             drive_stat_wrd = map_drive_get_stat_wrd_function_ptr[i](i);
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
@@ -1260,7 +1263,7 @@ void ctrl_change_all_drives_states(uint16_t controlword) {
              cia_command_names[cia_ctrlwrd_to_command(controlword)]);
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         gberror_t grc;
-        if (*map_drive_set_ctrl_wrd_function_ptr[i] != NULL) {
+        if (map_drive_set_ctrl_wrd_function_ptr[i] != NULL) {
             grc = map_drive_set_ctrl_wrd_function_ptr[i](i, controlword);
             ecm_status.drives[i].command = cia_ctrlwrd_to_command(controlword);
 
@@ -1451,7 +1454,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     if (first_run) {
         for (int slave = 1; slave < map_num_slaves + 1; slave++) {
             //            printf("In initial pdo set: slave %u\n", slave);
-            if (*map_slave_initial_pdo_function_ptr[slave - 1] != NULL) {
+            if (map_slave_initial_pdo_function_ptr[slave - 1] != NULL) {
                 if ((*map_slave_initial_pdo_function_ptr[slave - 1])(slave) == E_SUCCESS) {
                     UM_INFO(GBEM_UM_EN, "GBEM: Initial PDO sets succeeded for slave [%u]", slave);
                 } else {
@@ -1463,7 +1466,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
         int8_t moo_disp = 0;
 
         for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-            if (*map_drive_get_moo_sdo_function_ptr[i] != NULL) {
+            if (map_drive_get_moo_sdo_function_ptr[i] != NULL) {
                 moo_disp = (*map_drive_get_moo_sdo_function_ptr[i])(i);
                 //                printf("moo_disp: %d", moo_disp);
                 ecm_status.drives[i].act_moo = moo_disp;
@@ -1513,7 +1516,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 #if  DISABLE_ESTOP_CHECKING == 0
 
     bool estop = true;
-    if (*map_machine_get_safety_state_function_ptr != NULL) {
+    if (map_machine_get_safety_state_function_ptr != NULL) {
         estop = map_machine_get_safety_state_function_ptr(fsoe_master.slave_num);
         ecm_status.safety_state = estop;
         event_data.estop = estop;
@@ -1580,13 +1583,13 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
             error_ack_timer_active = true;
             error_ack_start_cycle = ecm_status.cycle_count;
 
-            if (*map_fsoe_master_set_error_ack_state_function_ptr != NULL) {
+            if (map_fsoe_master_set_error_ack_state_function_ptr != NULL) {
                 if (fsoe_master.found) {
                     map_fsoe_master_set_error_ack_state_function_ptr(true, fsoe_master.slave_num);
                 }
             }
         } else if ((ecm_status.cycle_count - error_ack_start_cycle) > 1000) {
-            if (*map_fsoe_master_set_error_ack_state_function_ptr != NULL) {
+            if (map_fsoe_master_set_error_ack_state_function_ptr != NULL) {
                 if (fsoe_master.found) {
                     map_fsoe_master_set_error_ack_state_function_ptr(false, fsoe_master.slave_num);
                 }
@@ -1604,7 +1607,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
     volatile int8_t moo_disp;
     for (uint16_t i = 0; i < MAP_NUM_DRIVES; i++) {
-        if (*map_drive_get_moo_pdo_function_ptr[i] != NULL) {
+        if (map_drive_get_moo_pdo_function_ptr[i] != NULL) {
             moo_disp = (*map_drive_get_moo_pdo_function_ptr[i])(i);
             //            printf("moo disp pdo: %u (drive %u)\n", moo_disp, i);
             ecm_status.drives[i].act_moo = moo_disp;
@@ -1665,6 +1668,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
     //read current state of state machine
     current_state = (cia_state_t) (intptr_t) (stateM_currentState(m)->data);
 
+
     ecm_status.machine_state = current_state;
     ecm_status.commanded_machine_state = cia_ctrlwrd_to_command(dpm_out->machine_word);
     LL_TRACE(GBEM_SM_LOG_EN, "sm: Current state of state machine - %s", cia_state_names[current_state]);
@@ -1717,7 +1721,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
 
     for (int slave = 1; slave < map_num_slaves + 1; slave++) {
-        if (*map_slave_exec_function_ptr[slave - 1] != NULL) {
+        if (map_slave_exec_function_ptr[slave - 1] != NULL) {
             if ((*map_slave_exec_function_ptr[slave - 1])(slave) == E_SUCCESS) {
                 // UM_INFO(GBEM_UM_EN, "GBEM: XXXXfor slave [%u]", slave);
             } else {
@@ -1740,7 +1744,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
 
     //copy PDO error codes into ecm status
     // for (uint16_t drive = 0; drive < MAP_NUM_DRIVES; drive++) {
-    //     if (*map_drive_get_error_string_pdo_function_ptr[drive] != NULL) {
+    //     if (map_drive_get_error_string_pdo_function_ptr[drive] != NULL) {
     //         uint8_t *error_code_string = map_drive_get_error_string_pdo_function_ptr[drive](drive);
     //         memset(&ecm_status.drives[drive].error_message[0], 0, sizeof(uint8_t) * MAX_DRIVE_ERROR_MSG_LENGTH);
     //         memcpy(&ecm_status.drives[drive].error_message[0], error_code_string,
@@ -1767,7 +1771,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
  */
 static void ctrl_copy_actpos(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-        if (*map_drive_get_actpos_wrd_function_ptr[i] != NULL) {
+        if (map_drive_get_actpos_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_actual_position[i] = map_drive_get_actpos_wrd_function_ptr[i](i);
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
@@ -1783,7 +1787,7 @@ static void ctrl_copy_actpos(void) {
  */
 static void ctrl_copy_actvel(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-        if (*map_drive_get_actvel_wrd_function_ptr[i] != NULL) {
+        if (map_drive_get_actvel_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_actual_velocity[i] = map_drive_get_actvel_wrd_function_ptr[i](i);
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
@@ -1799,7 +1803,7 @@ static void ctrl_copy_actvel(void) {
  */
 static void ctrl_copy_acttorq(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-        if (*map_drive_get_acttorq_wrd_function_ptr[i] != NULL) {
+        if (map_drive_get_acttorq_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_actual_torque[i] = map_drive_get_acttorq_wrd_function_ptr[i](i);
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
@@ -1815,7 +1819,7 @@ static void ctrl_copy_acttorq(void) {
  */
 static void ctrl_copy_control_effort(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-        if (*map_drive_get_control_effort_wrd_function_ptr[i] != NULL) {
+        if (map_drive_get_control_effort_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_actual_control_effort[i] = map_drive_get_control_effort_wrd_function_ptr[i](i);
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
@@ -1858,7 +1862,7 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                 break;
 
             case CIA_MOO_CSP:
-                if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
+                if (map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
                     grc = map_drive_set_setpos_wrd_function_ptr[i](i, dpm_out->joint_set_position[i]);
                     /* This function can be used to log nasty jumps in position*/
                     //            ctrl_check_for_big_pos_jump(i,dpm_out->joint_set_position[i] );
@@ -1870,7 +1874,7 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                              "GBEM: Missing function pointer for map_drive_set_setpos_wrd on drive [%u]", i);
                 }
 
-                if (*map_drive_set_setveloffset_wrd_function_ptr[i] != NULL) {
+                if (map_drive_set_setveloffset_wrd_function_ptr[i] != NULL) {
                     //                    printf("setvel [%d]\n", dpm_out->joint_set_velocity[i]);
                     //                    printf("actvel [%d]\n", dpm_in->joint_actual_velocity[i]);
 
@@ -1884,7 +1888,7 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                      *  LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_set_setvel_wrd on drive [%u]", i);
                      */
                 }
-                if (*map_drive_set_settorqoffset_wrd_function_ptr[i] != NULL) {
+                if (map_drive_set_settorqoffset_wrd_function_ptr[i] != NULL) {
                     grc = map_drive_set_settorqoffset_wrd_function_ptr[i](i, dpm_out->joint_set_torque_offset[i] +
                                                                              dpm_out->joint_set_torque[i]);
                     //                    printf("torq offset [%d] on drive [%d]\n", dpm_out->joint_set_torque_offset[i], i);
@@ -1905,7 +1909,7 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
             case CIA_MOO_CSV:
 
 
-                if (*map_drive_set_setvel_wrd_function_ptr[i] != NULL) {
+                if (map_drive_set_setvel_wrd_function_ptr[i] != NULL) {
                     grc = map_drive_set_setvel_wrd_function_ptr[i](i,
                                                                    dpm_out->joint_set_velocity[i]);
                     if (grc != E_SUCCESS) {
@@ -1922,7 +1926,7 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
             case CIA_MOO_CST:
 
 
-                if (*map_drive_set_settorq_wrd_function_ptr[i] != NULL) {
+                if (map_drive_set_settorq_wrd_function_ptr[i] != NULL) {
                     grc = map_drive_set_settorq_wrd_function_ptr[i](i, dpm_out->joint_set_torque[i]);
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive settorque function error [%s]", gb_strerror(grc));
@@ -1932,7 +1936,7 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                              "GBEM: Missing function pointer for map_drive_set_settorque_wrd on drive [%u]", i);
                 }
 
-                if (*map_drive_set_settorqoffset_wrd_function_ptr[i] != NULL) {
+                if (map_drive_set_settorqoffset_wrd_function_ptr[i] != NULL) {
                     grc = map_drive_set_settorqoffset_wrd_function_ptr[i](i, dpm_out->joint_set_torque_offset[i]);
                 } else {
                     LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
@@ -1940,7 +1944,7 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
                 }
 
                 /* also write position to drive for transition back to CSP*/
-                if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
+                if (map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
                     grc = map_drive_set_setpos_wrd_function_ptr[i](i, dpm_out->joint_set_position[i]);
                     if (grc != E_SUCCESS) {
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive setpos function error [%s]", gb_strerror(grc));
@@ -1966,7 +1970,7 @@ static void ctrl_copy_values_to_drives(uint64_t cycle_count, cia_state_t current
 static void __attribute__((unused)) ctrl_copy_setpos(void) {
     gberror_t grc;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-        if (*map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
+        if (map_drive_set_setpos_wrd_function_ptr[i] != NULL) {
             grc = map_drive_set_setpos_wrd_function_ptr[i](i, dpm_out->joint_set_position[i]);
             /* This function can be used to log nasty jumps in position*/
             //            ctrl_check_for_big_pos_jump(i,dpm_out->joint_set_position[i] );
@@ -1985,7 +1989,7 @@ static void __attribute__((unused)) ctrl_copy_setpos(void) {
  */
 static void ctrl_copy_drive_statuswords(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-        if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
+        if (map_drive_get_stat_wrd_function_ptr[i] != NULL) {
             dpm_in->joint_statusword[i] = map_drive_get_stat_wrd_function_ptr[i](i);
             ecm_status.drives[i].state = cia_statwrd_to_state(dpm_in->joint_statusword[i]);
             LL_TRACE(GBEM_SM_LOG_EN, "sm: Drive: %u, State: %s", i,
@@ -2008,7 +2012,7 @@ void ctrl_copy_drive_controlwords(void) {
 
     gberror_t grc;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-        if (*map_drive_set_ctrl_wrd_function_ptr[i] != NULL) {
+        if (map_drive_set_ctrl_wrd_function_ptr[i] != NULL) {
             grc = map_drive_set_ctrl_wrd_function_ptr[i](i, dpm_out->joint_controlword[i]);
             ecm_status.drives[i].command = cia_ctrlwrd_to_command(dpm_out->joint_controlword[i]);
             if (grc != E_SUCCESS) {
@@ -2185,7 +2189,7 @@ void ctrl_process_iomap_out(const bool zero) {
  */
 void ctrl_set_moo_pdo(void) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-        if (*map_drive_set_moo_pdo_function_ptr[i] != NULL) {
+        if (map_drive_set_moo_pdo_function_ptr[i] != NULL) {
             int8_t moo = 0;
             moo = (dpm_out->joint_controlword[i]) & 0x0F;
             map_drive_moo[i] = moo;
@@ -2318,7 +2322,7 @@ gberror_t update_fsoe_status_slaves(void) {
     bool any_fsoe_slave_is_error = false;
 
     for (int slave = 1; slave < map_num_slaves + 1; slave++) {
-        if (*map_slave_fsoe_get_slave_state_function_ptr[slave - 1] != NULL) {
+        if (map_slave_fsoe_get_slave_state_function_ptr[slave - 1] != NULL) {
             if (map_slave_fsoe_function[slave - 1] == FSOE_SLAVE_FUNCTION_MASTER) {
                 UM_FATAL(
                         "GBEM: FSoE master mapped on slave [%u] and we are trying to read slave slate - the mapping functions for reading FSoE slave state are incorrectly configured",
@@ -2346,7 +2350,7 @@ gberror_t update_fsoe_status_slaves(void) {
         }
 
 
-        if (*map_slave_fsoe_get_slave_con_id_function_ptr[slave - 1] != NULL) {
+        if (map_slave_fsoe_get_slave_con_id_function_ptr[slave - 1] != NULL) {
             uint16_t connection_id = 0;
 
             grc = map_slave_fsoe_get_slave_con_id_function_ptr[slave - 1](slave, &connection_id);
@@ -2364,7 +2368,7 @@ gberror_t update_fsoe_ecm_status_master(void) {
     gberror_t grc = E_SUCCESS;
 
     for (int slave = 1; slave < map_num_slaves + 1; slave++) {
-        if (*map_slave_fsoe_get_master_state_function_ptr[slave - 1] != NULL) {
+        if (map_slave_fsoe_get_master_state_function_ptr[slave - 1] != NULL) {
             if (map_slave_fsoe_function[slave - 1] != FSOE_SLAVE_FUNCTION_MASTER) {
                 UM_FATAL(
                         "GBEM: FSoE master read state function mapped on slave [%u] but the slave is not tagged as the master - the mapping functions for reading FSoE master state are incorrectly configured",
@@ -2427,7 +2431,7 @@ gberror_t ctrl_read_drive_logs(void) {
         start_cycle_count = ecm_status.cycle_count;
         run = true;
         for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-            if (*map_drive_get_log_file_function_ptr[i] != NULL) {
+            if (map_drive_get_log_file_function_ptr[i] != NULL) {
                 grc = map_drive_get_log_file_function_ptr[i](i);
 
                 if (grc != E_SUCCESS) {
@@ -2441,12 +2445,13 @@ gberror_t ctrl_read_drive_logs(void) {
     }
 
 
-    // printf("%llu\n", (ecm_status.cycle_count - start_cycle_count) / (uint64_t) 1000 * (uint64_t) MAP_CYCLE_TIME);
+    // printf("%llu\n", (ecm_status.cycle_count - start_cycle_count) / (uint64_t) 1000 * (uint64_t) gbem_ctx.map_cycle_time);
     // printf("%llu\n",
-    //        (uint64_t) TIME_SECS_AFTER_WHICH_DRIVE_LOGS_CAN_BE_READ_AGAIN / (uint64_t) 1000 * (uint64_t) MAP_CYCLE_TIME);
+    //        (uint64_t) TIME_SECS_AFTER_WHICH_DRIVE_LOGS_CAN_BE_READ_AGAIN / (uint64_t) 1000 * (uint64_t) gbem_ctx.map_cycle_time);
     //after a time period
     if ((ecm_status.cycle_count - start_cycle_count) >
-        (uint64_t) TIME_SECS_AFTER_WHICH_DRIVE_LOGS_CAN_BE_READ_AGAIN * (uint64_t) 1000 * (uint64_t) MAP_CYCLE_TIME) {
+        (uint64_t) TIME_SECS_AFTER_WHICH_DRIVE_LOGS_CAN_BE_READ_AGAIN * (uint64_t) 1000 *
+        (uint64_t) gbem_ctx.map_cycle_time) {
         run = false;
     }
 
