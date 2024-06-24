@@ -67,7 +67,7 @@ gberror_t nvram_step_1(void) {
 
 static gberror_t nvram_check_for_function(const uint16_t slave) {
 
-    if (*map_slave_nvram_sdo_function_ptr[slave - 1] == NULL) {
+    if (map_slave_nvram_sdo_function_ptr[slave - 1] == NULL) {
         return E_NO_FUNCTION_FOUND;
     }
     return E_SUCCESS;
@@ -75,7 +75,7 @@ static gberror_t nvram_check_for_function(const uint16_t slave) {
 
 static gberror_t nvram_step_3(const uint16_t slave) {
     gberror_t grc;
-    if (*map_slave_nvram_sdo_function_ptr[slave - 1] != NULL) {
+    if (map_slave_nvram_sdo_function_ptr[slave - 1] != NULL) {
         grc = (*map_slave_nvram_sdo_function_ptr[slave - 1])(slave);
         if (grc == E_SUCCESS) {
             UM_INFO(GBEM_UM_EN, "GBEM: Applying nvram SDOs succeeded for slave [%u]", slave);

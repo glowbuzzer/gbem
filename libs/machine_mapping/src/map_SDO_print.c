@@ -31,20 +31,20 @@ gberror_t map_print_sdos(void) {
     printf("***                       PDO remapping SDO writes                           ***\n");
     for (uint16_t slave = 1; slave < map_num_slaves + 1; slave++) {
 
-        if (*map_slave_pdo_map_function_ptr[slave - 1] != NULL) {
+        if (map_slave_pdo_map_function_ptr[slave - 1] != NULL) {
             (*map_slave_pdo_map_function_ptr[slave - 1])(slave);
         }
 
     }
     printf("***                           Standard SDO writes                            ***\n");
     for (uint16_t slave = 1; slave < map_num_slaves + 1; slave++) {
-        if (*map_slave_standard_sdo_function_ptr[slave - 1] != NULL) {
+        if (map_slave_standard_sdo_function_ptr[slave - 1] != NULL) {
             (*map_slave_standard_sdo_function_ptr[slave - 1])(slave);
         }
     }
     printf("***                             NVRAM SDO writes                             ***\n");
     for (uint16_t slave = 1; slave < map_num_slaves + 1; slave++) {
-        if (*map_slave_nvram_sdo_function_ptr[slave - 1] != NULL) {
+        if (map_slave_nvram_sdo_function_ptr[slave - 1] != NULL) {
             (*map_slave_nvram_sdo_function_ptr[slave - 1])(slave);
         }
     }

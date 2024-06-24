@@ -26,6 +26,7 @@
 #include "gbem_config.h"
 #include "etg.h"
 #include "map.h"
+#include "gbem_ctx.h"
 
 #define KRED     "\x1b[31m"
 #define KGREEN   "\x1b[32m"
@@ -38,7 +39,7 @@
 static gberror_t check_slave_function_ptrs(const uint16_t num_slaves) {
     //we can't check slaves as all function pointers optional
     for (int i = 0; i < num_slaves; i++) {
-        if (*map_slave_initial_pdo_function_ptr[i] == NULL) {
+        if (map_slave_initial_pdo_function_ptr[i] == NULL) {
 
         }
     }
@@ -66,37 +67,37 @@ static gberror_t check_slave_function_ptrs(const uint16_t num_slaves) {
 
 static gberror_t check_drive_function_ptrs(const uint16_t num_drives) {
     for (int i = 0; i < num_drives; i++) {
-        if (*map_drive_set_ctrl_wrd_function_ptr[i] == NULL) {
+        if (map_drive_set_ctrl_wrd_function_ptr[i] == NULL) {
             UM_ERROR(GBEM_UM_EN, "GBEM: Missing set control word function pointer on drive [%u]", i);
             return E_INVALID_MAP;
         }
-        if (*map_drive_get_stat_wrd_function_ptr[i] == NULL) {
+        if (map_drive_get_stat_wrd_function_ptr[i] == NULL) {
             UM_ERROR(GBEM_UM_EN, "GBEM: Missing get status word function pointer on drive [%u]", i);
             return E_INVALID_MAP;
         }
-        if (*map_drive_get_actpos_wrd_function_ptr[i] == NULL) {
+        if (map_drive_get_actpos_wrd_function_ptr[i] == NULL) {
             UM_ERROR(GBEM_UM_EN, "GBEM: Missing get actpos word function pointer on drive [%u]", i);
             return E_INVALID_MAP;
         }
-        if (*map_drive_set_setpos_wrd_function_ptr[i] == NULL) {
+        if (map_drive_set_setpos_wrd_function_ptr[i] == NULL) {
             UM_ERROR(GBEM_UM_EN, "GBEM: Missing set setpos word function pointer on drive [%u]", i);
             return E_INVALID_MAP;
         }
-        if (*map_drive_get_remote_function_ptr[i] == NULL) {
+        if (map_drive_get_remote_function_ptr[i] == NULL) {
             UM_ERROR(GBEM_UM_EN, "GBEM: Missing get remote word function pointer on drive [%u]", i);
             return E_INVALID_MAP;
         }
-        if (*map_drive_get_moo_pdo_function_ptr[i] == NULL && *map_drive_get_moo_sdo_function_ptr[i] == NULL) {
+        if (map_drive_get_moo_pdo_function_ptr[i] == NULL && *map_drive_get_moo_sdo_function_ptr[i] == NULL) {
             UM_ERROR(GBEM_UM_EN,
                      "GBEM: Neither a get modes of operation with SDO or POD function pointer on drive [%u]", i);
             return E_INVALID_MAP;
         }
-        if (*map_drive_get_error_string_sdo_function_ptr[i] == NULL &&
-            *map_drive_get_error_string_pdo_function_ptr[i] == NULL) {
+        if (map_drive_get_error_string_sdo_function_ptr[i] == NULL &&
+            map_drive_get_error_string_pdo_function_ptr[i] == NULL) {
             UM_ERROR(GBEM_UM_EN, "GBEM: Neither a get error with SDO or POD function pointer on drive [%u]", i);
             return E_INVALID_MAP;
         }
-        if (*map_drive_get_follow_error_function_ptr[i] == NULL) {
+        if (map_drive_get_follow_error_function_ptr[i] == NULL) {
             UM_ERROR(GBEM_UM_EN, "GBEM: Missing get follow error function pointer on drive [%u]", i);
             return E_INVALID_MAP;
         }
@@ -141,11 +142,12 @@ gberror_t config_process_general(void) {
     UM_INFO(GBEM_UM_EN, "GBEM: Machine map in use [%s]", map_machine_type_strings[map_machine_type]);
 
     UM_INFO(GBEM_UM_EN,
-            "GBEM: MAP_CYCLE_TIME [%u ms] (This is the cycle time for the fieldbus cyclic communication and defines the frequency at which GBC is signalled)",
-            MAP_CYCLE_TIME);
+            "GBEM: Cycle time [%u ms] (This is the cycle time for the fieldbus cyclic communication and defines the frequency at which GBC is signalled)",
+            gbem_ctx.map_cycle_time);
 
 
-    if (!(MAP_CYCLE_TIME == 1 || MAP_CYCLE_TIME == 2 || MAP_CYCLE_TIME == 4 || MAP_CYCLE_TIME == 8)) {
+    if (!(gbem_ctx.map_cycle_time == 1 || gbem_ctx.map_cycle_time == 2 || gbem_ctx.map_cycle_time == 4 ||
+          gbem_ctx.map_cycle_time == 8)) {
         UM_WARN(GBEM_UM_EN,
                 "GBEM: Strange cycle time is set. Usually this is 1, 2, 4 or 8 ms. Maybe you know what you are up to...");
     }
