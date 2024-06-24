@@ -44,6 +44,10 @@ typedef struct {
     event_data_t event_data;
     uint32_t gbem_heartbeat;
     ec_sdo_array ar;
+    int32_t ecm_cycle_shift; //ECM_CYCLE_SHIFT
+    int32_t map_cycle_time; //MAP_CYCLE_TIME
+    bool no_limits; //NO_LIMITS (software pos limits)
+    char *gbem_version;
 } gbem_ctx_t;
 
 extern gbem_ctx_t gbem_ctx;
