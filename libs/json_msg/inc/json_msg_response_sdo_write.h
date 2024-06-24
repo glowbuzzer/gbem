@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file           :  json_msg_get_version
+ * @file           :  json_msg_response_sdo_write
  * @brief          :
  ******************************************************************************
  * @attention
@@ -10,13 +10,15 @@
  *
  ******************************************************************************
  */
-#ifndef GBEM_JSON_MSG_GET_VERSION_H
-#define GBEM_JSON_MSG_GET_VERSION_H
+#ifndef GBEM_JSON_MSG_RESPONSE_SDO_WRITE_H
+#define GBEM_JSON_MSG_RESPONSE_SDO_WRITE_H
 
 #include "jansson.h"
-#include "gberror.h"
+#include "json_msg_response.h"
 
 gberror_t
-json_msg_response_get_version(char *request_id, char *response_json);
+json_msg_response_sdo_write(char *request_id, bool error, char *message,
+                            char *response_json);
 
-#endif //GBEM_JSON_MSG_GET_VERSION_H
+
+#endif //GBEM_JSON_MSG_RESPONSE_SDO_WRITE_H

@@ -17,9 +17,14 @@
 #include "json_msg_response.h"
 #include "ethercattype.h"
 #include "sdos_read_based_on_datatype.h"
+#include "sdos_write_based_on_datatype.h"
 #include "shared_mem_types.h"
 #include "dpm.h"
-#include "json_msg_get_version.h"
+#include "json_msg_response_get_version.h"
+#include "json_msg_response_sdo_read.h"
+#include "json_msg_parse_sdo_read_payload.c"
+#include "json_msg_parse_sdo_write_payload.h"
+#include "json_msg_response_sdo_write.h"
 
 
 gberror_t
@@ -75,63 +80,6 @@ json_msg_request_extract(char *msg, int *request_type, json_t **payload) {
 }
 
 
-gberror_t json_msg_parse_sdo_payload(json_t *sdo_payload, uint16_t *slave, ec_datatype *datatype, uint16_t *index,
-                                     uint8_t *sub_index, uint8_t *len) {
-
-    json_t *obj = json_object_get(sdo_payload, "index");
-
-    if (!json_is_integer(obj)) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: index is not a integer in JSON request\n");
-        return E_GENERAL_FAILURE;
-    }
-
-    *index = (uint16_t) json_integer_value(obj);
-
-    obj = json_object_get(sdo_payload, "subindex");
-
-    if (!json_is_integer(obj)) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: sub_index is not a integer in JSON request\n");
-        return E_GENERAL_FAILURE;
-    }
-
-    *sub_index = (uint8_t) json_integer_value(obj);
-
-    obj = json_object_get(sdo_payload, "slave");
-
-    if (!json_is_integer(obj)) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: slave is not a integer in JSON request\n");
-        return E_GENERAL_FAILURE;
-    }
-
-    *slave = (uint16_t) json_integer_value(obj);
-
-    obj = json_object_get(sdo_payload, "datatype");
-
-    if (!json_is_integer(obj)) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: datatype is not a integer in JSON request\n");
-        return E_GENERAL_FAILURE;
-    }
-
-    *datatype = (ec_datatype) json_integer_value(obj);
-
-
-    obj = json_object_get(sdo_payload, "length");
-
-    if (!json_is_integer(obj)) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: length is not a integer in JSON request\n");
-        return E_GENERAL_FAILURE;
-    }
-
-
-//    *len = (uint8_t) json_object_size(sdo_payload);
-
-    *len = (uint8_t) json_integer_value(obj);
-
-    return E_SUCCESS;
-
-
-}
-
 /**
  *
  * @param msg - IN
@@ -167,19 +115,20 @@ gberror_t json_msg_request_respond_handle(char *msg, char *response_json, char *
     ec_value value;
 
 
+    printf("Request type [%d]\n", request_type);
+
     switch (request_type) {
         case GBEM_REQUEST_SDO_READ:
 
-            if (json_msg_parse_sdo_payload(payload, &slave, &datatype, &index, &sub_index, &len) != E_SUCCESS) {
-                json_msg_response_error(request_id, request_type, "Failed to parse SDO payload", response_json);
+            if (json_msg_parse_sdo_read_payload(payload, &slave, &datatype, &index, &sub_index, &len) != E_SUCCESS) {
+                json_msg_response_error(request_id, request_type, "Failed to parse SDO read payload", response_json);
                 return E_SUCCESS;
             }
 
             //read sdo
-            printf("len [%d]\n", len);
+//            printf("len [%d]\n", len);
             rc = sdos_read_based_on_datatype(slave, index, sub_index, datatype, len, &value);
 
-            printf("strlen [%d]", strlen(value.visible_string));
 
             if (rc != E_SUCCESS) {
                 json_msg_response_error(request_id, request_type, "SDO read failed", response_json);
@@ -193,10 +142,29 @@ gberror_t json_msg_request_respond_handle(char *msg, char *response_json, char *
             break;
         case GBEM_REQUEST_SDO_WRITE:
 
+            if (json_msg_parse_sdo_write_payload(payload, &slave, &datatype, &index, &sub_index, &len, &value) !=
+                E_SUCCESS) {
+                json_msg_response_error(request_id, request_type, "Failed to parse SDO write payload", response_json);
+                return E_SUCCESS;
+            }
+
+//            rc = sdos_read_based_on_datatype(slave, index, sub_index, datatype, len, &value);
+
+            rc = sdos_write_based_on_datatype(slave, index, sub_index, datatype, len, value);
+
+            if (rc != E_SUCCESS) {
+                json_msg_response_error(request_id, request_type, "SDO write failed", response_json);
+                return E_SUCCESS;
+            }
+
+            //respond
+            json_msg_response_sdo_write(request_id, false, "SDO read success", response_json);
+
+
             break;
         case GBEM_REQUEST_GET_VERSION:
 
-            json_msg_reponse_get_version(request_id, response_json);
+            json_msg_response_get_version(request_id, response_json);
 
             break;
         default:
