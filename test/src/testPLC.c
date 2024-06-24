@@ -323,10 +323,10 @@ void test_ton(void) {
         TEST_ASSERT_EQUAL_INT(0, myton1.q);
         plcsl_ton(&myton1, x1);
         plc_bus_cycle_counter++;
-        plc_ms_counter = plc_ms_counter + MAP_CYCLE_TIME;
+        plc_ms_counter = plc_ms_counter + gbem_ctx.map_cycle_time;
     }
     TEST_ASSERT_EQUAL_INT(1, myton1.q);
-    plc_ms_counter = plc_ms_counter + MAP_CYCLE_TIME;
+    plc_ms_counter = plc_ms_counter + gbem_ctx.map_cycle_time;
     TEST_ASSERT_EQUAL_INT(1, myton1.q);
 }
 
@@ -473,13 +473,13 @@ void test_integrate(void) {
 
     for (int i = 0; i < 10; i++) {
         plcsl_integrate(&myintegrate1, x1, 1.0, x2);
-        plc_ms_counter = plc_ms_counter + MAP_CYCLE_TIME;
+        plc_ms_counter = plc_ms_counter + gbem_ctx.map_cycle_time;
     }
     TEST_ASSERT_EQUAL_DOUBLE(0.036, myintegrate1.integral);
 
     x2 = true;
     plcsl_integrate(&myintegrate1, x1, 1.0, x2);
-    plc_ms_counter = plc_ms_counter + MAP_CYCLE_TIME;
+    plc_ms_counter = plc_ms_counter + gbem_ctx.map_cycle_time;
     TEST_ASSERT_EQUAL_DOUBLE(0, myintegrate1.integral);
     x2 = false;
 
@@ -488,7 +488,7 @@ void test_integrate(void) {
     for (int i = 0; i < 10; i++) {
 
         plcsl_integrate(&myintegrate1, x1, 1.0, x2);
-        plc_ms_counter = plc_ms_counter + MAP_CYCLE_TIME;
+        plc_ms_counter = plc_ms_counter + gbem_ctx.map_cycle_time;
     }
     TEST_ASSERT_EQUAL_DOUBLE(0.030, myintegrate1.integral);
 
@@ -501,7 +501,7 @@ void test_clock_pulse(void) {
 
 
     for (int i = 0; i < 2000; i++) {
-        plc_ms_counter = plc_ms_counter + MAP_CYCLE_TIME;
+        plc_ms_counter = plc_ms_counter + gbem_ctx.map_cycle_time;
         plcsl_clock_pulse(&myclock_pulse1, n1, x2);
         printf("%u\n", myclock_pulse1.q);
     }
@@ -519,7 +519,7 @@ void test_differentiate(void) {
     for (int i = 0; i < 100; i++) {
 
         plcsl_differentiate(&mydifferentiate1, x1, i);
-        plc_ms_counter = plc_ms_counter + MAP_CYCLE_TIME;
+        plc_ms_counter = plc_ms_counter + gbem_ctx.map_cycle_time;
     }
 
     TEST_ASSERT_EQUAL_DOUBLE(250.0, mydifferentiate1.differential);
