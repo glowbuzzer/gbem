@@ -69,7 +69,7 @@ uint32_t map_get_datatype_size_bits(ec_datatype datatype) {
             return 32;
         case ECT_REAL64:
             return 64;
-        //todo crit finish these sizes
+            //todo crit finish these sizes
         case ECT_VISIBLE_STRING:
             return 8;
         case ECT_OCTET_STRING:
@@ -102,8 +102,7 @@ uint32_t map_get_datatype_size_bits(ec_datatype datatype) {
             return 64;
         default:
             LL_FATAL(
-                "GBEM: missing ec_datatype to size definition - this can occur when custom pdo map num entries don't match the num of elements in the array")
-            ;
+                    "GBEM: missing ec_datatype to size definition - this can occur when custom pdo map num entries don't match the num of elements in the array");
     }
     return 0;
 }
@@ -136,8 +135,8 @@ uint32_t map_fsoe_master_get_overall_slot_size_out(void) {
         switch (map_slave_fsoe_master_slot_config[slot]) {
             case MDP_SLOT_TYPE_NONE:
                 UM_FATAL(
-                    "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
-                    slot);
+                        "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                        slot);
                 break;
             case MDP_SLOT_TYPE_BBH_32_12:
                 size += 12;
@@ -155,8 +154,8 @@ uint32_t map_fsoe_master_get_overall_slot_size_in(void) {
         switch (map_slave_fsoe_master_slot_config[slot]) {
             case MDP_SLOT_TYPE_NONE:
                 UM_FATAL(
-                    "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
-                    slot);
+                        "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                        slot);
                 break;
             case MDP_SLOT_TYPE_BBH_32_12:
                 size += 32;
@@ -176,8 +175,8 @@ uint32_t map_fsoe_get_slot_size_master_out(uint16_t slave) {
             switch (map_slave_fsoe_master_slot_config[slot]) {
                 case MDP_SLOT_TYPE_NONE:
                     UM_FATAL(
-                        "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
-                        slot);
+                            "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                            slot);
                     break;
                 case MDP_SLOT_TYPE_BBH_32_12:
                     size = 12;
@@ -199,8 +198,8 @@ uint32_t map_fsoe_get_slot_size_master_in(uint16_t slave) {
             switch (map_slave_fsoe_master_slot_config[slot]) {
                 case MDP_SLOT_TYPE_NONE:
                     UM_FATAL(
-                        "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
-                        slot);
+                            "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                            slot);
                     break;
                 case MDP_SLOT_TYPE_BBH_32_12:
                     size = 32;
@@ -223,8 +222,8 @@ uint32_t map_fsoe_get_slot_size_slave_out(uint16_t slave) {
             switch (map_slave_fsoe_master_slot_config[slot]) {
                 case MDP_SLOT_TYPE_NONE:
                     UM_FATAL(
-                        "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
-                        slot);
+                            "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                            slot);
                     break;
                 case MDP_SLOT_TYPE_BBH_32_12:
                     size = 32;
@@ -266,8 +265,8 @@ uint32_t map_fsoe_get_slot_size_out(uint16_t slot) {
     switch (map_slave_fsoe_master_slot_config[slot]) {
         case MDP_SLOT_TYPE_NONE:
             UM_FATAL(
-                "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
-                slot);
+                    "GBEM: No slot type set for slot [%u] - check MAP_NUM_FSOE_MASTER_SLOTS matches the number of slots (FSoE slaves)",
+                    slot);
             break;
         case MDP_SLOT_TYPE_BBH_32_12:
             size = 32;
@@ -323,7 +322,7 @@ bool ec_is_warning(bool enable_check) {
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
-        if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
+        if (map_drive_get_stat_wrd_function_ptr[i] != NULL) {
             drive_stat_wrd = map_drive_get_stat_wrd_function_ptr[i](i);
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "Missing function pointer for map_drive_get_stat_wrd on drive [%u]", i);
@@ -390,7 +389,7 @@ bool ec_check_for_follow_error(gberror_t *grc, bool enable_check) {
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         bool follow_error = true;
-        if (*map_drive_get_follow_error_function_ptr[i] != NULL) {
+        if (map_drive_get_follow_error_function_ptr[i] != NULL) {
             follow_error = map_drive_get_follow_error_function_ptr[i](i);
         } else {
             //we can't check all drives for a follow error so return true that there is one - safest behaviour
@@ -454,7 +453,7 @@ bool ec_check_for_internal_limit(gberror_t *grc, bool enable_check) {
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         uint16_t drive_stat_wrd;
-        if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
+        if (map_drive_get_stat_wrd_function_ptr[i] != NULL) {
             drive_stat_wrd = map_drive_get_stat_wrd_function_ptr[i](i);
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "Missing function pointer for map_drive_get_stat_wrd on drive [%u]", i);
@@ -512,7 +511,7 @@ bool ec_check_remote(bool enable_check) {
     int j = 0;
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
         bool remote_ok = false;
-        if (*map_drive_get_remote_function_ptr[i] != NULL) {
+        if (map_drive_get_remote_function_ptr[i] != NULL) {
             remote_ok = map_drive_get_remote_function_ptr[i](i);
         } else {
             LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "Missing function pointer for map_drive_get_remote on drive [%u]", i);
