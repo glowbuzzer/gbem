@@ -18,6 +18,6 @@
 #include "json_conf_ethercat_helpers.h"
 #include "map.h"
 
-bool json_conf_parse_limits(json_t *json_drives, uint16_t num_drives, map_machine_limits_t *limits);
+bool json_conf_parse_limits(json_t *json_drives, uint16_t num_drives, map_machine_limits_t *limits, bool *no_limits);
 
 #endif //JANSSON_TEST_JSON_CONF_PARSE_LIMITS_H

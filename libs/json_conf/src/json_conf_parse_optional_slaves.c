@@ -23,7 +23,7 @@ bool json_conf_parse_optional_slaves(json_t *json_ethercat, uint16_t max_num_opt
     json_t *slaves;
     json_t *optional;
     json_t *is_configurable;
-    json_t *is_set;
+    json_t *is_enabled;
 
 
     size_t size;
@@ -70,6 +70,7 @@ bool json_conf_parse_optional_slaves(json_t *json_ethercat, uint16_t max_num_opt
 
         if (json_is_boolean(is_configurable)) {
             is_configurable_slave = json_boolean_value(is_configurable);
+
         } else {
             UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: is_configurable object not a boolean");
             return false;
@@ -77,15 +78,16 @@ bool json_conf_parse_optional_slaves(json_t *json_ethercat, uint16_t max_num_opt
 
         if (is_configurable_slave) {
 
-            is_set = json_object_get(optional, "is_set");
-            if (!json_conf_check_object(is_set, "is_set")) {
+            is_enabled = json_object_get(optional, "is_enabled");
+            if (!json_conf_check_object(is_enabled, "is_enabled")) {
                 return false;
             }
 
-            if (json_is_boolean(is_set)) {
-                optional_slaves->enable_optional_slave[index1] = json_boolean_value(is_set);
-
-                if (json_boolean_value(is_set)) {
+            if (json_is_boolean(is_enabled)) {
+                optional_slaves->enable_optional_slave[num_of_optional_slaves_found] = json_boolean_value(is_enabled);
+//                printf("optional_slaves->enable_optional_slave[%lld]: %d\n", (long long) index1,
+//                       optional_slaves->enable_optional_slave[index1]);
+                if (json_boolean_value(is_enabled)) {
                     num_of_optional_slaves_found++;
                 }
 

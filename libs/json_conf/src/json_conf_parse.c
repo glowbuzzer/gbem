@@ -16,6 +16,8 @@
 #include "json_conf_parse_limits.h"
 #include "json_conf_parse_sdo.h"
 #include "json_conf_parse_optional_slaves.h"
+#include "json_conf_parse_eep_name.h"
+#include "json_conf_parse_cycle_shift.h"
 #include "json_conf_parse_gbem.h"
 #include "json_conf_helpers.h"
 #include "json_conf_print.h"
@@ -26,9 +28,11 @@
 #include "gbem_config.h"
 
 bool
-json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *optional_slaves, ec_sdo_array *ar,
+json_conf_parse(map_machine_limits_t *limits, bool *no_limits, machine_config_optional_slaves_t *optional_slaves,
+                ec_sdo_array *ar,
                 int *ecm_cycle_shift, int *cycle_time, int *drive_state_change_timeout, bool *disable_drive_warn_check,
-                bool *disable_drive_limit_check, uint16_t num_drives, uint16_t max_num_optional_slaves) {
+                bool *disable_drive_limit_check, uint16_t num_drives, uint16_t max_num_optional_slaves,
+                map_slave_map_t *slave_eep, size_t max_slaves) {
 
 
     json_error_t error;
@@ -46,7 +50,7 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
         UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: Initial parse of the [%s]", GBEM_CONF_FILE);
 
         /* print JSON structure */
-        print_json(json_root);
+//        print_json(json_root);
 
         value = json_object_get(json_root, "machine_name");
         if (!json_conf_check_object(value, "machine_name")) {
@@ -67,7 +71,6 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
         }
 
 
-
         if (strcmp(machine_name_string, map_machine_type_strings[map_machine_type]) != 0) {
             UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Machine name [%s] does not match the machine type [%s]",
                      machine_name_string, map_machine_type_strings[map_machine_type]);
@@ -76,6 +79,27 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
         } else {
             UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: Machine name matches the machine type");
         }
+
+        //parse sub-machine name
+
+        value = json_object_get(json_root, "sub_machine_name");
+        if (!json_conf_check_object(value, "sub_machine_name")) {
+            json_decref(json_root);
+            return false;
+        }
+
+        char *sub_machine_name_string;
+
+        if (json_is_string(value)) {
+            sub_machine_name_string = json_string_value(value);
+
+            UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Sub-machine name: [%s]", sub_machine_name_string);
+        } else {
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Sub-machine name is not a string in the json config file");
+            json_decref(json_root);
+            return false;
+        }
+
 
 
 
@@ -109,6 +133,27 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
         }
 
 
+        //parse ee_name
+        if (json_conf_parse_eep_name(value, slave_eep, max_slaves)) {
+            UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: EE name parsed");
+        } else {
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: EE name parse failed");
+            json_decref(json_root);
+            return false;
+        }
+
+
+        //parse cycle shift
+
+        if (json_conf_parse_cycle_shift(value, ecm_cycle_shift)) {
+            UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: Cycle shift parsed");
+        } else {
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: Cycle shift parse failed");
+            json_decref(json_root);
+            return false;
+        }
+
+
 
         //parse drives
         value = json_object_get(json_root, "drives");
@@ -117,7 +162,7 @@ json_conf_parse(map_machine_limits_t *limits, machine_config_optional_slaves_t *
             return false;
         }
 
-        if (json_conf_parse_limits(value, num_drives, limits)) {
+        if (json_conf_parse_limits(value, num_drives, limits, no_limits)) {
             UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: Limits parsed");
         } else {
             UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: Limits parse failed");

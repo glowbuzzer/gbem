@@ -16,19 +16,40 @@
 #include "user_message.h"
 
 
-bool json_conf_parse_limits(json_t *json_drives, uint16_t num_drives, map_machine_limits_t *limits) {
+bool json_conf_parse_limits(json_t *json_drives, uint16_t num_drives, map_machine_limits_t *limits, bool *no_limits) {
 
     json_t *json_drives_limits;
+    json_t *json_no_limits;
     size_t index;
     json_t *value;
     const char *key;
     size_t size;
+
+
+    json_no_limits = json_object_get(json_drives, "no_limits");
+
+    if (!json_conf_check_object(json_no_limits, "no_limits")) {
+        return false;
+    }
+
 
     json_drives_limits = json_object_get(json_drives, "limits");
 
     if (!json_conf_check_object(json_drives_limits, "limits")) {
         return false;
     }
+    if (!json_is_boolean(json_no_limits)) {
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: no_limits object not a boolean");
+        return false;
+    }
+    UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: no_limits object found");
+
+
+    *no_limits = json_is_true(json_no_limits);
+
+
+    UM_INFO(GBEM_UM_EN, "GBEM: [JSON config] Success: no_limits is %s", *no_limits ? "true" : "false");
+
 
     if (!json_is_array(json_drives_limits)) {
         UM_ERROR(GBEM_UM_EN, "GBEM: [JSON config] Error: limits object not an array");
