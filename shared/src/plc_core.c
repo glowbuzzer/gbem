@@ -26,6 +26,7 @@
 #include <pthread.h>
 #include "log.h"
 #include "iomap_processing.h"
+#include "gbem_ctx.h"
 
 
 plc_task_set_t plc_task_set;
@@ -138,26 +139,26 @@ void plc_process_iomap_in(const uint8_t task_index) {
                 switch (map_iomap[i].plc.datatype) {
                     case ECT_BOOLEAN:
                         *((bool *) map_iomap[i].plc.io) = iomap_get_pdo_in_bool(map_iomap[i].pdo.byte_slave,
-                            map_iomap[i].pdo.slave_num,
-                            map_iomap[i].pdo.byte_num,
-                            map_iomap[i].pdo.bit_num);
+                                                                                map_iomap[i].pdo.slave_num,
+                                                                                map_iomap[i].pdo.byte_num,
+                                                                                map_iomap[i].pdo.bit_num);
                         break;
                     case ECT_INTEGER32:
                         *((int32_t *) map_iomap[i].plc.io) = iomap_get_pdo_in_int32(map_iomap[i].pdo.datatype,
-                            map_iomap[i].pdo.slave_num,
-                            map_iomap[i].pdo.byte_num);
+                                                                                    map_iomap[i].pdo.slave_num,
+                                                                                    map_iomap[i].pdo.byte_num);
                         break;
 
                     case ECT_UNSIGNED32:
                         *((uint32_t *) map_iomap[i].plc.io) = iomap_get_pdo_in_uint32(map_iomap[i].pdo.datatype,
-                            map_iomap[i].pdo.slave_num,
-                            map_iomap[i].pdo.byte_num);
+                                                                                      map_iomap[i].pdo.slave_num,
+                                                                                      map_iomap[i].pdo.byte_num);
                         break;
                     case ECT_REAL32:
                         *((float *) map_iomap[i].plc.io) = iomap_get_pdo_in_float(map_iomap[i].pdo.datatype,
-                            map_iomap[i].pdo.slave_num,
-                            map_iomap[i].pdo.byte_num,
-                            (float) map_iomap[i].pdo.max_val);
+                                                                                  map_iomap[i].pdo.slave_num,
+                                                                                  map_iomap[i].pdo.byte_num,
+                                                                                  (float) map_iomap[i].pdo.max_val);
                         break;
                     default:
                         LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: Invalid iomap datatype in row [%u]", i);
@@ -252,13 +253,13 @@ void plc_task_suffix(const int task_index, struct timespec *start_time) {
  * @brief executes (released semaphore) all plc tasks based on their registered interval and priority
  */
 void plc_task_exec(void) {
-    plc_bus_cycle_counter = plc_bus_cycle_counter + MAP_CYCLE_TIME;
+    plc_bus_cycle_counter = plc_bus_cycle_counter + gbem_ctx.map_cycle_time;
     static uint64_t ms_counter = 0;
 
     plc_ms_counter++;
 
     bool trigger_task[PLC_MAX_NUM_TASKS] = {0};
-    for (int i = 0; i < MAP_CYCLE_TIME; i++) {
+    for (int i = 0; i < gbem_ctx.map_cycle_time; i++) {
         ms_counter++;
         for (int j = 0; j < plc_task_set.num_tasks_defined; j++) {
             if (ms_counter % plc_task_set.tasks[j].cycle_time == 0) {
