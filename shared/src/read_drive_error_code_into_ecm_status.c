@@ -21,7 +21,7 @@ void read_drive_error_code_into_ecm_status_sdo(uint16_t drive) {
     uint8_t *error_code_string;
     bool error;
 
-    if (*map_drive_get_error_string_sdo_function_ptr[drive] != NULL) {
+    if (map_drive_get_error_string_sdo_function_ptr[drive] != NULL) {
         error_code_string = map_drive_get_error_string_sdo_function_ptr[drive](drive, &error);
         if (error) {
             //copy to history
@@ -47,7 +47,7 @@ void read_drive_error_code_into_ecm_status_pdo(uint16_t drive) {
     uint8_t *error_code_string;
     bool error;
 
-    if (*map_drive_get_error_string_pdo_function_ptr[drive] != NULL) {
+    if (map_drive_get_error_string_pdo_function_ptr[drive] != NULL) {
         error_code_string = map_drive_get_error_string_pdo_function_ptr[drive](drive, &error);
         if (error) {
             //copy to history
