@@ -17,7 +17,7 @@
 
 
 #define MAP_GLOBAL_DC_SYNC_OFFSET   2000U
-#define MAP_CYCLE_TIME              (4)
+//#define MAP_CYCLE_TIME              (4)
 
 
 #define MAP_G5_1                    1

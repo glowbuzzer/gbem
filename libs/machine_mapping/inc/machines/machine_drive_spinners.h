@@ -16,7 +16,7 @@
 #define GBEM_MACHINE_DRIVE_SPINNERS_H
 
 
-#define MAP_CYCLE_TIME              (1)
+//#define MAP_CYCLE_TIME              (1)
 #define MAP_GLOBAL_DC_SYNC_OFFSET   20000U
 
 

@@ -19,24 +19,25 @@
 #include "cia402.h"
 #include "gberror.h"
 #include "user_message.h"
+#include "gbem_ctx.h"
 
 
 /* This is used for the fixed POO remapping */
 map_SM_assignment_object_t map_SM2_akd = {
-    .number_of_entries = 1,
-    .SM_assignment_index = 0x1c12
+        .number_of_entries = 1,
+        .SM_assignment_index = 0x1c12
 };
 
 /* This is used for the fixed POO remapping */
 map_SM_assignment_object_t map_SM3_akd = {
-    .number_of_entries = 1,
-    .SM_assignment_index = 0x1c13
+        .number_of_entries = 1,
+        .SM_assignment_index = 0x1c13
 };
 
 /* This is used for the fixed POO remapping */
 /*0x1724 Target position for cyclic synchronous position mode (4 bytes - DINT), Control word (2byte), Torque feed forward (2 bytes) */
 uint16_t map_SM2_index_of_assigned_PDO_akd[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1724
+        0x1724
 };
 
 /* This is used for the fixed POO remapping */
@@ -57,7 +58,7 @@ uint16_t map_SM2_index_of_assigned_PDO_akd[ECM_MAX_PDO_MAPPING_ENTRIES] = {
  *
 */
 uint16_t map_SM3_index_of_assigned_PDO_akd[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1b26
+        0x1b26
 };
 
 /**
@@ -90,7 +91,7 @@ gberror_t ec_standard_sdos_akd(const uint16_t slave) {
     //interpolation time period
     //0x60C2:0x1
     //uint8
-    if (!ec_sdo_write_int8(slave, 0x60C2, 0x1, MAP_CYCLE_TIME, true)) {
+    if (!ec_sdo_write_int8(slave, 0x60C2, 0x1, gbem_ctx.map_cycle_time, true)) {
         return E_SDO_WRITE_FAILURE;
     }
 

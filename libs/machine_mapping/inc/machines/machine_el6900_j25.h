@@ -15,7 +15,7 @@
 #define GBEM_MACHINE_EL6900_J25_H
 
 
-#define MAP_CYCLE_TIME              (4)
+//#define MAP_CYCLE_TIME              (4)
 #define MAP_GLOBAL_DC_SYNC_OFFSET   2000U
 
 /* Slaves must be defined in order that they appear on the EtherCAT network */

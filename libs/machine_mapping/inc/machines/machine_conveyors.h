@@ -16,7 +16,7 @@
 #define GBEM_MACHINE_CONVEYORS_H
 
 
-#define MAP_CYCLE_TIME              (4)
+//#define MAP_CYCLE_TIME              (4)
 #define MAP_GLOBAL_DC_SYNC_OFFSET   2000U
 
 #define MAP_EK1100_1                1

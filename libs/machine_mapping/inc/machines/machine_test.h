@@ -16,7 +16,7 @@
 #define GBEM_MINI_MAP_H
 
 
-#define MAP_CYCLE_TIME              (4)
+//#define MAP_CYCLE_TIME              (4)
 #define MAP_GLOBAL_DC_SYNC_OFFSET   2000U
 
 /** This is the total number of drives on the EtherCAT network */
