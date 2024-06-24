@@ -31,63 +31,61 @@ _Noreturn void ec_reboot(void *argument) {
 
     while (1) {
 
-        if (BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBEM_REBOOT_BIT_NUM)) {
+//        if (BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBEM_REBOOT_BIT_NUM)) {
+//
+//            printf("dpm_out->machine_word: %d\n", dpm_out->machine_word);
+//            LL_FATAL("CONTROL_WORD_GBEM_REBOOT_BIT_NUM is set!");
+//
+//        }
 
-            printf("dpm_out->machine_word: %d\n", dpm_out->machine_word);
-            LL_FATAL("CONTROL_WORD_GBEM_REBOOT_BIT_NUM is set!");
+        if (BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBEM_REBOOT_BIT_NUM) &&
+            ecm_status.boot_state.boot_sucessful) {
+            UM_INFO(GBEM_GEN_LOG_EN, "GBEM: Reboot requested by high-level control");
+            ec_rxtx_mode = EC_RXTX_MODE_NONE;
+            ecm_status.boot_state.boot_sucessful = false;
+            int pthread_cancel_rc = 0;
+            pthread_cancel_rc = pthread_cancel(thread_ec_check);
+            if (pthread_cancel_rc != 0) {
+                UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_check");
+            } else {
+                UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_check");
+            }
+            pthread_cancel_rc = pthread_cancel(thread_ec_rxtx);
+            if (pthread_cancel_rc != 0) {
+                UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_rxtx");
+            } else {
+                UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_rxtx");
+            }
+            pthread_cancel_rc = pthread_cancel(thread_ec_error_message);
+            if (pthread_cancel_rc != 0) {
+                UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_error_message");
+            } else {
+                UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_error_message");
+            }
 
-        }
+            //todo crit
+            //frees the state machine
+//            ctrl_statemachinefree(m);
+//            struct stateMachine *m;
+//            m = ctrl_statemachine_alloc();
 
-//            if (BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBEM_REBOOT_BIT_NUM) &&
-//                ecm_status.boot_state.boot_sucessful) {
-//                LL_INFO(GBEM_GEN_LOG_EN, "GBEM: Reboot requested by high-level control");
-//                ec_rxtx_mode = EC_RXTX_MODE_NONE;
-//                ecm_status.boot_state.boot_sucessful = false;
-//                int pthread_cancel_rc = 0;
-//                pthread_cancel_rc = pthread_cancel(thread_ec_check);
-//                if (pthread_cancel_rc != 0) {
-//                    UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_check");
-//                } else {
-//                    UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_check");
-//                }
-//                pthread_cancel_rc = pthread_cancel(thread_ec_rxtx);
-//                if (pthread_cancel_rc != 0) {
-//                    UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_rxtx");
-//                } else {
-//                    UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_rxtx");
-//                }
-//                pthread_cancel_rc = pthread_cancel(thread_ec_error_message);
-//                if (pthread_cancel_rc != 0) {
-//                    UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_error_message");
-//                } else {
-//                    UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_error_message");
-//                }
-//
-//                //todo crit
-//                //frees the state machine
-////            ctrl_statemachinefree(m);
-////            struct stateMachine *m;
-////            m = ctrl_statemachine_alloc();
-//
-//
-//                /* Kill any PLC tasks that are running */
-//                for (int i = 0; i < plc_task_set.num_tasks_defined; i++) {
-//
-//                    pthread_cancel_rc = pthread_cancel(plc_task_set.tasks[i].id);
-//                    if (pthread_cancel_rc != 0) {
-//                        UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_error_message");
-//                    } else {
-//                        UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_error_message");
-//                    }
-//
-//                }
-//
-//                //run main again
-//                main(main_argc, main_argv);
-//    }
 
-        else {
-//            sleep(2);
+            /* Kill any PLC tasks that are running */
+            for (int i = 0; i < plc_task_set.num_tasks_defined; i++) {
+
+                pthread_cancel_rc = pthread_cancel(plc_task_set.tasks[i].id);
+                if (pthread_cancel_rc != 0) {
+                    UM_ERROR(GBEM_UM_EN, "GBEM: Failed to cancel thread_ec_error_message");
+                } else {
+                    UM_INFO(GBEM_UM_EN, "GBEM: Cancelled thread_ec_error_message");
+                }
+
+            }
+
+            //run main again
+            main(main_argc, main_argv);
+        } else {
+            sleep(2);
         }
 
     } //end while
