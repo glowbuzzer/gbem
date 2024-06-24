@@ -23,8 +23,6 @@ char full_path_for_emstat_json_status[200];
 char proc_name[100];
 
 
-
-
 uint8_t inA[SIZE_OF_GBC_PDO];
 uint8_t inB[SIZE_OF_GBC_PDO];
 uint8_t outA[SIZE_OF_GBC_PDO];
@@ -45,13 +43,12 @@ struct stateMachine *m;
 //bool ec_rxtx_test_mode = true;
 
 void internal_advanceStateIncrementHeartbeat(int number_of_cycles) {
-    for (int i=0; i<number_of_cycles;i++) {
+    for (int i = 0; i < number_of_cycles; i++) {
         ctrl_main(m, false);
         dpm_out->heartbeat++;
 
     }
 }
-
 
 
 void internal_advanceStateIncrementHeartbeatSetRemote(int number_of_cycles) {
@@ -61,41 +58,42 @@ void internal_advanceStateIncrementHeartbeatSetRemote(int number_of_cycles) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
 
 
+        uint16_t test_drive_status_word = 0;
 
-        uint16_t test_drive_status_word=0;
-
-        if (*map_drive_get_stat_wrd_function_ptr[i] != NULL) {
-            test_drive_status_word =  map_drive_get_stat_wrd_function_ptr[i](i);
+        if (map_drive_get_stat_wrd_function_ptr[i] != NULL) {
+            test_drive_status_word = map_drive_get_stat_wrd_function_ptr[i](i);
         } else {
-            LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_get_stat_wrd on drive [%u]", i);
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_get_stat_wrd on drive [%u]",
+                     i);
         }
 
         BIT_SET(test_drive_status_word, CIA_REMOTE_BIT_NUM);
 
-        if (*map_drive_set_stat_wrd_rev_function_ptr[i] != NULL) {
+        if (map_drive_set_stat_wrd_rev_function_ptr[i] != NULL) {
             map_drive_set_stat_wrd_rev_function_ptr[i](i, test_drive_status_word);
         } else {
-            LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_set_stat_wrd on drive [%u]", i);
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_set_stat_wrd on drive [%u]",
+                     i);
         }
 
 
     }
 
-for (int i=0; i<number_of_cycles;i++) {
-    ctrl_main(m, false);
-    dpm_in->heartbeat++;
-    dpm_out->heartbeat=dpm_in->heartbeat;
+    for (int i = 0; i < number_of_cycles; i++) {
+        ctrl_main(m, false);
+        dpm_in->heartbeat++;
+        dpm_out->heartbeat = dpm_in->heartbeat;
 //    printf("*** State Change ***\n");
 
 //printf("State change cycle count: %u\n", ctrl_state_change_cycle_count);
-}
+    }
 }
 
 void internal_advanceState(int number_of_cycles) {
-    for (int i=0; i<number_of_cycles;i++) {
-    ctrl_main(m, false);
+    for (int i = 0; i < number_of_cycles; i++) {
+        ctrl_main(m, false);
 //    printf("*** State Change ***\n");
-        }
+    }
 }
 
 
@@ -106,18 +104,15 @@ void internal_advanceState(int number_of_cycles) {
 void internal_setAllDriveStatus(cia_state_t state) {
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
 
-        if (*map_drive_set_stat_wrd_rev_function_ptr[i] != NULL) {
+        if (map_drive_set_stat_wrd_rev_function_ptr[i] != NULL) {
             map_drive_set_stat_wrd_rev_function_ptr[i](i, cia_state_to_statwrd(state));
         } else {
-            LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_set_stat_wrd on drive [%u]", i);
+            LL_ERROR(GBEM_MISSING_FUN_LOG_EN, "GBEM: Missing function pointer for map_drive_set_stat_wrd on drive [%u]",
+                     i);
         }
 
     }
 }
-
-
-
-
 
 
 /**
@@ -148,7 +143,6 @@ void internal_stateMachineAdvanceToOperationEnabled(void) {
 }
 
 
-
 void internal_stateMachineClearEstopAndResetFault(void) {
     internal_advanceStateIncrementHeartbeatSetRemote(1);
 
@@ -156,7 +150,7 @@ void internal_stateMachineClearEstopAndResetFault(void) {
 
 //    map_get_gbc_iomap_row(MAP_IN, CTRL_ESTOP_DIN, ECT_BOOLEAN, &row);
 
-    ec_pdo_set_input_bit_rev(ctrl_estop_din.slave_num,ctrl_estop_din.bit_num,
+    ec_pdo_set_input_bit_rev(ctrl_estop_din.slave_num, ctrl_estop_din.bit_num,
                              true);
 
 
@@ -230,7 +224,7 @@ void internal_Cleardown(void) {
 
 
     for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-        if (*map_drive_set_moo_rev_function_ptr[i] != NULL) {
+        if (map_drive_set_moo_rev_function_ptr[i] != NULL) {
             map_drive_set_moo_rev_function_ptr[i](i);
         }
 //
