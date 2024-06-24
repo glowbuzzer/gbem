@@ -20,6 +20,7 @@
 #include "cia402.h"
 #include "map_config.h"
 #include "map.h"
+#include "gbem_ctx.h"
 
 static void virtual_drive_process_state(uint16_t ctrlwrd, cia_state_t *state);
 
@@ -173,7 +174,8 @@ gberror_t ec_set_setvel_wrd_virtual(const uint16_t drive, const int32_t setvel) 
 
     virtual_drive_velocity[drive] = setvel;
     virtual_drive_position[drive] =
-            virtual_drive_position[drive] + (int32_t) ((double) setvel * ((double) MAP_CYCLE_TIME / (double) 1000));
+            virtual_drive_position[drive] +
+            (int32_t) ((double) setvel * ((double) gbem_ctx.map_cycle_time / (double) 1000));
     return E_SUCCESS;
 }
 
@@ -190,11 +192,11 @@ gberror_t ec_set_settorq_wrd_virtual(const uint16_t drive, const int32_t settorq
 
     virtual_drive_velocity[drive] =
             virtual_drive_velocity[drive] +
-            (int32_t) (angular_acceleration * ((double) MAP_CYCLE_TIME / (double) 1000));
+            (int32_t) (angular_acceleration * ((double) gbem_ctx.map_cycle_time / (double) 1000));
 
     virtual_drive_position[drive] =
             virtual_drive_position[drive] +
-            (int32_t) ((double) virtual_drive_velocity[drive] * ((double) MAP_CYCLE_TIME / (double) 1000));
+            (int32_t) ((double) virtual_drive_velocity[drive] * ((double) gbem_ctx.map_cycle_time / (double) 1000));
 
     virtual_drive_torque[drive] = settorq;
     return E_SUCCESS;
