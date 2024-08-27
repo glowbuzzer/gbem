@@ -165,7 +165,7 @@ static void main_getopt_usage(void) {
 //Catch nasty signals and try and cleanup before exit
 void cleanup(int sig) {
     //todo crit - debug remove
-    printf("Performing cleanup - signal [%d]\n", sig);
+    printf("[INFO     ] GBEM: Performing exit cleanup in response to signal [%d]\n", sig);
 
     //set status word to zeros to clear things like GBEM_ALIVE bit
     dpm_in->machine_word = 0;
