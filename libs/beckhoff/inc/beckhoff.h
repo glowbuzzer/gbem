@@ -16,6 +16,7 @@
 
 /* EK1xxx - EtherCAT couplers */
 #include "EK1100.h"
+#include "EK1110.h"
 
 /* EL1xxx - EtherCAT digital input */
 #include "EL1002.h"
