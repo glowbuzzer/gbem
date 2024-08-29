@@ -15,7 +15,12 @@
 #include "shared_mem_types.h"
 #include "gbem_ctx.h"
 
-
+/**
+ * @brief Get the version of the gbem and return it in the response json
+ * @param request_id
+ * @param response_json
+ * @return
+ */
 gberror_t
 json_msg_response_get_version(char *request_id, char *response_json) {
 
