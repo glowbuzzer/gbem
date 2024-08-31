@@ -80,7 +80,7 @@ sdos_write_based_on_datatype(const uint16_t slave, const uint16_t index, const u
             rc = ec_SDOwrite(slave, index, subindex, false, os, &value.visible_string, EC_TIMEOUTRXM);
             if (rc <= 0) {
                 UM_ERROR(GBEM_UM_EN,
-                         "GBEM: Could not write SDO. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
+                         "GBEM: Could not write SDO -  visible string. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
                          index, subindex, value, slave);
                 return E_SDO_WRITE_FAILURE;
             }
@@ -92,7 +92,7 @@ sdos_write_based_on_datatype(const uint16_t slave, const uint16_t index, const u
             rc = ec_SDOwrite(slave, index, subindex, false, os, &value.octet_string, EC_TIMEOUTRXM);
             if (rc <= 0) {
                 UM_ERROR(GBEM_UM_EN,
-                         "GBEM: Could not write SDO. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
+                         "GBEM: Could not write SDO - octet string. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
                          index, subindex, value, slave);
                 return E_SDO_WRITE_FAILURE;
             }
@@ -104,7 +104,7 @@ sdos_write_based_on_datatype(const uint16_t slave, const uint16_t index, const u
             rc = ec_SDOwrite(slave, index, subindex, false, os, &value.unicode_string, EC_TIMEOUTRXM);
             if (rc <= 0) {
                 UM_ERROR(GBEM_UM_EN,
-                         "GBEM: Could not write SDO. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
+                         "GBEM: Could not write SDO - unicode string. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
                          index, subindex, value, slave);
                 return E_SDO_WRITE_FAILURE;
             }
