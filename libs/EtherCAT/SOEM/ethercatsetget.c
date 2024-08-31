@@ -951,7 +951,7 @@ bool ec_sdo_write_uint8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint8_
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
-                     "GBEM: Could not write SDO. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
+                     "GBEM: Could not write SDO - uint8. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
                      Index, SubIndex, Value, Slave);
             if (umError) {
                 if (ec_iserror()) {
@@ -979,7 +979,7 @@ bool ec_sdo_write_int8(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int8_t 
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
-                     "GBEM: Could not write SDO. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
+                     "GBEM: Could not write SDO - int8. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
                      Index, SubIndex, Value, Slave);
             if (umError) {
                 if (ec_iserror()) {
@@ -1006,7 +1006,7 @@ bool ec_sdo_write_uint16(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint1
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
-                     "GBEM: Could not write SDO. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
+                     "GBEM: Could not write SDO - uint16. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
                      Index, SubIndex, Value, Slave);
             if (umError) {
                 if (ec_iserror()) {
@@ -1032,7 +1032,7 @@ bool ec_sdo_write_int16(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int16_
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
-                     "GBEM: Could not write SDO. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
+                     "GBEM: Could not write SDO - int16. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
                      Index, SubIndex, Value, Slave);
             if (umError) {
                 if (ec_iserror()) {
@@ -1058,7 +1058,7 @@ bool ec_sdo_write_uint32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, uint3
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
-                     "GBEM: Could not write SDO. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
+                     "GBEM: Could not write SDO - uint32. Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
                      Index, SubIndex, Value, Slave);
             if (umError) {
                 if (ec_iserror()) {
@@ -1084,7 +1084,7 @@ bool ec_sdo_write_int32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, int32_
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
-                     "GBEM: Could not write SDO.Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
+                     "GBEM: Could not write SDO - int32.Index:0x%08x - sub-index:0x%08x - value:%d - (on slave %u) aborting",
                      Index, SubIndex, Value, Slave);
             if (umError) {
                 if (ec_iserror()) {
@@ -1110,7 +1110,7 @@ bool ec_sdo_write_real32(uint16_t Slave, uint16_t Index, uint8_t SubIndex, float
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, &Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
-                     "GBEM: Could not write SDO. Index:0x%08x - sub-index:0x%08x - value:%f - (on slave %u) aborting",
+                     "GBEM: Could not write SDO - real32. Index:0x%08x - sub-index:0x%08x - value:%f - (on slave %u) aborting",
                      Index, SubIndex, Value, Slave);
             if (umError) {
                 if (ec_iserror()) {
@@ -1161,7 +1161,7 @@ ec_sdo_write_string_n(uint16_t Slave, uint16_t Index, uint8_t SubIndex, const ch
         int rc = ec_SDOwrite(Slave, Index, SubIndex, false, os, Value, EC_TIMEOUTRXM);
         if (rc <= 0) {
             UM_ERROR(GBEM_UM_EN,
-                     "GBEM: Could not write SDO. Index:0x%08x - sub-index:0x%08x - value:%.*s - (on slave %u) aborting",
+                     "GBEM: Could not write SDO - string_n. Index:0x%08x - sub-index:0x%08x - value:%.*s - (on slave %u) aborting",
                      Index, SubIndex, (int) n, Value, Slave);  // Print only n characters of the string
             if (umError) {
                 if (ec_iserror()) {
