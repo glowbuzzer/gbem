@@ -94,7 +94,7 @@ uint32_t ctrl_state_change_timeout = 0;
 
 //uint32_t ctrl_state_change_timeout = (CTRL_DRIVE_CHANGE_STATE_TIMEOUT * gbem_ctx.map_cycle_time);
 
-gberror_t ctrl_read_drive_logs(void);
+
 
 /** FSoE functions */
 void copy_fsoe_data(void);
@@ -795,7 +795,8 @@ static bool cia_trn12_guard(void *condition, struct event *event) {
         return true;
     } else {
         //			ctrl_change_all_drives_states(CIA_DISABLE_VOLTAGE_CTRLWRD);
-        ctrl_state_change_cycle_count++;
+        //we can remain in quick stop active with the FSoE safety stuff so disable the timeout
+//        ctrl_state_change_cycle_count++;
         //			LL_TRACE(SM_LOG_EN, ecm_status.cycle_count, "sm: TRN12 Guard - changing drive states with a Disable voltage controlword");
         return false;
     }
@@ -1730,16 +1731,7 @@ void ctrl_main(struct stateMachine *m, bool first_run) {
         }
     }
 
-    //if the control word has a bit set in run read drive logs
-    if (BIT_CHECK(dpm_out->machine_word, CONTROL_WORD_GBEM_DOWNLOAD_DRIVE_LOGS_BIT_NUM)) {
-        UM_INFO(GBEM_UM_EN, "GBEM: Downloading logs from drives");
-        gberror_t crdlrc = ctrl_read_drive_logs();
-        if (crdlrc == E_SUCCESS) {
-            UM_INFO(GBEM_UM_EN, "GBEM: Logs downloaded from drives successfully");
-        } else {
-            UM_ERROR(GBEM_UM_EN, "GBEM: Logs FAILED to download from drives");
-        }
-    }
+
     // print_status(&ecm_status);
 
     //copy PDO error codes into ecm status
@@ -2417,43 +2409,3 @@ gberror_t update_fsoe_ecm_status(void) {
 }
 
 
-#define TIME_SECS_AFTER_WHICH_DRIVE_LOGS_CAN_BE_READ_AGAIN 60
-
-
-gberror_t ctrl_read_drive_logs(void) {
-    gberror_t grc = E_SUCCESS;
-
-    static uint64_t start_cycle_count = 0;
-    static bool run = false;
-
-
-    if (!run) {
-        start_cycle_count = ecm_status.cycle_count;
-        run = true;
-        for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-            if (map_drive_get_log_file_function_ptr[i] != NULL) {
-                grc = map_drive_get_log_file_function_ptr[i](i);
-
-                if (grc != E_SUCCESS) {
-                    LL_ERROR(GBEM_GEN_LOG_EN, "GBEM: drive get log file function error [%s]", gb_strerror(grc));
-                }
-            } else {
-                LL_ERROR(GBEM_MISSING_FUN_LOG_EN,
-                         "GBEM: Missing function pointer for map_drive_get_drive_log on drive [%u]", i);
-            }
-        }
-    }
-
-
-    // printf("%llu\n", (ecm_status.cycle_count - start_cycle_count) / (uint64_t) 1000 * (uint64_t) gbem_ctx.map_cycle_time);
-    // printf("%llu\n",
-    //        (uint64_t) TIME_SECS_AFTER_WHICH_DRIVE_LOGS_CAN_BE_READ_AGAIN / (uint64_t) 1000 * (uint64_t) gbem_ctx.map_cycle_time);
-    //after a time period
-    if ((ecm_status.cycle_count - start_cycle_count) >
-        (uint64_t) TIME_SECS_AFTER_WHICH_DRIVE_LOGS_CAN_BE_READ_AGAIN * (uint64_t) 1000 *
-        (uint64_t) gbem_ctx.map_cycle_time) {
-        run = false;
-    }
-
-    return grc;
-}
