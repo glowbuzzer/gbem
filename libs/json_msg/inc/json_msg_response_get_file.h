@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file           :  json_msg
+ * @file           :  json_msg_response_get_file
  * @brief          :
  ******************************************************************************
  * @attention
@@ -10,21 +10,13 @@
  *
  ******************************************************************************
  */
-#ifndef GBEM_JSON_MSG_H
-#define GBEM_JSON_MSG_H
+#ifndef GBEM_JSON_MSG_RESPONSE_GET_FILE_H
+#define GBEM_JSON_MSG_RESPONSE_GET_FILE_H
 
+#include "jansson.h"
+#include "gberror.h"
 
-#define MAX_JSON_MSG_FILENAME_LENGTH 50
+gberror_t
+json_msg_response_get_file(char *request_id, char *response_json, char *file);
 
-
-//#define JSON_MSG_NUM_REQUEST_TYPES 1
-//typedef enum {
-//    SDO_READ
-//} json_msg_request_types_t;
-//
-//const char *json_msg_request_type_strings_t[JSON_MSG_NUM_REQUEST_TYPES] = {
-//        "sdo_read"
-//};
-
-
-#endif //GBEM_JSON_MSG_H
+#endif //GBEM_JSON_MSG_RESPONSE_GET_FILE_H
