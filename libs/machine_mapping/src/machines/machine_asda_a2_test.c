@@ -60,7 +60,7 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_asda_a2             
 //MAP_DRIVE_NEG_LIMIT(                        -1073741823                        );
 MAP_DRIVE_POS_LIMIT(                        0                                    );
 MAP_DRIVE_NEG_LIMIT(                        0                                    );
-MAP_DRIVE_DIRECTION(                        0,                                   );
+//MAP_DRIVE_DIRECTION(                        0,                                   );
 MAP_DRIVE_TORQ_LIMIT(                       0,                                   );
 MAP_DRIVE_VEL_LIMIT(                        0,                                   );
 MAP_DRIVE_SCALES(                           {0,0,0}                              );

@@ -123,7 +123,6 @@ MAP_DRIVE_RUN_HOMING(                       0,                                  
 MAP_DRIVE_GET_SECONDARY_NAME_FUNCTION(      NULL,                                 NULL,                                ec_get_secondary_name_aw_j_series,    NULL,                                     NULL,                                 NULL,                              NULL                                  );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                                 NULL,                                ec_print_params_aw_j_series,          NULL,                                     NULL,                                 NULL,                              NULL                                  );
 MAP_DRIVE_TYPE(                             DRIVE_TYPE_VIRTUAL,                   DRIVE_TYPE_VIRTUAL,                  DRIVE_TYPE_AW_J32,                    DRIVE_TYPE_VIRTUAL,                       DRIVE_TYPE_VIRTUAL,                   DRIVE_TYPE_VIRTUAL,                DRIVE_TYPE_VIRTUAL                    );
-MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           NULL,                                 NULL,                                ec_get_log_file_aw_j_series,          NULL,                                     NULL,                                 NULL,                              NULL                                  );
 
 /**
  * POS_LIMIT in degrees
@@ -132,7 +131,6 @@ MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           NULL,                               
  */
 
 /* DRIVE PARAMETERS */
-MAP_DRIVE_DIRECTION(                       1                );
 MAP_DRIVE_SCALES(                          {166886,9549,4.3});
 
 /* PLC IO CONFIG */

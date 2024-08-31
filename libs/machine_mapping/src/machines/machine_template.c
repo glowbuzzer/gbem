@@ -56,7 +56,6 @@ MAP_DRIVE_SET_SETVELOFFSET_WRD_FUNCTIONS(  NULL, NULL                           
 /* DRIVE PARAMETERS */
 MAP_DRIVE_POS_LIMIT(                        999,                            999                                 );
 MAP_DRIVE_NEG_LIMIT(                        -999,                           -999                                );
-MAP_DRIVE_DIRECTION(                        1,                              1                                   );
 MAP_DRIVE_TORQ_LIMIT(                       0,                              0                                   );
 MAP_DRIVE_VEL_LIMIT(                        0,                              0                                   );
 MAP_DRIVE_SCALES(                           {0},                            {0}                                 );

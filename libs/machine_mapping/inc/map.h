@@ -101,11 +101,10 @@ typedef enum {
 
 // #define MAP_DRIVE_POS_LIMIT(...) const int32_t map_drive_pos_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
 // #define MAP_DRIVE_NEG_LIMIT(...) const int32_t map_drive_neg_limit[MAP_NUM_DRIVES] = {__VA_ARGS__};
-#define MAP_DRIVE_DIRECTION(...) const uint8_t map_drive_direction[MAP_NUM_DRIVES] = {__VA_ARGS__};
+
 #define MAP_DRIVE_RUN_HOMING(...) const bool map_drive_run_homing[MAP_NUM_DRIVES] = {__VA_ARGS__};
 #define MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(...) gberror_t (*map_drive_print_params_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 #define MAP_DRIVE_GET_SECONDARY_NAME_FUNCTION(...) gberror_t (*map_drive_get_secondary_name_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, char *secondary_name) = {__VA_ARGS__};
-#define MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(...) gberror_t (*map_drive_get_log_file_function_ptr[MAP_NUM_DRIVES])(uint16_t drive) = {__VA_ARGS__};
 
 #define MAP_DRIVE_TYPE(...) const map_drive_type_t map_drive_type[MAP_NUM_DRIVES] = {__VA_ARGS__};
 
@@ -375,15 +374,13 @@ extern gberror_t (*map_drive_print_params_function_ptr[MAP_NUM_DRIVES])(uint16_t
 
 extern gberror_t (*map_drive_get_secondary_name_function_ptr[MAP_NUM_DRIVES])(uint16_t drive, char *secondary_name);
 
-extern gberror_t (*map_drive_get_log_file_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
-
 extern const bool map_drive_run_homing[MAP_NUM_DRIVES];
 
 extern gberror_t (*map_drive_homing_exec_function_ptr[MAP_NUM_DRIVES])(uint16_t drive);
 
 // extern const int32_t map_drive_pos_limit[MAP_NUM_DRIVES];
 // extern const int32_t map_drive_neg_limit[MAP_NUM_DRIVES];
-extern const uint8_t map_drive_direction[MAP_NUM_DRIVES];
+
 
 // extern const int32_t map_drive_torque_limit[MAP_NUM_DRIVES];
 // extern const int32_t map_drive_vel_limit[MAP_NUM_DRIVES];

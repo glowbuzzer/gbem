@@ -86,11 +86,9 @@ MAP_DRIVE_RUN_HOMING(                       0,                                  
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               NULL                                );
 MAP_DRIVE_GET_SECONDARY_NAME_FUNCTION(      NULL,                               NULL,                               );
 MAP_DRIVE_TYPE(                             DRIVE_TYPE_OM,                      DRIVE_TYPE_OM,                      );
-MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           NULL,                               NULL                                );
 
 
 /* DRIVE PARAMETERS */
-MAP_DRIVE_DIRECTION(                        1,                                  1                                   );
 MAP_DRIVE_SCALES(                           {0},                                {0}                                 );
 
 

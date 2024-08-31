@@ -120,10 +120,10 @@ gberror_t ec_standard_sdos_asda_a2(const uint16_t slave) {
     //                         ASDA_A2_MAX_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[slave], true)) {
     //     return E_SDO_WRITE_FAILURE;
     // }
-    if (!ec_sdo_write_int32(slave, ASDA_A2_DIRECTION_SDO_INDEX,
-                            ASDA_A2_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave], true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
+//    if (!ec_sdo_write_int32(slave, ASDA_A2_DIRECTION_SDO_INDEX,
+//                            ASDA_A2_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave], true)) {
+//        return E_SDO_WRITE_FAILURE;
+//    }
 
     if (!ec_sdo_write_uint32(slave, ASDA_A2_POSITION_FACTOR_NUMERATOR_SDO_INDEX,
                              ASDA_A2_POSITION_FACTOR_NUMERATOR_SDO_SUB_INDEX,

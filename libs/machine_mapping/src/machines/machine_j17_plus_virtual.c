@@ -67,7 +67,6 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           NULL,                               
 /* DRIVE PARAMETERS */
 MAP_DRIVE_POS_LIMIT(                        99999999,                               0,                                  0,                                  0,                                  0,                                  0                                   );
 MAP_DRIVE_NEG_LIMIT(                        -99999999,                              0,                                  0,                                  0,                                  0,                                  0                                   );
-MAP_DRIVE_DIRECTION(                        1,                                      1,                                  1,                                  1,                                  1,                                  1                                   );
 //percentage of max torque
 MAP_DRIVE_TORQ_LIMIT(                       20,                                     0,                                  0,                                  0,                                  0,                                  0,                                  );
 

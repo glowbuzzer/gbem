@@ -58,7 +58,7 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_el2522,         ec_p
 /* DRIVE PARAMETERS */
 MAP_DRIVE_POS_LIMIT(                        0,                              0                               );
 MAP_DRIVE_NEG_LIMIT(                        0,                              0                               );
-MAP_DRIVE_DIRECTION(                        0,                              0                               );
+//MAP_DRIVE_DIRECTION(                        0,                              0                               );
 MAP_DRIVE_TORQ_LIMIT(                       0,                              0                               );
 MAP_DRIVE_VEL_LIMIT(                        0,                              0                               );
 MAP_DRIVE_SCALES(                           {0},                            {0}                             );

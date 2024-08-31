@@ -79,7 +79,6 @@ MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series         
 //FOR AW DRIVES THESE ARE IN DEGREES
 MAP_DRIVE_POS_LIMIT(                        9999,                                  );
 MAP_DRIVE_NEG_LIMIT(                        -9999,                                 );
-MAP_DRIVE_DIRECTION(                        1,                                  );
 //percentage of max torque
 MAP_DRIVE_TORQ_LIMIT(                       30,                                  );
 MAP_DRIVE_VEL_LIMIT(                        50,                                  );

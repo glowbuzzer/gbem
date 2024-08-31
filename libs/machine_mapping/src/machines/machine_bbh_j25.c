@@ -95,11 +95,9 @@ MAP_DRIVE_RUN_HOMING(                       0,                                  
 MAP_DRIVE_GET_SECONDARY_NAME_FUNCTION(      ec_get_secondary_name_aw_j_series       );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series             );
 MAP_DRIVE_TYPE(                             DRIVE_TYPE_AW_J25                       );
-MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           ec_get_log_file_aw_j_series             );
 
 /* DRIVE PARAMETERS */
 
-MAP_DRIVE_DIRECTION(                        1,                                      );
 MAP_DRIVE_SCALES(                           {166886,9549,32.67}                     );
 
 /* PLC IO CONFIG */
@@ -107,7 +105,7 @@ MAP_DRIVE_SCALES(                           {166886,9549,32.67}                 
 
 
 /*IO MAP*/
-mapping_t map_iomap[18] = {
+mapping_t map_iomap[33] = {
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave=true},             {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=0, .type = GBC_IO_TYPE_SAFETY},      {}},
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1, .type = GBC_IO_TYPE_SAFETY},      {}},
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2, .type = GBC_IO_TYPE_SAFETY},      {}},
@@ -122,12 +120,29 @@ mapping_t map_iomap[18] = {
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=11, .type = GBC_IO_TYPE_SAFETY},      {}},
         {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=12, .type = GBC_IO_TYPE_SAFETY},      {}},
 
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=5, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=13, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=6, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=14, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=7, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=15, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_2, .bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=16, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_2, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=17, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_2, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=18, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_2, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=19, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_2, .bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=20, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_2, .bit_num=5, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=21, .type = GBC_IO_TYPE_SAFETY},      {}},
+
     //bit 0 is used by gbem to set the error ack
-        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=0, .type = GBC_IO_TYPE_SAFETY},     {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=1, .type = GBC_IO_TYPE_SAFETY},     {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=2, .type = GBC_IO_TYPE_SAFETY},     {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=3, .type = GBC_IO_TYPE_SAFETY},     {}},
-        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=5, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=4, .type = GBC_IO_TYPE_SAFETY},     {}},
+//        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=0, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=1, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=2, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=3, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=4, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=5, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=5, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=6, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=6, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=7, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=7, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_1, .bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=8, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_1, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=9, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_1, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=10, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_1, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=11, .type = GBC_IO_TYPE_SAFETY},     {}},
 };
 
 uint16_t map_num_rows_in_iomap = sizeof(map_iomap) / sizeof(map_iomap[0]);

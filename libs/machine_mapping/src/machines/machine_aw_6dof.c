@@ -133,7 +133,6 @@ MAP_DRIVE_RUN_HOMING(                       0,                                  
 MAP_DRIVE_GET_SECONDARY_NAME_FUNCTION(      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series       );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series             );
 MAP_DRIVE_TYPE(                             DRIVE_TYPE_AW_J_40_LP,                  DRIVE_TYPE_AW_J_40_HP,                  DRIVE_TYPE_AW_J32,                      DRIVE_TYPE_AW_J25,                      DRIVE_TYPE_AW_J25,                      DRIVE_TYPE_AW_J20                       );
-MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series             );
 
 /**
  * POS_LIMIT in degrees
@@ -142,7 +141,6 @@ MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           ec_get_log_file_aw_j_series,        
  */
 
 /* DRIVE PARAMETERS */
-MAP_DRIVE_DIRECTION(                        1,                                      1,                                      1,                                      1,                                      1,                                      1                                       );
 MAP_DRIVE_SCALES(                           {166886,9549,3.414},         {166886,9549,2.54},           {166886,9549,4.3},           {166886,9549,4.3},            {166886,9549,3.414},         {166886,9549,16.07}          );
 
 /* PLC IO CONFIG */

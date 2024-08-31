@@ -24,29 +24,29 @@
 //TxPDO 0x1c13 SM3
 
 map_PDO_configuration_object_t map_rxpdo_object_jvl_mis = {
-    .number_of_entries = 3,
-    .PDO_assignment_index = 0x1600
+        .number_of_entries = 3,
+        .PDO_assignment_index = 0x1600
 };
 
 map_PDO_configuration_object_t map_txpdo_object_jvl_mis = {
-    .number_of_entries = 7,
-    .PDO_assignment_index = 0x1a00
+        .number_of_entries = 7,
+        .PDO_assignment_index = 0x1a00
 };
 
 uint32_t map_rxpdo_contents_jvl_mis[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x60400010,
-    0x60600008,
-    0x607A0020
+        0x60400010,
+        0x60600008,
+        0x607A0020
 };
 
 uint32_t map_txpdo_contents_jvl_mis[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x60410010,
-    0x60610008,
-    0x60640020,
-    0x606c0020,
-    0x60770010,
-    0x60f40020,
-    0x603f0010,
+        0x60410010,
+        0x60610008,
+        0x60640020,
+        0x606c0020,
+        0x60770010,
+        0x60f40020,
+        0x603f0010,
 };
 
 //0x6091:1
@@ -122,10 +122,10 @@ gberror_t ec_standard_sdos_jvl_mis(const uint16_t slave) {
     //     return E_SDO_WRITE_FAILURE;
     // }
 
-    if (!ec_sdo_write_uint8(slave, JVL_MIS_DIRECTION_SDO_INDEX,
-                            JVL_MIS_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave - 1], true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
+//    if (!ec_sdo_write_uint8(slave, JVL_MIS_DIRECTION_SDO_INDEX,
+//                            JVL_MIS_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave - 1], true)) {
+//        return E_SDO_WRITE_FAILURE;
+//    }
 
     //    VIP: The position factor is automatically calculated when the feed constant (Object 0x6092) and gear ratio (Object 0x6091) are set.
 
@@ -215,23 +215,23 @@ bool ec_get_follow_error_jvl_mis(const uint16_t drive) {
 #define NUM_OF_JVL_MIS_ERROR_STRINGS 17
 
 const jvl_mis_error_string_t jvl_mis_alarm_code[NUM_OF_JVL_MIS_ERROR_STRINGS] = {
-    {0, "No error"},
-    {16912, "Temperature too high"},
-    {21376, "Initialization error"},
-    {30081, "Initialization error"},
-    {34321, "Follow erro"},
-    {34432, "SW position limit exceeded"},
-    {12832, "Undervoltage on bus"},
-    {29446, "Multiturn encoder lost position"},
-    {29447, "Multiturn encoder reed error"},
-    {29448, "Multiturn encoder communication error"},
-    {30080, "SSI Encoder error"},
-    {33921, "SSI Encoder error"},
-    {21889, "Memory error"},
-    {29445, "Singleturn encoder error"},
-    {21377, "STO alarm error"},
-    {34433, "Negative limit exceeded"},
-    {34434, "Positive limit exceeded"},
+        {0,     "No error"},
+        {16912, "Temperature too high"},
+        {21376, "Initialization error"},
+        {30081, "Initialization error"},
+        {34321, "Follow erro"},
+        {34432, "SW position limit exceeded"},
+        {12832, "Undervoltage on bus"},
+        {29446, "Multiturn encoder lost position"},
+        {29447, "Multiturn encoder reed error"},
+        {29448, "Multiturn encoder communication error"},
+        {30080, "SSI Encoder error"},
+        {33921, "SSI Encoder error"},
+        {21889, "Memory error"},
+        {29445, "Singleturn encoder error"},
+        {21377, "STO alarm error"},
+        {34433, "Negative limit exceeded"},
+        {34434, "Positive limit exceeded"},
 };
 
 uint8_t *ec_get_error_string_pdo_jvl_mis(const uint16_t drive) {

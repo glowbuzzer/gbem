@@ -25,25 +25,25 @@
 
 /* This is used for the fixed POO remapping */
 map_SM_assignment_object_t map_SM2_mse_408 = {
-    .number_of_entries = 1,
-    .SM_assignment_index = 0x1c12
+        .number_of_entries = 1,
+        .SM_assignment_index = 0x1c12
 };
 
 /* This is used for the fixed PDO remapping */
 map_SM_assignment_object_t map_SM3_mse_408 = {
-    .number_of_entries = 1,
-    .SM_assignment_index = 0x1c13
+        .number_of_entries = 1,
+        .SM_assignment_index = 0x1c13
 };
 
 
 /* This is used for the fixed PDO remapping */
 uint16_t map_SM2_index_of_assigned_PDO_mse_408[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1601,
+        0x1601,
 };
 
 /* This is used for the fixed PDO remapping */
 uint16_t map_SM3_index_of_assigned_PDO_mse_408[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1a01,
+        0x1a01,
 };
 
 
@@ -82,16 +82,16 @@ gberror_t ec_apply_standard_sdos_mse_408(const uint16_t slave) {
     //     }
     // }
 
+//
+//    uint8_t polarity = 0;
+//    if (map_drive_direction[map_slave_to_drive(slave)] == 1) {
+//        polarity = 1;
+//    }
 
-    uint8_t polarity = 0;
-    if (map_drive_direction[map_slave_to_drive(slave)] == 1) {
-        polarity = 1;
-    }
-
-    if (!ec_sdo_write_uint8(slave, MSE_408_DIRECTION_SDO_INDEX, MSE_408_DIRECTION_SDO_SUB_INDEX,
-                            polarity, true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
+//    if (!ec_sdo_write_uint8(slave, MSE_408_DIRECTION_SDO_INDEX, MSE_408_DIRECTION_SDO_SUB_INDEX,
+//                            polarity, true)) {
+//        return E_SDO_WRITE_FAILURE;
+//    }
 
     //Max Motor Speed 0x6080 0 U32 RW 1 300 000 0…800 000
     if (!ec_sdo_write_uint32(slave, MSE_408_MAX_MOTOR_SPEED_SDO_INDEX,
@@ -387,11 +387,11 @@ gberror_t ec_set_moo_pdo_rev_mse_408(const uint16_t drive) {
 
 /*array mapping an MSE-408 drive error code to a text string */
 const mse_408_error_string_t mse_408_error_code[NUM_OF_MSE_408_ERROR_STRINGS] = {
-    {0x8611, "Motor following error"},
-    {0x8500, "Error encoder short circuit” (or overcurrent on encoder)"},
-    {0x8400, "Axis speed too high” (see object 0x3321, subindex 4)"},
-    {0x5100, "Error power supply out of range"},
-    {0x4310, "Error drive excessive temperature"},
-    {0x2130, "Error short circuit” (or overcurrent on motor phase)"},
-    {0x0000, "Emergency end"},
+        {0x8611, "Motor following error"},
+        {0x8500, "Error encoder short circuit” (or overcurrent on encoder)"},
+        {0x8400, "Axis speed too high” (see object 0x3321, subindex 4)"},
+        {0x5100, "Error power supply out of range"},
+        {0x4310, "Error drive excessive temperature"},
+        {0x2130, "Error short circuit” (or overcurrent on motor phase)"},
+        {0x0000, "Emergency end"},
 };
