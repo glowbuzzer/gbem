@@ -20,7 +20,7 @@ gberror_t json_msg_parse_sdo_read_payload(json_t *sdo_payload, uint16_t *slave, 
     json_t *obj = json_object_get(sdo_payload, "index");
 
     if (!json_is_integer(obj)) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: index is not a integer in JSON request\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON MSG] Error: index is not a integer in JSON request\n");
         return E_GENERAL_FAILURE;
     }
 
@@ -29,7 +29,7 @@ gberror_t json_msg_parse_sdo_read_payload(json_t *sdo_payload, uint16_t *slave, 
     obj = json_object_get(sdo_payload, "subindex");
 
     if (!json_is_integer(obj)) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: sub_index is not a integer in JSON request\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON MSG] Error: sub_index is not a integer in JSON request\n");
         return E_GENERAL_FAILURE;
     }
 
@@ -38,7 +38,7 @@ gberror_t json_msg_parse_sdo_read_payload(json_t *sdo_payload, uint16_t *slave, 
     obj = json_object_get(sdo_payload, "slave");
 
     if (!json_is_integer(obj)) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: slave is not a integer in JSON request\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON MSG] Error: slave is not a integer in JSON request\n");
         return E_GENERAL_FAILURE;
     }
 
@@ -47,7 +47,7 @@ gberror_t json_msg_parse_sdo_read_payload(json_t *sdo_payload, uint16_t *slave, 
     obj = json_object_get(sdo_payload, "datatype");
 
     if (!json_is_integer(obj)) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: datatype is not a integer in JSON request\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON MSG] Error: datatype is not a integer in JSON request\n");
         return E_GENERAL_FAILURE;
     }
 
@@ -57,15 +57,17 @@ gberror_t json_msg_parse_sdo_read_payload(json_t *sdo_payload, uint16_t *slave, 
     obj = json_object_get(sdo_payload, "length");
 
     if (!json_is_integer(obj)) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: length is not a integer in JSON request\n");
-        return E_GENERAL_FAILURE;
+        if (!json_is_number(obj)) {
+
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON MSG] Error: length is not a integer in JSON request\n");
+            return E_GENERAL_FAILURE;
+        } else {
+            *len = 1;
+            return E_SUCCESS;
+        }
     }
 
-
-//    *len = (uint8_t) json_object_size(sdo_payload);
-
     *len = (uint8_t) json_integer_value(obj);
-
     return E_SUCCESS;
 
 

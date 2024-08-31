@@ -21,6 +21,7 @@
 
 
 
+
 //{
 //response: {
 //requestType: "get config" // not important to include, could be number
@@ -66,15 +67,17 @@ json_msg_response(char *request_id, int request_type, bool error, char *message,
     size_t size = json_dumpb(responsebody, NULL, 0, 0);
     if (size > DPM_REQUEST_RESPONSE_DATA_LENGTH) {
 
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: response size [%zu] overflow", size);
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON MSG] Error: response size [%zu] overflow", size);
 
 
     } else {
         //todo debug remove
-        printf("Response size to message request [%zu]", size);
+        UM_INFO(GBEM_UM_EN, "GBEM: [JSON MSG] Response size to message request [%zu]", size);
+
     }
 
     strcpy(response_json, json_dumps(response, JSON_COMPACT));
+
 
     json_decref(response);
     json_decref(responsebody);

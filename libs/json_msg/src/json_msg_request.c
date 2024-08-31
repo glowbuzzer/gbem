@@ -22,10 +22,17 @@
 #include "dpm.h"
 #include "json_msg_response_get_version.h"
 #include "json_msg_response_sdo_read.h"
-#include "json_msg_parse_sdo_read_payload.c"
+#include "json_msg_response_get_file.h"
+#include "json_msg_parse_sdo_read_payload.h"
 #include "json_msg_parse_sdo_write_payload.h"
+#include "json_msg_parse_get_file_payload.h"
 #include "json_msg_response_sdo_write.h"
+#include "foe_read_file.h"
+#include "../../foe/inc/foe_read_file.h"
+#include "dpm.h"
+#include "user_message.h"
 
+#define JSON_MSG_MAX_FILE_SIZE  (DPM_REQUEST_RESPONSE_DATA_LENGTH -100)
 
 gberror_t
 json_msg_request_extract(char *msg, int *request_type, json_t **payload) {
@@ -39,14 +46,14 @@ json_msg_request_extract(char *msg, int *request_type, json_t **payload) {
 
 
     if (!root) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: on line [%d ] [%s] of JSON request (json_msg_request_extract)\n",
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON MSG] Error: on line [%d ] [%s] of JSON request (json_msg_request_extract)\n",
                  error.line, error.text);
         return E_GENERAL_FAILURE;
     }
 
 //    request = json_object_get(root, "request");
 //    if (!json_is_object(request)) {
-//        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: request not found in JSON request\n");
+//        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON MSG] Error: request not found in JSON request\n");
 //        json_decref(root);
 //        return E_GENERAL_FAILURE;
 //    }
@@ -56,7 +63,7 @@ json_msg_request_extract(char *msg, int *request_type, json_t **payload) {
 
 
     if (!json_is_integer(request_type_json)) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: request_type is not a integer in JSON request\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON MSG] Error: request_type is not a integer in JSON request\n");
         json_decref(root);
         return E_GENERAL_FAILURE;
     }
@@ -69,7 +76,7 @@ json_msg_request_extract(char *msg, int *request_type, json_t **payload) {
     json_t *payload_json = json_object_get(root, "payload");
 
     if (!json_is_object(payload_json)) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: payload not found in JSON request\n");
+        UM_ERROR(GBEM_UM_EN, "GBEM: [JSON MSG] Error: payload not found in JSON request\n");
         json_decref(root);
         return E_GENERAL_FAILURE;
     }
@@ -93,7 +100,9 @@ gberror_t json_msg_request_respond_handle(char *msg, char *response_json, char *
     int request_type;
     json_t *payload;
     gberror_t rc;
-
+    char filename[MAX_JSON_MSG_FILENAME_LENGTH] = {0};
+    // Static allocation of the buffer for file contents
+    static char file_contents[JSON_MSG_MAX_FILE_SIZE] = {0};
 
     if (strnlen(msg, DPM_REQUEST_RESPONSE_DATA_LENGTH) < 5) {
         json_msg_response_error(request_id, 0, "Empty request", response_json);
@@ -107,6 +116,7 @@ gberror_t json_msg_request_respond_handle(char *msg, char *response_json, char *
 
     }
 
+    uint32_t password;
     uint16_t slave;
     ec_datatype datatype;
     uint16_t index;
@@ -115,7 +125,8 @@ gberror_t json_msg_request_respond_handle(char *msg, char *response_json, char *
     ec_value value;
 
 
-    printf("Request type [%d]\n", request_type);
+    UM_INFO(GBEM_UM_EN, "GBEM: [JSON MSG] Request type received [%d]\n", request_type);
+
 
     switch (request_type) {
         case GBEM_REQUEST_SDO_READ:
@@ -167,8 +178,30 @@ gberror_t json_msg_request_respond_handle(char *msg, char *response_json, char *
             json_msg_response_get_version(request_id, response_json);
 
             break;
+
+        case GBEM_REQUEST_GET_FILE:
+
+            if (json_msg_parse_get_file_payload(payload, &slave, &password, filename) != E_SUCCESS) {
+                json_msg_response_error(request_id, request_type, "Failed to parse get file payload", response_json);
+                return E_SUCCESS;
+            }
+
+            rc = foe_read_file(filename, password, slave, file_contents, JSON_MSG_MAX_FILE_SIZE);
+
+
+            if (rc != E_SUCCESS) {
+                json_msg_response_error(request_id, request_type, "Get file read failed", response_json);
+                return E_SUCCESS;
+            }
+
+            //respond
+            json_msg_response_get_file(request_id, response_json, file_contents);
+
+
+            break;
+
         default:
-            UM_ERROR(GBEM_UM_EN, "GBEM: [json_mesg] Error: request_type not supported\n");
+            UM_ERROR(GBEM_UM_EN, "GBEM: [JSON MSG] Error: request_type not supported\n");
             json_msg_response_error(request_id, request_type, "request type not supported", response_json);
             return E_SUCCESS;
     }
