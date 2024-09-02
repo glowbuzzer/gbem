@@ -63,6 +63,7 @@
 #include "EL2622.h"
 #include "EL2808.h"
 #include "EL2809.h"
+#include "EL2535_0005.h"
 
 
 /* EL3xxx - EtherCAT analog input */
@@ -115,6 +116,6 @@
 /* Drives */
 
 #include "AX5101.h"
-
+#include "ELM7231_9018.h"
 
 #endif /* INC_BECKHOFF_H_ */
