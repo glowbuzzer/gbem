@@ -31,19 +31,19 @@ MAP_FSOE_MASTER_SET_ERROR_ACK_STATE_FUNCTION(   ec_fsoe_set_error_ack_state_bbh_
 
 
 /* SLAVES */
-//                                          Slave 1                                 Slave 2             Slave 3                         Slave 4
-//                                          MAP_BBH_SCU_1_EC_1                      MAP_EK1100_1        MAP_EL6021_1                    MAP_AW_J25_FSOE_1
-//                                          Safety PLC                              Coupler             Serial comms                    AW J25 joint FSoE
-MAP_NUM_DRIVES_ATTACHED(                    0,                                      0,                  0,                              1);
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            NULL,                                   NULL,               NULL,                           ec_pdo_map_aw_j_series_fsoe);
-MAP_SLAVE_NVRAM_SDO_FUNCTIONS(              NULL,                                   NULL,               NULL,                           NULL);
-MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           ec_apply_standard_sdos_bbh_scu_1_ec,    NULL,               ec_apply_standard_sdos_el6021,  ec_apply_standard_sdos_aw_j_series_fsoe );
-MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            NULL,                                   NULL,               NULL,                           ec_initial_pdo_aw_j_series);
-MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(         ec_custom_fmmu_sm_bbh_scu_1_ec,         NULL,               NULL,                           ec_custom_fmmu_sm_aw_j_series);
-MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,                             EC_DC_NONE,         EC_DC_NONE,                     EC_DC_0);
-MAP_SLAVE_DC_CYCLE(                         0,                                      4,                  4,                              4) ;
-MAP_SLAVE_EXEC_FUNCTIONS(                   NULL,                                   NULL,               ec_slave_exec_el6021,          NULL);
-MAP_SLAVE_OPTIONAL(                         false,                                  false,              true,                          false);
+//                                          Slave 1                                 Slave 2             Slave 3                         Slave 4                 Slave 5             Slave 6             Slave 7
+//                                          MAP_BBH_SCU_1_EC_1                      MAP_EK1100_1        MAP_EL6021_1                    MAP_EL2535_0005_1       MAP_ELM7231_9818_1  MAP_EK1110_1        MAP_AW_J25_FSOE_1
+//                                          Safety PLC                              Coupler             Serial comms                    PWM                     Vertical Lift drive Coupler             AW J25 joint FSoE
+MAP_NUM_DRIVES_ATTACHED(                    0,                                      0,                  0,                              0,                      0,                  0,                  1);
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(            NULL,                                   NULL,               NULL,                           NULL,                   NULL,               NULL,               ec_pdo_map_aw_j_series_fsoe);
+MAP_SLAVE_NVRAM_SDO_FUNCTIONS(              NULL,                                   NULL,               NULL,                           NULL,                   NULL,               NULL,               NULL);
+MAP_SLAVE_STANDARD_SDO_FUNCTIONS(           ec_apply_standard_sdos_bbh_scu_1_ec,    NULL,               ec_apply_standard_sdos_el6021,  NULL,                   NULL,               NULL,               ec_apply_standard_sdos_aw_j_series_fsoe );
+MAP_SLAVE_INITIAL_PDO_FUNCTIONS(            NULL,                                   NULL,               NULL,                           NULL,                   NULL,               NULL,               ec_initial_pdo_aw_j_series);
+MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(         ec_custom_fmmu_sm_bbh_scu_1_ec,         NULL,               NULL,                           NULL,                   NULL,               NULL,               ec_custom_fmmu_sm_aw_j_series);
+MAP_SLAVE_DC_TYPE(                          EC_DC_NONE,                             EC_DC_NONE,         EC_DC_NONE,                     EC_DC_NONE,             EC_DC_NONE,         EC_DC_NONE,         EC_DC_0);
+MAP_SLAVE_DC_CYCLE(                         0,                                      4,                  4,                              4,                      4,                  4,                  4) ;
+MAP_SLAVE_EXEC_FUNCTIONS(                   NULL,                                   NULL,               ec_slave_exec_el6021,           NULL,                   NULL,               NULL,               NULL);
+MAP_SLAVE_OPTIONAL(                         false,                                  false,              true,                           true,                   true,               true,               false);
 
 
 
@@ -60,10 +60,13 @@ MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
 /*This is a zero indexed array even though the slaves are 1 indexed */
 /* This must be laid out in the order they appear in netscan */
 map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {
-        {.name = BBH_SCU_1_EC_EEP_NAME, .eep_id = BBH_SCU_1_EC_EEP_ID, .eep_man = BBH_SCU_1_EC_EEP_MAN, .eep_rev = BBH_SCU_1_EC_EEP_REV},
-        { .name = EK1100_EEP_NAME,       .eep_id = EK1100_EEP_ID,        .eep_man = EK1100_EEP_MAN,      .eep_rev = EK1100_EEP_REV   },
-        {.name = EL6021_EEP_NAME,       .eep_id = EL6021_EEP_ID,        .eep_man = EL6021_EEP_MAN,      .eep_rev = EL6021_EEP_REV   },
-        {.name = AW_EEP_NAME, .eep_id = AW_EEP_ID, .eep_man = AW_EEP_MAN, .eep_rev = AW_EEP_REV    },
+        {.name = BBH_SCU_1_EC_EEP_NAME, .eep_id = BBH_SCU_1_EC_EEP_ID,  .eep_man = BBH_SCU_1_EC_EEP_MAN,    .eep_rev = BBH_SCU_1_EC_EEP_REV},
+        {.name = EK1100_EEP_NAME,       .eep_id = EK1100_EEP_ID,        .eep_man = EK1100_EEP_MAN,          .eep_rev = EK1100_EEP_REV   },
+        {.name = EL6021_EEP_NAME,       .eep_id = EL6021_EEP_ID,        .eep_man = EL6021_EEP_MAN,          .eep_rev = EL6021_EEP_REV   },
+        {.name = EL2535_0005_EEP_NAME,  .eep_id = EL2535_0005_EEP_ID,   .eep_man = EL2535_0005_EEP_MAN,     .eep_rev = EL2535_0005_EEP_REV},
+        {.name = ELM7231_9018_EEP_NAME, .eep_id = ELM7231_9018_EEP_ID,  .eep_man = ELM7231_9018_EEP_MAN,    .eep_rev = ELM7231_9018_EEP_REV  },
+        {.name = EK1110_EEP_NAME,       .eep_id = EK1110_EEP_ID,        .eep_man = EK1110_EEP_MAN,          .eep_rev = EK1110_EEP_REV   },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,              .eep_rev = AW_EEP_REV    },
 };
 
 

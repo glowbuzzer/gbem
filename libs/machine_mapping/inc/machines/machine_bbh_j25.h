@@ -22,14 +22,17 @@
 #define MAP_BBH_SCU_1_EC_1          1
 #define MAP_EK1100_1                2
 #define MAP_EL6021_1                3
-#define MAP_AW_J25_FSOE_1           4
+#define MAP_EL2535_0005_1           4
+#define MAP_ELM7231_9818_1          5
+#define MAP_EK1110_1                6
+#define MAP_AW_J25_FSOE_1           7
 
 #define ECM_CHECK_EEP_MAN           0
 #define ECM_CHECK_EEP_REV           0
 #define ECM_CHECK_EEP_ID            0
 
 #define MAP_NUM_DRIVES              1
-#define MAP_NUM_SLAVES              4
+#define MAP_NUM_SLAVES              7
 #define MAP_NUM_FSOE_MASTER_SLOTS   1
 
 
