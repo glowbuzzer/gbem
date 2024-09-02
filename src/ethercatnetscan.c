@@ -739,6 +739,7 @@ void ecm_netscan(char *ifname1, bool apply_pdo_mapping) {
                                etohs(ec_slave[cnt].SM[nSM].SMlength), etohl(ec_slave[cnt].SM[nSM].SMflags),
                                ec_slave[cnt].SMtype[nSM]);
                 }
+                printf("FMMUunused [%d] for cnt [%d]\n", ec_slave[cnt].FMMUunused, cnt);
                 for (j = 0; j < ec_slave[cnt].FMMUunused; j++) {
                     printf(" FMMU%1d Ls:%8.8x Ll:%4d Lsb:%d Leb:%d Ps:%4.4x Psb:%d Ty:%2.2x Act:%2.2x\n", j,
                            etohl(ec_slave[cnt].FMMU[j].LogStart), etohs(ec_slave[cnt].FMMU[j].LogLength),
