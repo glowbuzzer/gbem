@@ -85,11 +85,14 @@ bool json_conf_parse_optional_slaves(json_t *json_ethercat, uint16_t max_num_opt
 
             if (json_is_boolean(is_enabled)) {
                 optional_slaves->enable_optional_slave[num_of_optional_slaves_found] = json_boolean_value(is_enabled);
-//                printf("optional_slaves->enable_optional_slave[%lld]: %d\n", (long long) index1,
-//                       optional_slaves->enable_optional_slave[index1]);
-                if (json_boolean_value(is_enabled)) {
-                    num_of_optional_slaves_found++;
-                }
+
+//                printf("optional_slaves->enable_optional_slave[%d]: %d\n", num_of_optional_slaves_found,
+//                       optional_slaves->enable_optional_slave[num_of_optional_slaves_found]);
+
+
+//                if (json_boolean_value(is_enabled)) {
+                num_of_optional_slaves_found++;
+//                }
 
 //todo fix me
             } else {
