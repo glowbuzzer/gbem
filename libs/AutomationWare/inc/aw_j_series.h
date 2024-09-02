@@ -44,7 +44,6 @@ uint8_t *ec_get_detailled_error_report_pdo_aw_j_series(uint16_t drive_number, bo
 
 /** Drive functions */
 
-gberror_t ec_get_log_file_aw_j_series(const uint16_t drive);
 
 gberror_t ec_set_ctrl_wrd_aw_j_series(uint16_t drive, uint16_t ctrlwrd);
 
