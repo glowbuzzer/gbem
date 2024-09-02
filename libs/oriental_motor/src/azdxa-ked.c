@@ -1797,10 +1797,10 @@ gberror_t ec_nvram_sdos_azdxa_ked(const uint16_t slave) {
                     //                         AZDXA_KED_MAX_LIMIT_SDO_DRIVE1_SUB_INDEX, map_drive_pos_limit[i], true)) {
                     //     return E_SDO_WRITE_FAILURE;
                     // }
-                    if (!ec_sdo_write_int32(slave, AZDXA_KED_DIRECTION_SDO_DRIVE1_INDEX,
-                                            AZDXA_KED_DIRECTION_SDO_DRIVE1_SUB_INDEX, map_drive_direction[i], true)) {
-                        return E_SDO_WRITE_FAILURE;
-                    }
+//                    if (!ec_sdo_write_int32(slave, AZDXA_KED_DIRECTION_SDO_DRIVE1_INDEX,
+//                                            AZDXA_KED_DIRECTION_SDO_DRIVE1_SUB_INDEX, map_drive_direction[i], true)) {
+//                        return E_SDO_WRITE_FAILURE;
+//                    }
                     break;
                 case 2:
                     //todo
@@ -1812,10 +1812,10 @@ gberror_t ec_nvram_sdos_azdxa_ked(const uint16_t slave) {
                     //                         AZDXA_KED_MAX_LIMIT_SDO_DRIVE2_SUB_INDEX, map_drive_pos_limit[i], true)) {
                     //     return E_SDO_WRITE_FAILURE;
                     // }
-                    if (!ec_sdo_write_int32(slave, AZDXA_KED_DIRECTION_SDO_DRIVE2_INDEX,
-                                            AZDXA_KED_DIRECTION_SDO_DRIVE2_SUB_INDEX, map_drive_direction[i], true)) {
-                        return E_SDO_WRITE_FAILURE;
-                    }
+//                    if (!ec_sdo_write_int32(slave, AZDXA_KED_DIRECTION_SDO_DRIVE2_INDEX,
+//                                            AZDXA_KED_DIRECTION_SDO_DRIVE2_SUB_INDEX, map_drive_direction[i], true)) {
+//                        return E_SDO_WRITE_FAILURE;
+//                    }
                     break;
                 case 3:
                     //todo
@@ -1827,10 +1827,10 @@ gberror_t ec_nvram_sdos_azdxa_ked(const uint16_t slave) {
                     //                         AZDXA_KED_MAX_LIMIT_SDO_DRIVE3_SUB_INDEX, map_drive_pos_limit[i], true)) {
                     //     return E_SDO_WRITE_FAILURE;
                     // }
-                    if (!ec_sdo_write_int32(slave, AZDXA_KED_DIRECTION_SDO_DRIVE3_INDEX,
-                                            AZDXA_KED_DIRECTION_SDO_DRIVE3_SUB_INDEX, map_drive_direction[i], true)) {
-                        return E_SDO_WRITE_FAILURE;
-                    }
+//                    if (!ec_sdo_write_int32(slave, AZDXA_KED_DIRECTION_SDO_DRIVE3_INDEX,
+//                                            AZDXA_KED_DIRECTION_SDO_DRIVE3_SUB_INDEX, map_drive_direction[i], true)) {
+//                        return E_SDO_WRITE_FAILURE;
+//                    }
                     break;
                 case 4:
                     //todo
@@ -1842,10 +1842,10 @@ gberror_t ec_nvram_sdos_azdxa_ked(const uint16_t slave) {
                     //                         AZDXA_KED_MAX_LIMIT_SDO_DRIVE4_SUB_INDEX, map_drive_pos_limit[i], true)) {
                     //     return E_SDO_WRITE_FAILURE;
                     // }
-                    if (!ec_sdo_write_int32(slave, AZDXA_KED_DIRECTION_SDO_DRIVE4_INDEX,
-                                            AZDXA_KED_DIRECTION_SDO_DRIVE4_SUB_INDEX, map_drive_direction[i], true)) {
-                        return E_SDO_WRITE_FAILURE;
-                    }
+//                    if (!ec_sdo_write_int32(slave, AZDXA_KED_DIRECTION_SDO_DRIVE4_INDEX,
+//                                            AZDXA_KED_DIRECTION_SDO_DRIVE4_SUB_INDEX, map_drive_direction[i], true)) {
+//                        return E_SDO_WRITE_FAILURE;
+//                    }
                     break;
                 default:
                     LL_ERROR(GBEM_GEN_LOG_EN, "Sub-drive index out of range");

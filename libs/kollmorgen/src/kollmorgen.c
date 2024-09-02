@@ -545,10 +545,10 @@ gberror_t ec_nvram_sdos_akd(const uint16_t slave) {
     //                         AKD_MAX_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[slave], true)) {
     //     return E_SDO_WRITE_FAILURE;
     // }
-    if (!ec_sdo_write_int32(slave, AKD_DIRECTION_SDO_INDEX,
-                            AKD_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave], true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
+//    if (!ec_sdo_write_int32(slave, AKD_DIRECTION_SDO_INDEX,
+//                            AKD_DIRECTION_SDO_SUB_INDEX, map_drive_direction[slave], true)) {
+//        return E_SDO_WRITE_FAILURE;
+//    }
 
     gberror_t grc = ec_write_nvram_akd(slave);
     if (grc != E_SUCCESS) {

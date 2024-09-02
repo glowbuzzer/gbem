@@ -28,25 +28,25 @@
 
 /* This is used for the fixed POO remapping */
 map_SM_assignment_object_t map_SM2_azd_ked = {
-    .number_of_entries = 1,
-    .SM_assignment_index = 0x1c12
+        .number_of_entries = 1,
+        .SM_assignment_index = 0x1c12
 };
 
 /* This is used for the fixed PDO remapping */
 map_SM_assignment_object_t map_SM3_azd_ked = {
-    .number_of_entries = 1,
-    .SM_assignment_index = 0x1c13
+        .number_of_entries = 1,
+        .SM_assignment_index = 0x1c13
 };
 
 
 /* This is used for the fixed PDO remapping */
 uint16_t map_SM2_index_of_assigned_PDO_azd_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1601,
+        0x1601,
 };
 
 /* This is used for the fixed PDO remapping */
 uint16_t map_SM3_index_of_assigned_PDO_azd_ked[ECM_MAX_PDO_MAPPING_ENTRIES] = {
-    0x1a01,
+        0x1a01,
 };
 
 
@@ -350,24 +350,24 @@ gberror_t ec_nvram_sdos_azd_ked(const uint16_t slave) {
         UM_INFO(GBEM_UM_EN, "GBEM: Applying NVRAM SDOs to AZD slave [%u]", slave);
     }
 
-    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
-        if (map_drive_to_slave[i] == slave) {
-            //todo
-            // if (!ec_sdo_write_int32(slave, AZD_KED_MIN_LIMIT_SDO_INDEX,
-            //                         AZD_KED_MIN_LIMIT_SDO_SUB_INDEX, map_drive_neg_limit[i], true)) {
-            //     return E_SDO_WRITE_FAILURE;
-            // }
-            //
-            // if (!ec_sdo_write_int32(slave, AZD_KED_MAX_LIMIT_SDO_INDEX,
-            //                         AZD_KED_MAX_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[i], true)) {
-            //     return E_SDO_WRITE_FAILURE;
-            // }
-            if (!ec_sdo_write_int32(slave, AZD_KED_DIRECTION_SDO_INDEX,
-                                    AZD_KED_DIRECTION_SDO_SUB_INDEX, map_drive_direction[i], true)) {
-                return E_SDO_WRITE_FAILURE;
-            }
-        }
-    }
+//    for (int i = 0; i < MAP_NUM_DRIVES; i++) {
+//        if (map_drive_to_slave[i] == slave) {
+//            //todo
+//            // if (!ec_sdo_write_int32(slave, AZD_KED_MIN_LIMIT_SDO_INDEX,
+//            //                         AZD_KED_MIN_LIMIT_SDO_SUB_INDEX, map_drive_neg_limit[i], true)) {
+//            //     return E_SDO_WRITE_FAILURE;
+//            // }
+//            //
+//            // if (!ec_sdo_write_int32(slave, AZD_KED_MAX_LIMIT_SDO_INDEX,
+//            //                         AZD_KED_MAX_LIMIT_SDO_SUB_INDEX, map_drive_pos_limit[i], true)) {
+//            //     return E_SDO_WRITE_FAILURE;
+//            // }
+//            if (!ec_sdo_write_int32(slave, AZD_KED_DIRECTION_SDO_INDEX,
+//                                    AZD_KED_DIRECTION_SDO_SUB_INDEX, map_drive_direction[i], true)) {
+//                return E_SDO_WRITE_FAILURE;
+//            }
+//        }
+//    }
     gberror_t rc = ec_write_nvram_azd_ked(slave);
     if (rc != E_SUCCESS) {
         return E_NVRAM_WRITE_FAILURE;
@@ -423,46 +423,46 @@ gberror_t ec_nvram_sdos_azd_ked(const uint16_t slave) {
 
 /*array mapping an AZD drive error code to a text string */
 const azd_ked_error_string_t azd_ked_alarm_code[NUM_OF_AZD_ERROR_STRINGS] = {
-    {0x0, "AZD: No warning"},
-    {0x10, "AZD: Excessive position deviation"},
-    {0x20, "AZD: Overcurrent"},
-    {0x21, "AZD: Main circuit overheat"},
-    {0x22, "AZD: Overvoltage"},
-    {0x23, "AZD: Main power off"},
-    {0x25, "AZD: Undervoltage"},
-    {0x26, "AZD: Motor overheat"},
-    {0x28, "AZD: Sensor error"},
-    {0x29, "AZD: CPU peripheral circuit error"},
-    {0x2A, "AZD: ABZO sensor communication error"},
-    {0x30, "AZD: Overload"},
-    {0x31, "AZD: Overspeed"},
-    {0x33, "AZD: Absolute position error"},
-    {0x34, "AZD: Command pulse error"},
-    {0x35, "AZD: Alarm detection OF other axes"},
-    {0x41, "AZD: EEPROM error"},
-    {0x42, "AZD: Sensor error AT power on"},
-    {0x43, "AZD: Rotation error AT power on"},
-    {0x44, "AZD: Encoder EEPROM error"},
-    {0x45, "AZD: Motor combination error"},
-    {0x4A, "AZD: RETURN-TO-home incomplete"},
-    {0x51, "AZD: Regeneration resistor overheat"},
-    {0x54, "AZD: Fan rotation deterioration"},
-    {0x60, "AZD: +/-LS both sides active"},
-    {0x61, "AZD: Reverse +/-LS connection"},
-    {0x62, "AZD: RETURN-TO-home operation error"},
-    {0x63, "AZD: No HOMES"},
-    {0x64, "AZD: TIM, Z, SLIT signal error"},
-    {0x66, "AZD: Hardware overtravel"},
-    {0x67, "AZD: Software overtravel"},
-    {0x6A, "AZD: RETURN-TO-home operation offset error"},
-    {0x6D, "AZD: Mechanical overtravel"},
-    {0x70, "AZD: Operation data error"},
-    {0x71, "AZD: Electronic gear setting error"},
-    {0x72, "AZD: Wrap setting error"},
-    {0x81, "AZD: Network bus error"},
-    {0x82, "AZD: Driver INTERNAL communication error 1"},
-    {0x84, "AZD: AZD: Driver INTERNAL communication error 2"},
-    {0x85, "AZD: Driver INTERNAL communication timeout"},
-    {0xF0, "AZD: CPU error"},
-    {0xFF, "AZD: End of error code list marker"}
+        {0x0,  "AZD: No warning"},
+        {0x10, "AZD: Excessive position deviation"},
+        {0x20, "AZD: Overcurrent"},
+        {0x21, "AZD: Main circuit overheat"},
+        {0x22, "AZD: Overvoltage"},
+        {0x23, "AZD: Main power off"},
+        {0x25, "AZD: Undervoltage"},
+        {0x26, "AZD: Motor overheat"},
+        {0x28, "AZD: Sensor error"},
+        {0x29, "AZD: CPU peripheral circuit error"},
+        {0x2A, "AZD: ABZO sensor communication error"},
+        {0x30, "AZD: Overload"},
+        {0x31, "AZD: Overspeed"},
+        {0x33, "AZD: Absolute position error"},
+        {0x34, "AZD: Command pulse error"},
+        {0x35, "AZD: Alarm detection OF other axes"},
+        {0x41, "AZD: EEPROM error"},
+        {0x42, "AZD: Sensor error AT power on"},
+        {0x43, "AZD: Rotation error AT power on"},
+        {0x44, "AZD: Encoder EEPROM error"},
+        {0x45, "AZD: Motor combination error"},
+        {0x4A, "AZD: RETURN-TO-home incomplete"},
+        {0x51, "AZD: Regeneration resistor overheat"},
+        {0x54, "AZD: Fan rotation deterioration"},
+        {0x60, "AZD: +/-LS both sides active"},
+        {0x61, "AZD: Reverse +/-LS connection"},
+        {0x62, "AZD: RETURN-TO-home operation error"},
+        {0x63, "AZD: No HOMES"},
+        {0x64, "AZD: TIM, Z, SLIT signal error"},
+        {0x66, "AZD: Hardware overtravel"},
+        {0x67, "AZD: Software overtravel"},
+        {0x6A, "AZD: RETURN-TO-home operation offset error"},
+        {0x6D, "AZD: Mechanical overtravel"},
+        {0x70, "AZD: Operation data error"},
+        {0x71, "AZD: Electronic gear setting error"},
+        {0x72, "AZD: Wrap setting error"},
+        {0x81, "AZD: Network bus error"},
+        {0x82, "AZD: Driver INTERNAL communication error 1"},
+        {0x84, "AZD: AZD: Driver INTERNAL communication error 2"},
+        {0x85, "AZD: Driver INTERNAL communication timeout"},
+        {0xF0, "AZD: CPU error"},
+        {0xFF, "AZD: End of error code list marker"}
 };

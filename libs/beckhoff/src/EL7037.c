@@ -142,10 +142,10 @@ gberror_t ec_standard_sdos_el7037(const uint16_t slave) {
                             EL7037_SPEED_RANGE_SDO_VALUE, true)) {
         return E_SDO_WRITE_FAILURE;
     }
-    if (!ec_sdo_write_uint8(slave, EL7037_INVERT_MOTOR_POLARITY_SDO_INDEX, EL7037_INVERT_MOTOR_POLARITY_SDO_SUB_INDEX,
-                            map_drive_direction[slave - 1], true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
+//    if (!ec_sdo_write_uint8(slave, EL7037_INVERT_MOTOR_POLARITY_SDO_INDEX, EL7037_INVERT_MOTOR_POLARITY_SDO_SUB_INDEX,
+//                            map_drive_direction[slave - 1], true)) {
+//        return E_SDO_WRITE_FAILURE;
+//    }
     //all applied correctly
     return E_SUCCESS;
 }
