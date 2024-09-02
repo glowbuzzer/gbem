@@ -223,7 +223,7 @@ gberror_t ec_apply_limits_aw_j_series(uint16_t slave) {
         }
     } else {
         UM_INFO(GBEM_UM_EN,
-                "GBEM: AW-J-Series - NO LIMITS set in the config do drive pos/vel/torque limits will be applied");
+                "GBEM: AW-J-Series - NO LIMITS set in the config. So drive pos/vel/torque limits will NOT be applied");
     }
 
 
@@ -282,60 +282,26 @@ gberror_t ec_pdo_map_aw_j_series(const uint16_t slave) {
     return map_apply_custom_pdo_mapping(slave, aw_j_series_custom_pdo_map);
 }
 
-#define SYNAPTICON_FOE_PASSWORD 0
-
-gberror_t ec_get_log_file_aw_j_series(const uint16_t drive) {
-    FILE *file;
-    char output_file_name[20];
-    char *file_name = "logging_curr.log";
-    // int buffer_size = 50000;
-    size_t bytes_read = 50000; //gets overwritten with bytes read
-    char *file_buff = (char *) malloc(bytes_read);
-
-    if (file_buff == NULL) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: Memory allocation failure when creating buffer for log file download over FoE");
-        return E_MALLOC;
-    }
-
-    int rc = ec_FOEread(map_drive_to_slave[drive], file_name, SYNAPTICON_FOE_PASSWORD, (int *) &bytes_read, file_buff,
-                        EC_TIMEOUTSTATE * 10);
-
-    if (rc < 1) {
-        free(file_buff);
-        return E_GENERAL_FAILURE;
-    }
-
-    UM_INFO(GBEM_UM_EN, "GBEM: Bytes read from drive log file on drive [%u] is [%u]", drive, bytes_read);
-
-    if (bytes_read == 0) {
-        free(file_buff);
-        return E_NOT_FOUND;
-    }
-
-    sprintf(output_file_name, "drive_%d.log", drive);
-
-    file = fopen(output_file_name, "w");
-    if (file == NULL) {
-        free(file_buff);
-        return E_FAILED_TO_OPEN_FILE;
-    }
-
-    size_t elements_written = fwrite(file_buff, 1, bytes_read, file);
-
-
-    if (elements_written != bytes_read) {
-        UM_ERROR(GBEM_UM_EN, "GBEM: Could not write J Series log file");
-        fclose(file);
-        free(file_buff);
-        return E_GENERAL_FAILURE;
-    }
-
-    fclose(file);
-    free(file_buff);
-    return E_SUCCESS;
-}
 
 gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
+
+    gberror_t rc = E_GENERAL_FAILURE;
+
+
+    rc = ec_apply_limits_aw_j_series(slave);
+
+    if (rc != E_SUCCESS) {
+        return rc;
+    }
+
+    rc = sdos_write_one_from_array(&gbem_ctx.ar, slave);
+
+    if (rc != E_SUCCESS) {
+        return rc;
+    }
+
+    return rc;
+
     //set bus cycle time
     //Communication cycle period	0x1006:0	DINT	32			100		readwrite
 //    if (!ec_sdo_write_int32(slave, AW_J_SERIES_COMMUNICATION_CYCLE_PERIOD_SDO_INDEX,
@@ -367,7 +333,7 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
 //    }
 
 
-    ec_apply_limits_aw_j_series(slave);
+//    ec_apply_limits_aw_j_series(slave);
 
     //Polarity	0x607E:0	USINT	8
 
@@ -395,7 +361,7 @@ gberror_t ec_apply_standard_sdos_aw_j_series(const uint16_t slave) {
 //        return E_SDO_WRITE_FAILURE;
 //    }
 
-    return E_SUCCESS;
+//    return E_SUCCESS;
 }
 
 /**
