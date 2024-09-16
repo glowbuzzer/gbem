@@ -12,6 +12,7 @@ jobs:
     uses: ./.github/workflows/machine-build-rpi.yml
     with:
       machine: MACHINE_AW_6DOF
+      sub_machine: L2
       version: ${GITHUB_REF#refs/tags/v}
     secrets: inherit
 
@@ -19,6 +20,7 @@ jobs:
     uses: ./.github/workflows/machine-build-rpi.yml
     with:
       machine: MACHINE_AW_6DOF_FSOE
+      sub_machine: L
       version: ${GITHUB_REF#refs/tags/v}
     secrets: inherit
 
@@ -55,6 +57,7 @@ jobs:
     uses: ./.github/workflows/machine-build-linux-amd64.yml
     with:
       machine: MACHINE_AW_6DOF
+      sub_machine: L2
       version: ${GITHUB_REF#refs/tags/v}
     secrets: inherit
 
@@ -62,6 +65,7 @@ jobs:
     uses: ./.github/workflows/machine-build-linux-amd64.yml
     with:
       machine: MACHINE_AW_6DOF_FSOE
+      sub_machine: L
       version: ${GITHUB_REF#refs/tags/v}
     secrets: inherit
 
