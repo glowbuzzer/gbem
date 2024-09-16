@@ -34,7 +34,7 @@ jobs:
         run: mkdir -p /tmp/gbem/${{ inputs.machine }} && cp ./GBEM /tmp/gbem/${{ inputs.machine }}
 
       - name: Attach artifact to build
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.machine }}-linux-amd64
           path: /tmp/gbem/${{ inputs.machine }}

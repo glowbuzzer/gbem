@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - machine-aw_j17
     tags:
       - 'v*'
 
