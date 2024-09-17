@@ -42,8 +42,10 @@ json_msg_request_extract(char *msg, int *request_type, json_t **payload) {
     json_error_t error;
 
     root = json_loads(msg, 0, &error);
-    printf("JSON: [%s]\n", json_dumps(root, JSON_INDENT(2)));
 
+#if defined(JSON_MSG_PRINT_CONTENTS) && JSON_MSG_PRINT_CONTENTS == 1
+    printf("JSON: [%s]\n", json_dumps(root, JSON_INDENT(2)));
+#endif
 
     if (!root) {
         UM_ERROR(GBEM_UM_EN, "GBEM: [JSON MSG] Error: on line [%d ] [%s] of JSON request (json_msg_request_extract)\n",

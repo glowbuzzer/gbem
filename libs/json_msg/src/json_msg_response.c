@@ -54,9 +54,9 @@ json_msg_response(char *request_id, int request_type, bool error, char *message,
 
     json_object_set(response, "response", responsebody);
 
-
+#if defined(JSON_MSG_PRINT_CONTENTS) && JSON_MSG_PRINT_CONTENTS == 1
     printf("JSON: [%s]\n", json_dumps(response, JSON_INDENT(2)));
-
+#endif
 
 
 

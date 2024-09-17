@@ -19,5 +19,6 @@
 
 gberror_t json_msg_request_respond_handle(char *msg, char *response_json, char *request_id);
 
+#define JSON_MSG_PRINT_CONTENTS 1
 
 #endif //GBEM_JSON_MSG_REQUEST_H
