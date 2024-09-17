@@ -15,6 +15,8 @@ RUN wget https://www.openssl.org/source/openssl-1.1.1k.tar.gz && \
 
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1-linux-x86_64.sh && mkdir /tmp/cmake && sh ./cmake-3.23.1-linux-x86_64.sh --skip-license --prefix=/tmp/cmake
 
+RUN apt-get install -y git
+
 COPY build.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh

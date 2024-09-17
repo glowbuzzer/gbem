@@ -7,6 +7,10 @@ on:
         # what machine are we building (ends up in machine.txt)
         required: true
         type: string
+      sub_machine:
+        # what sub-machine are we building (ends up in machine.txt)
+        required: false
+        type: string
       version:
         # version to bake into the build
         required: true
@@ -22,7 +26,7 @@ jobs:
           submodules: true
 
       - name: Set machine
-        run: echo "MAP_MACHINE ${{ inputs.machine }}" > machine.txt
+        run: echo "MAP_MACHINE ${{ inputs.machine }}" > machine.txt && echo "MAP_SUB_MACHINE ${{ inputs.sub_machine }}" >> machine.txt
 
       - name: Set GBC_VERSION
         run: echo "GBC_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
@@ -34,7 +38,7 @@ jobs:
         run: mkdir -p /tmp/gbem/${{ inputs.machine }} && cp ./GBEM /tmp/gbem/${{ inputs.machine }}
 
       - name: Attach artifact to build
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.machine }}-rpi
           path: /tmp/gbem/${{ inputs.machine }}
