@@ -55,8 +55,8 @@ typedef enum {
 
 #define MAP_SLAVE_EEP(...) map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {__VA_ARGS__};
 // #define MAP_SLAVE_MDP_SLOT_TYPE(...) const map_mdp_slot_type_t map_slave_mdp_slot_type[EC_MAXSLAVE] = {__VA_ARGS__};
-#define MAP_FSOE_MASTER_SLOT_CONFIG(...) const map_mdp_slot_type_t map_slave_fsoe_master_slot_config[MAP_NUM_FSOE_MASTER_SLOTS] = {__VA_ARGS__};
-#define MAP_FSOE_MASTER_SLOT_TO_SLAVE(...) const uint16_t map_fsoe_master_slot_to_slave[MAP_NUM_FSOE_MASTER_SLOTS] = {__VA_ARGS__};
+#define MAP_FSOE_MASTER_SLOT_CONFIG(...)  map_mdp_slot_type_t map_slave_fsoe_master_slot_config[MAP_NUM_FSOE_MASTER_SLOTS] = {__VA_ARGS__};
+#define MAP_FSOE_MASTER_SLOT_TO_SLAVE(...)  uint16_t map_fsoe_master_slot_to_slave[MAP_NUM_FSOE_MASTER_SLOTS] = {__VA_ARGS__};
 
 #define MAP_FSOE_MASTER_SET_ERROR_ACK_STATE_FUNCTION(...) gberror_t (*map_fsoe_master_set_error_ack_state_function_ptr)(bool state, uint16_t slave) = {__VA_ARGS__};
 
@@ -201,7 +201,7 @@ typedef enum {
 typedef struct {
     const map_inout_t inout;
     uint16_t slave_num;
-    const uint32_t byte_num;
+    uint32_t byte_num;
     const uint8_t bit_num;
     const ec_datatype datatype;
     const bool byte_slave;
@@ -307,8 +307,8 @@ extern int8_t map_dc_cycle[EC_MAXSLAVE];
 
 extern bool map_slave_optional[EC_MAXSLAVE];
 
-extern const uint16_t map_fsoe_master_slot_to_slave[MAP_NUM_FSOE_MASTER_SLOTS];
-extern const map_mdp_slot_type_t map_slave_fsoe_master_slot_config[MAP_NUM_FSOE_MASTER_SLOTS];
+extern uint16_t map_fsoe_master_slot_to_slave[MAP_NUM_FSOE_MASTER_SLOTS];
+extern map_mdp_slot_type_t map_slave_fsoe_master_slot_config[MAP_NUM_FSOE_MASTER_SLOTS];
 
 extern gberror_t (*map_fsoe_master_set_error_ack_state_function_ptr)(bool state, uint16_t slave);
 
