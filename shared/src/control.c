@@ -2205,11 +2205,24 @@ void ctrl_set_moo_pdo(void) {
 void copy_fsoe_data_slaves_to_master(uint16_t fsoe_master_no) {
     uint32_t base_master_byte_offset = map_slave_fsoe_offset_in[fsoe_master_no];
     uint32_t cumulative_master_byte_offset = 0;
+    static bool first_run = true;
+
 
     // bool found_at_least_one_fsoe_slave = false;
 
     //todo maybe -1 for bytes here?
     for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {
+
+        if (first_run) {
+
+            UM_INFO(GBEM_UM_EN, "GBEM: FSoE master slot [%u] slave [%u] offset [%u] size [%u]",
+                    slot, map_fsoe_master_slot_to_slave[slot],
+                    map_slave_fsoe_offset_in[map_fsoe_master_slot_to_slave[slot] - 1],
+                    map_fsoe_get_slot_size_in(slot));
+
+            first_run = false;
+        }
+
         uint32_t slave_fsoe_out_bytes = map_fsoe_get_slot_size_out(slot);
 
         uint16_t slave = map_fsoe_master_slot_to_slave[slot];
@@ -2229,11 +2242,21 @@ void copy_fsoe_data_master_to_slaves(uint16_t fsoe_master_no) {
     uint32_t base_master_byte_offset = map_slave_fsoe_offset_out[fsoe_master_no];
     uint32_t cumulative_master_byte_offset = 0;
     uint32_t slave_byte_offset = 0;
-
+    static bool first_run = true;
 
     //todo maybe -1 for bytes here?
     for (int slot = 0; slot < MAP_NUM_FSOE_MASTER_SLOTS; slot++) {
         // uint32_t slave_fsoe_in_bytes = map_fsoe_get_slot_size_in(slot);
+
+        if (first_run) {
+
+            UM_INFO(GBEM_UM_EN, "GBEM: FSoE master slot [%u] slave [%u] offset [%u] size [%u]",
+                    slot, map_fsoe_master_slot_to_slave[slot],
+                    map_slave_fsoe_offset_in[map_fsoe_master_slot_to_slave[slot] - 1],
+                    map_fsoe_get_slot_size_in(slot));
+            first_run = false;
+        }
+
         uint32_t slave_fsoe_in_bytes = 11;
 
         uint16_t slave = map_fsoe_master_slot_to_slave[slot];
