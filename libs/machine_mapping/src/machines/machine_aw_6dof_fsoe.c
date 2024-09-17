@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
- * @file           :  machine_aw_robot_l2.c
- * @brief          :  machine map for aw l2 sized robot with EK1100 + El1808 + EL2908
+ * @file           :  machine_aw_6dof_fsoe
+ * @brief          :  machine map for aw 6dof robot with FSoE
  ******************************************************************************
  * @attention
  *
@@ -13,7 +13,7 @@
 
 #include "map.h"
 //#ifdef must surround all the machine specific code so that when this machine is not defined it is not compiled
-#if MACHINE_AW_6DOF == 1
+#if MACHINE_AW_6DOF_FSOE == 1
 
 #include "automationware.h"
 #include "beckhoff.h"
@@ -21,72 +21,41 @@
 //@formatter:off
 
 /* MACHINE INFO */
-MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(          ?);
+MAP_MACHINE_GET_SAFETY_STATE_FUNCTION(          ec_fsoe_get_safety_state_bbh_scu_1_ec);
 
 /* FSOE MASTER INFO */
 MAP_FSOE_MASTER_SLOT_CONFIG(MDP_SLOT_TYPE_BBH_32_12, MDP_SLOT_TYPE_BBH_32_12, MDP_SLOT_TYPE_BBH_32_12, MDP_SLOT_TYPE_BBH_32_12, MDP_SLOT_TYPE_BBH_32_12, MDP_SLOT_TYPE_BBH_32_12 );
-MAP_FSOE_MASTER_SLOT_TO_SLAVE(MAP_AW_J40LP_CTRL_1, MAP_AW_J40HP_CTRL_1, MAP_AW_J32_CTRL_1, MAP_AW_J25_CTRL_1, MAP_AW_J25_CTRL_2, MAP_AW_J20_CTRL_1 );     );
+MAP_FSOE_MASTER_SLOT_TO_SLAVE(MAP_AW_J40LP_CTRL_1, MAP_AW_J40HP_CTRL_1, MAP_AW_J32_CTRL_1, MAP_AW_J25_CTRL_1, MAP_AW_J25_CTRL_2, MAP_AW_J20_CTRL_1 );
 MAP_FSOE_MASTER_SET_ERROR_ACK_STATE_FUNCTION(ec_fsoe_set_error_ack_state_bbh_scu_1_ec);
 
-//todo chnaged to 0 and 1
-/* ESTOP DIN INFO */
-map_pdo_object_t ctrl_estop_din_1 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1808_1, .bit_num=0};
-map_pdo_object_t ctrl_estop_din_2 = {.datatype=ECT_BOOLEAN, .inout=MAP_IN, .slave_num=MAP_EL1808_1, .bit_num=1};
 
 /* SLAVES */
-//                                         Slave 1                     Slave 2                   Slave 3                   Slave 4                         Slave 5                              Slave 6                              Slave 7                              Slave 8                              Slave 9                              Slave 10
-//                                         MAP_EK1100_1                MAP_EL2808_1              MAP_EL1808_1              MAP                             MAP_AW_J40LP_CTRL_1                  MAP_AW_J40LP_CTRL_1                  MAP_AW_J32_CTRL_1                    MAP_AW_J25_CTRL_1                    MAP_AW_J25_CTRL_2                    MAP_AW_J20_CTRL_1
-//                                         Coupler                     8 dig out                 8 dig in                  RS485                           J40LP joint                          J40HP joint                          J32 joint                            J25 joint                            J25 joint                            J20 joint
-MAP_NUM_DRIVES_ATTACHED(                   0,                          0,                        0,                        0,                              1,                                   1,                                   1,                                   1,                                   1,                                   1                                   );
-MAP_SLAVE_PDO_MAPPING_FUNCTIONS(           NULL,                       NULL,                     NULL,                     NULL,                           ec_pdo_map_aw_j_series,              ec_pdo_map_aw_j_series,              ec_pdo_map_aw_j_series,              ec_pdo_map_aw_j_series,              ec_pdo_map_aw_j_series,              ec_pdo_map_aw_j_series              );
-MAP_SLAVE_NVRAM_SDO_FUNCTIONS(             NULL,                       NULL,                     NULL,                     NULL,                           NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
-MAP_SLAVE_STANDARD_SDO_FUNCTIONS(          NULL,                       NULL,                     NULL,                     ec_apply_standard_sdos_el6021,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series  );
-MAP_SLAVE_INITIAL_PDO_FUNCTIONS(           NULL,                       NULL,                     NULL,                     NULL,                           ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series          );
-MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(        NULL,                       NULL,                     NULL,                     NULL,                           NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
-MAP_SLAVE_DC_TYPE(                         EC_DC_NONE,                 EC_DC_NONE,               EC_DC_NONE,               EC_DC_NONE,                     EC_DC_0,                             EC_DC_0,                             EC_DC_0,                             EC_DC_0,                             EC_DC_0,                             EC_DC_0                             );
-MAP_SLAVE_DC_CYCLE(                        0,                          0,                        0,                        0,                              4,                                   4,                                   4,                                   4,                                   4,                                   4                                   );
-MAP_SLAVE_EXEC_FUNCTIONS(                  NULL,                       NULL,                     NULL,                     ec_slave_exec_el6021,           NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL,                               );
-MAP_SLAVE_OPTIONAL(                        false,                      false,                    false,                    true,                           false,                               false,                               false,                               false,                               false,                               false, );
+//                                        Slave 1                                  Slave 2                     Slave 3                   Slave 4                   Slave 5                         Slave 6                              Slave 7                              Slave 8                              Slave 9                                   Slave 10                                    Slave 11                                    Slave 12                                    Slave 13                                    Slave 14
+//                                        MAP_BBH_SCU_1_EC_1                       MAP_EK1100_1                MAP_EL2808_1              MAP_EL1808_1              MAP_EL6021_1                    MAP_EL2535-0005_1                    MAP_ELM7231_1                        MAP_EK1110_1                         MAP_AW_J40LP_FSOE_1                       MAP_AW_J40LP_FSOE_1                         MAP_AW_J32_FSOE_1                           MAP_AW_J25_FSOE_1                           MAP_AW_J25_FSOE_2                           MAP_AW_J20_FSOE_1
+//                                        Safety PLC                               Coupler                     8 dig out                 8 dig in                  RS485                           PWM                                  Drive                                Coupler                              J40LP joint                               J40HP joint                                 J32 joint                                   J25 joint                                   J25 joint                                   J20 joint
+MAP_NUM_DRIVES_ATTACHED(                  0,                                       0,                          0,                        0,                        0,                              0,                                   1,                                   0,                                   1,                                        1,                                          1,                                          1,                                          1,                                          1                                           );
+MAP_SLAVE_PDO_MAPPING_FUNCTIONS(          NULL,                                    NULL,                       NULL,                     NULL,                     NULL,                           NULL,                                NULL,                                NULL,                                ec_pdo_map_aw_j_series_fsoe,              ec_pdo_map_aw_j_series_fsoe,                ec_pdo_map_aw_j_series_fsoe,                ec_pdo_map_aw_j_series_fsoe,                ec_pdo_map_aw_j_series_fsoe,                ec_pdo_map_aw_j_series_fsoe                 );
+MAP_SLAVE_NVRAM_SDO_FUNCTIONS(            NULL,                                    NULL,                       NULL,                     NULL,                     NULL,                           NULL,                                NULL,                                NULL,                                NULL,                                     NULL,                                       NULL,                                       NULL,                                       NULL,                                       NULL                                        );
+MAP_SLAVE_STANDARD_SDO_FUNCTIONS(         ec_apply_standard_sdos_bbh_scu_1_ec,     NULL,                       NULL,                     NULL,                     ec_apply_standard_sdos_el6021,  NULL,                                NULL,                                NULL,                                ec_apply_standard_sdos_aw_j_series_fsoe,  ec_apply_standard_sdos_aw_j_series_fsoe,    ec_apply_standard_sdos_aw_j_series_fsoe,    ec_apply_standard_sdos_aw_j_series_fsoe,    ec_apply_standard_sdos_aw_j_series_fsoe,    ec_apply_standard_sdos_aw_j_series_fsoe     );
+MAP_SLAVE_INITIAL_PDO_FUNCTIONS(          NULL,                                    NULL,                       NULL,                     NULL,                     NULL,                           NULL,                                NULL,                                NULL,                                ec_initial_pdo_aw_j_series,               ec_initial_pdo_aw_j_series,                 ec_initial_pdo_aw_j_series,                 ec_initial_pdo_aw_j_series,                 ec_initial_pdo_aw_j_series,                 ec_initial_pdo_aw_j_series                  );
+MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(       ec_custom_fmmu_sm_bbh_scu_1_ec,          NULL,                       NULL,                     NULL,                     NULL,                           NULL,                                NULL,                                NULL,                                ec_custom_fmmu_sm_aw_j_series,            ec_custom_fmmu_sm_aw_j_series,              ec_custom_fmmu_sm_aw_j_series,              ec_custom_fmmu_sm_aw_j_series,              ec_custom_fmmu_sm_aw_j_series,              ec_custom_fmmu_sm_aw_j_series               );
+MAP_SLAVE_DC_TYPE(                        EC_DC_NONE,                              EC_DC_NONE,                 EC_DC_NONE,               EC_DC_NONE,               EC_DC_NONE,                     EC_DC_NONE,                          EC_DC_0,                             EC_DC_NONE,                          EC_DC_0,                                  EC_DC_0,                                    EC_DC_0,                                    EC_DC_0,                                    EC_DC_0,                                    EC_DC_0                                     );
+MAP_SLAVE_DC_CYCLE(                       0,                                       0,                          0,                        0,                        0,                              0,                                   4,                                   0,                                   4,                                        4,                                          4,                                          4,                                          4,                                          4                                           );
+MAP_SLAVE_EXEC_FUNCTIONS(                 NULL,                                    NULL,                       NULL,                     NULL,                     ec_slave_exec_el6021,           NULL,                                NULL,                                NULL,                                NULL,                                     NULL,                                       NULL,                                       NULL,                                       NULL,                                       NULL,                                       );
+MAP_SLAVE_OPTIONAL(                       false,                                   false,                      false,                    false,                    true,                           true,                                true,                                true,                                false,                                    false,                                      false,                                      false,                                      false,                                      false,                                      );
 
 
 
 /* FSoE */
-MAP_SLAVE_FSOE_SLAVE_TYPE(                 FSOE_SLAVE_TYPE_SCU_1_EC,   FSOE_SLAVE_TYPE_NONE,     FSOE_SLAVE_TYPE_NONE,     FSOE_SLAVE_TYPE_NONE,           FSOE_SLAVE_TYPE_SYNAPTICON,          FSOE_SLAVE_TYPE_SYNAPTICON,          FSOE_SLAVE_TYPE_SYNAPTICON,          FSOE_SLAVE_TYPE_SYNAPTICON,          FSOE_SLAVE_TYPE_SYNAPTICON,          FSOE_SLAVE_TYPE_SYNAPTICON          );
-MAP_SLAVE_FSOE_SLAVE_FUNCTION(             FSOE_SLAVE_FUNCTION_MASTER, FSOE_SLAVE_FUNCTION_NONE, FSOE_SLAVE_FUNCTION_NONE, FSOE_SLAVE_FUNCTION_NONE,       FSOE_SLAVE_FUNCTION_SLAVE,            FSOE_SLAVE_FUNCTION_SLAVE,            FSOE_SLAVE_FUNCTION_SLAVE,            FSOE_SLAVE_FUNCTION_SLAVE,            FSOE_SLAVE_FUNCTION_SLAVE,            FSOE_SLAVE_FUNCTION_SLAVE            );
-MAP_SLAVE_FSOE_OFFSET_IN(                  0,                          0,                        0,                        0,                              0,                                   0,                                   0,                                   0,                                   0,                                   0                                   );
-MAP_SLAVE_FSOE_OFFSET_OUT(                 0,                          0,                        0,                        0,                              0,                                   0,                                   0,                                   0,                                   0,                                   0                                   );
-MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(  NULL,                       NULL,                     NULL,                     NULL,                           NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
-MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS( NULL,                       NULL,                     NULL,                     NULL,                           NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
-MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS( NULL,                       NULL,                     NULL,                     NULL,                           NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
-MAP_FSOE_MASTER_CONTROL_FUNCTION(          ec_fsoe_get_master_state_bbh_scu_1_ec);
+MAP_SLAVE_FSOE_SLAVE_TYPE(                 FSOE_SLAVE_TYPE_SCU_1_EC,                FSOE_SLAVE_TYPE_NONE,       FSOE_SLAVE_TYPE_NONE,     FSOE_SLAVE_TYPE_NONE,     FSOE_SLAVE_TYPE_NONE,            FSOE_SLAVE_TYPE_NONE,               FSOE_SLAVE_TYPE_ELM7231,             FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_SYNAPTICON,              FSOE_SLAVE_TYPE_SYNAPTICON,                 FSOE_SLAVE_TYPE_SYNAPTICON,                 FSOE_SLAVE_TYPE_SYNAPTICON,                 FSOE_SLAVE_TYPE_SYNAPTICON,                 FSOE_SLAVE_TYPE_SYNAPTICON                  );
+MAP_SLAVE_FSOE_SLAVE_FUNCTION(             FSOE_SLAVE_FUNCTION_MASTER,              FSOE_SLAVE_FUNCTION_NONE,   FSOE_SLAVE_FUNCTION_NONE, FSOE_SLAVE_FUNCTION_NONE, FSOE_SLAVE_FUNCTION_NONE,        FSOE_SLAVE_FUNCTION_NONE,           FSOE_SLAVE_FUNCTION_SLAVE,           FSOE_SLAVE_FUNCTION_NONE,            FSOE_SLAVE_FUNCTION_SLAVE,               FSOE_SLAVE_FUNCTION_SLAVE,                  FSOE_SLAVE_FUNCTION_SLAVE,                  FSOE_SLAVE_FUNCTION_SLAVE,                  FSOE_SLAVE_FUNCTION_SLAVE,                  FSOE_SLAVE_FUNCTION_SLAVE                   );
+MAP_SLAVE_FSOE_OFFSET_IN(                  BBH_SCU_1_EC_FSOE_IN_OFFSET,             0,                          0,                        0,                        0,                               0,                                  0,                                   0,                                   AW_J_SERIES_EC_FSOE_SM2_OFFSET,          AW_J_SERIES_EC_FSOE_SM2_OFFSET,             AW_J_SERIES_EC_FSOE_SM2_OFFSET,             AW_J_SERIES_EC_FSOE_SM2_OFFSET,             AW_J_SERIES_EC_FSOE_SM2_OFFSET,             AW_J_SERIES_EC_FSOE_SM2_OFFSET              );
+MAP_SLAVE_FSOE_OFFSET_OUT(                 BBH_SCU_1_EC_FSOE_OUT_OFFSET,            0,                          0,                        0,                        0,                               0,                                  0,                                   0,                                   AW_J_SERIES_EC_FSOE_SM3_OFFSET,          AW_J_SERIES_EC_FSOE_SM3_OFFSET,             AW_J_SERIES_EC_FSOE_SM3_OFFSET,             AW_J_SERIES_EC_FSOE_SM3_OFFSET,             AW_J_SERIES_EC_FSOE_SM3_OFFSET,             AW_J_SERIES_EC_FSOE_SM3_OFFSET              );
+MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(  NULL,                                    NULL,                       NULL,                     NULL,                     NULL,                            NULL,                               NULL,                                NULL,                                ec_fsoe_get_slave_state_aw_j_series,     ec_fsoe_get_slave_state_aw_j_series,        ec_fsoe_get_slave_state_aw_j_series,        ec_fsoe_get_slave_state_aw_j_series,        ec_fsoe_get_slave_state_aw_j_series,        ec_fsoe_get_slave_state_aw_j_series         );
+MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS( NULL,                                    NULL,                       NULL,                     NULL,                     NULL,                            NULL,                               NULL,                                NULL,                                ec_fsoe_get_slave_con_id_aw_j_series,    ec_fsoe_get_slave_con_id_aw_j_series,       ec_fsoe_get_slave_con_id_aw_j_series,       ec_fsoe_get_slave_con_id_aw_j_series,       ec_fsoe_get_slave_con_id_aw_j_series,       ec_fsoe_get_slave_con_id_aw_j_series        );
+MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS( ec_fsoe_get_master_state_bbh_scu_1_ec,   NULL,                       NULL,                     NULL,                     NULL,                            NULL,                               NULL,                                NULL,                                NULL,                                    NULL,                                       NULL,                                       NULL,                                       NULL,                                       NULL                                        );
+MAP_FSOE_MASTER_CONTROL_FUNCTION(          NULL);
 
-
-
-// /* SLAVES */
-// //                                         Slave 1                     Slave 2                   Slave 3                   Slave 4                              Slave 5                              Slave 6                              Slave 7                              Slave 8                              Slave 9
-// //                                         MAP_EK1100_1                MAP_EL2808_1              MAP_EL1808_1              MAP_AW_J40LP_CTRL_1                  MAP_AW_J40LP_CTRL_1                  MAP_AW_J32_CTRL_1                    MAP_AW_J25_CTRL_1                    MAP_AW_J25_CTRL_2                    MAP_AW_J20_CTRL_1
-// //                                         Coupler                     8 dig out                 8 dig in                  J40LP joint                          J40HP joint                          J32 joint                            J25 joint                            J25 joint                            J20 joint
-// MAP_NUM_DRIVES_ATTACHED(                   0,                          0,                        0,                        1,                                   1,                                   1,                                   1,                                   1,                                   1                                   );
-// MAP_SLAVE_PDO_MAPPING_FUNCTIONS(           NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                ec_pdo_map_aw_j_series              );
-// MAP_SLAVE_NVRAM_SDO_FUNCTIONS(             NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
-// MAP_SLAVE_STANDARD_SDO_FUNCTIONS(          NULL,                       NULL,                     NULL,                     ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series,  ec_apply_standard_sdos_aw_j_series  );
-// MAP_SLAVE_INITIAL_PDO_FUNCTIONS(           NULL,                       NULL,                     NULL,                     ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series,          ec_initial_pdo_aw_j_series          );
-// MAP_SLAVE_CUSTOM_FMMU_SM_FUNCTIONS(        NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
-// MAP_SLAVE_DC_TYPE(                         EC_DC_NONE,                 EC_DC_NONE,               EC_DC_NONE,               EC_DC_0,                             EC_DC_0,                             EC_DC_0,                             EC_DC_0,                             EC_DC_0,                             EC_DC_0                             );
-// MAP_SLAVE_DC_CYCLE(                        0,                          0,                        0,                        4,                                   4,                                   4,                                   4,                                   4,                                   4                                   );
-// MAP_SLAVE_EXEC_FUNCTIONS(                  NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL                                 NULL,                               );
-//
-//
-//
-// /* FSoE */
-// MAP_SLAVE_FSOE_SLAVE_TYPE(                 FSOE_SLAVE_TYPE_NONE,       FSOE_SLAVE_TYPE_NONE,     FSOE_SLAVE_TYPE_NONE,     FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE,                FSOE_SLAVE_TYPE_NONE                );
-// MAP_SLAVE_FSOE_SLAVE_FUNCTION(             FSOE_SLAVE_FUNCTION_NONE,   FSOE_SLAVE_FUNCTION_NONE, FSOE_SLAVE_FUNCTION_NONE, FSOE_SLAVE_FUNCTION_NONE,            FSOE_SLAVE_FUNCTION_NONE,            FSOE_SLAVE_FUNCTION_NONE,            FSOE_SLAVE_FUNCTION_NONE,            FSOE_SLAVE_FUNCTION_NONE,            FSOE_SLAVE_FUNCTION_NONE            );
-// MAP_SLAVE_FSOE_OFFSET_IN(                  0,                          0,                        0,                        0,                                   0,                                   0,                                   0,                                   0,                                   0                                   );
-// MAP_SLAVE_FSOE_OFFSET_OUT(                 0,                          0,                        0,                        0,                                   0,                                   0,                                   0,                                   0,                                   0                                   );
-// MAP_SLAVE_FSOE_GET_SLAVE_STATE_FUNCTIONS(  NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
-// MAP_SLAVE_FSOE_GET_SLAVE_CON_ID_FUNCTIONS( NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
-// MAP_SLAVE_FSOE_GET_MASTER_STATE_FUNCTIONS( NULL,                       NULL,                     NULL,                     NULL,                                NULL,                                NULL,                                NULL,                                NULL,                                NULL                                );
-// MAP_FSOE_MASTER_CONTROL_FUNCTION(NULL);
 
 
 
@@ -94,16 +63,20 @@ MAP_FSOE_MASTER_CONTROL_FUNCTION(          ec_fsoe_get_master_state_bbh_scu_1_ec
 /*This is a zero indexed array even though the slaves are 1 indexed */
 /* This must be laid out in the order they appear in netscan */
 map_slave_map_t ecm_slave_map[EC_MAXSLAVE] = {
-        {.name = EK1100_EEP_NAME,       .eep_id = EK1100_EEP_ID,        .eep_man = EK1100_EEP_MAN,      .eep_rev = EK1100_EEP_REV   },
-        {.name = EL2808_EEP_NAME,       .eep_id = EL2808_EEP_ID,        .eep_man = EL2808_EEP_MAN,      .eep_rev = EL2808_EEP_REV   },
-        {.name = EL1808_EEP_NAME,       .eep_id = EL1808_EEP_ID,        .eep_man = EL1808_EEP_MAN,      .eep_rev = EL1808_EEP_REV   },
-        {.name = EL6021_EEP_NAME,       .eep_id = EL6021_EEP_ID,        .eep_man = EL6021_EEP_MAN,      .eep_rev = EL6021_EEP_REV   },
-       {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV       },
-        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV       },
-        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV       },
-        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV       },
-        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV       },
-        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,          .eep_rev = AW_EEP_REV       },
+        {.name = BBH_SCU_1_EC_EEP_NAME, .eep_id = BBH_SCU_1_EC_EEP_ID, .eep_man = BBH_SCU_1_EC_EEP_MAN,     .eep_rev = BBH_SCU_1_EC_EEP_REV     },
+        {.name = EK1100_EEP_NAME,       .eep_id = EK1100_EEP_ID,        .eep_man = EK1100_EEP_MAN,          .eep_rev = EK1100_EEP_REV           },
+        {.name = EL2808_EEP_NAME,       .eep_id = EL2808_EEP_ID,        .eep_man = EL2808_EEP_MAN,          .eep_rev = EL2808_EEP_REV           },
+        {.name = EL1808_EEP_NAME,       .eep_id = EL1808_EEP_ID,        .eep_man = EL1808_EEP_MAN,          .eep_rev = EL1808_EEP_REV           },
+        {.name = EL6021_EEP_NAME,       .eep_id = EL6021_EEP_ID,        .eep_man = EL6021_EEP_MAN,          .eep_rev = EL6021_EEP_REV           },
+        {.name = EL2535_0005_EEP_NAME,  .eep_id = EL2535_0005_EEP_ID,   .eep_man = EL2535_0005_EEP_MAN,     .eep_rev = EL2535_0005_EEP_REV      },
+        {.name = ELM7231_9018_EEP_NAME, .eep_id = ELM7231_9018_EEP_ID,  .eep_man = ELM7231_9018_EEP_MAN,    .eep_rev = ELM7231_9018_EEP_REV     },
+        {.name = EK1110_EEP_NAME,       .eep_id = EK1110_EEP_ID,        .eep_man = EK1110_EEP_MAN,          .eep_rev = EK1110_EEP_REV           },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,              .eep_rev = AW_EEP_REV               },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,              .eep_rev = AW_EEP_REV               },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,              .eep_rev = AW_EEP_REV               },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,              .eep_rev = AW_EEP_REV               },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,              .eep_rev = AW_EEP_REV               },
+        {.name = AW_EEP_NAME,           .eep_id = AW_EEP_ID,            .eep_man = AW_EEP_MAN,              .eep_rev = AW_EEP_REV               },
 };
 
 
@@ -134,7 +107,6 @@ MAP_DRIVE_RUN_HOMING(                       0,                                  
 MAP_DRIVE_GET_SECONDARY_NAME_FUNCTION(      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series,      ec_get_secondary_name_aw_j_series       );
 MAP_DRIVE_PRINT_PARAMS_FUNCTIONS(           ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series,            ec_print_params_aw_j_series             );
 MAP_DRIVE_TYPE(                             DRIVE_TYPE_AW_J_40_LP,                  DRIVE_TYPE_AW_J_40_HP,                  DRIVE_TYPE_AW_J32,                      DRIVE_TYPE_AW_J25,                      DRIVE_TYPE_AW_J25,                      DRIVE_TYPE_AW_J20                       );
-MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series,            ec_get_log_file_aw_j_series             );
 
 /**
  * POS_LIMIT in degrees
@@ -143,70 +115,95 @@ MAP_DRIVE_GET_LOG_FILE_FUNCTIONS(           ec_get_log_file_aw_j_series,        
  */
 
 /* DRIVE PARAMETERS */
-MAP_DRIVE_DIRECTION(                        1,                                      1,                                      1,                                      1,                                      1,                                      1                                       );
 MAP_DRIVE_SCALES(                           {166886,9549,3.414},         {166886,9549,2.54},           {166886,9549,4.3},           {166886,9549,4.3},            {166886,9549,3.414},         {166886,9549,16.07}          );
 
 /* PLC IO CONFIG */
 
-extern bool plc_in_1_SS1_CMD_SW;
-extern bool plc_in_2_STOP_CMD_SW;
-extern bool plc_in_3_ARM_48V_SUPPLY;
-extern bool plc_in_4_RC_LIGHT_SIGNAL;
-extern bool plc_in_5_BRAKE_CHOPPER_ERROR;
-extern bool plc_in_6_IN_TOOL_1;
-extern bool plc_in_7_IN_TOOL_2;
-/*
- * Inputs
- * 1 SS1_CMD_SW - this triggers the quick stop
- * 2 STOP_CMD_SW - this triggers the quick stop too
- * 3 ARM_48V_SUPPLY
- * 4 RC_LIGHT_SIGNAL
- * 5 BRAKE_CHOPPER_ERROR
- * 6 IN_TOOL_1 - feedback from gripper
- * 7 IN_TOOL_2 - feedback from gripper
+
+
+/* Outputs
+ * 0 - OUT_TOOL_1 - command to gripper -> map to GBC IO
+ * 1 - OUT_TOOL_2 - command to gripper -> map to GBC IO
+ * 2 - SPARE - not used -> map to GBC IO
+ * 3 - SPARE - not used -> map to GBC IO
+ * 4 - SPARE - not used -> map to GBC IO
+ * 5 - SPARE - not used -> map to GBC IO
+ * 6 - SPARE - not used -> map to GBC IO
+ * 7 - SPARE - not used -> map to GBC IO
  */
 
-extern bool plc_out_1_SW_HEARTBYTE_CH1;
-extern bool plc_out_2_SW_HEARTBYTE_CH2;
-extern bool plc_out_3_SS1_CMD_SW_FB;
-extern bool plc_out_4_STOP_CMD_SW_FB;
-extern bool plc_out_5_SPARE;
-extern bool plc_out_6_OUT_TOOL_1;
-extern bool plc_out_7_OUT_TOOL_2;
-
-/*
- * Outputs
- * 1 SW_HEARTBYTE_CH1 - must be high to inform safety PLC that EEMC is working
- * 2 SW_HEARTBYTE_CH2 - must be high to inform safety PLC that EEMC is working
- * 3 SS1_CMD_SW_FB - must mirror the signal on SS1_CMD_SW
- * 4 STOP_CMD_SW_FB - must mirror the signal on STOP_CMD_SW
- * 5 SPARE
- * 6 OUT_TOOL_1 - command to gripper -> map to GBC IO
- * 7 OUT_TOOL_2 - command to gripper -> map to GBC IO
+/* Inputs
+ * 0 - IN_TOOL_1 - feedback from gripper -> map to GBC IO
+ * 1 - IN_TOOL_2 - feedback from gripper -> map to GBC IO
+ * 2 - 48V_SUPPLY_OK  - 48v supply to the arm -> map to GBC IO
+ * 3 - BRAKE_CHOPPER_ERROR - error from the brake chopper -> map to GBC IO
+ * 4 - BRAKE_AX_RELEASED - brake is released -> map to GBC IO
+ * 5 - SPARE - not used -> map to GBC IO
+ * 6 - SPARE - not used -> map to GBC IO
+ * 7 - SPARE - not used -> map to GBC IO
  */
 
 
 /*IO MAP*/
-mapping_t map_iomap[17] = {
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=0},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_1_SS1_CMD_SW, .linked_task_name="AwRobotTask1"}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_2_STOP_CMD_SW, .linked_task_name="AwRobotTask1"}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_3_ARM_48V_SUPPLY, .linked_task_name="AwRobotTask1"}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=3},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_4_RC_LIGHT_SIGNAL, .linked_task_name="AwRobotTask1"}},
-        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=4},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .io=&plc_in_5_BRAKE_CHOPPER_ERROR, .linked_task_name="AwRobotTask1"}},
+mapping_t map_iomap[50] = {
+        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=0},     {}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1},     {}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2},     {}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=3},     {}},
+        {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=4},     {}},
         {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=5, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=5},     {}},
         {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=6, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=6},     {}},
         {{.inout=MAP_IN, .slave_num=MAP_EL1808_1,.bit_num=7, .datatype=ECT_BOOLEAN, .byte_slave = false},     {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=7},     {}},
 
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave = false},    {},                                                    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_1_SW_HEARTBYTE_CH1, .linked_task_name="AwRobotTask1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave = false},    {},                                                    {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_2_SW_HEARTBYTE_CH2, .linked_task_name="AwRobotTask1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave = false},    {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_3_SS1_CMD_SW_FB, .linked_task_name="AwRobotTask1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave = false},    {},                                                   {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .io=&plc_out_4_STOP_CMD_SW_FB, .linked_task_name="AwRobotTask1"}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave = false},    {.inout = MAP_OUT, .datatype = ECT_BOOLEAN, .ionum=0, .type=GBC_IO_TYPE_NORMAL},{}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=5, .datatype=ECT_BOOLEAN, .byte_slave = false},    {.inout = MAP_OUT, .datatype = ECT_BOOLEAN, .ionum=1,.type=GBC_IO_TYPE_NORMAL},{}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=6, .datatype=ECT_BOOLEAN, .byte_slave = false},    {.inout = MAP_OUT, .datatype = ECT_BOOLEAN, .ionum=2,.type=GBC_IO_TYPE_NORMAL},{}},
-        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=7, .datatype=ECT_BOOLEAN, .byte_slave = false},    {.inout = MAP_OUT, .datatype = ECT_BOOLEAN, .ionum=3,.type=GBC_IO_TYPE_NORMAL},{}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave = false},    {.inout = MAP_OUT, .datatype = ECT_BOOLEAN, .ionum=0, .type=GBC_IO_TYPE_NORMAL},{}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave = false},    {.inout = MAP_OUT, .datatype = ECT_BOOLEAN, .ionum=1, .type=GBC_IO_TYPE_NORMAL},{}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave = false},    {.inout = MAP_OUT, .datatype = ECT_BOOLEAN, .ionum=2, .type=GBC_IO_TYPE_NORMAL},{}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave = false},    {.inout = MAP_OUT, .datatype = ECT_BOOLEAN, .ionum=3, .type=GBC_IO_TYPE_NORMAL},{}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave = false},    {.inout = MAP_OUT, .datatype = ECT_BOOLEAN, .ionum=4, .type=GBC_IO_TYPE_NORMAL},{}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=5, .datatype=ECT_BOOLEAN, .byte_slave = false},    {.inout = MAP_OUT, .datatype = ECT_BOOLEAN, .ionum=5,.type=GBC_IO_TYPE_NORMAL},{}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=6, .datatype=ECT_BOOLEAN, .byte_slave = false},    {.inout = MAP_OUT, .datatype = ECT_BOOLEAN, .ionum=6,.type=GBC_IO_TYPE_NORMAL},{}},
+        {{.inout=MAP_OUT, .slave_num=MAP_EL2808_1,.bit_num=7, .datatype=ECT_BOOLEAN, .byte_slave = false},    {.inout = MAP_OUT, .datatype = ECT_BOOLEAN, .ionum=7,.type=GBC_IO_TYPE_NORMAL},{}},
 
-        {{.inout=MAP_OUT, .slave_num=MAP_AW_J20_CTRL_1, .byte_num=35, .datatype=ECT_UNSIGNED32},              {.inout=MAP_OUT, .datatype=ECT_UNSIGNED32, .ionum=0}, {}                                                                                                }
+        {{.inout=MAP_OUT, .slave_num=MAP_AW_J20_CTRL_1, .byte_num=35, .datatype=ECT_UNSIGNED32},              {.inout=MAP_OUT, .datatype=ECT_UNSIGNED32, .ionum=0}, {}  },
+
+
+                 {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave=true},             {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=0, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=1, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=2, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=3, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=4, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=5, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=5, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=6, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=6, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_0, .bit_num=7, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=7, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave=true},             {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=8, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=9, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=10, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=11, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=12, .type = GBC_IO_TYPE_SAFETY},      {}},
+
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=5, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=13, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=6, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=14, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_1, .bit_num=7, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=15, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_2, .bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=16, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_2, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=17, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_2, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=18, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_2, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=19, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_2, .bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=20, .type = GBC_IO_TYPE_SAFETY},      {}},
+        {{.inout=MAP_IN, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_OUTPUTS_OFFSET_BYTE_2, .bit_num=5, .datatype=ECT_BOOLEAN, .byte_slave=true},              {.inout=MAP_IN, .datatype=ECT_BOOLEAN, .ionum=21, .type = GBC_IO_TYPE_SAFETY},      {}},
+
+    //bit 0 is used by gbem to set the error ack
+//        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=0, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=1, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=2, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=3, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=4, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=4, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=5, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=5, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=6, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=6, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_0, .bit_num=7, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=7, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_1, .bit_num=0, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=8, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_1, .bit_num=1, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=9, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_1, .bit_num=2, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=10, .type = GBC_IO_TYPE_SAFETY},     {}},
+        {{.inout=MAP_OUT, .slave_num=MAP_BBH_SCU_1_EC_1, .byte_num=BBH_SCU_1_EC_FUNCTIONAL_INPUTS_OFFSET_BYTE_1, .bit_num=3, .datatype=ECT_BOOLEAN, .byte_slave=true},            {.inout=MAP_OUT, .datatype=ECT_BOOLEAN, .ionum=11, .type = GBC_IO_TYPE_SAFETY},     {}}
         };
 
 

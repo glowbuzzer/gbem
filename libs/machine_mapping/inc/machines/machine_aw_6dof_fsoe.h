@@ -11,15 +11,15 @@
  ******************************************************************************
  */
 
-#ifndef GBEM_MACHINE_AW_6DOF_H
-#define GBEM_MACHINE_AW_6DOF_H
+#ifndef GBEM_MACHINE_AW_6DOF_FSOE_H
+#define GBEM_MACHINE_AW_6DOF_FSOE_H
 
 #include "stdbool.h"
 
 #define MAP_GLOBAL_DC_SYNC_OFFSET   2000U
 
 /* Slaves must be defined in order that they appear on the EtherCAT network */
-#define MAP_SCU_1_EC                1
+#define MAP_BBH_SCU_1_EC_1          1
 #define MAP_EK1100_1                2
 #define MAP_EL2808_1                3
 #define MAP_EL1808_1                4
@@ -38,14 +38,14 @@
 
 
 #define MAP_NUM_DRIVES              6
-#define MAP_NUM_SLAVES              11
+#define MAP_NUM_SLAVES              14
 #define MAP_NUM_FSOE_MASTER_SLOTS   6
 
 /**CRITICAL! if this is defined then hardware estop is disabled! */
-#define DISABLE_ESTOP_CHECKING      0
+#define DISABLE_ESTOP_CHECKING      1
 
 
-#define MAP_NUMBER_ESTOP_DIN        1
+#define MAP_NUMBER_ESTOP_DIN        0
 
 
-#endif //GBEM_MACHINE_AW_6DOF_H
+#endif //GBEM_MACHINE_AW_6DOF_FSOE_H
