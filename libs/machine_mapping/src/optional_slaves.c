@@ -315,6 +315,14 @@ gberror_t os_disable_slaves(bool *which_slaves_are_optional) {
 
 
 
+//    map_fsoe_master_slot_to_slave
+
+
+    for (uint16_t i = 0; i < MAP_NUM_FSOE_MASTER_SLOTS; i++) {
+        if (map_fsoe_master_slot_to_slave[i] > 0) {
+            map_fsoe_master_slot_to_slave[i] = map_fsoe_master_slot_to_slave[i] - count_of_deleted;
+        }
+    }
 
 
     UM_INFO(GBEM_UM_EN, "GBEM: Number of slaves disabled [%u]", count_of_deleted);
