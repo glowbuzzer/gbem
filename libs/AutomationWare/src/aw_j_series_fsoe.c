@@ -350,47 +350,28 @@ gberror_t ec_set_slots_aw_j_series_fsoe(const uint16_t slave) {
  * \return
  */
 gberror_t ec_apply_standard_sdos_aw_j_series_fsoe(const uint16_t slave) {
-    ec_set_slots_aw_j_series_fsoe(slave);
-
-    ec_apply_limits_aw_j_series(slave);
-
-
     gberror_t rc = E_GENERAL_FAILURE;
+
+    rc = ec_set_slots_aw_j_series_fsoe(slave);
+
+    if (rc != E_SUCCESS) {
+        return rc;
+    }
+
+    rc = ec_apply_limits_aw_j_series(slave);
+
+    if (rc != E_SUCCESS) {
+        return rc;
+    }
 
     rc = sdos_write_one_from_array(&gbem_ctx.ar, slave);
 
+    if (rc != E_SUCCESS) {
+        return rc;
+    }
+
     return rc;
 
-    //TODO
-
-
-    //Polarity	0x607E:0	USINT	8
-
-    uint8_t polarity = 0;
-    if (map_drive_direction[map_slave_to_drive(slave)] == 0) {
-        polarity = 128;
-    }
-    //todo crit velocity polarity
-
-    if (!ec_sdo_write_int32(slave, AW_J_SERIES_POLARITY_SDO_INDEX, AW_J_SERIES_POLARITY_SDO_SUB_INDEX,
-                            polarity, true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-
-    //Configure LED gpio output pin
-    if (!ec_sdo_write_uint8(slave, AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_INDEX, AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_SUB_INDEX,
-                            AW_J_SERIES_LED_OP_PIN_CONFIG_SDO_VALUE, true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-    //Configure LED gpio output pin voltage
-    if (!ec_sdo_write_uint8(slave, AW_J_SERIES_LED_OP_PIN_VOLTAGE_SDO_INDEX,
-                            AW_J_SERIES_LED_OP_PIN_VOLTAGE_SDO_SUB_INDEX,
-                            AW_J_SERIES_LED_OP_PIN_VOLTAGE_SDO_VALUE, true)) {
-        return E_SDO_WRITE_FAILURE;
-    }
-
-    return E_SUCCESS;
 }
 
 
