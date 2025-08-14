@@ -18,7 +18,7 @@
 #include "cyclic_message.h"
 
 #include "cia402.h"
-#include "shared.h"
+#include "ecm_status.h"
 
 typedef struct {
     bool disable_drive_follow_error_check;
@@ -28,6 +28,9 @@ typedef struct {
 
 extern debug_settings_t debug_settings;
 
+#ifndef MAP_NUM_DRIVES
+#define MAP_NUM_DRIVES 1
+#endif
 
 /** sm event data (passed in with each call to execute the state machine ) */
 typedef struct {

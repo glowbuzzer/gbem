@@ -19,6 +19,7 @@
 #include "dpm.h"
 #include "linux_shm.h"
 #include "control.h"
+#include "ethercattype.h"
 
 typedef struct {
     char eth_interface1[SIZE_OF_IF_NAME]; //done

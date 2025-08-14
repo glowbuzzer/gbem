@@ -177,16 +177,16 @@ endif ()
 
 
 # Define where the config file will be copied to
-set(CONFIG_FILE_PATH "${gbc_config_SOURCE_DIR}/${MACHINE_SUB_MACHINE_VALUE}.json")
-message(STATUS "GB: CONFIG_FILE_PATH is [${CONFIG_FILE_PATH}]")
-message(STATUS "GB: ${gbc_config_SOURCE_DIR}/${MACHINE_SUB_MACHINE_VALUE}.json")
-
-# Add a custom command to copy the file
-add_custom_target(copy_config_file ALL
-        #        OUTPUT "${CMAKE_BINARY_DIR}/config_mini.json"
-        COMMAND ${CMAKE_COMMAND} -E copy ${CONFIG_FILE_PATH} /gb/gbem_config.json
-        DEPENDS ${CONFIG_FILE_PATH}
-)
+#set(CONFIG_FILE_PATH "${gbc_config_SOURCE_DIR}/${MACHINE_SUB_MACHINE_VALUE}.json")
+#message(STATUS "GB: CONFIG_FILE_PATH is [${CONFIG_FILE_PATH}]")
+#message(STATUS "GB: ${gbc_config_SOURCE_DIR}/${MACHINE_SUB_MACHINE_VALUE}.json")
+#
+## Add a custom command to copy the file
+#add_custom_target(copy_config_file ALL
+#        #        OUTPUT "${CMAKE_BINARY_DIR}/config_mini.json"
+#        COMMAND ${CMAKE_COMMAND} -E copy ${CONFIG_FILE_PATH} /gb/gbem_config.json
+#        DEPENDS ${CONFIG_FILE_PATH}
+#)
 
 # Define a custom target that depends on the copied file
 #add_custom_target(copy_config_file ALL DEPENDS "${CMAKE_BINARY_DIR}/config_mini.json")
@@ -236,9 +236,9 @@ MESSAGE(STATUS "ETHTOOL_CMD_ERROR: " ${ETHTOOL_CMD_ERROR})
 MESSAGE(STATUS "ETHTOOL_CMD_OUTPUT: " ${ETHTOOL_CMD_OUTPUT})
 
 add_executable(GBEM ${SOURCES})
-add_dependencies(GBEM copy_config_file)
+#add_dependencies(GBEM copy_config_file)
 #NEW_DRIVE
-target_link_libraries(GBEM EtherCAT jansson sdos json_conf json_msg Logging mjson common-misc cia state_machine dpm ecm_status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen automationware virtual_drive RTA trio delta JVL omron oriental_motor bbh unity gberror gbem_config foe etg m rt)
+target_link_libraries(GBEM EtherCAT jansson sdos json_conf json_msg Logging mjson common-misc cia state_machine dpm dpm-status minini machine_mapping linux-shm pid sleep beckhoff cannon_automata kollmorgen automationware virtual_drive RTA trio delta JVL omron oriental_motor bbh unity gberror gbem_config foe etg m rt)
 target_include_directories(GBEM PUBLIC inc "shared/inc" "plc_user_code" ${PROJECT_BINARY_DIR}/version ${gbem_config_BINARY_DIR})
 
 #add_executable(GBEM_testStateMachine shared/src/control.c shared/src/ec_functions.c src/ecrxtx.c src/ethercatnetscan.c src/status.c shared/src/json-maker.c shared/src/float_int_conv.c test/src/test.c test/src/testStateMachine.c shared/src/plc_core.c plc_user_code/plc_init.c src/cyclic_message.c plc_user_code/plc_task_1.c shared/src/iomap_processing.c)
@@ -352,12 +352,12 @@ add_subdirectory("gclibs/logging")
 add_subdirectory("gclibs/pid")
 add_subdirectory("gclibs/cia")
 add_subdirectory("gclibs/dpm")
+add_subdirectory("gclibs/dpm/status/ecm")
 add_subdirectory("gclibs/linux-shm")
 add_subdirectory("gclibs/sleep")
 add_subdirectory("gclibs/gberror")
 add_subdirectory("gclibs/minini")
 add_subdirectory("gclibs/state_machine")
-add_subdirectory("gclibs/ecm_status")
 
 
 #file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/libs/json_conf/MACHINE_BBH_J25.json
